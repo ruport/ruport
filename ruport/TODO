@@ -1,0 +1,23 @@
+TODO: (Wiped clean for a fresh start as of 2006.02.20)
+
+Immediate Goals:
+
+  Features:
+
+    - PDF document support + example
+
+    - event system
+ 
+    - Composite key selection
+
+    - Value modification predicate.
+      DataRow#set_value_if("my_value") { # my_condition }
+      (Update: What was I talking about here???)
+      
+    - Column based default values
+
+    - Document the inner classes of Format
+
+    - make the Fetchable module to abstract data acquisition
+  
+    - Calculated fields

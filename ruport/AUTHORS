@@ -1,0 +1,21 @@
+Developers:
+---------------------------------------------------
+
+{Gregory Brown}[mailto:gregory.t.brown@gmail.com]
+{Dudley Flanders}[mailto:dudley@misnomer.us]
+
+Contributors / People we've (legally) stolen from:
+---------------------------------------------------
+
+James Edward Gray II:
+- Original inspiration via query.rb
+- system_extensions.rb
+
+Francis Hwang:
+- SQLSplit
+
+Simon Claret:
+- PDF table support 
+
+Dinko Mehinovic:
+- util/release/raa.rb

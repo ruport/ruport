@@ -1,0 +1,19 @@
+h1. Emailing Reports
+
+<hr>
+
+h2. Basic Usage
+
+<hr>
+
+<hr>
+
+h2. Attachments and HTML
+
+<hr>
+
+<hr>
+
+h2. 3rd party mail objects
+
+<hr>

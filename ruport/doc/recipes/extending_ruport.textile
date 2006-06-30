@@ -1,0 +1,20 @@
+h1. Extending Ruport
+
+<hr>
+
+h2. Format Engine Plugins
+
+<hr>
+
+<hr>
+
+h2. Custom Format Engines
+
+<hr>
+
+<hr>
+
+h2. Black Magic & Voodoo
+
+<hr>
+
