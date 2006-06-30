@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document name="Test document">
+  <page name="Table of contents">
+    <section name="Header" emphasis="Bold">
+      <element name="Title">Table of Contents</element>
+    </section>
+    <section name="Table">
+      <element name="content1">How to install Ruport</element>
+      <element name="content2">How to use Ruport</element>
+      <element name="content3">How to rock and roll</element>
+    </section>
+  </page>
+  <page name="Installing Ruport">
+    <section></section>
+  </page>
+  <page name="Using Ruport">
+    <section />
+  </page>
+  <page name="Rocking and Rolling">
+    <section />
+  </page>
+</document>

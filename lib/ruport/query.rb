@@ -1,0 +1,207 @@
+require "generator"
+require "ruport/query/sql_split"
+
+module Ruport
+  
+  # Query offers a way to interact with databases via DBI.  It supports
+  # returning result sets in either Ruport's native DataSets, or in their raw
+  # form as DBI::Rows.
+  #
+  # It offers basic caching support, the ability to instantiate a generator for
+  # a result set, and the ability to quickly and easily swap between data
+  # sources.
+  class Query 
+    
+    
+    include Enumerable
+    
+    # Queries are initialized with some SQL and a number of options that effect
+    # their operation.  They are NOT executed at initialization.  
+    #
+    # This is important to note as they will not query the database until either
+    # Query#result, Query#execute, Query#generator, or an enumerable method is
+    # called on them. 
+    #
+    # This kind of laziness is supposed to be A Good Thing, and
+    # as long as you keep it in mind, it should not cause any problems.
+    #
+    # The SQL can be single or multistatement, but the resulting DataSet will
+    # consist only of the result of the last statement which returns something.
+    #
+    # Options:
+    #
+    # <tt>:source</tt>  
+    #   A source specified in Ruport::Config.sources, defaults to :default
+    # <tt>:origin</tt>  
+    #   query origin, default to :string, but can be
+    #   set to :file, loading the path specified by the sql parameter
+    # <tt>:dsn</tt>
+    #   If specifed, the query object will manually override Ruport::Config
+    # <tt>:user</tt>
+    #   If a DSN is specified, a user can be set by this option
+    # <tt>:password</tt>
+    #   If a DSN is specified, a password can be set by this option
+    # <tt>:raw_data</tt>
+    #   When set to true, DBI::Rows will be returned
+    # <tt>:cache_enabled</tt>
+    #   When set to true, Query will download results only once, and then return
+    #   cached values until cache has been cleared.
+    # Examples:
+    #   
+    #   # uses Ruport::Config's default source
+    #   Ruport::Query.new("select * from fo")
+    #   
+    #   # uses the Ruport::Config's source labeled :my_source
+    #   Ruport::Query.new("select * from fo", :source => :my_source)
+    #
+    #   # uses a manually entered source
+    #   Ruport::Query.new("select * from fo", :dsn => "dbi:mysql:my_db",
+    #     :user => "greg", :password => "chunky_bacon" )
+    #
+    #   # uses a SQL file stored on disk
+    #   Ruport::Query.new("my_query.sql",:origin => :file)
+    def initialize(sql, options={})
+      options[:source] ||= :default
+      options[:origin] ||= :string
+      @sql = sql
+      @statements = SqlSplit.new(get_query(options[:origin],sql))
+      
+      if options[:dsn]
+        Ruport::Config.source :temp, :dsn      => options[:dsn],
+                                     :user     => options[:user],
+                                     :password => options[:password]
+        options[:source] = :temp
+      end
+      
+      select_source(options[:source])
+      
+      @raw_data = options[:raw_data]
+      @cache_enabled  = options[:cache_enabled]
+      @cached_data = nil
+    end
+    
+    # set to true to get DBI:Rows, false to get Ruport constructs
+    attr_accessor :raw_data
+    
+    # modifying this might be useful for testing, this is the data stored by
+    # ruport when caching
+    attr_accessor :cached_data
+    
+    # this is the original SQL for the Query object
+    attr_reader :sql
+    
+    # This will set the dsn, username, and password to one specified by a label
+    # that corresponds to a source in Ruport::Config
+    def select_source(label)
+      @dsn      = Ruport::Config.sources[label].dsn
+      @user     = Ruport::Config.sources[label].user
+      @password = Ruport::Config.sources[label].password
+    end 
+    
+    # Standard each iterator, iterates through result set row by row.
+    def each(&action) 
+      Ruport::complain(
+        "no block given!", :status => :fatal,
+        :level => :log_only, :exception => LocalJumpError 
+      ) unless action
+      fetch &action
+    end
+    
+    # Grabs the result set as a DataSet or if in raw_data mode, an array of
+    # DBI:Row objects
+    def result; fetch; end
+    
+    # Runs the query without returning its results.
+    def execute; fetch; nil; end
+    
+    # clears the contents of the cache
+    def clear_cache
+      @cached_data = nil
+    end
+
+    # clears the contents of the cache and then runs the query, filling the
+    # cache with the new result
+    def update_cache
+      clear_cache
+      caching_flag,@cache_enabled = @cache_enabled, true
+      fetch; @cache_enabled = caching_flag
+    end
+    
+    # Turns on caching.  New data will not be loaded until cache is clear or
+    # caching is disabled.
+    def enable_caching
+      @cache_enabled = true
+    end
+
+    # Turns off caching and flushes the cached data
+    def disable_caching
+      @cached_data   = nil
+      @cache_enabled = false
+    end
+    
+    # Returns a DataSet, even if in raw_data mode
+    # Does not work with raw data if cache is enabled and filled
+    def to_dataset
+      data_flag, @raw_data = @raw_data, false
+      data = fetch; @raw_data = data_flag; return data
+    end
+
+    # Returns a csv dump of the query
+    def to_csv
+      to_dataset.to_csv
+    end
+
+    # Returns a Generator object of the result set
+    def generator
+      Generator.new(fetch)
+    end
+
+    private
+    
+    def query_data( query_text )
+      
+      require "dbi"
+      
+      data = @raw_data ? [] : DataSet.new
+      DBI.connect(@dsn, @user, @password) do |dbh|
+        dbh.execute(query_text) do |sth|
+            return unless sth.fetchable?
+            results = sth.fetch_all  
+            data.fields = sth.column_names unless @raw_data
+            results.each { |row| data << row }
+        end
+      end
+      data
+      rescue NoMethodError; nil
+    end 
+    
+    def get_query(type,query)
+      case (type)
+      when :string
+         query
+      when :file
+        load_file( query )
+      end
+    end
+    
+    def load_file( query_file )
+      begin; File.read( query_file ).strip ; rescue
+        Ruport::complain "Could not open #{query_file}",
+          :status => :fatal, :exception => LoadError
+      end
+    end
+    
+    def fetch(&action)
+      data = nil
+      if @cache_enabled and @cached_data
+        data = @cached_data
+      else
+        @statements.each { |query_text| data = query_data( query_text ) }
+      end
+      data.each { |r| action.call(r) } if block_given? ; data
+      @cached_data = data if @cache_enabled
+      return data
+    end
+
+  end
+end
