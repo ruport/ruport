@@ -51,6 +51,7 @@ help.
 <%= chapter "data_acquisition" %>
 <%= chapter "data_set_manipulation" %>
 <%= chapter "formatting_system" %>
+<%= chapter "report_engine" %>
 <%= chapter "email" %>
 <%= chapter "extending_ruport" %>
 <%= chapter "resources" %>
