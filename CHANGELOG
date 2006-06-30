@@ -2,6 +2,9 @@ The current version of Ruby Reports is 0.4.13
 
 changes since 0.4.11
 
+- Ruport is now on Trac.
+  http://stonecode.svnrepository.com/ruport/
+
 - I apparently never knew how to use inject.  
   Injects are all functional now.
 
