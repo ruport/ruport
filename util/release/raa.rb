@@ -9,5 +9,5 @@ agent = WWW::Mechanize.new
 page = agent.get frontpage
 form = page.forms[1]
 form.fields.name("pass").value = ARGV[0]
-form.fields.name("version").value = (Ruport::VERSION =~ /(\d.\d.\d)/ && $1)
+form.fields.name("version").value = (Ruport::VERSION =~ /(\d+.\d+.\d+)/ && $1)
 page = agent.submit(form, form.buttons[0])
