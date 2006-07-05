@@ -5,7 +5,7 @@ class TestConfiguration < Test::Unit::TestCase
 
   def setup
     Ruport::Config.init!
-    Ruport::Config.log_file "test/unit.log"
+    Ruport::Config.log_file = "test/unit.log"
   end
   
   def test_dsn_defaults
@@ -73,7 +73,7 @@ class TestConfiguration < Test::Unit::TestCase
     assert Ruport::Config.logger.nil?
      
     # And then we change are mind again.  Back logging?
-    Ruport::Config.log_file "test/unit.log"  
+    Ruport::Config.log_file = "test/unit.log"  
     assert(Ruport::Config.logger.kind_of?(Logger))
     
   end

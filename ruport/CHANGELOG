@@ -2,6 +2,15 @@ The current version of Ruby Reports is 0.4.13
 
 changes since 0.4.11
 
+- Report#query now has an 'as' method that allows direct translation of a query
+  to a particular format, e.g.
+
+  query "select * from ruport", :as => :pdf
+
+- Revamped Report class so that it can be used
+
+- Lots of bug fixes and cleanup
+
 - Ruport is now on Trac.
   http://stonecode.svnrepository.com/ruport/
 

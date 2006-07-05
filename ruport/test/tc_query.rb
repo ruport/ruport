@@ -66,4 +66,9 @@ class TestQuery < Test::Unit::TestCase
     # to be written
   end
 
+  def test_caching_triggers
+    assert_nothing_raised { @query1.enable_caching }
+    assert_nothing_raised { @query1.disable_caching }
+  end
+
 end

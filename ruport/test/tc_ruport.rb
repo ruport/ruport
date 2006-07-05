@@ -6,7 +6,7 @@ require "ruport"
 class TestRuport < Test::Unit::TestCase
 
   def setup
-    Ruport::Config.log_file "test/complain.log"
+    Ruport::Config.log_file = "test/complain.log"
     @output = StringIO.new
   end
 
