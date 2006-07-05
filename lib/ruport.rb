@@ -39,19 +39,18 @@ module Ruport
   # 
   # If you want to recover these messages to secondary output for debugging, you
   # can use Config::enable_paranoia 
-  def Ruport.complain(message,options={})
+  def Ruport.log(message,options={})
     options = {:status => :warn, :output => $stderr}.merge(options)
     options[:output].puts "[!!] #{message}" unless 
       options[:level].eql?(:log_only) and not Ruport::Config.paranoid?
-    case(options[:status])
-    when :warn
-      Ruport::Config::logger.warn(message) if Ruport::Config.logger
-    when :fatal
-      Ruport::Config::logger.fatal(message) if Ruport::Config.logger
-      raise options[:exception] || RuntimeError, message
+    Ruport::Config::logger.send(options[:status],message) if Config.logger
+    if options[:status].eql? :fatal
+      raise(options[:exception] || RuntimeError, message) 
     end
   end
-
+ 
+  def Ruport.complain(*args); Ruport.log(*args) end
+  
   def Ruport.configure(&block)
     block.call(Ruport::Config)
   end

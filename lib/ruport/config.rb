@@ -59,7 +59,7 @@ module Ruport
   #
   class Config
     include Singleton
-    
+
     def Config.method_missing(method_id,*args)
       case(method_id)
       when :source

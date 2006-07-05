@@ -42,6 +42,7 @@ module Ruport
       
       attr_accessor :rendered_field_names
       attr_accessor :pre, :post
+      attr_accessor :header, :footer
    end
     
     

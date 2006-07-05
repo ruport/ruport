@@ -72,7 +72,7 @@ module Ruport
       def plugins
         format_plugins.values
       end 
-
+      
     end
   end
   

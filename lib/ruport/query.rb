@@ -115,7 +115,7 @@ module Ruport
     
     # clears the contents of the cache
     def clear_cache
-      @cached_data = nil
+      @CAched_data = nil
     end
 
     # clears the contents of the cache and then runs the query, filling the
@@ -133,7 +133,7 @@ module Ruport
 
     # Turns off caching and flushes the cached data
     def disable_caching
-      cleare_cache
+      clear_cache
       @cache_enabled = false
     end
     

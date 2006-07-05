@@ -4,9 +4,10 @@
 %w[erb yaml date logger fileutils].each { |lib| require lib }
 
 require "ruport/mailer"
-
+require "forwardable"
 module Ruport
   class Report   
+    extend Forwardable
     def initialize( source_name=:default, mailer_name=:default )
       @source = source_name
       @report_name = @report = ""
@@ -31,6 +32,8 @@ module Ruport
       q = Query.new(sql, options)
       if options[:yield_type].eql?(:by_row)
         q.each { |r| action.call(r) }
+      elsif options[:as]
+        Format.table :data => q.result, :plugin => options[:as]
       else
         block_given? ? action.call(q.result) : q.result
       end
@@ -41,8 +44,7 @@ module Ruport
     def eval_template( filename, code )
       filename =~ /\.rb/ ? eval(code) : ERB.new(code, 0, "%").run(binding)
     end
-    
-
+   
     # Generates the report.  If @pre or @post are defined with lambdas,
     # they will be called before and after the main code.
     #
@@ -81,8 +83,33 @@ module Ruport
       string
     end
 
+    def write(my_file=file)
+      File.open(my_file,"w") { |f| f << report }
+    end
 
+    class << self
+      def prepare(&block); define_method(:prepare,&block) end
+      def generate(&block); define_method(:generate,&block) end
+      def cleanup(&block); define_method(:cleanup,&block) end
+      def run(rep=self.new)
+        rep.prepare if rep.respond_to? :prepare;
+        rep.report = rep.generate;
+        yield(rep)
+        rep.cleanup if rep.respond_to? :cleanup;
+      end
+    end
+
+    def run(&block)
+      self.class.run(self,&block)
+    end
+
+    def log(*args); Ruport.log(*args) end
+      
+    
+    def_delegators Ruport::Config, :source, :mailer, :log_file, :log_file=
+    
   end
+
 end
 
 

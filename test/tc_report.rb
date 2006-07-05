@@ -28,4 +28,19 @@ class TestReport < Test::Unit::TestCase
     end
   end
 
-end  
+  class MyReport < Report; end
+  
+  def test_klass_methods
+    MyReport.prepare  { self.file = "foo.csv" }
+    MyReport.generate { "hello dolly" }
+    MyReport.cleanup { @foo = "bar" }
+    report = MyReport.new
+    report.run { |rep|  
+      assert_equal("foo.csv",rep.file)
+      assert_equal("hello dolly",rep.report)
+      assert_equal(nil,rep.instance_eval("@foo"))
+    }
+    assert_equal("bar",report.instance_eval("@foo"))
+  end
+
+end
