@@ -61,8 +61,7 @@ module Ruport
     #   # uses a SQL file stored on disk
     #   Ruport::Query.new("my_query.sql",:origin => :file)
     def initialize(sql, options={})
-      options[:source] ||= :default
-      options[:origin] ||= :string
+      options = { :source => :default, :origin => :string }.merge(options)
       @sql = sql
       @statements = SqlSplit.new(get_query(options[:origin],sql))
       
@@ -122,9 +121,8 @@ module Ruport
     # clears the contents of the cache and then runs the query, filling the
     # cache with the new result
     def update_cache
-      clear_cache
-      caching_flag,@cache_enabled = @cache_enabled, true
-      fetch; @cache_enabled = caching_flag
+      return unless @cache_enabled
+      clear_cache; fetch
     end
     
     # Turns on caching.  New data will not be loaded until cache is clear or
@@ -135,7 +133,7 @@ module Ruport
 
     # Turns off caching and flushes the cached data
     def disable_caching
-      @cached_data   = nil
+      cleare_cache
       @cache_enabled = false
     end
     
@@ -148,7 +146,7 @@ module Ruport
 
     # Returns a csv dump of the query
     def to_csv
-      to_dataset.to_csv
+      Format.table :plugin => :csv, :data => fetch
     end
 
     # Returns a Generator object of the result set
@@ -176,12 +174,7 @@ module Ruport
     end 
     
     def get_query(type,query)
-      case (type)
-      when :string
-         query
-      when :file
-        load_file( query )
-      end
+      type.eql?(:file) ? load_file( query ) : query
     end
     
     def load_file( query_file )

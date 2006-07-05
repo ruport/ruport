@@ -59,41 +59,40 @@ module Ruport
 # This part of Ruport is under active development.  Please do feel free to
 # submit feature requests or suggestions.
   class Format
-      
-      def Format.build_interface_for(engine,name)
-        (class << self; self; end).send(:define_method, name, 
-          lambda { |options| simple_interface(engine, options) })
-        (class << self; self; end).send(:define_method, "#{name}_object",
-          lambda { |options|
-            options[:auto_render] = false; simple_interface(engine,options) })
-      end
-
-      %w[open_node document engine plugin].each { |lib|
-         require "ruport/format/#{lib}" 
-      }
-
-    class << self      
-
-      def simple_interface(engine, options={})
-        my_engine = engine.dup
-        
-        my_engine.send(:plugin=,options[:plugin])
-        options = my_engine.active_plugin.rendering_options.merge(options)
-       
-        options[:auto_render] = true unless options.has_key? :auto_render
-        
-
-        options[:data] = options[:data].dup
-        
-        options.each do |k,v|
-          my_engine.send("#{k}=",v) if my_engine.respond_to? k
-        end
-        
-        options[:auto_render] ? my_engine.render : my_engine.dup
-      end
-
+    
+    # Builds a simple interface to a formatting engine.
+    # Two of these interfaces are built into Ruport:
+    # Format.document and Format.table
+    #
+    # These interfaces pass a hash of keywords to the associative engine.  
+    # Here is a simple example:
+    # 
+    # Format.build_interface_for Format::Engine::Yable, "table"
+    # 
+    # This will allow the following code to work:
+    # 
+    # Format.table :data => [[1,2],[3,4]], :plugin => :csv
+    #  
+    # So, if you want to create a standard interface to a 
+    # custom built engine, you could simply do something like:
+    # 
+    # Format.build_interface_for MyCustomEngine, "my_name"
+    #
+    # which would be accessible via
+    #
+    # Format.my_name ...
+    def Format.build_interface_for(engine,name)
+      (class << self; self; end).send(:define_method, name, 
+        lambda { |options| simple_interface(engine, options) })
+      (class << self; self; end).send(:define_method, "#{name}_object",
+        lambda { |options|
+          options[:auto_render] = false; simple_interface(engine,options) })
     end
-   
+
+    %w[open_node document engine plugin].each { |lib|
+       require "ruport/format/#{lib}" 
+    }
+
     @@filters = Hash.new
     
     # To hook up a Format object to your current class, you need to pass it a
@@ -101,7 +100,7 @@ module Ruport
     # evaluated in the context of the object they are being called from, rather
     # than within an instance of Format.
     #
-    def initialize(klass_binding)
+    def initialize(klass_binding=binding)
       @binding = klass_binding
     end
     
@@ -143,9 +142,32 @@ module Ruport
     end
 
     def method_missing(m)
-      @@filters[m] ? @@filters[m].call(@content) : super
+      @@filters[m] ? @@filters[m][@content] : super
     end
-  
+
+
+    private
+
+     def Format.simple_interface(engine, options={})
+        my_engine = engine.dup
+        
+        my_engine.send(:plugin=,options[:plugin])
+        options = my_engine.active_plugin.rendering_options.merge(options)
+       
+        options[:auto_render] = true unless options.has_key? :auto_render
+        
+
+        options[:data] = options[:data].dup
+        
+        options.each do |k,v|
+          my_engine.send("#{k}=",v) if my_engine.respond_to? k
+        end
+        
+        options[:auto_render] ? my_engine.render : my_engine.dup
+      end
+
+
+    
   end
 end
 
