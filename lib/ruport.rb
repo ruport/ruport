@@ -40,8 +40,7 @@ module Ruport
   # If you want to recover these messages to secondary output for debugging, you
   # can use Config::enable_paranoia 
   def Ruport.complain(message,options={})
-    options[:status] ||= :warn
-    options[:output] ||= $stderr
+    options = {:status => :warn, :output => $stderr}.merge(options)
     options[:output].puts "[!!] #{message}" unless 
       options[:level].eql?(:log_only) and not Ruport::Config.paranoid?
     case(options[:status])
