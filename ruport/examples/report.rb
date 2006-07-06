@@ -7,6 +7,9 @@ class MyReport < Ruport::Report
     source :default, 
       :dsn => "dbi:mysql:vagrant_bazaar_development", 
       :user => "root"
+    mailer :default,
+     :host => "mail.adelphia.net", 
+     :address => "gregory.t.brown@gmail.com"
   end
   
   generate do
@@ -21,6 +24,12 @@ class MyReport < Ruport::Report
 end
 
 MyReport.run { |res| 
-  res.write "foo.csv"; 
-  puts File.read("foo.csv")
+  res.write "foo.csv";
+  res.send_to("greg7224@gmail.com") do |mail|
+    mail.subject = "Sample report" 
+    mail.attach "foo.csv"
+    mail.text = <<-EOS
+      this is a sample of sending an emailed report from within Ruport.
+    EOS
+  end
 }

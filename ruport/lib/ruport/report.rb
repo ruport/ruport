@@ -104,7 +104,13 @@ module Ruport
     end
 
     def log(*args); Ruport.log(*args) end
-      
+    
+    def send_to(adds)
+      m = Mailer.new
+      m.to = adds
+      yield(m)
+      m.deliver :from => m.from, :to => m.to
+    end
     
     def_delegators Ruport::Config, :source, :mailer, :log_file, :log_file=
     
