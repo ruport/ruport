@@ -9,7 +9,8 @@ module Ruport
   class Report   
     extend Forwardable
     def initialize( source_name=:default, mailer_name=:default )
-      @source = source_name
+      use_source source_name
+      use_mailer mailer_name
       @report_name = @report = ""
       @file        = nil
     end
