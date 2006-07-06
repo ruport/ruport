@@ -54,7 +54,6 @@ module Ruport
   def Ruport.configure(&block)
     block.call(Ruport::Config)
   end
-
 end
 
 
