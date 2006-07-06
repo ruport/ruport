@@ -69,7 +69,7 @@ module Ruport
       when :mailer
         @@mailers[args.first] = OpenStruct.new(*args[1..-1])
         check_mailer(@@mailers[args.first],args.first)
-      when :log_file
+      when :log_file,:log_file=
         @@logger = Logger.new(args.first)
       when :default_source
         @@sources[:default]
