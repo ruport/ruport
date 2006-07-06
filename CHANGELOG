@@ -2,6 +2,9 @@ The current version of Ruby Reports is 0.4.13
 
 changes since 0.4.11
 
+- Mailfactory is now a gem dependency.  If you install via setup.rb or building
+  the gem yourself, you only need it if you plan to use Ruport::Mailer
+
 - Report#query now has an 'as' method that allows direct translation of a query
   to a particular format, e.g.
 
