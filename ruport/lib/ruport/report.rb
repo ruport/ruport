@@ -64,6 +64,10 @@ module Ruport
     def use_source(label)
       @source = label
     end
+
+    def use_mailer(label)
+      @mailer = label
+    end
     
     # Provides a nice way to execute templates and filters.
     #
@@ -109,6 +113,7 @@ module Ruport
       m = Mailer.new
       m.to = adds
       yield(m)
+      m.select_mailer @mailer
       m.deliver :from => m.from, :to => m.to
     end
     
