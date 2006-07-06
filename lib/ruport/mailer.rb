@@ -11,7 +11,8 @@ module Ruport
       extend Forwardable
       
       def initialize( mailer_label=:default )
-        select_mailer(mailer_label); mail_object
+        select_mailer(mailer_label); 
+        mail_object.from = @mailer.address if mail_object.from.to_s.empty?
         rescue
           raise "you need to specify a mailer to use"
       end
@@ -29,14 +30,14 @@ module Ruport
       end
 
       def select_mailer(label)
-        mailer      = Ruport::Config.mailers[label]
-        @host       = mailer.host
-        @user       = mailer.user
-        @password   = mailer.password
-        @address    = mailer.address
-        @port       = mailer.port       || 25
-        @auth       = mailer.auth_type  || :plain
-        @mail_klass = mailer.mail_klass
+        @mailer      = Ruport::Config.mailers[label]
+        @host       = @mailer.host
+        @user       = @mailer.user
+        @password   = @mailer.password
+        @address    = @mailer.address
+        @port       = @mailer.port       || 25
+        @auth       = @mailer.auth_type  || :plain
+        @mail_klass = @mailer.mail_klass
       end
 
       def mail_object
