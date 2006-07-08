@@ -11,12 +11,13 @@ module Ruport
     def initialize( source_name=:default, mailer_name=:default )
       use_source source_name
       use_mailer mailer_name
-      @report_name = @report = ""
+      @report_name = @results = ""
       @file        = nil
     end
     
-    attr_accessor :file,:report
-    
+    attr_accessor :file,:results
+    alias_method :report, :results
+    alias_method :report=, :results=
     # High level interface to Ruport::Query
     # - Can read SQL statements from file or string
     # - Can use multistatement SQL 
@@ -57,7 +58,7 @@ module Ruport
     # explanation, so you may want to start there.     
     def generate_report
       @pre.call if @pre
-      @file ? File.open(@file,"w") { |f| f.puts @report } : puts(@report)
+      @file ? File.open(@file,"w") { |f| f.puts results } : puts(results)
       @post.call if @post
     end
 
@@ -92,15 +93,22 @@ module Ruport
       File.open(my_file,"w") { |f| f << report }
     end
 
+    def append(my_file=file)
+      File.open(my_file,"a") { |f| f << report }
+    end
+
     class << self
       def prepare(&block); define_method(:prepare,&block) end
       def generate(&block); define_method(:generate,&block) end
       def cleanup(&block); define_method(:cleanup,&block) end
-      def run(rep=self.new)
-        rep.prepare if rep.respond_to? :prepare;
-        rep.report = rep.generate;
-        yield(rep)
-        rep.cleanup if rep.respond_to? :cleanup;
+      def run(*args)
+        args[0] ||= self.new
+        args.each { |rep|
+          rep.prepare if rep.respond_to? :prepare;
+          rep.results = rep.generate;
+          yield(rep)
+          rep.cleanup if rep.respond_to? :cleanup;
+        }
       end
     end
 

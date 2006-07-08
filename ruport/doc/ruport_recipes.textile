@@ -19,9 +19,9 @@ Some of the functionality Ruport currently provides include:
 
 * Data delivery as part of an HTML page, via email, or out to a file.
 
-Ruport provides an extendable formatting system, so you can add in arbitrary
-formatting support as needed.  The tools provided can be used in a stand-alone
-command-line application, integrated into a Rails application,
+Ruby Reports provides an extendable formatting system, so you can add in 
+arbitrary formatting support as needed.  The tools provided can be used in a 
+stand-alone command-line application, integrated into a Rails application,
 or in any other Ruby program.
 
 Some of the key strengths of Ruport:

@@ -5,7 +5,7 @@ class MyReport < Ruport::Report
     log_file "f.log"
     log "preparing report", :status => :info
     source :default, 
-      :dsn => "dbi:mysql:vagrant_bazaar_development", 
+      :dsn => "dbi:mysql:foo", 
       :user => "root"
     mailer :default,
      :host => "mail.adelphia.net", 
@@ -14,7 +14,7 @@ class MyReport < Ruport::Report
   
   generate do
     log "generated csv from query", :status => :info
-    query "select * from users", :as => :csv 
+    query "select * from bar", :as => :csv 
   end
 
   cleanup do

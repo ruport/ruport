@@ -31,16 +31,36 @@ class TestReport < Test::Unit::TestCase
   class MyReport < Report; end
   
   def test_klass_methods
-    MyReport.prepare  { self.file = "foo.csv" }
-    MyReport.generate { "hello dolly" }
-    MyReport.cleanup { @foo = "bar" }
-    report = MyReport.new
+    rep_klass = MyReport.dup
+    rep_klass.prepare  { self.file = "foo.csv" }
+    rep_klass.generate { "hello dolly" }
+    rep_klass.cleanup { @foo = "bar" }
+    report = rep_klass.new
     report.run { |rep|  
       assert_equal("foo.csv",rep.file)
       assert_equal("hello dolly",rep.report)
       assert_equal(nil,rep.instance_eval("@foo"))
     }
     assert_equal("bar",report.instance_eval("@foo"))
+  end
+
+  def test_multi_reports
+    rep_klass = MyReport.dup
+    
+    report1 = rep_klass.new
+    report2 = rep_klass.new
+
+    report1.file = "foo"
+    report2.file = "bar"
+
+    rep_klass.generate { file }
+
+    expected = %w[foo bar]
+
+    rep_klass.run(report1,report2) do |rep|
+      assert_equal expected.shift, rep.results
+    end
+
   end
 
 end
