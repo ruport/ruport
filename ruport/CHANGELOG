@@ -2,6 +2,11 @@ The current version of Ruby Reports is 0.4.13
 
 changes since 0.4.11
 
+- Report can now run single or multiple reports and do things such as send them
+  via email or write/append them to files.
+
+- Report has been overhauled to have a simple DSL
+
 - Mailfactory is now a gem dependency.  If you install via setup.rb or building
   the gem yourself, you only need it if you plan to use Ruport::Mailer
 
