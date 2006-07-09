@@ -6,8 +6,6 @@ Immediate Goals:
 
     - PDF document support + example
 
-    - event system
- 
     - Composite key selection
 
     - Value modification predicate.
@@ -18,6 +16,4 @@ Immediate Goals:
 
     - Document the inner classes of Format
 
-    - make the Fetchable module to abstract data acquisition
-  
     - Calculated fields

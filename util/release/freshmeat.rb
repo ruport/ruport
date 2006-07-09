@@ -44,4 +44,4 @@ form.field("add_release[url_changelog]").value = "http://rubyforge.org/frs/shown
 
 agent.submit(form,form.buttons[0])
 
-p agent.page.forms[2]
+p agent.page.forms[2].buttons[0]
