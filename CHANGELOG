@@ -18,8 +18,6 @@ changes since 0.4.11
 
   query "select * from ruport", :as => :pdf
 
-- Revamped Report class so that it can be used
-
 - Lots of bug fixes and cleanup
 
 - Ruport is now on Trac.
