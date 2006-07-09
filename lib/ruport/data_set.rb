@@ -186,9 +186,10 @@ module Ruport
           lambda { |r| loaded_data << r } 
         end
        
-        loaded_data.fields = input[0] if options[:has_names]
-        input = input[1..-1] if options[:has_names] 
-        
+        if options[:has_names]
+          loaded_data.fields = input[0] ; input = input[1..-1]
+        end
+
         loaded_data.default = options[:default]
         input.each { |row| action[row] }
         return loaded_data	
