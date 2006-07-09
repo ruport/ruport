@@ -1,13 +1,28 @@
-# fixME: Copyright notice here.
+# report.rb : High Level Interface to Ruport
+#
+# Author: Gregory Brown
+# Copyright 2006, All Rights Reserved
+#
+# This is Free Software.  See LICENSE and COPYING files for details.
 
 #load the needed standard libraries.
 %w[erb yaml date logger fileutils].each { |lib| require lib }
 
 require "ruport/mailer"
 require "forwardable"
+
 module Ruport
   class Report   
     extend Forwardable
+    
+    # When initializing a report, you can provide a default mailer and source by
+    # giving a name of a valid source or mailer you've defined via
+    # Ruport::Config
+    #
+    # If your report does not need any sort of specialized information, you can
+    # simply use Report.run (Or MyReportName.run if you've inherited)
+    #
+    # This will auto-initialize a report.
     def initialize( source_name=:default, mailer_name=:default )
       use_source source_name
       use_mailer mailer_name
@@ -15,16 +30,54 @@ module Ruport
       @file        = nil
     end
     
-    attr_accessor :file,:results
+    #by default, this file will be used by Report#write
+    attr_accessor :file
+
+    #this attribute will get the results of Report#generate when the report is
+    #run.
+    attr_accessor :results
+
+    # Preserved for backwards compatability, please do not use this.
     alias_method :report, :results
+
+    # Preserved for backwards compabilitity, please do not use this.
     alias_method :report=, :results=
-    # High level interface to Ruport::Query
-    # - Can read SQL statements from file or string
-    # - Can use multistatement SQL 
-    # - Can iterate by row or return entire set
-    # - Can return raw DBI:Row objects or Ruport constructs.
+
+
+    # Simplified interface to Ruport::Query
     #
-    # Defaults to returning entire sets of Ruport constructs.
+    # === Can read SQL statements from file or string
+    #  
+    #  #from string 
+    #  result = query "select * from foo"
+    #
+    #  #from file 
+    #  result = query "my_query.sql", :origin => :file
+    # 
+    # === Can use multistatement SQL
+    #
+    #  # will return the value of the last statement, "select * from foo"
+    #  result = query "insert into foo values(1,2); select * from foo"
+    # 
+    # === Can iterate by row or return entire set
+    #  
+    #  query("select * from foo", :yield_type => :by_row) { |r|
+    #     #do something with the rows here
+    #  }
+    # 
+    # === Can return raw DBI:Row objects or Ruport's data structures.
+    # 
+    #  # will return a DataSet
+    #  result = query "select * from foo"
+    #
+    #  # will return an Array of DBI::Row objects
+    #  result = query "select * from foo", :raw_data => true
+    #
+    # === Can quickly output in a number of formats
+    # 
+    #  result = query "select * from foo", :as => :csv
+    #  result = query "select * from foo", :as => :html
+    #  result = query "select * from foo", :as => :pdf
     #
     # See source of this function and methods of Ruport::Query for details.
     def query(sql, options={}, &action)
@@ -43,25 +96,13 @@ module Ruport
     
     # Evaluates _code_ from _filename_ as pure ruby code for files ending in
     # .rb, and as ERb templates for anything else.
-    def eval_template( filename, code )
+    #
+    # This code will be evaluated in the context of the instance on which it is
+    # called.
+    def eval_template( code, filename=nil )
       filename =~ /\.rb/ ? eval(code) : ERB.new(code, 0, "%").run(binding)
     end
    
-    # Generates the report.  If @pre or @post are defined with lambdas,
-    # they will be called before and after the main code.
-    #
-    # If @file != nil, ruport will print to the
-    # file with the specified name.  Otherwise, it will print to STDOUT by
-    # default. 
-    #
-    # The source for this function is probably easier to read than this
-    # explanation, so you may want to start there.     
-    def generate_report
-      @pre.call if @pre
-      @file ? File.open(@file,"w") { |f| f.puts results } : puts(results)
-      @post.call if @post
-    end
-
     # sets the active source to the Ruport::Config source requested by label.
     def use_source(label)
       @source = label
@@ -75,12 +116,11 @@ module Ruport
     #
     # Example:
     #
-    #   my_report.render( "_<%= @some_internal_var %>_", 
-    #                     :filters => [:erb,:red_cloth] )
+    #  process_text "_<%= @some_internal_var %>_", :filters => [:erb,:red_cloth]
     #
     # This method automatically passes a binding into the filters, so you are
     # free to access data from your Report instance in your templates.
-    def render(string, options)
+    def process_text(string, options)
       options[:filters].each do |f|
         format = Format.new(binding)
         format.content = string
@@ -88,36 +128,92 @@ module Ruport
       end
       string
     end
+    
+    # preserved for backwards compatibility. please do not use.
+    alias_method :render, :process_text
 
-    def write(my_file=file)
-      File.open(my_file,"w") { |f| f << report }
+    # This allows you to create filters to be used by process_text
+    #
+    # The block is evaluated in the context of the instance.
+    #
+    # E.g
+    #
+    #  text_processor(:unix_newlines) { results.gsub!(/\r\n/,"\n") }
+    def text_processor(label,&block)
+      Format.register_filter(label, &block)
     end
 
+
+    # Writes the contents of <tt>results</tt> to file.  If a filename is
+    # specified, it will use it.  Otherwise, it will try to write to the file
+    # specified by the <tt>file</tt> attribute.
+    def write(my_file=file)
+      File.open(my_file,"w") { |f| f << results }
+    end
+
+    # Like Report#write, but will append to a file rather than overwrite it if
+    # the file already exists
     def append(my_file=file)
-      File.open(my_file,"a") { |f| f << report }
+      File.open(my_file,"a") { |f| f << results }
     end
 
     class << self
+
+      # Defines an instance method which will be run before the
+      # <tt>generate</tt> method when Ruport.run is executed
+      #
+      # Good for setting config info and perhaps files and/or loggers
       def prepare(&block); define_method(:prepare,&block) end
+      
+      # Defines an instance method which will be executed by Report.run
+      #
+      # The return value of this method is assigned to the <tt>results</tt>
+      # attribute
+      #
       def generate(&block); define_method(:generate,&block) end
+      
+      # Defines an instance method which will be executed after the object is
+      # yielded in Report.run 
+      #
       def cleanup(&block); define_method(:cleanup,&block) end
-      def run(*args)
-        args[0] ||= self.new
-        args.each { |rep|
+      
+      # Runs the reports specified.  If no reports are specified, then it
+      # creates a new instance via <tt>self.new</tt>
+      #
+      # Tries to execute the prepare instance method, then runs generate.
+      # It then yields the object so that you may do something with it
+      # (print something out, write to file, email, etc)
+      # 
+      # Finally, it tries to call cleanup.
+      def run(*reports)
+        reports[0] ||= self.new
+        reports.each { |rep|
           rep.prepare if rep.respond_to? :prepare;
           rep.results = rep.generate;
-          yield(rep)
+          yield(rep) if block_given?
           rep.cleanup if rep.respond_to? :cleanup;
         }
       end
     end
 
+    # this method passes <tt>self</tt> to Report.run 
+    #
+    # Please see the class method for details.
+
     def run(&block)
       self.class.run(self,&block)
     end
-
-    def log(*args); Ruport.log(*args) end
     
+    # Preserved for backwards compatibility, please do not use this.
+    alias_method :generate_report, :run
+
+    # Allows logging and other fun stuff. See Ruport.log
+    def log(*args); Ruport.log(*args) end
+   
+    # Creates a new Mailer and sets the <tt>to</tt> attribute to the addresses
+    # specified.  Yields a Mailer object, which can be modified before delivery.
+    #
+    # By default, this will
     def send_to(adds)
       m = Mailer.new
       m.to = adds
