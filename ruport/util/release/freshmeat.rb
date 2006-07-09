@@ -43,3 +43,5 @@ form.field("add_release[url_zip]").value = links_hash["zip"]
 form.field("add_release[url_changelog]").value = "http://rubyforge.org/frs/shownotes.php?#{release}"
 
 agent.submit(form,form.buttons[0])
+
+p agent.page.forms[2]
