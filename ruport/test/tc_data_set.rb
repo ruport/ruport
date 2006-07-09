@@ -171,7 +171,6 @@ class TestDataSet < Test::Unit::TestCase
     assert_equal(nil,loaded_data.fields)
     assert_equal([%w[col1 col2 col3],%w[a b c],["d",nil,"e"]],loaded_data.to_a)
     assert_equal(%w[a b c],loaded_data[1].to_a)
-    
 
     loaded_data = DataSet.load("test/samples/data.csv") do |set,row| 
       set << row if row.include? 'b' 

@@ -12,6 +12,63 @@ require "ruport/mailer"
 require "forwardable"
 
 module Ruport
+  # === Overview
+  #
+  # The Ruport::Report class povides a high level interface to most of Ruport's
+  # functionality.  It is designed to allow you to build and run reports easily.
+  # If your needs are complicated, you will probably need to take a look at the
+  # individual classes of the library, but if they are fairly simple, you may be
+  # able to get away using this class alone.
+  #
+  # === Example
+  #
+  # Here is a simple example of using the Report class to run a simple query and
+  # then email the results as a CSV file, deleting the file from the local
+  # machine after it has been emailed:
+  #
+  #  require "ruport"
+  #  require "fileutils"
+  #  class MyReport < Ruport::Report
+  #    prepare do
+  #      log_file "f.log"
+  #      log "preparing report", :status => :info
+  #      source :default, 
+  #        :dsn => "dbi:mysql:foo", 
+  #        :user => "root"
+  #      mailer :default,
+  #        :host => "mail.adelphia.net", 
+  #        :address => "gregory.t.brown@gmail.com"
+  #    end
+  #      
+  #    generate do
+  #      log "generated csv from query", :status => :info
+  #      query "select * from bar", :as => :csv 
+  #    end
+  #
+  #    cleanup do
+  #      log "removing foo.csv", :status => :info
+  #      FileUtils.rm("foo.csv") 
+  #    end
+  #  end
+  #
+  #  MyReport.run { |res| 
+  #    res.write "foo.csv";
+  #    res.send_to("greg7224@gmail.com") do |mail|
+  #      mail.subject = "Sample report" 
+  #      mail.attach "foo.csv"
+  #      mail.text = <<-EOS
+  #        this is a sample of sending an emailed report from within Ruport.
+  #      EOS
+  #    end
+  #  } 
+  #
+  # 
+  # This class can also be used to run templates and process text filters
+  #
+  # See the examples in the documentation below to see how to use these
+  # features. (Namely Report#process_text , Report#text_processor, and
+  # Report#eval_template )
+  #
   class Report   
     extend Forwardable
     
@@ -108,6 +165,7 @@ module Ruport
       @source = label
     end
 
+    # sets the active mailer to the Ruport::Config source requested by label.
     def use_mailer(label)
       @mailer = label
     end
@@ -163,6 +221,7 @@ module Ruport
       # <tt>generate</tt> method when Ruport.run is executed
       #
       # Good for setting config info and perhaps files and/or loggers
+      #
       def prepare(&block); define_method(:prepare,&block) end
       
       # Defines an instance method which will be executed by Report.run
@@ -199,7 +258,6 @@ module Ruport
     # this method passes <tt>self</tt> to Report.run 
     #
     # Please see the class method for details.
-
     def run(&block)
       self.class.run(self,&block)
     end
