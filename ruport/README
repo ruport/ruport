@@ -1,8 +1,8 @@
 # ------------------------------------------------------------------------
 # -------------------------------------------------------------------------
-#
-# WARNING: THIS DOCUMENT IS FREQUENTLY OUT OF DATE.
 # 
+# NOTE:
+#
 # The most up to date information can be found at:
 # http://reporting.stonecode.org
 #
@@ -24,9 +24,9 @@
 #
 # - Installation 
 #
-#  Optional Dependencies:
+#  Dependencies:
 #   
-#    Ruport has a number of dependencies:
+#    Ruport has a number of dependencies.
 #     
 #    Ruby/DBI and appropriate dbds: Makes Query useable 
 #    (must be installed manually)
@@ -37,8 +37,10 @@
 #    RedCloth:  Enables textile/markdown filtering
 #    (available via rubygems)
 #    
-#    PDF::Writer: Enables printable documents via render_pdf (Experimental)
+#    PDF::Writer: Enables printable documents 
 #    (available via rubygems)
+#
+#    MailFactory: For email support. 
 #
 #  Note that by installing any of the dependencies, either via gems or manually,
 #  their functionality will automatically be enabled.
@@ -64,7 +66,7 @@
 #
 # - Caveats 
 #
-#  Ruport is alpha software.  It's not completely tested and the API is
+#  Ruport is experimental software.  It's not completely tested and the API is
 #  changing rapidly from version to version.  Test suites are becoming
 #  increasingly robust, but have not identified all possible edge cases.  If
 #  Ruport goes wild on you, it's because it hasn't been tamed yet.
@@ -105,9 +107,9 @@
 #    http://rubyforge.org/projects/ruport
 #
 #  - The latest stable API documentation is available at:
-#    http://ruport.rubyforge.org/docs
+#    http://reporting.stonecode.org/docs
 #
-#  There also will be some tutorials on stonecode.org
+#  There also will be some tutorials on ruport.infogami.com
 #
 #  If you are interested in developing Ruport, please *never* study code in
 #  official releases.  As this software is in it's early stages, it's essential
@@ -121,7 +123,7 @@
 #
 #  Those who would like to become regular contributors will be given write
 #  access.  Also, anyone interested in the internal design and project
-#  management aspects of Ruport can request to be added to our basecamp
+#  management aspects of Ruport can request to be added to our Trac
 #  account.  This is primarily intended for people who are working on the
 #  project actively, though.
 #
@@ -150,25 +152,13 @@
 #  Format provides support for building filters and specialized formatting
 #  systems. 
 # 
-#  Query currently provides a high level interface to DBI.  Soon it will support
-#  a mixin wrapper called Fetchable which will enable you to wrap whatever data
-#  source you choose.  If you would like to query a database or load a sql dump,
-#  this class can help you do that.  It can generate DataSets on the fly, or feed
-#  you DBI:Rows, depending on what you need.
-#
-#  There is also a Config class which allows you to set things such as data
-#  sources, mailer information, and logging.  Ruport#complain provides a robust
-#  way to handle error logging and warnings.
-#
-#  Finally, Ruport provides a powerful yet oh-so-scary parsing tool.  It is
-#  essentially James Edward Gray II's Parse::Input library within the Ruport
-#  library.  (And will soon be integrated nicely too)
-#
-#  Read the source of ruport/parser.rb if you have some gnarly data you need to
-#  munge.
+#  Query currently provides a high level interface to DBI.
+#  If you would like to query a database or load a sql dump, 
+#  this class can help you do that.  It can generate DataSets on the fly, 
+#  or feed you DBI:Rows, depending on what you need.
 #
 #  Finally, Please consult the API documentation and/or source code for more
-#  information. (http://ruport.rubyforge.org/docs).  Not all classes have been
+#  information. (http://reporting.stonecode.org/docs).  Not all classes have been
 #  documented but the ones that have may be easier to understand when their docs
 #  have been read.  Also, feel free to contribute documentation.
 #
