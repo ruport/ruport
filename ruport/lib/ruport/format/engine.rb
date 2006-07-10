@@ -30,8 +30,8 @@ module Ruport
       end
       
       def active_plugin
+        return yield(@format_plugins[:current]) if block_given?
         @format_plugins[:current]  
-        #plugin && @format_plugins[plugin]
       end
 
       def plugin=(p)

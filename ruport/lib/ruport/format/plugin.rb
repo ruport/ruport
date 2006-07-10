@@ -5,8 +5,8 @@ module Ruport
 
       attr_accessor :data
 
-      def plugin_name(name)
-        @name = name
+      def plugin_name(name=nil)
+        @name ||= name
       end
       
       def format_name
@@ -39,7 +39,7 @@ module Ruport
         @options.merge!(hash)
         @options.dup
       end
-      
+     
       attr_accessor :rendered_field_names
       attr_accessor :pre, :post
       attr_accessor :header, :footer

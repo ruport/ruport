@@ -68,7 +68,22 @@ class TestTabularFormatEngine < Test::Unit::TestCase
     @engine.data = [[1,2,3],[4,5,6]].to_ds(%w[a b c])
     assert_equal(3,@engine.num_cols)
   end
-    
+
+  def test_plugin_access
+    @engine.plugin = :mock
+    @engine.data   = [[1,5],[3,8]]
+
+    #normal access
+    assert_equal :mock, @engine.active_plugin.plugin_name
+    assert_equal [[1,5],[3,8]], @engine.active_plugin.data
+
+    #block access
+    @engine.active_plugin do |p|
+      assert_equal :mock, p.plugin_name
+      assert_equal [[1,5],[3,8]], p.data
+    end
+  end
+
 end
 
 class TestDocumentFormatEngine < Test::Unit::TestCase
