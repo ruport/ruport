@@ -96,6 +96,17 @@ module Ruport
         data[0].to_a.length
       end
 
+      def prune(limit=data[0].length)
+        (0...limit).each do |field|
+          last = ""
+          data.each_with_index { |e,i|
+            next if i.zero? || field.nonzero? && data[i][field-1] 
+            last = data[i-1][field] if data[i-1][field]
+            data[i][field] = nil if e[field] == last
+          }
+        end
+      end
+      
       attr_accessor :show_field_names
       
       private
@@ -105,7 +116,7 @@ module Ruport
           active_plugin.rendered_field_names = active_plugin.build_field_names
         end
       end
-      
+
     end  
     
       alias_engine Table, :table_engine
