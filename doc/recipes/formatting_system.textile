@@ -1,14 +1,179 @@
 h1. Formatting System
 
-<hr>
+The formatting system for Ruport is designed to be highly extensible.  It
+consists of engines which wrap the functionality related to concepts such as
+tabular data or structured documents.   These engines are tied to plugins, which
+are designed to implement a particular output format or formatting tool.  These
+formats can be tied to multiple engines, allowing them to have different
+behavior depending on the engine which calls them.
+
+These plugins and engines are then provided via a standard interface, making it
+easy to unify diverse formats in your reports.
+
+Ruport current has two built in engines(table/document) and four built in
+plugins(pdf,text,csv,html).  These will surely grow in the coming months.
+
+This section is about using Ruport's inbuilt formatting functionality.  For
+details on how to create your own plugins and engines, see the *Extending
+Ruport* section of this recipe book.
 
 h2. Tabular Output
 
 <hr>
 
+Each engine in Ruport is given a simple interface which can be accessed through
+the Format class.  Though it would not be terribly difficult to write your own
+interface to an engine, there is no reason why you should have to.
+
+The simple interface to the tabular output engine is just called table.  The
+most basic usage of this method would be something like:
+
+<pre><code>
+
+  Ruport::Format.table :data => [[1,2],[3,4]], :plugin => :csv #=> "1,2\n3,4\n"
+
+</code></pre>
+
+However, most of the time you are going to want to do something with your data
+at output time, and it is possible to do that.  In this section we will field
+name pretty printing, rewriting columns as you render them, and shortcuts for
+using the formatting system with ActiveRecord and with DataSets.
+
 h3. Pretty Field Names
 
-<hr>
+The first thing the formatting engine does is make a copy of your data.  This
+means you are free to make modifications to the data stored in your engine.
+Most of the time we will be dealing with DataSets inside of the formatting
+system, especially since ActiveRecord objects are converted to DataSets when
+used within Ruport.  One nice trick about a DataSet is that it maintains field
+names seperate from its DataRows.
+
+This means we can easily reassign the field names to something nice.
+For example, the code below shows a basic DataSet which is given pretty field
+names at rendering time.
+
+Notice that for this, we need to pull the engine object itself to make the
+modification, rather than just rendering directly.  There are shortcuts for
+this, which you can see at the end of this section.
+
+<pre><code>
+  d = Ruport::DataSet.new %w[a b], :data => [[1,2],[3,4]]
+  table = Ruport::Format.table_object :data => d, :plugin => :csv
+  table.data.fields = %w[Apples Bananas]
+  puts table.render #=> "Apples,Bananas\n1,2\n3,4\n"
+</code></pre>
+
+The neat thing about the above code is that since you stored a reference to a
+Table object, you can go ahead and print out an html table from the same data
+set with just two additional lines
+
+<pre><code>
+table.plugin = :html
+puts table.render
+</code></pre>
+
+h4. What if I don't want to display fields?
+
+If your data that you pass in to the table object does not respond to 'fields',
+it will not display the fields by default.  However, if you are working with
+DataSets or some other format that *does* display field names by default 
+and you want to turn them off, you can easily do so:
+
+<pre><code>
+  
+  # using the auto-rendering method
+  Ruport::Format.table :data => my_data_set, :plugin => :csv,  
+                       :show_field_names => false
+ 
+  #Using the table object method
+  table = Ruport::Format.table_object :data => my_data_set, :plugin => :csv
+  table.show_field_names = false
+  table.render
+
+</pre></code>
+
+*Side note:*
+You may have noticed that both the keywords and the accessors on the Table
+object are the same.  This is because the keywords are simply passed to the
+engine as accessors, which means that you can set any attribute the engine has
+through them.
+
+h3. Rewriting columns for formatting
+
+A perfect example of needing to rewrite a column in some tabular data is that
+of email addresses.  You probably want to preserve the actual address for
+another task, but if you say, want to print out a list of users on a web page,
+you do not want to provide a harvest for spammers, so you'd want to munge the
+output.
+
+Ruport makes this easy for you.  The code below does the proper munging on a
+DataSet which contains the field "email" :
+
+<pre><code>
+table = Format.table_object :data => my_data, :plugin => :html
+table.rewrite_column("email") { |r| 
+  r["email"].gsub("@"," at ").gsub("."," dot ") 
+}
+puts table.render
+</code></pre>
+
+Essentially, <tt>rewrite_column</tt> is given a column name to be rewritten, and
+is passed each row iteratively.  The result of the block is what gets assigned
+to the column in that row.
+
+This means you could have easily set all the values to a fake address:
+
+<pre><code>
+table.rewrite_column("email") { "none@none.com" }
+</code></pre>
+
+This functionality can also be used to implement calculated fields, see the
+section *DataSet Manipulation - Calculated Fields* to see how
+
+h3. Shortcuts for rendering tables
+
+If <tt>Format.table</tt> seems a little too basic for your needs and
+<tt>Format.table_object</tt> seems a little clunky, 
+you'd be in the same boat as me.
+
+There is a much nicer way of dealing with these tools, so long as you are using
+a DataSet or an ActiveRecord object.
+
+h4. DataSet Shortcut
+
+<tt>DataSet#as</tt> is a simple wrapper around Format.table which saves a few
+keystrokes and makes things look nicer (I think)
+
+The following code will output a DataSet as a CSV:
+
+<pre><code>
+  ds = DataSet.new %w[a b], :data => [[1,2],[3,4]]
+  puts ds.as(:csv)
+</code></pre>
+
+Now if you needed to access the engine to do any of the already mentioned tasks,
+you easily could by providing a block.  For example, say you wanted to turn off
+field names:
+
+<pre><code>
+  puts ds.as(:csv) { |engine| engine.show_field_names = false }
+</code></pre>
+
+h4. ActiveRecord shortcut
+
+You may have noticed that <tt>acts_as_reportable</tt> provides a
+formatted_table method.  This allows you to pass in an AR find
+(optionally) and then have it converted to a DataSet.  This method takes a
+block which yields the table engine, so the same task shown above can be used
+to dump an AR model without it's field names:
+
+<pre><code>
+  puts MyModel.formatted_table(:csv) { |eng| eng.show_field_names = false }
+</pre></code>
+
+There is an entire section dedicated to ActiveRecord in this recipe book, so if
+you are interested in making use of Ruport's hooks into it, be sure to check out
+that section.
 
 h2. Structured Documents
 
