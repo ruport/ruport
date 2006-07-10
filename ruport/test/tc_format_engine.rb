@@ -84,6 +84,47 @@ class TestTabularFormatEngine < Test::Unit::TestCase
     end
   end
 
+  def test_prune
+    @engine.plugin = :mock
+    @engine.data = [[1,2,3],[1,4,3],[2,4,1]]
+    @engine.prune
+    assert_equal([[1,2,3],[nil,4,3],[2,4,1]],@engine.data)
+    @engine.data = [[1,2,3],[2,4,1],[2,7,9],[1,2,3],[1,7,9]]
+    @engine.prune
+    assert_equal([[1,2,3],[2,4,1],[nil,7,9],[1,2,3],[nil,7,9]],
+                 @engine.data)
+    @engine.data = [[1,2,3],[1,2,4],[1,3,7],[2,1,9],[2,2,3],[2,2,9]]
+    @engine.prune
+    assert_equal( [[1,2,3],[nil,nil,4],[nil,3,7],
+                   [2,1,9],[nil,2,3],[nil,nil,9]], @engine.data)
+     
+    @engine.data = [[1,2,3],[1,2,4],[1,3,7],[2,1,9],[2,2,3],[2,2,9]]
+    @engine.prune(1)
+    assert_equal( [[1,2,3],[nil,2,4],[nil,3,7],
+                   [2,1,9],[nil,2,3],[nil,2,9]], @engine.data)
+
+    data = DataSet.new %w[name date service amount]
+    data << [ "Greg Gibson", "1/1/2000",  "Prophy",  "100.00" ] <<
+            [ "Greg Gibson", "1/1/2000",  "Filling", "100.00" ] <<
+            [ "Greg Gibson", "1/12/2000", "Prophy",  "100.00" ] <<
+            [ "Greg Gibson", "1/12/2000", "Filling", "100.00" ] <<
+            [ "Greg Brown",  "1/12/2000", "Prophy",  "100.00" ]
+
+    @engine.data = data
+    @engine.prune(1)
+    data2 = data.dup
+    data2[1][0] = data2[2][0] = data2[3][0] = nil
+    assert_equal(data2, @engine.data)
+    
+    @engine.data=data
+
+    data3 = data2.dup
+    data3[1][1] = data3[3][1] = nil
+    @engine.prune(2)
+
+    assert_equal(data3, @engine.data)
+  end
+
 end
 
 class TestDocumentFormatEngine < Test::Unit::TestCase
