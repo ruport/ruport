@@ -18,11 +18,27 @@ module Ruport
       def renderer(render_type,&block)
         m = "render_#{render_type}".to_sym
         block = lambda { data } unless block_given?
-        (class << self; self; end).send(:define_method, m, &block)
+        singleton.send(:define_method, m, &block)
       end
 
       def format_field_names(&block)
-        (class << self; self; end).send(:define_method, :build_field_names, &block)
+        singleton.send( :define_method, :build_field_names, &block)
+      end
+
+      def helper(name,&block)
+        singleton.send( :define_method, "#{name}_helper", &block )
+      end
+
+      def singleton
+        (class << self; self; end)
+      end
+
+      def attribute(sym)
+        self.class.send(:attr_accessor, sym )
+      end
+
+      def action(name,&block)
+        singleton.send(:define_method, name, &block)
       end
 
       def register_on(klass)
@@ -88,6 +104,7 @@ module Ruport
            r.gsub!(/\A.{#{width},}/) { |m| m[0,width-2] += ">>" }
         }.join("\n") << "\n"
       end
+      
       format_field_names do
         data.fields.each_with_index { |f,i| 
           data.fields[i] = f.to_s.center(max_col_width(i))
@@ -95,7 +112,7 @@ module Ruport
         "#{hr}| #{data.fields.to_a.join(' | ')} |\n"
       end
 
-      def self.max_col_width(index) 
+      action :max_col_width do |index|
         f = data.fields if data.respond_to? :fields
         d = DataSet.new f, :data => data
         
@@ -108,19 +125,19 @@ module Ruport
         [cw,nw].max
       end
 
-      def self.table_width
+      action :table_width do
         f = data.fields if data.respond_to? :fields
         d = DataSet.new f, :data => data 
 
         d[0].fields.inject(0) { |s,e| s + max_col_width(e) }
       end
 
-      def self.hr
+      action :hr do
         len = data[0].to_a.length * 3 + table_width + 1
         "+" + "-"*(len-2) + "+\n"
       end
 
-      class << self; attr_accessor :right_margin; end
+      attribute :right_margin
 
       register_on :table_engine
       register_on :document_engine
