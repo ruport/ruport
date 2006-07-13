@@ -18,6 +18,7 @@ module Ruport
       attr_reader :plugin 
       attr_reader :data
       attr_accessor :klass_binding
+      attr_reader :options
       
       def alias_engine(klass,name)
         Format::Engine.engine_klasses ||= {}
@@ -27,6 +28,11 @@ module Ruport
       def data=(data)
         @data = data
         active_plugin.data = data.dup if active_plugin
+      end
+
+      def options=(opts)
+        @options = opts
+        active_plugin.options = options if active_plugin
       end
       
       def active_plugin
@@ -74,7 +80,7 @@ module Ruport
       end 
       
       def method_missing(id)
-        super unless active_plugin && active_plugin.respond_to?("#{id}_helper")
+        super unless active_plugin.respond_to?("#{id}_helper")
         return active_plugin.send("#{id}_helper",self)
       end
 
