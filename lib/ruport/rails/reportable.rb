@@ -1,8 +1,8 @@
 module Ruport
   module Reportable
-    def formatted_table(type,options={},&block)
+    def formatted_table(type,options={})
       to_ds(:find => options[:find],:columns => options[:columns]).as(type){ |e|
-        block[e] if block_given?
+        yield(e) if block_given?
       }
     end
     def to_ds(options={})

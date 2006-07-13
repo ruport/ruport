@@ -137,7 +137,7 @@ module Ruport
     #  result = query "select * from foo", :as => :pdf
     #
     # See source of this function and methods of Ruport::Query for details.
-    def query(sql, options={}, &action)
+    def query(sql, options={})
       options[:origin] ||= :string
       options[:source] ||= @source
 
@@ -147,7 +147,7 @@ module Ruport
       elsif options[:as]
         Format.table :data => q.result, :plugin => options[:as]
       else
-        block_given? ? action.call(q.result) : q.result
+        block_given? ? yield(q.result) : q.result
       end
     end
     
