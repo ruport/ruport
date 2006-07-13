@@ -4,6 +4,7 @@ module Ruport
     class << self
 
       attr_accessor :data
+      attr_accessor :options 
 
       def plugin_name(name=nil)
         @name ||= name
