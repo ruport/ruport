@@ -178,4 +178,10 @@ module Ruport
         end
       end
     end
+
+    def method_missing(id,*args)
+      f = id.to_s.gsub(/=$/,'')
+      return super unless fields.include?(f)
+      args.empty? ? self[f] : self[f] = args[0]
+    end
 end

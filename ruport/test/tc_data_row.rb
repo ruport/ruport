@@ -21,6 +21,14 @@ class TestDataRow < Test::Unit::TestCase
     assert_equal("[1,2]",@rows[0].to_s)
   end
 
+  def test_accessor_style
+    row = @rows[0]
+    assert_equal 1, row.foo
+    assert_equal 2, row.bar
+    row.bar = 17
+    assert_equal [1,17], row.to_a
+  end
+
   def test_tagging
     @rows[0].tag_as :foo
     assert_equal(true, @rows[0].has_tag?(:foo) )
