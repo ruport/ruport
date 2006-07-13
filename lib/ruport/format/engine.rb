@@ -73,6 +73,11 @@ module Ruport
         format_plugins.values
       end 
       
+      def method_missing(id)
+        super unless active_plugin && active_plugin.respond_to?("#{id}_helper")
+        return active_plugin.send("#{id}_helper",self)
+      end
+
     end
   end
   

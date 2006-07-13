@@ -10,11 +10,22 @@ class MockPlugin < Ruport::Format::Plugin
   
   renderer(:document) { data }
 
-  register_on :table_engine
-  register_on :document_engine
-
   rendering_options :red_cloth_enabled => true, 
                     :erb_enabled => true
+  
+  action(:reverse_data) { data.reverse }
+  action(:mock_action)  { "mock" }
+
+  helper(:test) { |eng| eng }
+
+  attribute :apple
+
+  helper(:complex_test) { |eng|
+    eng.rewrite_column(0) { "a" } if apple 
+  }
+
+  register_on :table_engine
+  register_on :document_engine
 
 end
 
@@ -25,11 +36,34 @@ class TestTabularFormatEngine < Test::Unit::TestCase
   def setup
     @engine = Format::Engine::Table.dup
   end
-  
+
+  def test_plugin_attributes
+    assert_equal nil, @engine.active_plugin.apple
+    @engine.active_plugin.apple = :banana
+    assert_equal :banana, @engine.active_plugin.apple
+  end
   def test_basic_render
      @engine.plugin = :mock
      @engine.data = [[1,2,3],[4,5,6],[7,8,9]]
      assert_equal( "#{@engine.data}", @engine.render )
+  end
+
+  def test_plugin_actions
+    @engine.plugin = :mock
+    @engine.data = [1,2,3,4]
+    assert_equal( [4,3,2,1], @engine.active_plugin.reverse_data )
+    assert_equal( "mock", @engine.active_plugin.mock_action )
+  end
+
+  def test_helper
+    @engine.plugin = :mock
+    assert_equal @engine, @engine.test
+    @engine.data = [[1,2,3],[4,5,6]]
+    @engine.complex_test
+    assert_equal([[1,2,3],[4,5,6]],@engine.data)
+    @engine.active_plugin.apple = true
+    @engine.complex_test
+    assert_equal([['a',2,3],['a',5,6]],@engine.data)
   end
 
   def test_render_without_field_names
