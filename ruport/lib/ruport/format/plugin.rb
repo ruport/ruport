@@ -6,9 +6,21 @@ module Ruport
       attr_accessor :data
       attr_accessor :options 
 
-      def plugin_name(name=nil)
-        @name ||= name
+      def singleton; (class << self; self; end) end
+ 
+      def attribute(sym)
+        singleton.send(:attr_accessor, sym )
       end
+
+      def action(name,&block)
+        singleton.send(:define_method, name, &block)
+      end
+
+      def helper(name,&block)
+        singleton.send( :define_method, "#{name}_helper", &block )
+      end
+     
+      def plugin_name(name=nil); @name ||= name; end
       
       def format_name
         pattern = /Ruport::Format|Plugin/
@@ -24,22 +36,6 @@ module Ruport
 
       def format_field_names(&block)
         singleton.send( :define_method, :build_field_names, &block)
-      end
-
-      def helper(name,&block)
-        singleton.send( :define_method, "#{name}_helper", &block )
-      end
-
-      def singleton
-        (class << self; self; end)
-      end
-
-      def attribute(sym)
-        self.class.send(:attr_accessor, sym )
-      end
-
-      def action(name,&block)
-        singleton.send(:define_method, name, &block)
       end
 
       def register_on(klass)
