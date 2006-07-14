@@ -41,6 +41,13 @@ class TestTaggable < Test::Unit::TestCase
     @obj.delete_tag(:scarlet)
     assert !@obj.has_tag?(:scarlet)
   end
+
+  def test_avoid_duplication
+    @obj.tag(:smelly)
+    assert_equal 1, @obj.tags.select { |t| t.eql? :smelly }.length 
+    @obj.tag(:smelly)
+    assert_equal 1, @obj.tags.select { |t| t.eql? :smelly }.length   
+  end
   
 end
     
