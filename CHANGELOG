@@ -2,6 +2,8 @@ The current version of Ruby Reports is 0.4.15
 
 changes since 0.4.13
 
+- Added DataSet#rename_columns
+
 - Added taggable mixin
 
 - Added an options accessor to help solve ticket #8

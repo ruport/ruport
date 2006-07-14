@@ -46,6 +46,23 @@ class TestDataSet < Test::Unit::TestCase
                     @data[2].to_a )
   end
 
+  def test_rename_columns
+    @data.rename_columns "col1" => "Column 1", 
+                         "col2" => "Column 2", 
+                         "col3" => "Column 3"
+    assert_equal %w[Column\ 1 Column\ 2 Column\ 3], @data.fields
+    @data.each do |r|
+      assert_equal %w[Column\ 1 Column\ 2 Column\ 3], r.fields
+    end
+    assert_equal "b", @data[0]["Column 2"]
+    assert_equal "e", @data[1]["Column 3"]
+    @data.rename_columns %w[one two three]
+    assert_equal %w[one two three], @data.fields
+    @data.each do |r|
+      assert_equal %w[one two three], r.fields
+    end
+  end
+
   def test_delete_if
     @data.delete_if { |r| r.any? { |e| e.empty? } }
     assert_equal([%w[a b c]],@data.to_a)

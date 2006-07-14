@@ -234,6 +234,14 @@ module Ruport
       @fields = d.fields
     end
 
+    def rename_columns(cols)
+      if cols.kind_of?(Array)
+        cols.each_with_index { |c,i| fields[i] = c }
+      else
+        cols.map { |k,v| fields[fields.index(k)] = v }
+      end
+      @data.each { |r| r.fields = fields }
+    end
     # uses Format::Builder to render DataSets in various ready to output
     # formats.  
     #
@@ -286,6 +294,7 @@ module Ruport
       f.all? { |e| e.kind_of? Integer } &&
       f.inject([]) { |s,e| s + [@fields[e]] } || f
     end
+
     
   end
 end
