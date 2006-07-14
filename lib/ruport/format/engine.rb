@@ -7,18 +7,28 @@ module Ruport
       include Enumerable
       extend Forwardable
 
-      def_delegator :@data, :each
-      
-      def renderer(&block)
-        block = lambda { data } unless block_given?
-        (class << self; self; end).send(:define_method, :render, &block)
-      end
-
       attr_accessor :engine_klasses
       attr_reader :plugin 
       attr_reader :data
       attr_accessor :klass_binding
       attr_reader :options
+      
+      def_delegator :@data, :each
+      
+      def singleton; (class << self; self; end); end
+
+      def attribute(sym)
+        singleton.send(:attr_accessor, sym )
+      end
+
+      def action(name,&block)
+        singleton.send(:define_method, name, &block)
+      end
+
+      def renderer(&block)
+        block = lambda { data } unless block_given?
+        singleton.send(:define_method, :render, &block)
+      end
       
       def alias_engine(klass,name)
         Format::Engine.engine_klasses ||= {}
