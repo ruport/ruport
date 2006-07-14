@@ -57,6 +57,6 @@ module Ruport
 end
 
 
-%w[config report format query data_row data_set].each { |lib|
+%w[config report format query data_row data_set data].each { |lib|
   require "ruport/#{lib}" 
 }

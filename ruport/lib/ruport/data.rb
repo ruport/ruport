@@ -1,0 +1,1 @@
+require "ruport/data/taggable"
