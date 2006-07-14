@@ -3,7 +3,7 @@ module Ruport::Data
   module Taggable
 
     def tag(tag_name)
-      @ruport_tags << tag_name
+      @ruport_tags << tag_name unless has_tag? tag_name
     end
 
     def delete_tag(tag_name)
