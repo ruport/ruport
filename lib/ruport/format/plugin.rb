@@ -5,20 +5,14 @@ module Ruport
 
       attr_accessor :data
       attr_accessor :options 
-
-      def singleton; (class << self; self; end) end
- 
-      def attribute(sym)
-        singleton.send(:attr_accessor, sym )
-      end
-
-      def action(name,&block)
-        singleton.send(:define_method, name, &block)
-      end
+      
+      include MetaTools
 
       def helper(name,&block)
         singleton.send( :define_method, "#{name}_helper", &block )
       end
+
+      private :singleton, :attribute, :attributes, :action
      
       def plugin_name(name=nil); @name ||= name; end
       

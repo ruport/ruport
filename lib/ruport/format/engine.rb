@@ -1,10 +1,10 @@
 module Ruport
   class Format::Engine
     require "forwardable"
-    
     class << self
 
       include Enumerable
+      include MetaTools
       extend Forwardable
 
       attr_accessor :engine_klasses
@@ -14,16 +14,7 @@ module Ruport
       attr_reader :options
       
       def_delegator :@data, :each
-      
-      def singleton; (class << self; self; end); end
-
-      def attribute(sym)
-        singleton.send(:attr_accessor, sym )
-      end
-
-      def action(name,&block)
-        singleton.send(:define_method, name, &block)
-      end
+      private :attribute, :attributes, :singleton, :action
 
       def renderer(&block)
         block = lambda { data } unless block_given?
