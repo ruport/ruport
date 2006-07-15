@@ -58,5 +58,12 @@ class RecordTest < Test::Unit::TestCase
     assert_equal @record.c, @record["c"]
     assert_equal @record.d, @record["d"]
   end
-  
+
+  def test_attribute_setting
+    @record.a = 10
+    @record.b = 20
+    assert_equal 10, @record.a
+    assert_equal 20, @record.b
+  end
+
 end

@@ -27,11 +27,10 @@ module Ruport::Data
 
     def_delegator :@data,:each
 
-    def method_missing(id)
+    def method_missing(id,*args)
+      id = id.to_s.gsub(/=$/,"")
       if @collection.column_names.include?(id)
-        self[id]
-      elsif @collection.column_names.include?(id.to_s) 
-        self[id.to_s]
+        args.empty? ? self[id] : self[id] = args.first
       else
         super
       end
