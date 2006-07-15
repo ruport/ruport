@@ -17,6 +17,14 @@ module Ruport::Data
       end
     end
 
+    def []=(index, value)
+      if index.kind_of? Integer
+        @data[index] = value
+      else
+        @data[@collection.column_names.index(index)] = value
+      end
+    end
+
     def_delegator :@data,:each
 
     def method_missing(id)
