@@ -54,14 +54,14 @@ module Ruport
     
     
     class CSVPlugin < Format::Plugin
-       
+      
+      helper(:init_plugin) { require "fastercsv" }
+
       format_field_names do
-        require "fastercsv"
         FasterCSV.generate { |csv| csv << data.fields }
       end
       
       renderer :table do
-        require "fastercsv"
         rendered_field_names +
         FasterCSV.generate { |csv| data.each { |r| csv << r } }
       end
