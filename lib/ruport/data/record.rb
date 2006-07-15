@@ -8,6 +8,7 @@ module Ruport::Data
     def initialize(data,options={})
       @data = data
       @collection = options[:collection]
+      extend Taggable
     end
 
     def [](index)
