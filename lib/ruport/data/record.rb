@@ -3,6 +3,7 @@ module Ruport::Data
     require "forwardable"
     extend Forwardable
     include Enumerable
+    extend Taggable
 
     def initialize(data,options={})
       @data = data
