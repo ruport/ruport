@@ -18,7 +18,7 @@ module Ruport
 
       def renderer(&block)
         block = lambda { data } unless block_given?
-        singleton.send(:define_method, :render, &block)
+        singleton.send(:define_method, :render,&block)
       end
       
       def alias_engine(klass,name)
@@ -56,6 +56,9 @@ module Ruport
         raise "No plugin specified" unless plugin
         raise "No data provided" unless data
         active_plugin.data = data.dup
+        if active_plugin.respond_to? :init_plugin_helper
+          active_plugin.init_plugin_helper(self)
+        end
       end
 
       def flush_data

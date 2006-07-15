@@ -2,6 +2,8 @@ The current version of Ruby Reports is 0.4.15
 
 changes since 0.4.13
 
+- Added init_plugin hooks
+
 - Added DataSet#rename_columns
 
 - Added taggable mixin
@@ -10,7 +12,7 @@ changes since 0.4.13
 
 - Alioth now has a powerful hook back into the engine from plugins via helpers
 
-- added action / attribute methods for format engine / plugin
+- added action / attribute methods for format engine / plugin via MetaTools
 
 - added accessor style methods to DataRow via method_missing
 
