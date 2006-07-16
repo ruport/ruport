@@ -22,9 +22,6 @@ module Ruport::Data
       @ruport_tags = tags_list
     end
 
-    def self.extended(obj)
-      obj.tags = []
-    end
   end
   
 end
