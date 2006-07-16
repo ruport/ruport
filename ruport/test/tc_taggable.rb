@@ -11,8 +11,8 @@ class TestTaggable < Test::Unit::TestCase
     @obj = Object.new.extend(Taggable)
   end
   
-  def test_tags_are_empty_initially
-    assert_equal [], @obj.instance_variable_get(:@ruport_tags)
+  def test_tags_are_nil_initially
+    assert_equal nil, @obj.instance_variable_get(:@ruport_tags)
   end
   
   def test_get_tags
