@@ -2,8 +2,9 @@ module Ruport::Data
   class Record
     require "forwardable"
     extend Forwardable
-    include Enumerable
     extend Taggable
+    
+    include Enumerable
 
     def initialize(data,options={})
       @data = data
@@ -11,6 +12,10 @@ module Ruport::Data
       extend Taggable
     end
 
+    attr_reader :data
+    def_delegators :@data,:each
+
+  
     def [](index)
       if index.kind_of? Integer
         @data[index]
@@ -27,7 +32,23 @@ module Ruport::Data
       end
     end
 
-    def_delegator :@data,:each
+    def ==(other)
+      return false if column_names && !other.column_names
+      return false if other.column_names && !column_names
+      (column_names == other.column_names) && (data == other.data)
+    end
+
+    alias_method :eql?, :==
+    
+    def to_a; data.dup; end
+    
+    def to_h
+      column_names.inject({}) { |s,r| s.merge(r => self[r]) } 
+    end
+
+    def column_names
+      @collection && @collection.column_names
+    end
 
     def method_missing(id,*args)
       id = id.to_s.gsub(/=$/,"")

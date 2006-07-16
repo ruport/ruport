@@ -2,11 +2,16 @@ require "test/unit"
 require "ruport"
 
 class DummyCollection
+  def initialize(column_names=nil)
+    self.column_names = column_names
+  end
   attr_accessor :column_names
 end
 
 
 class RecordTest < Test::Unit::TestCase
+
+  include Ruport::Data
 
   def setup
     @collection = DummyCollection.new
@@ -64,6 +69,41 @@ class RecordTest < Test::Unit::TestCase
     @record.b = 20
     assert_equal 10, @record.a
     assert_equal 20, @record.b
+  end
+
+  def test_to_a
+    assert_equal [1,2,3,4], a = @record.to_a; a[0] = "q"
+    assert_equal [1,2,3,4], @record.to_a
+  end
+
+  def test_to_h
+    assert_nothing_raised { @record.to_h }
+    assert_equal({ "a" => 1, "b" => 2, "c" => 3, "d" => 4 }, @record.to_h)
+  end
+
+  def test_equality
+
+    dc  = DummyCollection.new %w[a b c d]
+    dc2 = DummyCollection.new %w[a b c d]
+    dc3 = DummyCollection.new %w[a b c]
+    
+    rec1 = Record.new [1,2,3,4]
+    rec2 = Record.new [1,2,3,4]
+    rec3 = Record.new [1,2]
+    rec4 = Record.new [1,2,3,4], :collection => dc
+    rec5 = Record.new [1,2,3,4], :collection => dc2
+    rec6 = Record.new [1,2,3,4], :collection => dc3
+    rec7 = Record.new [1,2],     :collection => dc
+    
+    [:==, :eql?].each do |op|
+      assert   rec1.send(op, rec2)
+      assert   rec4.send(op, rec5)
+      assert ! rec1.send(op,rec3)
+      assert ! rec1.send(op,rec4)
+      assert ! rec6.send(op,rec7)
+      assert ! rec3.send(op,rec4)
+    end
+
   end
 
 end
