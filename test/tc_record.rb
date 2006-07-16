@@ -1,23 +1,14 @@
 require "test/unit"
 require "ruport"
 
-class DummyCollection
-  def initialize(column_names=nil)
-    self.column_names = column_names
-  end
-  attr_accessor :column_names
-end
-
 
 class RecordTest < Test::Unit::TestCase
 
   include Ruport::Data
 
   def setup
-    @collection = DummyCollection.new
-    @collection.column_names = %w[a b c d]
-    
-    @record = Ruport::Data::Record.new [1,2,3,4], :collection => @collection    
+    @attributes = %w[a b c d]
+    @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes 
   end
 
   def test_init
@@ -83,17 +74,17 @@ class RecordTest < Test::Unit::TestCase
 
   def test_equality
 
-    dc  = DummyCollection.new %w[a b c d]
-    dc2 = DummyCollection.new %w[a b c d]
-    dc3 = DummyCollection.new %w[a b c]
+    dc  = %w[a b c d]
+    dc2 = %w[a b c d]
+    dc3 = %w[a b c]
     
     rec1 = Record.new [1,2,3,4]
     rec2 = Record.new [1,2,3,4]
     rec3 = Record.new [1,2]
-    rec4 = Record.new [1,2,3,4], :collection => dc
-    rec5 = Record.new [1,2,3,4], :collection => dc2
-    rec6 = Record.new [1,2,3,4], :collection => dc3
-    rec7 = Record.new [1,2],     :collection => dc
+    rec4 = Record.new [1,2,3,4], :attributes => dc
+    rec5 = Record.new [1,2,3,4], :attributes => dc2
+    rec6 = Record.new [1,2,3,4], :attributes => dc3
+    rec7 = Record.new [1,2],     :attributes => dc
     
     [:==, :eql?].each do |op|
       assert   rec1.send(op, rec2)
@@ -104,6 +95,46 @@ class RecordTest < Test::Unit::TestCase
       assert ! rec3.send(op,rec4)
     end
 
+  end
+
+  def test_attributes
+    assert_equal %w[a b c d], @record.attributes
+    @record.attributes = %w[apple banana courier django]
+    assert_equal %w[apple banana courier django], @record.attributes
+  end
+
+  def test_reordering
+    r = @record.reorder "a","d","b","c"
+    assert_equal [1,4,2,3], r.data
+    assert_equal %w[a d b c], r.attributes
+
+    assert_equal [1,2,3,4], @record.data
+    assert_equal %w[a b c d], @record.attributes
+    
+    @record.reorder! "a","d","b","c"
+    assert_equal [1,4,2,3], @record.data
+    assert_equal %w[a d b c], @record.attributes
+
+    @record.reorder! 3,1,2
+    assert_equal [3,4,2], @record.data
+    assert_equal %w[c d b], @record.attributes
+  end
+
+  def test_dup
+    rec1 = Record.new [1,2,3,4], :attributes => %w[a b c d]
+    rec2 = rec1.dup
+
+    rec2.a = 5
+    rec2["b"] = 7
+    rec2[2] = 9
+
+    rec2.tag(:apple)
+
+    assert_equal [1,2,3,4], rec1.data
+    assert_equal [5,7,9,4], rec2.data
+
+    assert_equal [], rec1.tags
+    assert_equal [:apple], rec2.tags
   end
 
 end
