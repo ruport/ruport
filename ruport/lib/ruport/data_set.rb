@@ -257,7 +257,7 @@ module Ruport
     #
     # This will enable <tt>data.as(:my_format_name)</tt>
     def as(format,&action)
-      t = Format.table_object(:data => clone, :plugin => format)
+      t = Format.table_object(:data => self, :plugin => format)
       action.call(t) if block_given?
       t.render
     end

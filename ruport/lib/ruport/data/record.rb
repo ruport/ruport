@@ -3,22 +3,22 @@ module Ruport::Data
     require "forwardable"
     extend Forwardable
     include Enumerable
+    include Taggable
 
     def initialize(data,options={})
-      @data = data
+      @data = data.dup
       @attributes = options[:attributes]
-      extend Taggable
     end
 
     attr_reader :data
-    def_delegators :@data,:each
+    def_delegators :@data,:each, :length
 
   
     def [](index)
       if index.kind_of? Integer
         @data[index]
       else
-        @data[attributes.index(index)]
+        @data[@attributes.index(index)]
       end
     end
 
@@ -62,7 +62,7 @@ module Ruport::Data
     end
 
     def dup
-      self.class.new(data.dup,:attributes => attributes)
+      self.class.new(data,:attributes => attributes)
     end 
     
     #FIXME: This does not take into account frozen / tainted state
@@ -70,7 +70,7 @@ module Ruport::Data
 
     def method_missing(id,*args)
       id = id.to_s.gsub(/=$/,"")
-      if attributes.include?(id)
+      if @attributes.include?(id)
         args.empty? ? self[id] : self[id] = args.first
       else
         super

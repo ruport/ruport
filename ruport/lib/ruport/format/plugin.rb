@@ -85,7 +85,7 @@ module Ruport
           }
         }
         
-        a = data.inject(th){ |s,r| 
+        a = data.inject(th){ |s,r|
           s + "| #{r.to_a.join(' | ')} |\n"
         } << hr
 
