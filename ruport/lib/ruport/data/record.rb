@@ -2,13 +2,11 @@ module Ruport::Data
   class Record
     require "forwardable"
     extend Forwardable
-    extend Taggable
-    
     include Enumerable
 
     def initialize(data,options={})
       @data = data
-      @collection = options[:collection]
+      @attributes = options[:attributes]
       extend Taggable
     end
 
@@ -20,7 +18,7 @@ module Ruport::Data
       if index.kind_of? Integer
         @data[index]
       else
-        @data[@collection.column_names.index(index)]
+        @data[attributes.index(index)]
       end
     end
 
@@ -28,31 +26,51 @@ module Ruport::Data
       if index.kind_of? Integer
         @data[index] = value
       else
-        @data[@collection.column_names.index(index)] = value
+        @data[attributes.index(index)] = value
       end
     end
 
     def ==(other)
-      return false if column_names && !other.column_names
-      return false if other.column_names && !column_names
-      (column_names == other.column_names) && (data == other.data)
+      return false if attributes && !other.attributes
+      return false if other.attributes && !attributes
+      (attributes == other.attributes) && (data == other.data)
     end
 
     alias_method :eql?, :==
     
     def to_a; data.dup; end
     
-    def to_h
-      column_names.inject({}) { |s,r| s.merge(r => self[r]) } 
+    def to_h; Hash[*attributes.zip(data).flatten] end
+
+    def attributes; @attributes && @attributes.dup; end
+
+    def attributes=(a); @attributes=a; end
+
+    def reorder(*indices)
+      a = dup; a.reorder! *indices; a
     end
 
-    def column_names
-      @collection && @collection.column_names
+    def reorder!(*indices)
+      @data = indices.map { |i| self[i] }
+      if attributes
+        if indices.all? { |e| e.kind_of? Integer }
+          @attributes = indices.map { |i| @attributes[i] }
+        else
+          @attributes = indices
+        end
+      end
     end
+
+    def dup
+      self.class.new(data.dup,:attributes => attributes)
+    end 
+    
+    #FIXME: This does not take into account frozen / tainted state
+    alias_method :clone, :dup
 
     def method_missing(id,*args)
       id = id.to_s.gsub(/=$/,"")
-      if @collection.column_names.include?(id)
+      if attributes.include?(id)
         args.empty? ? self[id] : self[id] = args.first
       else
         super
