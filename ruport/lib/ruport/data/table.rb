@@ -51,9 +51,7 @@ module Ruport::Data
         end
       end
       return loaded_data
-    end
-
-      
+    end 
 
   end
 end
