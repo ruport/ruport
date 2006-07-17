@@ -14,7 +14,7 @@ module Ruport
   
   begin; require 'rubygems'; rescue LoadError; nil end
   
-  VERSION = "Ruby Reports Version 0.4.15"
+  VERSION = "Ruby Reports Version 0.4.17"
   
   # Ruports logging and error interface.
   # Can generate warnings or raise fatal errors
