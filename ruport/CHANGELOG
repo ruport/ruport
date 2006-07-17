@@ -2,6 +2,10 @@ The current version of Ruby Reports is 0.4.15
 
 changes since 0.4.13
 
+- Began building a new data handling system, which is much faster than
+  DataSet/DataRow and takes up less memory.  It is also very young, though.
+  (See Data::Table and Data::Record)
+
 - Added init_plugin hooks
 
 - Added DataSet#rename_columns

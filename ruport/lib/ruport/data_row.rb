@@ -74,7 +74,7 @@ module Ruport
       
       attr_accessor :fields, :tags
       alias_method  :column_names, :fields
-      
+      alias_method  :attributes, :fields
       # Returns a new DataRow
       def +(other)
         DataRow.new @fields + other.fields, :data => (@data + other.to_a)

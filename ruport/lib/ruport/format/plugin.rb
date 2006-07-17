@@ -58,7 +58,7 @@ module Ruport
       helper(:init_plugin) { require "fastercsv" }
 
       format_field_names do
-        FasterCSV.generate { |csv| csv << data.fields }
+        FasterCSV.generate { |csv| csv << data.column_names }
       end
       
       renderer :table do
@@ -97,30 +97,30 @@ module Ruport
       end
       
       format_field_names do
-        data.fields.each_with_index { |f,i| 
-          data.fields[i] = f.to_s.center(max_col_width(i))
+        data.column_names.each_with_index { |f,i| 
+          data.column_names[i] = f.to_s.center(max_col_width(i))
         }
-        "#{hr}| #{data.fields.to_a.join(' | ')} |\n"
+        "#{hr}| #{data.column_names.to_a.join(' | ')} |\n"
       end
 
       action :max_col_width do |index|
-        f = data.fields if data.respond_to? :fields
+        f = data.column_names if data.respond_to? :column_names
         d = DataSet.new f, :data => data
         
         cw = d.map { |r| r[index].to_s.length }.max
         
-        return cw unless d.fields
+        return cw unless d.column_names
         
-        nw = (index.kind_of?(Integer) ? d.fields[index] : index ).to_s.length
+        nw = (index.kind_of?(Integer) ? d.column_names[index] : index ).to_s.length
         
         [cw,nw].max
       end
 
       action :table_width do
-        f = data.fields if data.respond_to? :fields
+        f = data.column_names if data.respond_to? :column_names
         d = DataSet.new f, :data => data 
 
-        d[0].fields.inject(0) { |s,e| s + max_col_width(e) }
+        d[0].attributes.inject(0) { |s,e| s + max_col_width(e) }
       end
 
       action :hr do
@@ -153,7 +153,7 @@ module Ruport
         pdf.render
       end
 
-      format_field_names { data.fields }
+      format_field_names { data.column_names }
 
       register_on :table_engine
     end
@@ -173,7 +173,7 @@ module Ruport
       end
 
       format_field_names do
-        s = "|_." + data.fields.join(" |_.") + "|\n"
+        s = "|_." + data.column_names.join(" |_.") + "|\n"
       end
 
       register_on :table_engine

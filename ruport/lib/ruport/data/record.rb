@@ -47,7 +47,7 @@ module Ruport::Data
     def attributes=(a); @attributes=a; end
 
     def reorder(*indices)
-      a = dup; a.reorder! *indices; a
+      dup.reorder! *indices
     end
 
     def reorder!(*indices)
@@ -58,7 +58,7 @@ module Ruport::Data
         else
           @attributes = indices
         end
-      end
+      end; self
     end
 
     def dup
