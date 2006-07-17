@@ -19,6 +19,13 @@ class TestTable < Test::Unit::TestCase
     tables.zip([[],[],[a],[b]]).each { |t,n| assert_equal n, t.data }
   end
 
+  def test_append_record  
+    table = Ruport::Data::Table.new :column_names => %w[a b c]
+    table << Ruport::Data::Record.new([1,2,3], :attributes => %w[a b c])
+    assert_equal([1,2,3],table[0].data)
+    assert_equal(%w[a b c],table[0].attributes)
+  end
+
   def test_csv_load
     table = Ruport::Data::Table.load("test/samples/data.csv")
     assert_equal %w[col1 col2 col3], table.column_names

@@ -21,7 +21,7 @@ module Ruport::Data
         arr = @column_names.map { |k| other[k] }
         @data << Record.new(arr, :attributes => @column_names)
       when Record
-        @data << Record.reorder(*column_names)
+        @data << other.reorder(*column_names)
       end
     end
 
