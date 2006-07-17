@@ -24,6 +24,9 @@ class TestTable < Test::Unit::TestCase
     table << Ruport::Data::Record.new([1,2,3], :attributes => %w[a b c])
     assert_equal([1,2,3],table[0].data)
     assert_equal(%w[a b c],table[0].attributes)
+    rec = table[0].dup
+    rec.attributes = %w[a b c d]
+    assert_raise(ArgumentError) { table << rec }
   end
 
   def test_csv_load

@@ -21,6 +21,7 @@ module Ruport::Data
         arr = @column_names.map { |k| other[k] }
         @data << Record.new(arr, :attributes => @column_names)
       when Record
+        raise ArgumentError unless column_names.eql? other.attributes
         @data << other.reorder(*column_names)
       end
     end
