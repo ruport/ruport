@@ -60,14 +60,14 @@ module Ruport
     module_function
     
     def source(*args)
-      return @sources[args.first] if args.length == 1
-      @sources[args.first] = OpenStruct.new(*args[1..-1])
-      check_source(@sources[args.first],args.first)
+      return sources[args.first] if args.length == 1
+      sources[args.first] = OpenStruct.new(*args[1..-1])
+      check_source(sources[args.first],args.first)
     end
 
     def mailer(*args)
-      @mailers[args.first] = OpenStruct.new(*args[1..-1])
-      check_mailer(@mailers[args.first],args.first)
+      mailers[args.first] = OpenStruct.new(*args[1..-1])
+      check_mailer(mailers[args.first],args.first)
     end
 
     def log_file(file)
@@ -80,23 +80,23 @@ module Ruport
     end
 
     def default_source
-      @sources[:default]
+      sources[:default]
     end
 
     def default_mailer
-      @mailers[:default]
+      mailers[:default]
     end
 
-    def sources; @sources; end
+    def sources; @sources ||= {}; end
 
-    def mailer; @mailers; end
+    def mailers; @mailers ||= {}; end
 
     def logger; @logger; end
 
-    def enable_paronia; @paranoid = true; end
+    def enable_paranoia; @paranoid = true; end
     def disable_paranoia; @paranoid = false; end
     def paranoid=(val); @paranoid = val; end
-    def paranoid?; @paranoid; end
+    def paranoid?; !!@paranoid; end
     
     def check_source(settings,label)
       unless settings.dsn
@@ -117,16 +117,6 @@ module Ruport
         )
       end
     end
-    
-    def init!
-      @@sources  = { }
-      @@mailers  = { }
-      @@logger   = nil
-      @@paranoid = false
-    end
-
-  
-    init!
     
   end
 end

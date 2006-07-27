@@ -52,7 +52,7 @@ class TestRuport < Test::Unit::TestCase
   end
 
   def teardown
-    Ruport::Config.class_eval("@@logger").close
+    Ruport::Config.class_eval("@logger").close
     FileUtils.rm("test/complain.log")
   end
   

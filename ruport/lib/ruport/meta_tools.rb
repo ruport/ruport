@@ -5,10 +5,10 @@ module Ruport
   #
   module MetaTools
     
-    # provides the singleton object
-    def singleton; (class << self; self; end); end
+    # provides the singleton_class object
+    def singleton_class; (class << self; self; end); end
 
-    # allows you to define an attribute accessor on the singleton.
+    # allows you to define an attribute accessor on the singleton_class.
     #
     # Example:
     # 
@@ -21,7 +21,7 @@ module Ruport
     #  A.foo #=> nil
     #  A.foo = 7 #=> 7 
     def attribute(sym,value = nil)
-      singleton.send(:attr_accessor, sym )
+      singleton_class.send(:attr_accessor, sym )
       self.send("#{sym}=",value)
     end
 
@@ -33,7 +33,7 @@ module Ruport
     end
 
     def action(name,&block)
-      singleton.send(:define_method, name, &block)
+      singleton_class.send(:define_method, name, &block)
     end
   end
 end

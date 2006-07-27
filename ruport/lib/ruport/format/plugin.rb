@@ -9,10 +9,10 @@ module Ruport
       include MetaTools
 
       def helper(name,&block)
-        singleton.send( :define_method, "#{name}_helper", &block )
+        singleton_class.send( :define_method, "#{name}_helper", &block )
       end
 
-      private :singleton, :attribute, :attributes, :action
+      private :singleton_class, :attribute, :attributes, :action
      
       def plugin_name(name=nil); @name ||= name; end
       
@@ -25,11 +25,11 @@ module Ruport
       def renderer(render_type,&block)
         m = "render_#{render_type}".to_sym
         block = lambda { data } unless block_given?
-        singleton.send(:define_method, m, &block)
+        singleton_class.send(:define_method, m, &block)
       end
 
       def format_field_names(&block)
-        singleton.send( :define_method, :build_field_names, &block)
+        singleton_class.send( :define_method, :build_field_names, &block)
       end
 
       def register_on(klass)

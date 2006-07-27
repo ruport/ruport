@@ -14,11 +14,11 @@ module Ruport
       attr_reader :options
       
       def_delegator :@data, :each
-      private :attribute, :attributes, :singleton, :action
+      private :attribute, :attributes, :singleton_class, :action
 
       def renderer(&block)
         block = lambda { data } unless block_given?
-        singleton.send(:define_method, :render,&block)
+        singleton_class.send(:define_method, :render,&block)
       end
       
       def alias_engine(klass,name)
