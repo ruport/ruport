@@ -32,7 +32,7 @@ module Ruport::Data
     def ==(other)
       return false if @attributes && !other.attributes
       return false if other.attributes && !@attributes
-      (@attributes == other.attributes) && (@data == other.data)
+      @attributes == other.attributes && @data == other.data
     end
 
     alias_method :eql?, :==
@@ -51,7 +51,7 @@ module Ruport::Data
 
     def reorder!(*indices)
       @data = indices.map { |i| self[i] }
-      if attributes
+      if @attributes
         if indices.all? { |e| e.kind_of? Integer }
           @attributes = indices.map { |i| @attributes[i] }
         else
@@ -61,7 +61,7 @@ module Ruport::Data
     end
 
     def dup
-      self.class.new(@data,:attributes => @attributes && @attributes.dup)
+      self.class.new(@data,:attributes => attributes)
     end 
     
     #FIXME: This does not take into account frozen / tainted state

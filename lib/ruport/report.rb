@@ -83,7 +83,8 @@ module Ruport
     def initialize( source_name=:default, mailer_name=:default )
       use_source source_name
       use_mailer mailer_name
-      @report_name = @results = ""
+      @report_name = "" 
+      @results     = ""
       @file        = nil
     end
     
@@ -99,7 +100,6 @@ module Ruport
 
     # Preserved for backwards compabilitity, please do not use this.
     alias_method :report=, :results=
-
 
     # Simplified interface to Ruport::Query
     #
@@ -263,7 +263,7 @@ module Ruport
     end
 
     def load_csv(file,options={})
-      case(options[:as])
+      case options[:as]
       when :table
         Data::Table.load(file)
       when :array

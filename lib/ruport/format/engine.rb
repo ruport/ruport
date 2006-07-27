@@ -1,16 +1,17 @@
 module Ruport
   class Format::Engine
     require "forwardable"
+    require "enumerator"
     class << self
 
       include Enumerable
       include MetaTools
       extend Forwardable
 
-      attr_accessor :engine_klasses
+      attr_accessor :engine_classes
       attr_reader :plugin 
       attr_reader :data
-      attr_accessor :klass_binding
+      attr_accessor :class_binding
       attr_reader :options
       
       def_delegator :@data, :each
@@ -22,8 +23,8 @@ module Ruport
       end
       
       def alias_engine(klass,name)
-        Format::Engine.engine_klasses ||= {}
-        Format::Engine.engine_klasses[name] = klass
+        Format::Engine.engine_classes ||= {}
+        Format::Engine.engine_classes[name] = klass
       end
 
       def data=(data)
@@ -49,7 +50,7 @@ module Ruport
       
       def apply_erb
        active_plugin.data = 
-         ERB.new(active_plugin.data).result(klass_binding || binding)
+         ERB.new(active_plugin.data).result(class_binding || binding)
       end
  
       def render
@@ -66,7 +67,7 @@ module Ruport
       end
       
       def accept_format_plugin(klass) 
-        format_plugins[klass.format_name] = klass
+        format_plugins[klass.plugin_name] = klass
       end
 
       private  
@@ -83,12 +84,14 @@ module Ruport
         format_plugins.values
       end 
       
-      def method_missing(id)
+      def method_missing(id,*args)
         super unless active_plugin.respond_to?("#{id}_helper")
         return active_plugin.send("#{id}_helper",self)
       end
 
     end
+    
+    private_class_method :new
   end
   
   class Format::Engine::Table < Format::Engine      
@@ -99,7 +102,7 @@ module Ruport
         build_field_names if (data.respond_to?(:column_names) && 
                               data.column_names && show_field_names)
         a = active_plugin.render_table
-      end
+     end
 
     class << self
 
@@ -112,12 +115,12 @@ module Ruport
       end
 
       def prune(limit=data[0].length)
-        (0...limit).each do |field|
+        limit.times do |field|
           last = ""
-          data.each_with_index { |e,i|
-            next if i.zero? || field.nonzero? && data[i][field-1] 
-            last = data[i-1][field] if data[i-1][field]
-            data[i][field] = nil if e[field] == last
+          data.each_cons(2) { |l,e|
+            next if field.nonzero? && e[field-1] 
+            last = l[field] if l[field]
+            e[field] = nil if e[field] == last
           }
         end
       end

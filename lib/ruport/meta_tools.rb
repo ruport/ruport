@@ -4,10 +4,6 @@ module Ruport
   # formatting system, and might be helpful for other things.
   #
   module MetaTools
-    
-    # provides the singleton_class object
-    def singleton_class; (class << self; self; end); end
-
     # allows you to define an attribute accessor on the singleton_class.
     #
     # Example:
@@ -38,3 +34,9 @@ module Ruport
   end
 end
 
+class Module
+
+    # provides the singleton_class object
+    def singleton_class; (class << self; self; end); end
+
+end

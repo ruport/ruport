@@ -18,6 +18,7 @@ class TSVPlugin < Format::Plugin
     FasterCSV.generate(:col_sep => "\t") { |csv| data.each { |r| csv << r } }
   end
 
+  plugin_name :tsv
   register_on Format::Engine::Table
   
 end

@@ -99,7 +99,7 @@ module Ruport
     
     # Standard each iterator, iterates through result set row by row.
     def each(&action) 
-      Ruport::complain(
+      Ruport.log(
         "no block given!", :status => :fatal,
         :level => :log_only, :exception => LocalJumpError 
       ) unless action
@@ -115,7 +115,7 @@ module Ruport
     
     # clears the contents of the cache
     def clear_cache
-      @CAched_data = nil
+      @cached_data = nil
     end
 
     # clears the contents of the cache and then runs the query, filling the
@@ -179,19 +179,19 @@ module Ruport
     
     def load_file( query_file )
       begin; File.read( query_file ).strip ; rescue
-        Ruport::complain "Could not open #{query_file}",
+        Ruport.log "Could not open #{query_file}",
           :status => :fatal, :exception => LoadError
       end
     end
     
-    def fetch(&action)
+    def fetch
       data = nil
       if @cache_enabled and @cached_data
         data = @cached_data
       else
         @statements.each { |query_text| data = query_data( query_text ) }
       end
-      data.each { |r| action.call(r) } if block_given? ; data
+      data.each { |r| yield(r) } if block_given? ; data
       @cached_data = data if @cache_enabled
       return data
     end
