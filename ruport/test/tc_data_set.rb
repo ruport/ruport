@@ -275,6 +275,9 @@ class TestDataSet < Test::Unit::TestCase
     sum = data.sigma { |r| r["x"] }
     assert_equal(18,sum)
 
+    sum = data.sigma("x")
+    assert_equal(18,sum)
+
     #check alias
     sum = data.sum { |r| r["x"] }
     assert_equal(18,sum) 

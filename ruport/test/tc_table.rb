@@ -46,4 +46,30 @@ class TestTable < Test::Unit::TestCase
                      assert_equal %w[col1 col3], r.attributes }
   end
 
+  def test_partition
+    table = Ruport::Data::Table.new :column_names => %w[c1 c2 c3]
+    table << ['a',2,3]
+    table << ['d',5,6]
+    table << ['a',4,5]
+    table << ['b',3,4]
+    table << ['d',9,10]
+
+    group = table.split :group => "c1"
+  
+    t = table.reorder("c2","c3")
+
+    data = [[t[0],t[2]],[t[1],t[4]],[t[3]]]
+    c1 = Ruport::Data::Record.new data, :attributes => %w[a d b]
+    assert_equal c1.a, group.a.to_a
+    assert_equal c1.d, group.d.to_a
+    assert_equal c1.b, group.b.to_a
+  end
+  
+  def test_append_chain
+    table = Ruport::Data::Table.new :column_names => %w[a b c]
+    table << [1,2,3] << [4,5,6] << [7,8,9] 
+    assert_equal 3, table.length
+    assert_equal 5, table[1].b
+  end
+
 end
