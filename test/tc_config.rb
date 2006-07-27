@@ -4,7 +4,6 @@ require "ruport"
 class TestConfiguration < Test::Unit::TestCase
 
   def setup
-    Ruport::Config.init!
     Ruport::Config.log_file = "test/unit.log"
   end
   
@@ -14,14 +13,6 @@ class TestConfiguration < Test::Unit::TestCase
 
   def test_mail_defaults
     assert_equal(nil, Ruport::Config.default_mailer)
-  end
-
-  def test_init
-     Ruport::Config.init!
-     assert_equal({}, Ruport::Config.sources)
-     assert_equal({}, Ruport::Config.mailers)
-     assert_equal(nil,Ruport::Config.logger)
-     assert_equal(false,Ruport::Config.paranoid?)
   end
 
   def test_missing_dsn
@@ -68,10 +59,6 @@ class TestConfiguration < Test::Unit::TestCase
     # We have a logger running now, dont we?
     assert(Ruport::Config.logger.kind_of?(Logger)) 
       
-    # If we could go back in time and never define one...
-    Ruport::Config.init!
-    assert Ruport::Config.logger.nil?
-     
     # And then we change are mind again.  Back logging?
     Ruport::Config.log_file = "test/unit.log"  
     assert(Ruport::Config.logger.kind_of?(Logger))
