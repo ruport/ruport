@@ -13,7 +13,7 @@ module Ruport::Data
     end
 
     def <<(other)
-      case(other)
+      case other
       when Array
         @data << Record.new(other, :attributes => @column_names)
       when Hash
@@ -55,15 +55,13 @@ module Ruport::Data
         else
           yield(loaded_data,row)
         end
-      end
-      return loaded_data
+      end ; loaded_data
     end
 
     def split(options={})
       group = map { |r| r[options[:group]] }.uniq 
-      data = []
-      group.each { |g| 
-        data << select { |r| r[options[:group]].eql?(g) } 
+      data = group.inject([]) { |s,g| 
+        s + [select { |r| r[options[:group]].eql?(g) }] 
       }
       c = column_names - [options[:group]]
       data.map! { |g| 

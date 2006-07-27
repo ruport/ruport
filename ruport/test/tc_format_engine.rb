@@ -24,6 +24,7 @@ class MockPlugin < Ruport::Format::Plugin
     eng.rewrite_column(0) { "a" } if apple 
   }
 
+  plugin_name :mock
   register_on :table_engine
   register_on :document_engine
 

@@ -67,7 +67,7 @@ module Ruport
     # These interfaces pass a hash of keywords to the associative engine.  
     # Here is a simple example:
     # 
-    # Format.build_interface_for Format::Engine::Yable, "table"
+    # Format.build_interface_for Format::Engine::Table, "table"
     # 
     # This will allow the following code to work:
     # 
@@ -81,10 +81,10 @@ module Ruport
     # which would be accessible via
     #
     # Format.my_name ...
-    def Format.build_interface_for(engine,name)
-      (class << self; self; end).send(:define_method, name, 
+    def self.build_interface_for(engine,name)
+      singleton_class.send(:define_method, name, 
         lambda { |options| simple_interface(engine, options) })
-      (class << self; self; end).send(:define_method, "#{name}_object",
+      singleton_class.send(:define_method, "#{name}_object",
         lambda { |options|
           options[:auto_render] = false; simple_interface(engine,options) })
     end
@@ -100,8 +100,8 @@ module Ruport
     # evaluated in the context of the object they are being called from, rather
     # than within an instance of Format.
     #
-    def initialize(klass_binding=binding)
-      @binding = klass_binding
+    def initialize(class_binding=binding)
+      @binding = class_binding
     end
     
     # This is the text to be processed by the filters
@@ -114,7 +114,7 @@ module Ruport
     # of the object that Format is bound to.
     def filter_erb  
       self.class.document :data => @content, 
-                          :klass_binding => @binding,
+                          :class_binding => @binding,
                           :plugin => :text
     end
     
@@ -137,18 +137,18 @@ module Ruport
     #   Format.register_filter :no_ohz do
     #     content.gsub(/O/i,"")
     #   end
-    def Format.register_filter(name,&filter_proc)
+    def self.register_filter(name,&filter_proc)
       @@filters["filter_#{name}".to_sym] = filter_proc 
     end
 
-    def method_missing(m)
+    def method_missing(m,*args)
       @@filters[m] ? @@filters[m][@content] : super
     end
 
 
     private
 
-     def Format.simple_interface(engine, options={})
+     def self.simple_interface(engine, options={})
         my_engine = engine.dup
         
         my_engine.send(:plugin=,options[:plugin])

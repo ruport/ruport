@@ -16,15 +16,15 @@ module Ruport
      
       def plugin_name(name=nil); @name ||= name; end
       
-      def format_name
-        pattern = /Ruport::Format|Plugin/
-        @name ||= 
-         self.name.gsub(pattern,"").downcase.delete(":").to_sym
-      end
+      #def format_name
+      #  pattern = /Ruport::Format|Plugin/
+      #  @name ||= 
+      #   self.name.gsub(pattern,"").downcase.delete(":").to_sym
+      #end
       
       def renderer(render_type,&block)
         m = "render_#{render_type}".to_sym
-        block = lambda { data } unless block_given?
+        block ||= lambda { data } 
         singleton_class.send(:define_method, m, &block)
       end
 
@@ -35,7 +35,7 @@ module Ruport
       def register_on(klass)
         
         if klass.kind_of? Symbol
-          klass = Format::Engine.engine_klasses[klass]
+          klass = Format::Engine.engine_classes[klass]
         end
         
         klass.accept_format_plugin(self)
@@ -65,7 +65,8 @@ module Ruport
         rendered_field_names +
         FasterCSV.generate { |csv| data.each { |r| csv << r } }
       end
-
+      
+      plugin_name :csv
       register_on :table_engine
     end
 
@@ -91,9 +92,9 @@ module Ruport
 
         width = self.right_margin || SystemExtensions.terminal_width
         
-        a.split("\n").each { |r|
-           r.gsub!(/\A.{#{width},}/) { |m| m[0,width-2] += ">>" }
-        }.join("\n") << "\n"
+        a.to_a.each { |r|
+           r.gsub!(/\A.{#{width+1},}/) { |m| m[0,width-2] + ">>" }
+        }.join
       end
       
       format_field_names do
@@ -129,7 +130,7 @@ module Ruport
       end
 
       attribute :right_margin
-
+      plugin_name :text
       register_on :table_engine
       register_on :document_engine
     end
@@ -154,7 +155,8 @@ module Ruport
       end
 
       format_field_names { data.column_names }
-
+      
+      plugin_name :pdf
       register_on :table_engine
     end
 
@@ -176,6 +178,7 @@ module Ruport
         s = "|_." + data.column_names.join(" |_.") + "|\n"
       end
 
+      plugin_name :html
       register_on :table_engine
       register_on :document_engine
       

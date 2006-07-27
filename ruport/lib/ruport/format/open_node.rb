@@ -11,12 +11,12 @@ module Ruport
         @my_name          = my_name
         super(options)
         self.name = name
-        self.send(@my_children_name) || 
-        self.send("#{@my_children_name}=".to_sym,{})
+        send(@my_children_name) || 
+        send("#{@my_children_name}=".to_sym,{})
       end
       
-      def each &p
-        self.send(@my_children_name).values.each(&p)
+     def each(&p)
+        send(@my_children_name).values.each(&p)
       end
       
       def add_child(klass,name,options={})

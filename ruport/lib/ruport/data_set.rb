@@ -180,7 +180,7 @@ module Ruport
         input = FasterCSV.read(source) if source =~ /\.csv/
         loaded_data = self.new
         
-        action = if block_given? 
+        action = if block 
           lambda { |r| block[loaded_data,r] }
         else 
           lambda { |r| loaded_data << r } 
@@ -245,20 +245,13 @@ module Ruport
     # uses Format::Builder to render DataSets in various ready to output
     # formats.  
     #
-    #    data.as(:html)                  -> String
-    #
-    #    data.as(:text) do |builder|
-    #      builder.range = 2..4          -> String
-    #      builder.header = "My Title"
-    #    end
-    #
     # To add new formats to this function, simply re-open Format::Builder
     # and add methods like <tt>render_my_format_name</tt>. 
     #
     # This will enable <tt>data.as(:my_format_name)</tt>
-    def as(format,&action)
+    def as(format)
       t = Format.table_object(:data => self, :plugin => format)
-      action.call(t) if block_given?
+      yield(t) if block_given?
       t.render
     end
     
@@ -266,6 +259,10 @@ module Ruport
     # The result of the block will be added to a running total
     #
     # Only works with blocks resulting in numeric values.
+    #
+    # Also allows summing up a specific column, e.g.
+    #
+    #   my_set.sigma("col1")
     def sigma(f = nil)
       if f
         inject(0) { |s,r| s + (r[f] || 0) }
