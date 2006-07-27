@@ -1,3 +1,4 @@
+require "ruport"
 require "test/unit"
 
 class TestFormat < Test::Unit::TestCase

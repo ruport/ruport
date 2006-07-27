@@ -12,7 +12,6 @@ module Ruport::Data
 
     attr_reader :data
     def_delegators :@data,:each, :length
-
   
     def [](index)
       if index.kind_of? Integer
@@ -31,16 +30,16 @@ module Ruport::Data
     end
 
     def ==(other)
-      return false if attributes && !other.attributes
-      return false if other.attributes && !attributes
-      (attributes == other.attributes) && (data == other.data)
+      return false if @attributes && !other.attributes
+      return false if other.attributes && !@attributes
+      (@attributes == other.attributes) && (@data == other.data)
     end
 
     alias_method :eql?, :==
     
-    def to_a; data.dup; end
+    def to_a; @data.dup; end
     
-    def to_h; Hash[*attributes.zip(data).flatten] end
+    def to_h; Hash[*@attributes.zip(data).flatten] end
 
     def attributes; @attributes && @attributes.dup; end
 
@@ -62,7 +61,7 @@ module Ruport::Data
     end
 
     def dup
-      self.class.new(data,:attributes => attributes)
+      self.class.new(@data,:attributes => @attributes && @attributes.dup)
     end 
     
     #FIXME: This does not take into account frozen / tainted state

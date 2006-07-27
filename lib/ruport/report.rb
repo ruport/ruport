@@ -157,7 +157,7 @@ module Ruport
     # This code will be evaluated in the context of the instance on which it is
     # called.
     def eval_template( code, filename=nil )
-      filename =~ /\.rb/ ? eval(code) : ERB.new(code, 0, "%").run(binding)
+      filename =~ /\.rb/ ? eval(code) : ERB.new(code, 0, "%").result(binding)
     end
    
     # sets the active source to the Ruport::Config source requested by label.
@@ -261,6 +261,19 @@ module Ruport
     def run(&block)
       self.class.run(self,&block)
     end
+
+    def load_csv(file,options={})
+      case(options[:as])
+      when :table
+        Data::Table.load(file)
+      when :array
+        a = []
+        Data::Table.load(file) { |s,r| a << r }
+        return a
+      else
+        DataSet.load(file)
+      end
+    end
     
     # Preserved for backwards compatibility, please do not use this.
     alias_method :generate_report, :run
@@ -271,7 +284,6 @@ module Ruport
     # Creates a new Mailer and sets the <tt>to</tt> attribute to the addresses
     # specified.  Yields a Mailer object, which can be modified before delivery.
     #
-    # By default, this will
     def send_to(adds)
       m = Mailer.new
       m.to = adds

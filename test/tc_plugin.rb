@@ -31,6 +31,14 @@ class CSVPluginTest < Test::Unit::TestCase
     a.data = a.data.to_ds(%w[a b])
     assert_equal("a,b\n1,2\n3,4\n",a.render)
 
+    a.data = Ruport::Data::Table.new :data => [[1,2],[3,4]]
+    assert_equal("1,2\n3,4\n",a.render)
+
+    a.data = Ruport::Data::Table.new :data => [[1,2],[3,4]], 
+                                     :column_names => %w[a b]
+
+    assert_equal("a,b\n1,2\n3,4\n",a.render)
+    
     a.show_field_names = false
     assert_equal("1,2\n3,4\n", a.render)
   end

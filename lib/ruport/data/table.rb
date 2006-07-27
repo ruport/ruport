@@ -7,7 +7,7 @@ module Ruport::Data
     end
 
     attr_reader :column_names
-    
+
     def column_names=(other)
       @column_names = other.dup
     end
@@ -22,8 +22,9 @@ module Ruport::Data
         @data << Record.new(arr, :attributes => @column_names)
       when Record
         raise ArgumentError unless column_names.eql? other.attributes
-        @data << other.reorder(*column_names)
+        @data << Record.new(other.to_a, :attributes => @column_names)
       end
+      self
     end
 
     def reorder!(*indices)
@@ -33,6 +34,10 @@ module Ruport::Data
 
     def reorder(*indices)
       dup.reorder! *indices
+    end
+
+    def dup
+      a = self.class.new(:data => @data, :column_names => @column_names)
     end
 
     def self.load(csv_file, options = {})
@@ -52,7 +57,23 @@ module Ruport::Data
         end
       end
       return loaded_data
-    end 
+    end
+
+    def split(options={})
+      group = map { |r| r[options[:group]] }.uniq 
+      data = []
+      group.each { |g| 
+        data << select { |r| r[options[:group]].eql?(g) } 
+      }
+      c = column_names - [options[:group]]
+      data.map! { |g| 
+        Ruport::Data::Table.new(
+          :data => g.map { |x| x.reorder(*c) },
+          :column_names => c
+        )
+      }
+      Ruport::Data::Record.new data, :attributes => group
+    end
 
   end
 end

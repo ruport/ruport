@@ -48,7 +48,7 @@ module Ruport
     #an array which contains column names
     attr_accessor :fields
     alias_method  :column_names, :fields
-    
+    alias_method  :column_names=, :fields= 
     #the default value to fill empty cells with 
     attr_accessor :default
     
@@ -266,9 +266,11 @@ module Ruport
     # The result of the block will be added to a running total
     #
     # Only works with blocks resulting in numeric values.
-    def sigma
-      inject(0) do |s,r|
-        s + (yield(r) || 0)
+    def sigma(f = nil)
+      if f
+        inject(0) { |s,r| s + (r[f] || 0) }
+      else
+        inject(0) { |s,r| s + (yield(r) || 0) }
       end
     end
     

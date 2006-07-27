@@ -31,7 +31,7 @@ module Ruport
   # The status <tt>:warn</tt> will invoke Logger#warn.  A status of
   # <tt>:fatal</tt> will invoke Logger#fatal and raise an exception
   # 
-  # By default, complain will also print warnings to $stderr
+  # By default, <tt>log()</tt> will also print warnings to $stderr
   # You can redirect this to any I/O object via <tt>:output</tt>
   #
   # You can prevent messages from appearing on the secondary output by setting
@@ -49,8 +49,18 @@ module Ruport
     end
   end
  
+  #Alias for Ruport.log
   def Ruport.complain(*args); Ruport.log(*args) end
-  
+ 
+  # yields a Ruport::Config object, allowing you to specify configuration
+  # options.
+  #
+  # Example: 
+  #
+  #   Ruport.configure do |c|
+  #     c.source :default, :dsn => "dbi:mysql:foo",
+  #                        :user => "clyde", :password => "pman"
+  #   end
   def Ruport.configure(&block)
     block.call(Ruport::Config)
   end

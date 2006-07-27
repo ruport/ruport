@@ -57,7 +57,7 @@ module Ruport
         raise "No data provided" unless data
         active_plugin.data = data.dup
         if active_plugin.respond_to? :init_plugin_helper
-          active_plugin.init_plugin_helper(self)
+           active_plugin.init_plugin_helper(self)
         end
       end
 

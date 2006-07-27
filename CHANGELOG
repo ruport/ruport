@@ -2,6 +2,16 @@ The current version of Ruby Reports is 0.4.19
 
 changes since 0.4.17
 
+- Data::Table and Data::Record now dup correctly
+
+- Fixed some serious issues between Data::Table and TextPlugin
+
+- Report#eval_template now returns an ERb string instead of printing to STDOUT
+
+- Added Data::Table#split which allows basic grouping operations
+
+- Added Report#load_csv convenience method 
+
 - Tightened up Data::Table#<< to ensure column_names match record attributes
 
 - Fixed appending a Record in Data::Table#<<
