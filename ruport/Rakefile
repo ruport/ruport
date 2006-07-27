@@ -10,6 +10,9 @@ end
 
 #Set to true to disable dependency resolution
 LEAN=false
+dir = File.dirname(__FILE__)
+lib = File.join(dir, "lib", "ruport.rb")
+version = File.read(lib)[/^\s*VERSION\s*=\s*(['"])(\d+\.\d+\.d+)\1/,2]
 
 task :default => [:test]
 

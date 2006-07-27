@@ -12,9 +12,9 @@
 
 module Ruport
   
-  begin; require 'rubygems'; rescue LoadError; nil end
+  #begin; require 'rubygems'; rescue LoadError; nil end
   
-  VERSION = "Ruby Reports Version 0.4.19"
+  VERSION = "0.4.19"
   
   # Ruports logging and error interface.
   # Can generate warnings or raise fatal errors
@@ -39,7 +39,7 @@ module Ruport
   # 
   # If you want to recover these messages to secondary output for debugging, you
   # can use Config::enable_paranoia 
-  def Ruport.log(message,options={})
+  def self.log(message,options={})
     options = {:status => :warn, :output => $stderr}.merge(options)
     options[:output].puts "[!!] #{message}" unless 
       options[:level].eql?(:log_only) and not Ruport::Config.paranoid?
@@ -50,7 +50,7 @@ module Ruport
   end
  
   #Alias for Ruport.log
-  def Ruport.complain(*args); Ruport.log(*args) end
+  def self.complain(*args); Ruport.log(*args) end
  
   # yields a Ruport::Config object, allowing you to specify configuration
   # options.
@@ -61,7 +61,7 @@ module Ruport
   #     c.source :default, :dsn => "dbi:mysql:foo",
   #                        :user => "clyde", :password => "pman"
   #   end
-  def Ruport.configure(&block)
+  def self.configure(&block)
     block.call(Ruport::Config)
   end
 end
