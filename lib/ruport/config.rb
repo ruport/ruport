@@ -9,7 +9,6 @@
 #
 # See LICENSE and COPYING for details
 #
-require "singleton"
 require "ostruct"
 module Ruport
   # This class serves as the configuration system for Ruport.
@@ -57,51 +56,49 @@ module Ruport
   # Saving this config information into a file and then requiring it can allow
   # you share configurations between Ruport applications.
   #
-  class Config
-    include Singleton
-
-    def Config.method_missing(method_id,*args)
-      case(method_id)
-      when :source
-        return @@sources[args.first] if args.length == 1
-        @@sources[args.first] = OpenStruct.new(*args[1..-1])
-        check_source(@@sources[args.first],args.first)
-      when :mailer
-        @@mailers[args.first] = OpenStruct.new(*args[1..-1])
-        check_mailer(@@mailers[args.first],args.first)
-      when :log_file,:log_file=
-        @@logger = Logger.new(args.first)
-      when :default_source
-        @@sources[:default]
-      when :default_mailer
-        @@mailers[:default]
-      when :sources
-        @@sources
-      when :mailers
-        @@mailers
-      when :logger
-        @@logger
-      when :enable_paranoia
-        @@paranoid = true
-      when :disable_paranoia
-        @@paranoid = false
-      when :paranoid?
-        @@paranoid
-      else
-        super
-      end 
-    end
+  module Config
+    module_function
     
-    private
-    
-    def Config.init!
-      @@sources  = { }
-      @@mailers  = { }
-      @@logger   = nil
-      @@paranoid = false
+    def source(*args)
+      return @sources[args.first] if args.length == 1
+      @sources[args.first] = OpenStruct.new(*args[1..-1])
+      check_source(@sources[args.first],args.first)
     end
 
-    def Config.check_source(settings,label)
+    def mailer(*args)
+      @mailers[args.first] = OpenStruct.new(*args[1..-1])
+      check_mailer(@mailers[args.first],args.first)
+    end
+
+    def log_file(file)
+      @logger = Logger.new(file)
+    end
+    
+    #alias_method :log_file=, :log_file
+    def log_file=(file)
+      log_file(file)
+    end
+
+    def default_source
+      @sources[:default]
+    end
+
+    def default_mailer
+      @mailers[:default]
+    end
+
+    def sources; @sources; end
+
+    def mailer; @mailers; end
+
+    def logger; @logger; end
+
+    def enable_paronia; @paranoid = true; end
+    def disable_paranoia; @paranoid = false; end
+    def paranoid=(val); @paranoid = val; end
+    def paranoid?; @paranoid; end
+    
+    def check_source(settings,label)
       unless settings.dsn
         Ruport.complain( 
           "Missing DSN for source #{label}!",
@@ -111,7 +108,7 @@ module Ruport
       end
     end
 
-    def Config.check_mailer(settings, label)
+    def check_mailer(settings, label)
       unless settings.host
         Ruport.complain(
           "Missing host for mailer #{label}",
@@ -120,7 +117,15 @@ module Ruport
         )
       end
     end
-   
+    
+    def init!
+      @@sources  = { }
+      @@mailers  = { }
+      @@logger   = nil
+      @@paranoid = false
+    end
+
+  
     init!
     
   end
