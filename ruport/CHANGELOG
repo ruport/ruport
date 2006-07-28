@@ -44,7 +44,7 @@ changes since 0.4.13
 
 - added accessor style methods to DataRow via method_missing
 
-- added prune method for Table formmatting. 
+- added prune method for Table formatting. 
 
 changes since 0.4.11
 
