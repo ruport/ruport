@@ -59,18 +59,32 @@ module Ruport::Data
     end
 
     def split(options={})
-      group = map { |r| r[options[:group]] }.uniq 
-      data = group.inject([]) { |s,g| 
-        s + [select { |r| r[options[:group]].eql?(g) }] 
-      }
-      c = column_names - [options[:group]]
+      if options[:group].kind_of? Array
+        group = map { |r| options[:group].map { |e| r[e] } }.uniq
+         data = group.inject([]) { |s,g|
+           s + [select { |r| options[:group].map { |e| r[e] }.eql?(g) }]
+         }
+         c = column_names - options[:group]
+      else
+        group = map { |r| r[options[:group]] }.uniq 
+        data = group.inject([]) { |s,g| 
+          s + [select { |r| r[options[:group]].eql?(g) }] 
+        }
+        c = column_names - [options[:group]]
+
+      end 
       data.map! { |g| 
         Ruport::Data::Table.new(
           :data => g.map { |x| x.reorder(*c) },
           :column_names => c
         )
       }
-      Ruport::Data::Record.new data, :attributes => group
+      if options[:group].kind_of? Array
+        Ruport::Data::Record.new(data, 
+          :attributes => group.map { |e| e.join("_") } )
+      else
+        Ruport::Data::Record.new data, :attributes => group
+      end
     end
 
   end
