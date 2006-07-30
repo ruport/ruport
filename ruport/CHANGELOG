@@ -1,6 +1,6 @@
 The current version of Ruby Reports is 0.4.19
 
-changes since 0.4.17
+changes since 0.4.1
 
 - Made method_missing a lot more friendly all around.
 
