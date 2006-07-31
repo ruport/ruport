@@ -12,8 +12,7 @@ end
 LEAN=false
 dir = File.dirname(__FILE__)
 lib = File.join(dir, "lib", "ruport.rb")
-version = File.read(lib)[/^\s*VERSION\s*=\s*(['"])(\d+\.\d+\.d+)\1/,2]
-
+version = File.read(lib)[/^\s*VERSION\s*=\s*(['"])(\d+\.\d+\.d+)['"]/,1]
 task :default => [:test]
 
 Rake::TestTask.new do |test|
@@ -24,7 +23,7 @@ end
 
 spec = Gem::Specification.new do |spec|
 	spec.name = LEAN ? "lean-ruport" : "ruport"
-	spec.version = "0.4.19"
+	spec.version = "0.4.21"
 	spec.platform = Gem::Platform::RUBY
 	spec.summary = "A generalized Ruby report generation and templating engine."
 	spec.files =  Dir.glob("{examples,lib,test}/**/**/*") +

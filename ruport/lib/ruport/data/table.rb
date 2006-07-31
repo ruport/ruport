@@ -86,6 +86,11 @@ module Ruport::Data
         Ruport::Data::Record.new data, :attributes => group
       end
     end
+    
+    def method_missing(id,*args)
+     return send(:as,id.to_s.gsub(/^to_/,"").to_sym) if id.to_s =~ /^to_/ 
+     super
+    end
 
   end
 end

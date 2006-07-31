@@ -1,4 +1,8 @@
-The current version of Ruby Reports is 0.4.19
+The current version of Ruby Reports is 0.4.21
+
+changes since 0.4.19
+
+- Added smart Data::Table.to_format method_missing functionality
 
 changes since 0.4.17
 
