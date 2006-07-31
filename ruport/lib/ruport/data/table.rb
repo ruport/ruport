@@ -88,7 +88,7 @@ module Ruport::Data
     end
     
     def method_missing(id,*args)
-     return send(:as,$1.to_sym) if id.to_s =~ /^to_(.*)$/ 
+     return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
      super
     end
 
