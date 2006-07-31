@@ -88,4 +88,10 @@ class TestTable < Test::Unit::TestCase
     assert_equal 5, table[1].b
   end
 
+  def test_to_hack
+    table = Ruport::Data::Table.new :column_names => %w[a b], 
+                                    :data => [[1,2],[3,4],[5,6]]
+    assert_equal("a,b\n1,2\n3,4\n5,6\n",table.to_csv)
+  end
+
 end
