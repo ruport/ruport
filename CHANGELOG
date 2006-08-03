@@ -2,6 +2,8 @@ The current version of Ruby Reports is 0.4.21
 
 changes since 0.4.19
 
+- acts_as_reportable converted to use Data::Table
+
 - Data::Record's constructor can now take a hash
 
 - Added initial Data::Set implementation

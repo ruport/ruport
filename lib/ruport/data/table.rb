@@ -12,6 +12,10 @@ module Ruport::Data
       @column_names = other.dup
     end
 
+    def to_s
+      as(:text)
+    end
+
     def <<(other)
       case other
       when Array
