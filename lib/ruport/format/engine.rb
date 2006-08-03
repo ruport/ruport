@@ -109,7 +109,7 @@ module Ruport
       def rewrite_column(key,&block)
         data.each { |r| r[key] = block[r] }
       end
- 
+
       def num_cols
         data[0].to_a.length
       end
