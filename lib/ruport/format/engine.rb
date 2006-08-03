@@ -94,6 +94,26 @@ module Ruport
     private_class_method :new
   end
   
+ class Format::Engine::Invoice < Ruport::Format::Engine
+
+    # company header
+    attribute :company_data
+  
+    # order meta data
+    attributes [:comments,:customer_id,:date,:email,:name,:phone,:order_number]
+   
+    renderer do
+      super
+      build_company_header
+      build_order_header
+      active_plugin.render_invoice
+    end
+  
+    alias_engine Invoice, :invoice_engine
+    Ruport::Format.build_interface_for Invoice, :invoice
+  
+  end
+
   class Format::Engine::Table < Format::Engine      
         
      renderer do
