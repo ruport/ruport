@@ -137,4 +137,18 @@ class RecordTest < Test::Unit::TestCase
     assert_equal [:apple], rec2.tags
   end
 
+  def test_records_with_same_attrs_and_data_hash_the_same
+    r = Record.new :attributes => %w[a b], :data => [1,2]
+    s = Record.new :attributes => %w[a b], :data => [1,2]
+    assert_equal r.hash, s.hash
+  end
+  
+  def test_records_with_differing_attrs_and_data_hash_differently
+    r = Record.new :attributes => %w[a b], :data => [1,2]
+    s = Record.new :attributes => %w[a b]
+    assert r.hash != s.hash
+    
+    t = Record.new :attributes => %w[a b], :data => [1,3]
+    assert r.hash != t.hash
+  end
 end

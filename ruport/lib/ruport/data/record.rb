@@ -67,6 +67,10 @@ module Ruport::Data
     #FIXME: This does not take into account frozen / tainted state
     alias_method :clone, :dup
 
+    def hash
+      (attributes.to_a + data.to_a).hash
+    end
+
     def method_missing(id,*args)
       id = id.to_s.gsub(/=$/,"")
       if @attributes.include?(id)
