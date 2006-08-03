@@ -22,7 +22,24 @@ class RecordTest < Test::Unit::TestCase
     assert_equal 4, @record["d"]
     assert_equal 2, @record.b
     assert_equal 3, @record.c
-
+  end
+  
+  def test_hash_constructor
+    record = Ruport::Data::Record.new({:a => 1, :b => 2, :c => 3},{})
+    assert_equal 1, record[:a]
+    assert_equal 2, record[:b]
+    assert_equal 3, record[:c]
+  end
+  
+  def test_hash_constructor_with_attributes
+    record = Record.new({:a => 1, :b => 2, :c => 3 }, :attributes => [:c,:b,:a])
+    assert_equal 1, record[:a]
+    assert_equal 2, record[:b]
+    assert_equal 3, record[:c]
+    
+    assert_equal 3, record[0]
+    assert_equal 2, record[1]
+    assert_equal 1, record[2]
   end
   
   def test_brackets

@@ -6,8 +6,17 @@ module Ruport::Data
     include Taggable
 
     def initialize(data,options={})
-      @data = data.dup
-      @attributes = options[:attributes]
+      if data.kind_of?(Hash)
+        if options[:attributes]
+          @attributes = options[:attributes]
+          @data = options[:attributes].map { |k| data[k] }
+        else
+          @attributes, @data = data.to_a.transpose
+        end
+      else
+        @data = data.dup
+        @attributes = options[:attributes]
+      end
     end
 
     attr_reader :data
