@@ -1,1 +1,1 @@
-%w[taggable record collection table].each { |l| require "ruport/data/#{l}" }
+%w[taggable record collection table set].each { |l| require "ruport/data/#{l}" }
