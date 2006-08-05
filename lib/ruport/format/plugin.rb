@@ -200,45 +200,37 @@ module Ruport
       end
 
       # Company Information in top lefthand corner
-      helper(:build_company_header) { |eng|
-      
-        if eng.company_data.class == Array
-
-          PDF::SimpleTable.new do |table|
-            @values = eng.company_data.inject([]) do |s,line|
-              s << { "value" => line}
-            end
-            table.data = @values
-            table.column_order = ["value"]
-            table.show_headings = false
-            table.font_size = 10
-            table.show_lines = :outer
-            table.shade_rows = :none
-            table.width = 200
-            table.position = :left
-            table.orientation = :right
-            table.render_on(pdf)
-          end
-        end
+      helper(:build_company_header) { |eng| 
+        text_box(eng.company_info)
       }
 
-      # Order details
-      helper(:build_order_header) { |eng|
-        
-        pdf.add_text_wrap(410, 750, 80, "Date:", 12)
-        pdf.add_text_wrap(410, 730, 80, "Customer:", 12)
-        pdf.add_text_wrap(410, 710, 80, "Phone:", 12)
-        pdf.add_text_wrap(410, 690, 80, "Email:", 12)
-        pdf.add_text_wrap(410, 670, 80, "Order:", 12)
-        pdf.add_text_wrap(410, 650, 80, "CID:", 12)
-        pdf.add_text_wrap(470, 750, 200, eng.date.to_s, 12)
-        pdf.add_text_wrap(470, 730, 200, eng.name.to_s, 12)
-        pdf.add_text_wrap(470, 710, 200, eng.phone.to_s, 12)
-        pdf.add_text_wrap(470, 690, 200, eng.email.to_s, 12)
-        pdf.add_text_wrap(470, 670, 200, eng.order_number.to_s, 12)
-        pdf.add_text_wrap(470, 650, 200, eng.customer_id.to_s, 12)
-      } 
+      
 
+      helper(:build_order_helper) { }
+
+      # Order details
+      helper(:build_customer_header) { |eng| 
+        pdf.y -= 10
+        text_box(eng.customer_info)
+      }
+     
+      def self.text_box(content,options={})
+        PDF::SimpleTable.new do |table| 
+          table.data = content.to_a.inject([]) do |s,line|
+            s << { "value" => line }
+          end
+          table.column_order = "value"
+          table.show_headings = false
+          table.show_lines  = :outer
+          table.shade_rows  = :none
+          table.width       = options[:width]    || 200
+          table.orientation = options[:orientation] || :right
+          table.position = options[:position] || :left
+          table.font_size = options[:font_size] || 10
+          table.render_on(pdf)
+        end
+      end
+       
       plugin_name :pdf
       register_on :table_engine
       register_on :invoice_engine     
