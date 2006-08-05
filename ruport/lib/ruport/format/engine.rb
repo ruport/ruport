@@ -96,16 +96,13 @@ module Ruport
   
  class Format::Engine::Invoice < Ruport::Format::Engine
 
-    # company header
-    attribute :company_data
-  
     # order meta data
-    attributes [:comments,:customer_id,:date,:email,:name,:phone,:order_number]
+    attributes [:customer_info, :company_info]
    
     renderer do
       super
       build_company_header
-      build_order_header
+      build_customer_header
       active_plugin.render_invoice
     end
   
