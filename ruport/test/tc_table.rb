@@ -93,5 +93,26 @@ class TestTable < Test::Unit::TestCase
                                     :data => [[1,2],[3,4],[5,6]]
     assert_equal("a,b\n1,2\n3,4\n5,6\n",table.to_csv)
   end
+  
+  def test_to_set
+    table = Ruport::Data::Table.new :column_names => %w[a b], 
+                                    :data => [[1,2],[3,4],[5,6]]
+    a = table.to_set
+    b = Ruport::Data::Set.new :data => [table[1],table[0],table[2]] 
+
+    assert_equal a,b
+  end
+  
+  def test_array_hack
+    t = [[1,2],[3,4],[5,6]].to_table 
+    assert_instance_of Ruport::Data::Table, t
+    assert_equal nil, t.column_names
+    assert_equal Ruport::Data::Record.new([3,4]), t[1]
+    t = [[1,2],[3,4],[5,6]].to_table :column_names => %w[a b]
+    table = Ruport::Data::Table.new :column_names => %w[a b], 
+                                    :data => [[1,2],[3,4],[5,6]]
+    
+    assert_equal t, table 
+  end
 
 end

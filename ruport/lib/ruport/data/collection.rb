@@ -12,6 +12,10 @@ module Ruport::Data
     def as(type)
       Ruport::Format.table :data => self, :plugin => type
     end
+
+    def to_set
+      Set.new :data => self
+    end
     
     attr_reader :data
     def_delegators :@data, :each, :length, :[], :empty?

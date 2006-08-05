@@ -1,3 +1,9 @@
+class Array
+  def to_table(options={})
+    Ruport::Data::Table.new({:data => self}.merge(options))
+  end
+end
+
 module Ruport::Data
   class Table < Collection
     def initialize(options={})
@@ -11,6 +17,11 @@ module Ruport::Data
     def column_names=(other)
       @column_names = other.dup
     end
+
+    def eql?(other)
+      data.eql?(other.data) && column_names.eql?(other.column_names) 
+    end
+    alias_method :==, :eql?
 
     def to_s
       as(:text)
