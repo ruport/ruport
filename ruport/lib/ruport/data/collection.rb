@@ -14,9 +14,13 @@ module Ruport::Data
     end
 
     def to_set
-      Set.new :data => self
+      Set.new :data => data
     end
     
+    def to_table(options={})
+      Table.new({:data => data.map { |r| r.to_a }}.merge(options))
+    end
+
     attr_reader :data
     def_delegators :@data, :each, :length, :[], :empty?
   end
