@@ -1,5 +1,5 @@
 require "test/unit"
-require "ruportlib"
+require "ruport"
 
 class TestSqlSplit < Test::Unit::TestCase
 	def teardown
