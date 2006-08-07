@@ -2,6 +2,12 @@ The current version of Ruby Reports is 0.4.21
 
 changes since 0.4.19
 
+- Removed DataSet / DataRow.  Farewell good friends
+
+- Added Array#to_table, dropped Array#to_ds
+
+- You can now convert Sets to Tables and vice-versa
+
 - acts_as_reportable converted to use Data::Table
 
 - Data::Record's constructor can now take a hash
