@@ -19,16 +19,10 @@ module Ruport
 # There are three main sets of functionality the Ruport::Format model provides.
 #   * Structured printable document support ( Format::Document and friends)
 #   * Text filter support ( Report#render and the Format class)
-#   * Support for DataSet Formatting ( Format::Builder)
 #
 # The support for structured printable documents is currently geared towards PDF
 # support and needs some additional work to be truly useful.  Suggestions would
 # be much appreciated.
-#
-# Format::Builder lets you define functions that will be used via DataSet#as
-# This is primary geared towards tabular data output, but there is no reason why
-# DataSet#as and the <tt>render_foo</tt> methods of Format::Builder cannot be
-# adapted to fit whatever needs you may need.
 #
 # The filters implemented in the Format class are meant to process strings or
 # entire templates.  The Format class will soon automatically build a

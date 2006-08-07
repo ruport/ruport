@@ -4,7 +4,7 @@ require "ruport/query/sql_split"
 module Ruport
   
   # Query offers a way to interact with databases via DBI.  It supports
-  # returning result sets in either Ruport's native DataSets, or in their raw
+  # returning result sets in either Ruport's native Data::Table, or in their raw
   # form as DBI::Rows.
   #
   # It offers basic caching support, the ability to instantiate a generator for
@@ -25,7 +25,7 @@ module Ruport
     # This kind of laziness is supposed to be A Good Thing, and
     # as long as you keep it in mind, it should not cause any problems.
     #
-    # The SQL can be single or multistatement, but the resulting DataSet will
+    # The SQL can be single or multistatement, but the resulting Data::Table will
     # consist only of the result of the last statement which returns something.
     #
     # Options:
@@ -106,7 +106,7 @@ module Ruport
       fetch &action
     end
     
-    # Grabs the result set as a DataSet or if in raw_data mode, an array of
+    # Grabs the result set as a Data::Table or if in raw_data mode, an array of
     # DBI:Row objects
     def result; fetch; end
     
@@ -137,7 +137,7 @@ module Ruport
       @cache_enabled = false
     end
     
-    # Returns a DataSet, even if in raw_data mode
+    # Returns a Data::Table, even if in raw_data mode
     # Does not work with raw data if cache is enabled and filled
     def to_dataset
       data_flag, @raw_data = @raw_data, false
@@ -160,7 +160,7 @@ module Ruport
       
       require "dbi"
       
-      data = @raw_data ? [] : DataSet.new
+      data = @raw_data ? [] : Data::Table.new
       DBI.connect(@dsn, @user, @password) do |dbh|
         dbh.execute(query_text) do |sth|
             return unless sth.fetchable?
