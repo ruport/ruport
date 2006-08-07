@@ -11,11 +11,11 @@ class Format::Plugin::Text < Ruport::Format::Plugin
   end
 
   format_field_names do
-    data.fields.join("---") << "\n"
+    data.column_names.join("---") << "\n"
   end
 
   register_on :table_engine
 end
 
-puts Format.table({ :data => [[1,2],[3,4]].to_ds(%w[a b]),
+puts Format.table({ :data => [[1,2],[3,4]].to_table(:column_names =>%w[a b]),
                     :plugin => :text })
