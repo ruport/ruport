@@ -100,7 +100,7 @@ class TestTabularFormatEngine < Test::Unit::TestCase
     @engine.data = [[1,2,3,4],[5,6,7,8]]
     assert_equal(4,@engine.num_cols)
 
-    @engine.data = [[1,2,3],[4,5,6]].to_ds(%w[a b c])
+    @engine.data = [[1,2,3],[4,5,6]].to_table(:column_names => %w[a b c])
     assert_equal(3,@engine.num_cols)
   end
 

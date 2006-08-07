@@ -297,12 +297,3 @@ module Ruport
     
   end
 end
-
-class Array
-  
-  # Will convert Arrays of Enumerable objects to DataSets. 
-  # May have dragons.
-  def to_ds(fields,options={})
-    Ruport::DataSet.new fields, :data => to_a, :default => options[:default]
-  end 
-end

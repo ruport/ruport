@@ -10,7 +10,7 @@ class TSVPlugin < Format::Plugin
   require "fastercsv"
   
   format_field_names do
-    FasterCSV.generate(:col_sep => "\t") { |csv| csv << data.fields }
+    FasterCSV.generate(:col_sep => "\t") { |csv| csv << data.column_names }
   end
   
   renderer :table do
@@ -29,7 +29,7 @@ class CSVPluginTest < Test::Unit::TestCase
     a = Format.table_object :plugin => :csv, :data => [[1,2],[3,4]]
     assert_equal("1,2\n3,4\n",a.render)
 
-    a.data = a.data.to_ds(%w[a b])
+    a.data = a.data.to_table(:column_names => %w[a b])
     assert_equal("a,b\n1,2\n3,4\n",a.render)
 
     a.data = Ruport::Data::Table.new :data => [[1,2],[3,4]]
@@ -52,7 +52,7 @@ class PDFPluginTest < Test::Unit::TestCase
     a = Format.table_object :plugin => :pdf, :data => [[1,2],[3,4]]
     assert_raise(RuntimeError) { a.render }
     
-    a.data = a.data.to_ds(%w[a b])
+    a.data = a.data.to_table(:column_names => %w[a b])
     assert_nothing_raised { a.render }
     
     #FIXME: Engine should be further duck typed so this test will pass
@@ -62,7 +62,7 @@ class PDFPluginTest < Test::Unit::TestCase
 
   def test_hooks
     a = Format.table_object :plugin => :pdf, 
-                            :data   => [[1,2],[3,4]].to_ds(%w[a b])
+          :data   => [[1,2],[3,4]].to_table(:column_names => %w[a b])
     y = 0
     a.active_plugin.pre  = lambda { |pdf| 
       assert_instance_of(PDF::Writer,pdf); 
@@ -83,7 +83,7 @@ class HTMLPluginTest < Test::Unit::TestCase
     assert_equal("<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2</td>"+
                  "\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>3</td>\n\t\t\t<td>&nbsp;"+
                  "</td>\n\t\t</tr>\n\t</table>",a.render)
-    a.data = a.data.to_ds(%w[a b])
+    a.data = a.data.to_table(:column_names => %w[a b])
     assert_equal("<table>\n\t\t<tr>\n\t\t\t<th>a </th>\n\t\t\t<th>b</th>"+
                  "\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>"+
                  "2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>3</td>\n\t\t\t<td>"+
@@ -103,7 +103,7 @@ class NewPluginTest < Test::Unit::TestCase
     a = Format.table_object :plugin => :tsv, :data => [[1,2],[3,4]]
     assert_equal("1\t2\n3\t4\n",a.render)
 
-    a.data = a.data.to_ds(%w[a b])
+    a.data = a.data.to_table(:column_names => %w[a b])
     assert_equal("a\tb\n1\t2\n3\t4\n",a.render)
 
     a.show_field_names = false
