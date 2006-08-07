@@ -1,6 +1,7 @@
 The current version of Ruby Reports is 0.4.21
 
 changes since 0.4.19
+- Added a rake task to run rcov
 
 - Removed DataSet / DataRow.  Farewell good friends
 
