@@ -65,10 +65,16 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title    = "Ruport Documentation"
 end
 
-
 Rake::GemPackageTask.new(spec) do |pkg|
 	pkg.need_zip = true
 	pkg.need_tar = true
 end
 
-
+begin
+  require 'rcov/rcovtask'
+  Rcov::RcovTask.new do |t|
+    t.test_files = [ "test/ts_all.rb" ]
+  end
+rescue LoadError
+  nil
+end
