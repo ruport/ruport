@@ -124,9 +124,6 @@ module Ruport
     # 
     # === Can return raw DBI:Row objects or Ruport's data structures.
     # 
-    #  # will return a DataSet
-    #  result = query "select * from foo"
-    #
     #  # will return an Array of DBI::Row objects
     #  result = query "select * from foo", :raw_data => true
     #
@@ -264,14 +261,11 @@ module Ruport
 
     def load_csv(file,options={})
       case options[:as]
-      when :table
-        Data::Table.load(file)
       when :array
         a = []
-        Data::Table.load(file) { |s,r| a << r }
-        return a
+        Data::Table.load(file) { |s,r| a << r } ; a
       else
-        DataSet.load(file)
+        Data::Table.load(file)
       end
     end
     

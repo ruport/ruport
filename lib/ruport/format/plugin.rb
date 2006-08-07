@@ -106,7 +106,7 @@ module Ruport
 
       action :max_col_width do |index|
         f = data.column_names if data.respond_to? :column_names
-        d = DataSet.new f, :data => data
+        d = Data::Table.new :column_names => f, :data => data
         
         cw = d.map { |r| r[index].to_s.length }.max
         
@@ -119,9 +119,11 @@ module Ruport
 
       action :table_width do
         f = data.column_names if data.respond_to? :column_names
-        d = DataSet.new f, :data => data 
+        d = Data::Table.new:column_names => f, :data => data 
 
-        d[0].attributes.inject(0) { |s,e| s + max_col_width(e) }
+        f = d[0].attributes || (0...d[0].length)
+
+        f.inject(0) { |s,e| s + max_col_width(e) }
       end
 
       action :hr do

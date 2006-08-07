@@ -6,7 +6,7 @@ class MockPlugin < Ruport::Format::Plugin
   
   renderer(:table) { "#{rendered_field_names}#{data}" }
  
-  format_field_names { "#{data.fields}" }
+  format_field_names { "#{data.column_names}" }
   
   renderer(:document) { data }
 
@@ -85,9 +85,9 @@ class TestTabularFormatEngine < Test::Unit::TestCase
     a = @engine.dup
     a.plugin = :mock
     
-    a.data = [[1,2],[3,4]].to_ds(%w[a b])
+    a.data = [[1,2],[3,4]].to_table(:column_names =>%w[a b])
     a.rewrite_column("a") { |r| r["a"] + 1 }
-    assert_equal([[2,2],[4,4]].to_ds(%w[a b]),a.data)
+    assert_equal([[2,2],[4,4]].to_table(:column_names => %w[a b]),a.data)
     assert_nothing_raised { a.render }
     
     a.data = [[5,6],[7,8]]

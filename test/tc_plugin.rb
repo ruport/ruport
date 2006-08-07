@@ -121,7 +121,7 @@ class TextPluginTest < Test::Unit::TestCase
     a = Format.table_object :plugin => :text, :data => [[1,2],[3,4]]
     assert_equal("#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}",a.render)
 
-    a.data = a.data.to_ds(%w[a b])
+    a.data = a.data.to_table(:column_names => %w[a b])
     assert_equal("#{tf}| a | b |\n#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}", a.render)
     
   end
@@ -131,13 +131,13 @@ class TextPluginTest < Test::Unit::TestCase
     assert_equal(3,a.active_plugin.max_col_width(0))
     assert_equal(1,a.active_plugin.max_col_width(1))
 
-    a.data = [[1,2],[300,4]].to_ds(%w[a b])
+    a.data = [[1,2],[300,4]].to_table(:column_names => %w[a b])
 
     assert_equal(3,a.active_plugin.max_col_width("a"))
     assert_equal(1,a.active_plugin.max_col_width("b"))
     assert_equal(3,a.active_plugin.max_col_width(0))
 
-    a.data = [[1,2],[3,40000]].to_ds(%w[foo bazz])
+    a.data = [[1,2],[3,40000]].to_table(:column_names => %w[foo bazz])
     assert_equal(3,a.active_plugin.max_col_width("foo"))
     assert_equal(5,a.active_plugin.max_col_width("bazz"))
 
@@ -149,7 +149,7 @@ class TextPluginTest < Test::Unit::TestCase
     a = Format.table_object :plugin => :text, :data => [[1,2],[300,4]]
     assert_equal(4,a.active_plugin.table_width)
     
-    a.data = [[1,2],[3,40000]].to_ds(%w[foo bazz])
+    a.data = [[1,2],[3,40000]].to_table(:column_names =>%w[foo bazz])
     assert_equal(8,a.active_plugin.table_width)
   end
 
@@ -159,7 +159,7 @@ class TextPluginTest < Test::Unit::TestCase
     assert_equal("+---------+\n",a.active_plugin.hr)
 
 
-    a.data = [[1,2],[3,40000]].to_ds(%w[foo bazz])
+    a.data = [[1,2],[3,40000]].to_table(:column_names => %w[foo bazz])
     assert_equal "+-------------+\n", a.active_plugin.hr
     
   end
@@ -171,7 +171,7 @@ class TextPluginTest < Test::Unit::TestCase
     assert_equal("#{tf}|  1  | 2 |\n| 300 | 4 |\n#{tf}",a.render)
 
     tf = "+------------+\n"
-    a.data = a.data.to_ds(%w[a bark])
+    a.data = a.data.to_table(:column_names => %w[a bark])
     assert_equal("#{tf}|  a  | bark |\n#{tf}|  1  |  2   |\n"+
                  "| 300 |  4   |\n#{tf}",a.render)
     
