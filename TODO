@@ -1,19 +1,6 @@
-TODO: (Wiped clean for a fresh start as of 2006.02.20)
+TODO:
 
-Immediate Goals:
+This file needs updating badly.
 
-  Features:
-
-    - PDF document support + example
-
-    - Composite key selection
-
-    - Value modification predicate.
-      DataRow#set_value_if("my_value") { # my_condition }
-      (Update: What was I talking about here???)
-      
-    - Column based default values
-
-    - Document the inner classes of Format
-
-    - Calculated fields
+In the interim, check the Roadmap at 
+http://stonecode.svnrepository.com/ruport
