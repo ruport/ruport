@@ -2,6 +2,12 @@ The current version of Ruby Reports is 0.4.23
 
 changes since 0.4.21
 
+- Added rope, a tool for building a friendly environment for reports that use
+  Ruport.
+
+- Fixed very broken Ruport::Query (DataSet aftermath)
+  We need to figure out a way to test this class better.
+
 - Added Data::Table#add_column which is useful for calculated fields. (#19)
 
 - Data::Table.reorder now works properly. 

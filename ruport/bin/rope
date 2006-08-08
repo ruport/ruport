@@ -41,6 +41,7 @@ if ARGV[0].eql? "report"
   }
 REP = <<-EOR
 require "ruport"
+require "config/ruport_config"
 class #{ARGV[1].capitalize} < Ruport::Report
   
   #optional
@@ -62,16 +63,23 @@ begin require "rubygems" rescue LoadError nil end
 require "ruport"
 require "test/unit"
 require "app/reports/#{ARGV[1]}"
+require "config/ruport_config"
 class Test#{ARGV[1].capitalize} < Test::Unit::TestCase
   def test_flunk
     flunk "Write your real tests here or in any test/tc_* file"
   end
 end
 EOR
-
   File.open("app/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
   File.open("test/tc_#{ARGV[1]}.rb","w") { |f| f << TEST } 
 end
+'
+
+SQL_EXEC = '
+begin require "rubygems" rescue LoadError nil end
+require "ruport"
+require "config/ruport_config"
+puts Ruport::Query.new(ARGF.read).result
 '
 
 mkdir project
@@ -85,7 +93,7 @@ touch("#{project}/app/reports.rb")
 File.open("#{project}/config/ruport_config.rb","w") { |f| f << CONFIG }
 File.open("#{project}/Rakefile","w") { |f| f << RAKEFILE }
 File.open("#{project}/util/build.rb","w") { |f| f << BUILD }
-
+File.open("#{project}/util/sql_exec.rb","w") { |f| f << SQL_EXEC }
 
 
 
