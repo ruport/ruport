@@ -113,6 +113,12 @@ class TestTable < Test::Unit::TestCase
                                     :data => [[1,2],[3,4],[5,6]]
     
     assert_equal t, table 
+    
+    # test short form
+    table2 = [[1,2],[3,4],[5,6]].to_table %w[a b]
+  
+    assert_equal table, table2
+
   end
 
 end

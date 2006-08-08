@@ -1,5 +1,6 @@
 class Array
   def to_table(options={})
+    options = { :column_names => options } if options.kind_of? Array 
     Ruport::Data::Table.new({:data => self}.merge(options))
   end
 end

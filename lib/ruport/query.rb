@@ -139,7 +139,7 @@ module Ruport
     
     # Returns a Data::Table, even if in raw_data mode
     # Does not work with raw data if cache is enabled and filled
-    def to_dataset
+    def to_table
       data_flag, @raw_data = @raw_data, false
       data = fetch; @raw_data = data_flag; return data
     end
