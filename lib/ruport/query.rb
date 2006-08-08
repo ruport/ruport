@@ -165,8 +165,8 @@ module Ruport
         dbh.execute(query_text) do |sth|
             return unless sth.fetchable?
             results = sth.fetch_all  
-            data.fields = sth.column_names unless @raw_data
-            results.each { |row| data << row }
+            data.column_names = sth.column_names unless @raw_data
+            results.each { |row| data << row.to_a }
         end
       end
       data
@@ -191,7 +191,7 @@ module Ruport
       else
         @statements.each { |query_text| data = query_data( query_text ) }
       end
-      data.each { |r| yield(r) } if block_given? ; data
+      data.each { |r| yield(r) } if block_given? 
       @cached_data = data if @cache_enabled
       return data
     end
