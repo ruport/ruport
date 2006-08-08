@@ -1,4 +1,12 @@
-The current version of Ruby Reports is 0.4.21
+The current version of Ruby Reports is 0.4.23
+
+changes since 0.4.21
+
+- Renamed Query#to_dataset to Query#to_table
+
+- Array#to_table now supports just passing an array of column_names if you do
+  not need other keyword arguments.  This makes the interface support to_ds
+  style calls.
 
 changes since 0.4.19
 - Added a rake task to run rcov
