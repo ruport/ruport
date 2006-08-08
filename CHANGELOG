@@ -2,6 +2,14 @@ The current version of Ruby Reports is 0.4.23
 
 changes since 0.4.21
 
+- Added Data::Table#add_column which is useful for calculated fields. (#19)
+
+- Data::Table.reorder now works properly. 
+  (Can use integer indices or attributes)
+
+- Moved Data::Table.to_format to Collection, but be warned that the plugins must
+  support the collection you call them on.  (Set is not fully supported yet)
+
 - Renamed Query#to_dataset to Query#to_table
 
 - Array#to_table now supports just passing an array of column_names if you do

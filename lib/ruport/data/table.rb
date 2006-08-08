@@ -17,6 +17,7 @@ module Ruport::Data
 
     def column_names=(other)
       @column_names = other.dup
+      map { |r| r.attributes = @column_names }
     end
 
     def eql?(other)
@@ -44,12 +45,25 @@ module Ruport::Data
     end
 
     def reorder!(*indices)
-      @column_names = indices
+      @column_names = if indices.all? { |i| i.kind_of? Integer }
+        indices.map { |i| @column_names[i] }
+      else
+        indices 
+      end
       @data.each { |r| r.reorder! *indices }; self
     end
 
     def reorder(*indices)
       dup.reorder! *indices
+    end
+
+    def append_column(options={})
+      self.column_names += [options[:name]]  if options[:name]
+      if block_given?
+        each { |r| r.data << yield(r) || options[:fill] }
+      else
+        each { |r| r.data << options[:fill] }
+      end
     end
 
     def dup
@@ -103,10 +117,5 @@ module Ruport::Data
       end
     end
     
-    def method_missing(id,*args)
-     return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
-     super
-    end
-
   end
 end

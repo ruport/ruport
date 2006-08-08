@@ -44,6 +44,29 @@ class TestTable < Test::Unit::TestCase
     rows = [%w[a c], %w[d e]]
     table.each { |r| assert_equal rows.shift, r.data
                      assert_equal %w[col1 col3], r.attributes }
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c]).reorder 2,0
+    rows = [[3,1],[6,4]]
+    a.each { |r| assert_equal rows.shift, r.data 
+                 assert_equal %w[c a], r.attributes }
+    assert_equal %w[c a], a.column_names
+  end
+
+  def test_append_column
+    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    a.append_column(:name => "c")
+    assert_equal [[1,2,nil],[3,4,nil],[5,6,nil]].to_table(%w[a b c]), a
+    a = [[1,2],[3,4],[5,6]].to_table
+    a.append_column 
+    assert_equal [[1,2,nil],[3,4,nil],[5,6,nil]].to_table, a
+    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    a.append_column(:name => "c",:fill => "x")
+    assert_equal [[1,2,'x'],[3,4,'x'],[5,6,'x']].to_table(%w[a b c]), a
+    a.append_column(:name => "d") { |r| r.to_a.join("|") }
+    assert_equal( 
+    [ [1,2,'x','1|2|x'],
+      [3,4,'x',"3|4|x"],
+      [5,6,'x','5|6|x']].to_table(%w[a b c d]), a)
+    
   end
 
   def test_split
