@@ -1,4 +1,4 @@
-begin require 'rubygems'; rescue LoadError; nil end
+require 'rubygems' rescue LoadError nil
 require 'ruport'
 require 'test/unit'
 
