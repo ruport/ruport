@@ -16,12 +16,6 @@ module Ruport
      
       def plugin_name(name=nil); @name ||= name; end
       
-      #def format_name
-      #  pattern = /Ruport::Format|Plugin/
-      #  @name ||= 
-      #   self.name.gsub(pattern,"").downcase.delete(":").to_sym
-      #end
-      
       def renderer(render_type,&block)
         m = "render_#{render_type}".to_sym
         block ||= lambda { data } 
