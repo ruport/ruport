@@ -8,7 +8,7 @@ end
 project = ARGV[0]
 
 RAKEFILE = <<-EOS
-begin require "rubygems" rescue LoadError nil end
+require "rubygems" rescue LoadError nil  
 require "rake/testtask"
 
 task :default => [:test]
@@ -23,6 +23,7 @@ EOS
 
 CONFIG = <<-EOS
 require "ruport"
+
 # For details, see Ruport::Config documentation
 Ruport.configure { |c|
   c.source :default, :user     => "root", 
@@ -33,16 +34,26 @@ Ruport.configure { |c|
 EOS
 
 BUILD = '
+
+def format_class_name(string)
+  string.downcase.split("_").map { |s| s.capitalize }.join
+end
+
 exit unless ARGV.length > 1
+
+class_name = format_class_name(ARGV[1])
+
 exit if File.exist? "app/reports/#{ARGV[1]}.rb"
 if ARGV[0].eql? "report"
   File.open("app/reports.rb", "a") { |f| 
     f << "require \"app/reports/#{ARGV[1]}\""
   }
 REP = <<-EOR
+require "rubygems" rescue LoadError nil  
 require "ruport"
 require "config/ruport_config"
-class #{ARGV[1].capitalize} < Ruport::Report
+
+class #{class_name} < Ruport::Report
   
   #optional
   prepare { }
@@ -55,16 +66,17 @@ class #{ARGV[1].capitalize} < Ruport::Report
 
 end
 
-##{ARGV[1].capitalize}.run { |res| puts res.results }
+##{class_name}.run { |res| puts res.results }
 EOR
 
 TEST = <<-EOR
-begin require "rubygems" rescue LoadError nil end
+require "rubygems" rescue LoadError nil  
 require "ruport"
 require "test/unit"
 require "app/reports/#{ARGV[1]}"
 require "config/ruport_config"
-class Test#{ARGV[1].capitalize} < Test::Unit::TestCase
+
+class Test#{class_name} < Test::Unit::TestCase
   def test_flunk
     flunk "Write your real tests here or in any test/tc_* file"
   end
@@ -76,9 +88,10 @@ end
 '
 
 SQL_EXEC = '
-begin require "rubygems" rescue LoadError nil end
+require "rubygems" rescue LoadError nil  
 require "ruport"
 require "config/ruport_config"
+
 puts Ruport::Query.new(ARGF.read).result
 '
 
