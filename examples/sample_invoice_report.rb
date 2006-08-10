@@ -18,7 +18,7 @@ class SampleInvoiceReport < Ruport::Report
       i.data = [["Rock Collection","$25.00"],
                  ["Endless Sand Supply","$500.00"],
                  ["Fire Filled Pit","$800.00"]].to_table %w[item price]
-      i.comments = "Be sure to visit our website at www.iheartruport.com"
+      i.comments = "Your Total: $1325.00  --  Thank you for your purchase!"
       i.title = "Invoice for Gregory"
       #i.active_plugin.paper = "A4"
     end
