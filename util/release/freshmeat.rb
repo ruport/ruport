@@ -46,6 +46,4 @@ agent.submit(form,form.buttons[0])
 
 
 form = agent.page.forms[2]
-p agent.page.forms
-exit
 agent.submit(form,form.buttons[0])
