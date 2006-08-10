@@ -30,4 +30,3 @@ class SampleInvoiceReport < Ruport::Report
 end
 
 SampleInvoiceReport.run { |res| res.write }
-SampleInvoiceReport.run { |res| res.write("bar.pdf") }
