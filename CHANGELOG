@@ -2,6 +2,8 @@ The current version of Ruby Reports is 0.4.23
 
 changes since 0.4.21
 
+- JH's invoice engine integrated
+
 - Added rope, a tool for building a friendly environment for reports that use
   Ruport.
 
