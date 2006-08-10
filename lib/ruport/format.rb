@@ -151,7 +151,7 @@ module Ruport
         options[:auto_render] = true unless options.has_key? :auto_render
         
 
-        options[:data] = options[:data].dup
+        options[:data] = options[:data].dup if options[:data]
         
         options.each do |k,v|
           my_engine.send("#{k}=",v) if my_engine.respond_to? k

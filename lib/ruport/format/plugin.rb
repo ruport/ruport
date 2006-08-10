@@ -158,10 +158,57 @@ module Ruport
 
       format_field_names { data.column_names }
       
-      renderer :invoice do
-        return unless defined? PDF::Writer
-     
-        pdf.start_page_numbering(500, 20, 8, :right)
+      renderer(:invoice) { pdf.render }
+
+      # Company Information in top lefthand corner
+      helper(:build_company_header) { |eng| 
+        @tod = pdf.y
+        text_box(eng.company_info)
+      }
+
+      helper(:build_headers) { |eng|
+        build_company_header_helper(eng)
+        build_customer_header_helper(eng)
+        build_title_helper(eng)
+        build_order_header_helper(eng)
+      }
+
+      helper(:build_order_header) { |eng|
+        if eng.order_info
+          text_box(eng.order_info, :position => 350)
+        end
+      }
+
+      helper(:build_title) { |eng|
+        pdf.y = @tod
+        if eng.title
+          pdf.text eng.title, :left => 350, :font_size => 14
+          pdf.y -= 10
+        end
+      }
+
+      helper(:build_footer) { |eng|
+        # footer
+        pdf.open_object do |footer|
+          pdf.save_state
+          pdf.stroke_color! Color::RGB::Black
+          pdf.stroke_style! PDF::Writer::StrokeStyle::DEFAULT
+          if eng.comments  
+            pdf.y -= 20
+            text_box eng.comments, :position => 110, :width => 400
+          end
+          pdf.add_text_wrap( 50, 20, 200, "Printed at " + 
+                             Time.now.strftime("%H:%M %d/%m/%Y"), 8)
+
+          pdf.restore_state
+          pdf.close_object
+          pdf.add_object(footer, :all_pages)
+        end
+        pdf.stop_page_numbering(true, :current)
+      } 
+       
+      helper(:build_body) do
+       pdf.start_page_numbering(500, 20, 8, :right)
        
         # order contents 
         pdf.y = 620
@@ -175,34 +222,7 @@ module Ruport
           table.render_on(pdf)
           table.font_size = 12
         end
-         
-          
-        # footer
-        pdf.open_object do |footer|
-          pdf.save_state
-          pdf.stroke_color! Color::Black
-          pdf.stroke_style! PDF::Writer::StrokeStyle::DEFAULT
-        
-          pdf.add_text_wrap( 50, 20, 200, "Printed at " + 
-                             Time.now.strftime("%H:%M %d/%m/%Y"), 8)
-
-          pdf.restore_state
-          pdf.close_object
-          pdf.add_object(footer, :all_pages)
-        end
-        
-        pdf.stop_page_numbering(true, :current)
-        pdf.render
       end
-
-      # Company Information in top lefthand corner
-      helper(:build_company_header) { |eng| 
-        text_box(eng.company_info)
-      }
-
-      
-
-      helper(:build_order_helper) { }
 
       # Order details
       helper(:build_customer_header) { |eng| 
@@ -219,7 +239,7 @@ module Ruport
           table.show_headings = false
           table.show_lines  = :outer
           table.shade_rows  = :none
-          table.width       = options[:width]    || 200
+          table.width       = options[:width] || 200
           table.orientation = options[:orientation] || :right
           table.position = options[:position] || :left
           table.font_size = options[:font_size] || 10

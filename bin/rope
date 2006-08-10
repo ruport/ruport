@@ -39,7 +39,10 @@ def format_class_name(string)
   string.downcase.split("_").map { |s| s.capitalize }.join
 end
 
-exit unless ARGV.length > 1
+unless ARGV.length > 1
+  puts "usage build.rb [command] [options]"
+  exit
+end
 
 class_name = format_class_name(ARGV[1])
 
