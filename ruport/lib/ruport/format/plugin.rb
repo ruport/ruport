@@ -195,7 +195,8 @@ module Ruport
           pdf.stroke_style! PDF::Writer::StrokeStyle::DEFAULT
           if eng.comments  
             pdf.y -= 20
-            text_box eng.comments, :position => 110, :width => 400
+            text_box eng.comments, :position => 110, :width => 400, 
+                                   :font_size => 14
           end
           pdf.add_text_wrap( 50, 20, 200, "Printed at " + 
                              Time.now.strftime("%H:%M %d/%m/%Y"), 8)
