@@ -27,9 +27,10 @@ module Ruport
         Format::Engine.engine_classes[name] = klass
       end
 
-      def data=(data)
-        @data = data
-        active_plugin.data = data.dup if active_plugin
+      def data=(stuff)
+        return unless stuff
+        @data = stuff
+        active_plugin.data = stuff.dup if active_plugin
       end
 
       def options=(opts)
@@ -55,7 +56,6 @@ module Ruport
  
       def render
         raise "No plugin specified" unless plugin
-        raise "No data provided" unless data
         active_plugin.data = data.dup
         if active_plugin.respond_to? :init_plugin_helper
            active_plugin.init_plugin_helper(self)
@@ -97,12 +97,14 @@ module Ruport
  class Format::Engine::Invoice < Ruport::Format::Engine
 
     # order meta data
-    attributes [:customer_info, :company_info]
+    attributes [ :customer_info, :company_info, 
+                 :comments, :order_info, :title]
    
     renderer do
       super
-      build_company_header
-      build_customer_header
+      build_headers
+      build_body
+      build_footer
       active_plugin.render_invoice
     end
   
