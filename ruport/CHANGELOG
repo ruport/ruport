@@ -2,6 +2,9 @@ The current version of Ruby Reports is 0.4.99
 
 changes since 0.4.23
 
+- Trimmed down system_extensions.rb to only include the relevant terminal
+  geometry code
+
 - Record/Table reordering can now be expressed either as a splatted list or an
   array.  Eg %w[a b c] and "a","b","c" are both acceptable as arguments.
 

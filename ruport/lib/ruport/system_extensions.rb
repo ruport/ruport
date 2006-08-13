@@ -9,6 +9,9 @@
 # - Outer Module is changed from HighLine to Ruport
 # - terminal_width / terminal_height added
 #
+# The following modifications have been made by Gregory Brown on 2006.08.13
+# - removed most methods, preserving only terminal geometry features
+#
 # All modifications are under the distributions terms of Ruport.
 # Copyright 2006, Gregory Brown.  All Rights Reserved
 #
@@ -32,18 +35,6 @@ module Ruport
     begin
       require "Win32API"       # See if we're on Windows.
 
-      CHARACTER_MODE = "Win32API"    # For Debugging purposes only.
-
-      #
-      # Windows savvy getc().
-      # 
-      # *WARNING*:  This method ignores <tt>input</tt> and reads one
-      # character from +STDIN+!
-      # 
-      def get_character( input = STDIN )
-        Win32API.new("crtdll", "_getch", [ ], "L").Call
-      end
-
       # A Windows savvy method to fetch the console columns, and rows.
       def terminal_size
         m_GetStdHandle               = Win32API.new( 'kernel32',
@@ -64,49 +55,6 @@ module Ruport
         return right - left + 1, bottom - top + 1
       end
     rescue LoadError             # If we're not on Windows try...
-      begin
-        require "termios"    # Unix, first choice.
-
-        CHARACTER_MODE = "termios"    # For Debugging purposes only.
-
-        #
-        # Unix savvy getc().  (First choice.)
-        # 
-        # *WARNING*:  This method requires the "termios" library!
-        # 
-        def get_character( input = STDIN )
-          old_settings = Termios.getattr(input)
-
-          new_settings         =  old_settings.dup
-          new_settings.c_lflag &= ~(Termios::ECHO | Termios::ICANON)
-
-          begin
-            Termios.setattr(input, Termios::TCSANOW, new_settings)
-            input.getc
-          ensure
-            Termios.setattr(input, Termios::TCSANOW, old_settings)
-          end
-        end
-      rescue LoadError         # If our first choice fails, default.
-        CHARACTER_MODE = "stty"    # For Debugging purposes only.
-
-        #
-        # Unix savvy getc().  (Second choice.)
-        # 
-        # *WARNING*:  This method requires the external "stty" program!
-        # 
-        def get_character( input = STDIN )
-          state = `stty -g`
-
-          begin
-            system "stty raw -echo cbreak"
-            input.getc
-          ensure
-            system "stty #{state}"
-          end
-        end
-      end
-      
       # A Unix savvy method to fetch the console columns, and rows.
       def terminal_size
        `stty size`.split.map { |x| x.to_i }.reverse
