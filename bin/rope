@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require "fileutils"
 include FileUtils
 
@@ -7,21 +9,20 @@ if ARGV.empty?
 end
 project = ARGV[0]
 
-RAKEFILE = <<-EOS
-require "rubygems" rescue LoadError nil  
+RAKEFILE = <<END_RAKEFILE
+begin; require "rubygems"; rescue LoadError; end
 require "rake/testtask"
 
 task :default => [:test]
 
 Rake::TestTask.new do |test|
-  test.libs       << "test"
-  test.pattern = 'test/**/tc_*.rb'
-  test.verbose    =  true
+  test.libs    << "test"
+  test.pattern =  'test/**/tc_*.rb'
+  test.verbose =  true
 end
+END_RAKEFILE
 
-EOS
-
-CONFIG = <<-EOS
+CONFIG = <<END_CONFIG
 require "ruport"
 
 # For details, see Ruport::Config documentation
@@ -30,11 +31,9 @@ Ruport.configure { |c|
                      :dsn      =>  "dbi:mysql:mydb"
   c.log_file "log/ruport.log"
 }
+END_CONFIG
 
-EOS
-
-BUILD = '
-
+BUILD = <<'END_BUILD'
 def format_class_name(string)
   string.downcase.split("_").map { |s| s.capitalize }.join
 end
@@ -51,8 +50,8 @@ if ARGV[0].eql? "report"
   File.open("app/reports.rb", "a") { |f| 
     f << "require \"app/reports/#{ARGV[1]}\""
   }
-REP = <<-EOR
-require "rubygems" rescue LoadError nil  
+REP = <<EOR
+begin; require "rubygems"; rescue LoadError; end
 require "ruport"
 require "config/ruport_config"
 
@@ -72,8 +71,8 @@ end
 ##{class_name}.run { |res| puts res.results }
 EOR
 
-TEST = <<-EOR
-require "rubygems" rescue LoadError nil  
+TEST = <<EOR
+begin; require "rubygems"; rescue LoadError; end
 require "ruport"
 require "test/unit"
 require "app/reports/#{ARGV[1]}"
@@ -88,29 +87,23 @@ EOR
   File.open("app/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
   File.open("test/tc_#{ARGV[1]}.rb","w") { |f| f << TEST } 
 end
-'
+END_BUILD
 
-SQL_EXEC = '
-require "rubygems" rescue LoadError nil  
+SQL_EXEC = <<'END_SQL'
+begin; require "rubygems"; rescue LoadError; end
 require "ruport"
 require "config/ruport_config"
 
 puts Ruport::Query.new(ARGF.read).result
-'
+END_SQL
 
 mkdir project
-
 %w[test config output data app app/reports templates sql log util].each do |d|
   mkdir "#{project}/#{d}"
 end
-
 
 touch("#{project}/app/reports.rb")
 File.open("#{project}/config/ruport_config.rb","w") { |f| f << CONFIG }
 File.open("#{project}/Rakefile","w") { |f| f << RAKEFILE }
 File.open("#{project}/util/build.rb","w") { |f| f << BUILD }
 File.open("#{project}/util/sql_exec.rb","w") { |f| f << SQL_EXEC }
-
-
-
-
