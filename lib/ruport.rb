@@ -67,6 +67,6 @@ module Ruport
 end
 
 
-%w[config meta_tools report format query data].each { |lib|
+%w[config meta_tools report format query data mailer].each { |lib|
   require "ruport/#{lib}" 
 }

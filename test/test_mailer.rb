@@ -1,6 +1,6 @@
 require "test/unit"
 require "ruport"
-require "ruport/mailer"
+begin; require "rubygems"; rescue LoadError; nil end
 
 class TestMailer < Test::Unit::TestCase
 
