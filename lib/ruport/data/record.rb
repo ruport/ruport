@@ -24,6 +24,7 @@ module Ruport::Data
   
     def [](index)
       if index.kind_of? Integer
+        raise unless index < @data.length
         @data[index]
       else
         @data[@attributes.index(index)]
@@ -60,6 +61,10 @@ module Ruport::Data
 
     def reorder!(*indices)
       indices = indices[0] if indices[0].kind_of?(Array) 
+      indices.each do |i| 
+        self[i] rescue raise ArgumentError, 
+                "you may have specified an invalid column" 
+      end
       @data = indices.map { |i| self[i] }
       if @attributes
         if indices.all? { |e| e.kind_of? Integer }
@@ -69,6 +74,7 @@ module Ruport::Data
         end
       end; self
     end
+
 
     def dup
       self.class.new(@data,:attributes => attributes)

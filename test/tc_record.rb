@@ -139,6 +139,11 @@ class RecordTest < Test::Unit::TestCase
     r.reorder! %w[a b c]
     assert_equal [1,2,3], r.data
     assert_equal %w[a b c], r.attributes
+
+    assert_raise(ArgumentError) { r.reorder "foo" }
+    assert_raise(ArgumentError) { r.reorder 0,5 }
+    assert_nothing_raised { r.reorder 0 }
+    assert_nothing_raised { r.reorder "a","b" }
   end
 
   def test_dup
