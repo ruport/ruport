@@ -9,8 +9,7 @@ module Ruport
     # Example:
     # 
     #  class A
-    #     class << self; include MetaTools; end
-    #
+    #     extend Ruport::MetaTools
     #     attribute :foo
     #  end
     #
@@ -21,13 +20,23 @@ module Ruport
       self.send("#{sym}=",value)
     end
 
-    # same as accessor, but takes an array of attributes
+    # same as attribute, but takes an array of attributes
     #
     # e.g. attributes [:foo,:bar,:baz]
     def attributes(syms)
       syms.each { |s| attribute s }
     end
-
+    
+    # allows you to define a method on the singleton_class
+    #
+    # Example:
+    #
+    #   class A
+    #     extend Ruport::MetaTools
+    #     action(:bar) { |x| x + 1 }
+    #   end
+    #
+    #   A.bar(3) #=> 4
     def action(name,&block)
       singleton_class.send(:define_method, name, &block)
     end
@@ -35,8 +44,6 @@ module Ruport
 end
 
 class Module
-
     # provides the singleton_class object
     def singleton_class; (class << self; self; end); end
-
 end

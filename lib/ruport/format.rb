@@ -10,48 +10,6 @@
 # See LICENSE and COPYING for details
 module Ruport
   
-  
-# Ruport's Format model is meant to help get your data in a suitable format for
-# output.  Rather than make too many assumptions about how you will want your
-# data to look, a number of tools have been built so that you can quickly define
-# those things yourself.
-#
-# There are three main sets of functionality the Ruport::Format model provides.
-#   * Structured printable document support ( Format::Document and friends)
-#   * Text filter support ( Report#render and the Format class)
-#
-# The support for structured printable documents is currently geared towards PDF
-# support and needs some additional work to be truly useful.  Suggestions would
-# be much appreciated.
-#
-# The filters implemented in the Format class are meant to process strings or
-# entire templates.  The Format class will soon automatically build a
-# Ruport::Parser for any string input.  By default, filters are provided to
-# process erb, pure ruby, and redcloth.  It is trivial to extend this
-# functionality though.
-#
-# This is best shown by a simple example:
-#
-#   a = Ruport::Report.new
-#   Ruport::Format.register_filter :reverser do
-#     content.reverse
-#   end
-#   a.render "somestring", :filters => [:reverser]
-#   
-#   Output: "gnirtsemos"
-#
-# Filters can be combined, and you can run them in different orders to obtain
-# different results.
-#
-# See the source for the built in filters for ideas.
-#
-# Also, see Report#render for how to bind Format objects to your own classes.
-#
-# When combined, filters, data set output templates, and structured printable
-# document facilities create a complete Formatting system.
-#
-# This part of Ruport is under active development.  Please do feel free to
-# submit feature requests or suggestions.
   class Format
     
     # Builds a simple interface to a formatting engine.
