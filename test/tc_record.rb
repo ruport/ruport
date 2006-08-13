@@ -135,6 +135,10 @@ class RecordTest < Test::Unit::TestCase
     @record.reorder! 3,1,2
     assert_equal [3,4,2], @record.data
     assert_equal %w[c d b], @record.attributes
+
+    r.reorder! %w[a b c]
+    assert_equal [1,2,3], r.data
+    assert_equal %w[a b c], r.attributes
   end
 
   def test_dup

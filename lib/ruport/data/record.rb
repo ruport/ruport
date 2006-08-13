@@ -59,6 +59,7 @@ module Ruport::Data
     end
 
     def reorder!(*indices)
+      indices = indices[0] if indices[0].kind_of?(Array) 
       @data = indices.map { |i| self[i] }
       if @attributes
         if indices.all? { |e| e.kind_of? Integer }
