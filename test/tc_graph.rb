@@ -41,7 +41,7 @@ class TestGraph < Test::Unit::TestCase
 
     assert_not_equal nil, output
   end
-  
+ 
   def test_mismatched_headings
     graph = Ruport::Format.graph_object :plugin => :svg, :data => @data_mismatched_headings
     graph.options = {:graph_style => :line}

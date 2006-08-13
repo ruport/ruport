@@ -1,3 +1,9 @@
+# The Ruport Data Collections.
+# Authors: Gregory Brown / Dudley Flanders
+#
+# This is Free Software.  For details, see LICENSE and COPYING
+# Copyright 2006 by respective content owners, all rights reserved.
+
 class Array
   def to_table(options={})
     options = { :column_names => options } if options.kind_of? Array 
@@ -39,7 +45,8 @@ module Ruport::Data
         @data << Record.new(arr, :attributes => @column_names)
       when Record
         raise ArgumentError unless column_names.eql? other.attributes
-        @data << Record.new(other.to_a, :attributes => @column_names)
+        @data << Record.new(other.data, :attributes => @column_names)
+        @data.last.tags = other.tags.dup
       end
       self
     end
@@ -69,6 +76,8 @@ module Ruport::Data
 
     def dup
       a = self.class.new(:data => @data, :column_names => @column_names)
+      a.tags = tags.dup
+      return a
     end
 
     def self.load(csv_file, options = {})

@@ -8,3 +8,5 @@ http://stonecode.svnrepository.com/ruport
 - Check out the way Ruport.log prints
 
 - Be able to bind engine/plugins to specific engines
+
+- Set needs dup/clone

@@ -1,10 +1,30 @@
+# The Ruport Data Collections.
+# Authors: Gregory Brown / Dudley Flanders
+#
+# This is Free Software.  For details, see LICENSE and COPYING
+# Copyright 2006 by respective content owners, all rights reserved.
 module Ruport::Data
+
+  # Data::Records are the work horse of Ruport's Data model.  These can behave
+  # as array like, hash like, or struct like objects.  They are used as the base
+  # record for both Tables and Sets in Ruport.
   class Record
     require "forwardable"
     extend Forwardable
     include Enumerable
     include Taggable
 
+    # Creates a new Record object.  If the <tt>:attributes</tt> keyword is
+    # specified, Hash-like and Struct-like access will be enabled.  Otherwise,
+    # Record elements may be accessed ordinally, like an Array.
+    #
+    #   a = Record.new [1,2,3]
+    #   a[1] #=> 2
+    #
+    #   b = Record.new [1,2,3], :attributes => %w[a b c]
+    #   b[1]   #=> 2  
+    #   b['a'] #=> 1
+    #   b.c    #=> 3
     def initialize(data,options={})
       if data.kind_of?(Hash)
         if options[:attributes]
@@ -77,7 +97,9 @@ module Ruport::Data
 
 
     def dup
-      self.class.new(@data,:attributes => attributes)
+      copy = self.class.new(@data,:attributes => attributes)
+      copy.tags = self.tags.dup
+      return copy
     end 
     
     #FIXME: This does not take into account frozen / tainted state

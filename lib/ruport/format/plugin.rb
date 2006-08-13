@@ -71,10 +71,13 @@ module Ruport
       helper(:init_plugin) { |eng|
         # check the supplied data can be used for graphing
         data.each { |r|
-          raise ArgumentError, "Column names and data do not match" if data.column_names.size != r.data.size
+          if data.column_names.size != r.data.size
+            raise ArgumentError, "Column names and data do not match"           
+          end 
           r.data.each { |c|
             begin
-              c = BigDecimal.new(c) unless c.kind_of?(Float) || c.kind_of?(Fixnum) || c.kind_of?(BigDecimal)
+              c = BigDecimal.new(c) unless c.kind_of?(Float) || 
+                c.kind_of?(Fixnum) || c.kind_of?(BigDecimal)
             rescue
               raise ArgumentError, "Unable to convert #{c.to_s} into a number" 
             end
@@ -107,13 +110,11 @@ module Ruport
 
       renderer :graph do
         
-        counter = 1 # only used to display a nice name for the data if none was supplied
-        data.each { |r|
+        data.each_with_index { |r,i|
           @graph.add_data({
             :data => r.data,
-            :title => r.tags[0] || 'series ' + counter.to_s
+            :title => r.tags[0] || 'series ' + (i+1).to_s
           })
-          counter = counter + 1
         }
         
         # return the rendered graph

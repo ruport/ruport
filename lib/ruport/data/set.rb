@@ -1,3 +1,8 @@
+# The Ruport Data Collections.
+# Authors: Gregory Brown / Dudley Flanders
+#
+# This is Free Software.  For details, see LICENSE and COPYING
+# Copyright 2006 by respective content owners, all rights reserved.
 require 'set'
 
 module Ruport::Data
@@ -16,6 +21,8 @@ module Ruport::Data
           @data << Record.new(other)
       end
     end
+    
+    #FIXME: Implement dup/clone
     
     def ==(other)
       @data == other.data
