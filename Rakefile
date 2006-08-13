@@ -79,3 +79,11 @@ begin
 rescue LoadError
   nil
 end
+
+desc "Generate Ruport Recipes. Assumes you have erb, redcloth, and htmldoc."
+task :cookbook do
+  sh "erb doc/ruport_recipes.textile | redcloth >doc/temp.html" 
+  sh "htmldoc --batch doc/ruport.book" rescue nil
+  rm "doc/temp.html"
+  mv "out.pdf", "doc/out.pdf"
+end

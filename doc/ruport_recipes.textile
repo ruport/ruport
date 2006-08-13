@@ -1,4 +1,8 @@
-<% def chapter(c); File.read("recipes/#{c}.textile"); end %>
+<%  
+  def chapter(c) 
+    File.read(File.dirname(__FILE__) + "/recipes/#{c}.textile"); 
+  end
+%>
 h1. Introduction
 
 Thank you for taking the time to learn about Ruby Reports.  
