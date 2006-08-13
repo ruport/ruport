@@ -1,3 +1,5 @@
+class InvalidPluginError < RuntimeError; end
+
 module Ruport
   class Format::Engine
     require "forwardable"
@@ -44,6 +46,11 @@ module Ruport
       end
 
       def plugin=(p)
+        if @format_plugins[p].nil?
+          raise(InvalidPluginError, 
+                'The requested plugin and engine combination is invalid') 
+        end
+
         @plugin = p
         @format_plugins[:current] = @format_plugins[p].dup
         @format_plugins[:current].data = self.data.dup if self.data 
@@ -162,7 +169,8 @@ module Ruport
       
       def build_field_names
         if active_plugin.respond_to?(:build_field_names)
-          active_plugin.rendered_field_names = active_plugin.build_field_names
+          active_plugin.rendered_field_names = 
+            active_plugin.build_field_names
         end
       end
 

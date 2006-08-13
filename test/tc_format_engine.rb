@@ -75,6 +75,15 @@ class TestTabularFormatEngine < Test::Unit::TestCase
     assert_equal "#{@engine.data}", @engine.render 
   end
 
+  # test that attempting to render using an invalid plugin returns an exception
+  # with a useful message
+  def test_render_with_invalid_plugin
+    assert_raises(InvalidPluginError) {
+      Format.table(:plugin => :monkeys, 
+                   :data => [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]))
+    }
+  end
+  
   def test_simple_interface
     expected = "#{[[1,2],[3,4]]}"
     actual = Format.table(:plugin => :mock, :data => [[1,2],[3,4]]) 
