@@ -1,3 +1,5 @@
+require 'bigdecimal'
+
 module Ruport
   class Format::Plugin
 
@@ -64,6 +66,64 @@ module Ruport
       register_on :table_engine
     end
 
+    class SVGPlugin < Format::Plugin
+      
+      helper(:init_plugin) { |eng|
+        # check the supplied data can be used for graphing
+        data.each { |r|
+          raise ArgumentError, "Column names and data do not match" if data.column_names.size != r.data.size
+          r.data.each { |c|
+            begin
+              c = BigDecimal.new(c) unless c.kind_of?(Float) || c.kind_of?(Fixnum) || c.kind_of?(BigDecimal)
+            rescue
+              raise ArgumentError, "Unable to convert #{c.to_s} into a number" 
+            end
+          }
+        }
+
+        # load the appropriate SVG::Graph class based on the graph_style option
+        case options[:graph_style]
+        when :bar
+          require "SVG/Graph/Bar"
+          graphclass = SVG::Graph::Bar
+        when :bar_horizontal
+          require "SVG/Graph/BarHorizontal"
+          graphclass = SVG::Graph::BarHorizontal
+        when :line
+          require "SVG/Graph/Line" 
+          graphclass = SVG::Graph::Line
+        when :pie
+          require "SVG/Graph/Pie" 
+          graphclass = SVG::Graph::Pie
+        else
+          raise "Unsupported graph type requested"
+        end
+
+        # create an instance of the graphing class
+        options = {} if options.nil?
+        options[:fields] = data.column_names
+        @graph = graphclass.new(options)
+      }
+
+      renderer :graph do
+        
+        counter = 1 # only used to display a nice name for the data if none was supplied
+        data.each { |r|
+          @graph.add_data({
+            :data => r.data,
+            :title => r.tags[0] || 'series ' + counter.to_s
+          })
+          counter = counter + 1
+        }
+        
+        # return the rendered graph
+        @graph.burn()
+      end
+      
+      plugin_name :svg
+      register_on :graph_engine
+    end
+    
     class TextPlugin < Format::Plugin
       rendering_options :erb_enabled => true, :red_cloth_enabled => false
 

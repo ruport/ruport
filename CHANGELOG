@@ -2,6 +2,8 @@ The current version of Ruby Reports is 0.4.99
 
 changes since 0.4.23
 
+- Ruport now has charting support via SVG::Graph
+
 - reordering now has intuitive error messages
 
 - Trimmed down system_extensions.rb to only include the relevant terminal

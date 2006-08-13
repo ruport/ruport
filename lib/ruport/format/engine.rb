@@ -94,6 +94,18 @@ module Ruport
     private_class_method :new
   end
   
+  class Format::Engine::Graph < Ruport::Format::Engine
+    
+    renderer do
+      super
+      active_plugin.render_graph
+    end
+  
+    alias_engine Graph, :graph_engine
+    Ruport::Format.build_interface_for Graph, :graph
+  
+  end
+ 
  class Format::Engine::Invoice < Ruport::Format::Engine
 
     # order meta data

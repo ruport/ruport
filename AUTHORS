@@ -19,3 +19,12 @@ Simon Claret:
 
 Dinko Mehinovic:
 - util/release/raa.rb
+
+James Healy:
+- original inspiration for Invoice engine
+- SVG::Graph integration
+
+The SVG Graph support is made possible by SVG::Graph, which we have vendored
+because a gem is not available.  
+See: http://www.germane-software.com/software/SVG/SVG::Graph/
+

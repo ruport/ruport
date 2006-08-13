@@ -8,12 +8,6 @@ Sometimes you just gotta pay some mad propz to the peoples.
 - Austin Ziegler for suggesting the Ruby License, which hopefully keeps everyone
   happy.
 
-- All the people at RubyConf 2005, new_haven.rb, and NYC.rb that made
-  suggestions and let me know what kind of problems they were dealing with.
-
-- The people on the Ruport mailing list who will happily run unit tests and
-  check out little things for me when I need it.
-
 - Francis Hwang for overall design suggestions and the contribution of SqlSplit.
   Additionally, his efforts on DBI to bring it back to life.  (Along with the
   rest of the new DBI team)
@@ -29,9 +23,16 @@ Sometimes you just gotta pay some mad propz to the peoples.
 
 - Simon Claret for neato PDF table support
 
-- Dudley Flanders for DataSet psuedo keyword support
+- James Healy for the original code for Report::Invoice, and for SVG::Graph
+  integration.
+
+- All the people at RubyConf 2005, new_haven.rb, and NYC.rb that made
+  suggestions and let me know what kind of problems they were dealing with.
+
+- The people on the Ruport mailing list who will happily run unit tests and
+  check out little things for me when I need it.
 
 - RubyTalk, #ruby-lang and the Ruby community in general. 
   Each and every one of you is my homie.
 
-- James Healy for the original code for Report::Invoice
+
