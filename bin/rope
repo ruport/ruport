@@ -17,7 +17,7 @@ task :default => [:test]
 
 Rake::TestTask.new do |test|
   test.libs    << "test"
-  test.pattern =  'test/**/tc_*.rb'
+  test.pattern =  'test/**/test_*.rb'
   test.verbose =  true
 end
 END_RAKEFILE
@@ -80,12 +80,12 @@ require "config/ruport_config"
 
 class Test#{class_name} < Test::Unit::TestCase
   def test_flunk
-    flunk "Write your real tests here or in any test/tc_* file"
+    flunk "Write your real tests here or in any test/test_* file"
   end
 end
 EOR
   File.open("app/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
-  File.open("test/tc_#{ARGV[1]}.rb","w") { |f| f << TEST } 
+  File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST } 
 end
 END_BUILD
 
