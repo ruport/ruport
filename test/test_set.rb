@@ -63,6 +63,7 @@ class TestSet < Test::Unit::TestCase
     assert_equal(set3.data.length, 3)
     assert_equal(Set.new(:data => [ %w[a b c], %w[x y z], ["d","","e"] ]), set3)
     assert_equal((set | set2), set.union(set2))
+    assert_equal((set | set2), set + (set2))
   end
   
   def test_difference
@@ -91,6 +92,19 @@ class TestSet < Test::Unit::TestCase
     assert_equal(1, set3.data.length)
     assert_equal(Set.new(:data => [ %w[a b c] ]), set3)
     assert_equal((set & set2), set.intersection(set2))
+  end
+  
+  def test_exclusion
+    set = Set.new
+    set << %w[ a b c ]  << %w[x y z] << [1,2,3]
+
+    set2 = Set.new
+    set2 << %w[ a b c ]
+  
+    set3 = set ^ set2
+    assert_kind_of(Set, set3)
+    assert_equal(2, set3.data.length)
+    assert_equal(Set.new(:data => [ %w[x y z], [1,2,3] ]), set3)
   end
   
 end
