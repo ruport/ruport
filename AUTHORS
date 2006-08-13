@@ -19,6 +19,7 @@ Simon Claret:
 
 Dinko Mehinovic:
 - util/release/raa.rb
+- util/release/freshmeat.rb
 
 James Healy:
 - original inspiration for Invoice engine
