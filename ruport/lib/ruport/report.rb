@@ -95,12 +95,6 @@ module Ruport
     #run.
     attr_accessor :results
 
-    # Preserved for backwards compatability, please do not use this.
-    alias_method :report, :results
-
-    # Preserved for backwards compabilitity, please do not use this.
-    alias_method :report=, :results=
-
     # Simplified interface to Ruport::Query
     #
     # === Can read SQL statements from file or string
@@ -259,19 +253,25 @@ module Ruport
       self.class.run(self,&block)
     end
 
+
+    # loads a CSV in from file.
+    #
+    # Example
+    #
+    # my_table = load_csv "foo.csv" #=> Data::Table
+    # my_array = load_csv "foo.csv", :as => :array #=> Array
+    #
+    # See also, Ruport::Data::Table.load
     def load_csv(file,options={})
       case options[:as]
       when :array
         a = []
-        Data::Table.load(file) { |s,r| a << r } ; a
+        Data::Table.load(file,options) { |s,r| a << r } ; a
       else
-        Data::Table.load(file)
+        Data::Table.load(file,options)
       end
     end
     
-    # Preserved for backwards compatibility, please do not use this.
-    alias_method :generate_report, :run
-
     # Allows logging and other fun stuff. See Ruport.log
     def log(*args); Ruport.log(*args) end
    

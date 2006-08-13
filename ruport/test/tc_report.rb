@@ -38,7 +38,7 @@ class TestReport < Test::Unit::TestCase
     report = rep_klass.new
     report.run { |rep|  
       assert_equal("foo.csv",rep.file)
-      assert_equal("hello dolly",rep.report)
+      assert_equal("hello dolly",rep.results)
       assert_equal(nil,rep.instance_eval("@foo"))
     }
     assert_equal("bar",report.instance_eval("@foo"))

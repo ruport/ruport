@@ -58,46 +58,89 @@ module Ruport
   #
   module Config
     module_function
-    
-    def source(*args)
+
+
+    # create or retrieve a database source configuration.
+    #
+    # setting a source
+    #
+    #   source :default, :user => "root", :password => "clyde",
+    #                    :dsn  => "dbi:mysql:blinkybase"
+    #
+    # retrieving a source
+    #
+    #   db = source(:default) #=> <OpenStruct ..>
+    #   db.dsn #=> "dbi:mysql:blinkybase"
+    def source(*args) 
       return sources[args.first] if args.length == 1
       sources[args.first] = OpenStruct.new(*args[1..-1])
       check_source(sources[args.first],args.first)
     end
 
+    # create or retrieve a mailer configuration
+    #
+    # creating a mailer config
+    #
+    #   mailer :alternate, :host => "mail.test.com", 
+    #                      :address => "test@test.com",
+    #                      :user => "test", :password => "blinky"
+    #                      :auth_type => :cram_md5
+    #
+    # retreiving a mailer config
+    #
+    #   mail_conf = mailer(:alternate) #=> <OpenStruct ..>
+    #   mail_conf.address #=> test@test.com
     def mailer(*args)
+      return mailers[args.first] if args.length == 1
       mailers[args.first] = OpenStruct.new(*args[1..-1])
       check_mailer(mailers[args.first],args.first)
     end
 
+
+    # Sets the logger to use the specified file.
+    #
+    #   log_file "foo.log"
     def log_file(file)
       @logger = Logger.new(file)
     end
     
-    #alias_method :log_file=, :log_file
+    # Same as Config.log_file, but accessor style
     def log_file=(file)
       log_file(file)
     end
 
+    # Returns the source which is labeled :default
     def default_source
       sources[:default]
     end
 
+    # Returns the mailer which is labeled :default
     def default_mailer
       mailers[:default]
     end
 
+    # Returns an array of database source configs
     def sources; @sources ||= {}; end
 
+    # Returns an array of mailer configs
     def mailers; @mailers ||= {}; end
 
+    # Returns the currently active logger
     def logger; @logger; end
 
+    # Forces all messages marked :log_only to surface
     def enable_paranoia; @paranoid = true; end
+
+    # Disables the printing of :log_only messages to STDERR
     def disable_paranoia; @paranoid = false; end
+
+    # Sets paranoid status
     def paranoid=(val); @paranoid = val; end
+
+    # Checks to see if paranoia is enabled
     def paranoid?; !!@paranoid; end
     
+    # Verifies that you have provided a DSN for your source
     def check_source(settings,label)
       unless settings.dsn
         Ruport.complain( 
@@ -108,6 +151,7 @@ module Ruport
       end
     end
 
+    # Verifies that you have provided a host for your mailer
     def check_mailer(settings, label)
       unless settings.host
         Ruport.complain(
