@@ -17,12 +17,24 @@ module Ruport::Data
     # Creates a new Record object.  If the <tt>:attributes</tt> keyword is
     # specified, Hash-like and Struct-like access will be enabled.  Otherwise,
     # Record elements may be accessed ordinally, like an Array.
+    # 
+    # Records accept either Hashes or Arrays as their data.
     #
     #   a = Record.new [1,2,3]
     #   a[1] #=> 2
     #
     #   b = Record.new [1,2,3], :attributes => %w[a b c]
     #   b[1]   #=> 2  
+    #   b['a'] #=> 1
+    #   b.c    #=> 3
+    #
+    #   c = Record.new {"a" => 1, "c" => 3, "b" => 2}, :attributes => %w[a b c]
+    #   b[1]   #=> 2
+    #   b['a'] #=> 1
+    #   b.c    #=> 3
+    #
+    #   c = Record.new { "a" => 1, "c" => 3, "b" => 2 }
+    #   b[1]   #=> ? (without attributes, you cannot rely on order)
     #   b['a'] #=> 1
     #   b.c    #=> 3
     def initialize(data,options={})
@@ -38,8 +50,10 @@ module Ruport::Data
         @attributes = options[:attributes]
       end
     end
-
+    
+    # The underlying data which is being stored in the record
     attr_reader :data
+    
     def_delegators :@data,:each, :length
   
     def [](index)

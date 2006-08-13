@@ -1,5 +1,5 @@
-require 'rubygems' rescue LoadError nil
 require 'ruport'
+require 'rubygems' rescue LoadError nil
 require 'test/unit'
 
 class MockPlugin < Ruport::Format::Plugin
@@ -147,7 +147,7 @@ class TestTabularFormatEngine < Test::Unit::TestCase
     assert_equal( [[1,2,3],[nil,2,4],[nil,3,7],
                    [2,1,9],[nil,2,3],[nil,2,9]], @engine.data)
 
-    data = Data::Table.new :column_names => %w[name date service amount]
+    data = Ruport::Data::Table.new :column_names => %w[name date service amount]
     data << [ "Greg Gibson", "1/1/2000",  "Prophy",  "100.00" ] <<
             [ "Greg Gibson", "1/1/2000",  "Filling", "100.00" ] <<
             [ "Greg Gibson", "1/12/2000", "Prophy",  "100.00" ] <<
