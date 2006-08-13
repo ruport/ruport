@@ -41,6 +41,9 @@ class TestSet < Test::Unit::TestCase
     assert_equal [Record.new([1,2,3])], s.data.to_a
   end
   
+  def test_dup
+    assert_not_equal @set.data.object_id, @set.dup.data.object_id
+  end
   # def test_append_hash
   #   s = Set.new
   #   assert s.data.empty?

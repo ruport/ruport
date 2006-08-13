@@ -1,6 +1,7 @@
 require "ruport"
 require "test/unit"
 
+require "rubygems" rescue LoadError nil
 class TestFormat < Test::Unit::TestCase
  
   def setup

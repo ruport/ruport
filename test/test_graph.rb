@@ -1,3 +1,4 @@
+require "ruport"
 require 'rubygems' rescue LoadError nil
 require "test/unit"
 

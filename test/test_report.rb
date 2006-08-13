@@ -5,6 +5,7 @@
 
 require "test/unit"
 require "ruport"
+require "rubygems" rescue LoadError nil
 class TestReport < Test::Unit::TestCase
   include Ruport
 

@@ -172,6 +172,9 @@ class TestTabularFormatEngine < Test::Unit::TestCase
 end
 
 class TestDocumentFormatEngine < Test::Unit::TestCase
+  
+  include Ruport
+  
   def setup
     @engine = Format::Engine::Document.dup
   end

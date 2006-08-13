@@ -22,8 +22,13 @@ module Ruport::Data
       end
     end
     
-    #FIXME: Implement dup/clone
-    
+    def dup
+     a =  self.class.new(:data=>@data)
+     a.tags = tags.dup
+     return a
+    end
+    alias_method :clone, :dup
+
     def ==(other)
       @data == other.data
     end
