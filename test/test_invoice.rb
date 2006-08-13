@@ -6,8 +6,13 @@ class SampleInvoiceReport < Ruport::Report
 end
 
 class TestInvoice < Test::Unit::TestCase
-  
+ 
   def test_basic
+    begin
+      require "pdf/writer"
+    rescue LoadError
+      warn "skipping pdf test"; return
+    end
     inv = SampleInvoiceReport.build_invoice do |i|
       i.company_info = "Foo Inc.\n42 Bar Street\nBaz, CT\n"
       i.customer_info = "Gregory Brown\ngregory.t.brown@gmail.com"

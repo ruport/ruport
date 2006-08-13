@@ -1,6 +1,6 @@
 require "test/unit"
 require "ruport"
-
+require "rubygems" rescue LoadError nil
 
 include Ruport
 
@@ -49,6 +49,11 @@ end
 class PDFPluginTest < Test::Unit::TestCase
 
   def test_ensure_fails_on_array
+    begin
+      require "pdf/writer" 
+    rescue LoadError 
+      warn "skipping pdf test"; return
+    end
     a = Format.table_object :plugin => :pdf, :data => [[1,2],[3,4]]
     assert_raise(RuntimeError) { a.render }
     
@@ -61,6 +66,12 @@ class PDFPluginTest < Test::Unit::TestCase
   end
 
   def test_hooks
+    begin
+      require "pdf/writer" 
+    rescue LoadError 
+      warn "skipping pdf test"; return
+    end
+    a = Format.table_object :plugin => :pdf, :data => [[1,2],[3,4]]
     a = Format.table_object :plugin => :pdf, 
           :data   => [[1,2],[3,4]].to_table(:column_names => %w[a b])
     y = 0

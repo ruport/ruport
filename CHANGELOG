@@ -1,6 +1,9 @@
 The current version of Ruby Reports is 0.4.99
 
 changes since 0.4.23
+
+- Unit tests should no longer explode when PDF::Writer is not installed
+
 - Added a simplistic Rake task for building the recipe book
 
 - Added intuitive error message for invalid plugins
