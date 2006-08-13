@@ -107,7 +107,7 @@ module Ruport
     end
     
     # Grabs the result set as a Data::Table or if in raw_data mode, an array of
-    # DBI:Row objects
+    # DBI::Row objects
     def result; fetch; end
     
     # Runs the query without returning its results.
