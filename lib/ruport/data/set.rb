@@ -100,7 +100,7 @@ module Ruport::Data
     #   s2 = Set.new :data => [%w[a b c],[4,5,6]]
     #   s3 = s1 ^ s2
     #   s4 = Set.new :data => [[1, 2, 3],[4,5,6]]
-    #   3 == s4 #=> true   
+    #   s3 == s4 #=> true   
     def ^(other)
       Set.new :data => (@data ^ other.data)
     end
