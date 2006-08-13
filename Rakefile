@@ -17,7 +17,7 @@ task :default => [:test]
 
 Rake::TestTask.new do |test|
 	test.libs << "test"
-	test.test_files = [ "test/test_*.rb" ]
+	test.test_files = Dir[ "test/test_*.rb" ]
 	test.verbose = true
 end
 
@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |spec|
   
   spec.require_path = "lib"
 	
-  spec.test_file = "test/ts_all.rb"
+  spec.test_files = Dir[ "test/test_*.rb" ]
   spec.bindir = "bin"
   spec.executables = FileList["rope"]
 	spec.has_rdoc = true
@@ -74,7 +74,7 @@ end
 begin
   require 'rcov/rcovtask'
   Rcov::RcovTask.new do |t|
-    t.test_files = [ "test/ts_all.rb" ]
+    t.test_files = Dir[ "test/test_*.rb" ]
   end
 rescue LoadError
   nil
