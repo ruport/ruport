@@ -83,6 +83,8 @@ module Ruport
             end
           }
         }
+        
+        raise RuntimeError, 'You must provide an options hash before rendering a graph' if self.options.nil?
 
         # load the appropriate SVG::Graph class based on the graph_style option
         case options[:graph_style]
@@ -103,7 +105,6 @@ module Ruport
         end
 
         # create an instance of the graphing class
-        options = {} if options.nil?
         options[:fields] = data.column_names
         @graph = graphclass.new(options)
       }
