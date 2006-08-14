@@ -2,10 +2,12 @@ The current version of Ruby Reports is 0.4.99
 
 changes since 0.4.23
 
-- actions now will throw an error if they are already defined.
-  (Temporary collision remedy)
+- Removed the legacy Format::Document|Element|Page|OpenNode classes
 
 - Added lots of API documentation
+
+- actions now will throw an error if they are already defined.
+  (Temporary collision remedy)
 
 - You can now dup Sets
 
