@@ -68,7 +68,7 @@ module Ruport::Data
         raise "Invalid index" unless index < @data.length
         @data[index]
       else
-        raise "Invalid index" unless @attributes.index(index) > -1
+        raise "Invalid index" unless @attributes.index(index)
         @data[@attributes.index(index)]
       end
     end
@@ -83,8 +83,10 @@ module Ruport::Data
     #    my_record.ghost = "blinky"
     def []=(index, value)
       if index.kind_of? Integer
+        raise "Invalid index" unless index < @data.length
         @data[index] = value
       else
+        raise "Invalid index" unless @attributes.index(index)
         @data[attributes.index(index)] = value
       end
     end
