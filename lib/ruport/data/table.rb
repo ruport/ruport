@@ -30,6 +30,7 @@ module Ruport::Data
   #
   # Included in this class are methods to create Tables manually and from CSV
   # files.
+  #
   # For building a table using ActiveRecord, have a look at Ruport::Reportable. 
   class Table < Collection
 

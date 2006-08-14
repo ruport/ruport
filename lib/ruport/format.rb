@@ -9,7 +9,41 @@
 #
 # See LICENSE and COPYING for details
 module Ruport
-  
+
+  # Ruport makes heavy use of ruby's advanced meta programming features in 
+  # this Class.
+  #
+  # All subclasses of Ruport::Format::Engine and Ruport::Format::Plugin
+  # (both Ruports' internal ones and any custom ones outside the Ruport 
+  # library) should dynamically register themselves with this class.
+  #
+  # All report generation is then done via Format, not with the engines
+  # and plugins directly.
+  #
+  # For each engine that is registered with Format, 2 methods are created:
+  #  - <enginename>; and
+  #  - <enginename>_object
+  #
+  # Either one of these methods can be used to create your report, depending
+  # on your requirments.
+  #
+  # = Format.enginename
+  #
+  # A brief example of creating a simple report with the table engine
+  #   
+  #   data = [[1,2],[5,3],[3,10]].to_table(%w[a b])
+  #   File.open("myreport.pdf","w") { |f| f.puts Ruport::Format.table(:plugin => :pdf, :data => data)}
+  #
+  # = Format.enginename_object
+  # 
+  # A slightly different way to create a simple report with the table engine. 
+  # This technique gives you a chance to modify some of the engines settings
+  # before calling render manually.
+  #
+  #   data = [[1,2],[5,3],[3,10]].to_table(%w[a b])
+  #   myreport = Ruport::Format.table_object :plugin => :pdf, :data => data
+  #   File.open("myreport.pdf","w") { |f| f.puts myreport.render }
+  # 
   class Format
     
     # Builds a simple interface to a formatting engine.

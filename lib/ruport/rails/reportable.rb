@@ -1,7 +1,7 @@
 module Ruport
 
   # This module is designed to be mixed in with an ActiveRecord model
-  # to added easy conversion to ruport data structures.
+  # to add easy conversion to ruport data structures.
   #
   # In the ActiveRecord Model you wish to integrate with report, add the 
   # following line just below the class definition:

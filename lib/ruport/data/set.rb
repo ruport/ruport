@@ -6,6 +6,17 @@
 require 'set'
 
 module Ruport::Data
+  
+  # This class is one of the core classes for building and working with data 
+  # in Ruport. The idea is to get your data into a standard form, regardless 
+  # of its source (a database, manual arrays, ActiveRecord, CSVs, etc.).
+  # 
+  # Set is intended to be used as the data store for unstructured data -
+  # Ruport::Data::Table is an alternate intermediary data store intended
+  # for structured, tabular data.
+  #
+  # Once your data is in a Ruport::Data::Set object, it can be manipulated
+  # to suit your needs, then used to build a report.
   class Set < Collection
     
     # Creates a new set containing the elements of options[:data].

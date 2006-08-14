@@ -1,15 +1,13 @@
-Developers:
----------------------------------------------------
+= Developers
 
-{Gregory Brown}[mailto:gregory.t.brown@gmail.com]
-{Dudley Flanders}[mailto:dudley@misnomer.us]
+- {Gregory Brown}[mailto:gregory.t.brown@gmail.com]
+- {Dudley Flanders}[mailto:dudley@misnomer.us]
 
-Contributors / People we've (legally) stolen from:
----------------------------------------------------
+= Contributors / People we've (legally) stolen from:
 
 James Edward Gray II:
-- Original inspiration via query.rb
-- system_extensions.rb
+  - Original inspiration via query.rb
+  - system_extensions.rb
 
 Francis Hwang:
 - SQLSplit
