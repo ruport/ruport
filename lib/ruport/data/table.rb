@@ -6,7 +6,7 @@
 
 class Array
   # Converts an array to a Ruport::Data::Table object, ready to
-  # generate reports with.
+  # use in your reports.
   #
   #   [[1,2],[3,4]].to_table(%w[a b])
   def to_table(options={})
@@ -17,23 +17,24 @@ end
 
 module Ruport::Data
   
-  # This class is one of the core class for building and working with data in
-  # Ruport. The idea is to get your data into a standard form, regardless of 
-  # it's source (files, a database, manual arrays, active record, CSV).
+  # This class is one of the core classes for building and working with data 
+  # in Ruport. The idea is to get your data into a standard form, regardless 
+  # of its source (a database, manual arrays, ActiveRecord, CSVs, etc.).
   # 
   # Table is intended to be used as the data store for structured, tabular
   # data - Ruport::Data::Set is an alternate intermediary data store intended
   # for less structured data.
   #
-  # Once your data is into a Ruport::Data::Table object, it can be manipulated
+  # Once your data is in a Ruport::Data::Table object, it can be manipulated
   # to suit your needs, then used to build a report.
   #
-  # Included in this class are methods to create Table's manually and from CSV.
-  # For building a table using ActiveRecord, have a look at Ruport::Reportable 
+  # Included in this class are methods to create Tables manually and from CSV
+  # files.
+  # For building a table using ActiveRecord, have a look at Ruport::Reportable. 
   class Table < Collection
 
-    # Creates a new table based on the supplied options
-    # Valid options are :data and :column_names
+    # Creates a new table based on the supplied options.
+    # Valid options are :data and :column_names.
     #
     #   table = Table.new({:data => [1,2,3], [3,4,5], 
     #                      :column_names => %w[a b c]})
@@ -45,8 +46,8 @@ module Ruport::Data
 
     attr_reader :column_names
 
-    # Sets the column names for this table.
-    # Single parameter should be an array listing the names
+    # Sets the column names for this table. The single parameter should be 
+    # an array listing the names of the columns.
     #
     #   tbl = Table.new({:data => [1,2,3], [3,4,5], :column_names => %w[a b c]})
     #   tbl.column_names = %w[e f g]
@@ -66,7 +67,7 @@ module Ruport::Data
     end
     alias_method :==, :eql?
 
-    # Uses ruports inbuilt text plugin to render this table into a string
+    # Uses Ruport's built-in text plugin to render this table into a string
     # 
     #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
     #   puts data.to_s
@@ -74,7 +75,7 @@ module Ruport::Data
       as(:text)
     end
 
-    # Used too add extra data to the table. The single parameter can be an 
+    # Used to add extra data to the table. The single parameter can be an 
     # Array, Hash or Ruport::Data::Record.
     #
     #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
@@ -112,7 +113,7 @@ module Ruport::Data
       @data.each { |r| r.reorder! *indices }; self
     end
 
-    # returns a copy of the table with it's columns in the requested order
+    # Returns a copy of the table with its columns in the requested order.
     #
     #   one = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
     #   two = one.reorder!([1,0])  
@@ -121,8 +122,8 @@ module Ruport::Data
     end
 
     # adds an extra column to the table. Accepts an options Hash as its
-    # only parameter which should contain 2 keys - :name and :fill
-    # :name species the new columns name, and :fill the default value to 
+    # only parameter which should contain 2 keys - :name and :fill.
+    # :name specifies the new columns name, and :fill the default value to 
     # use for the column in existing rows.
     #   
     #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
@@ -137,7 +138,7 @@ module Ruport::Data
     end
 
     # Create a shallow copy of the table: the same data elements are referenced
-    # by both the old and new table
+    # by both the old and new table.
     #
     #   one = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
     #   two = one.dup
@@ -147,7 +148,7 @@ module Ruport::Data
       return a
     end
 
-    # loads a CSV file directly into a table using the fasterCSV library.
+    # Loads a CSV file directly into a table using the fasterCSV library.
     #   
     #   data = Table.load('mydata.csv')
     def self.load(csv_file, options = {})
@@ -168,7 +169,7 @@ module Ruport::Data
       end ; loaded_data
     end
 
-    # Used for advanced grouping functionality. More info to come
+    # Used for advanced grouping functionality. More info to come.
     def split(options={})
       if options[:group].kind_of? Array
         group = map { |r| options[:group].map { |e| r[e] } }.uniq
