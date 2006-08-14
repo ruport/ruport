@@ -182,7 +182,37 @@ module Ruport::Data
       end ; loaded_data
     end
 
-    # Used for advanced grouping functionality. More info to come.
+    
+
+    # Allows you to split tables into multiple tables for grouping.
+    #
+    # Example:
+    #
+    #   a = Table.new(:column_name => %w[name a b c])
+    #   a << ["greg",1,2,3]
+    #   a << ["joe", 2,3,4]
+    #   a << ["greg",7,8,9]
+    #   a << ["joe", 1,2,3]
+    #
+    #   b = a.split :group => "name"
+    #
+    #   b.greg.eql? [[1,2,3],[7,8,9]].to_table(%w[a b c]) #=> true
+    #   b["joe"].eql? [[2,3,4],[1,2,3]].to_table(%w[a b c]) #=> true
+    #
+    # You can also pass an array to :group, and the resulting attributes in
+    # the group will be joined by an underscore. 
+    # 
+    # Example:
+    #
+    #   a = Table.new(:column_names => %w[first_name last_name x]
+    #   a << %w[greg brown foo]
+    #   a << %w[greg gibson bar]
+    #   a << %w[greg brown baz]
+    #
+    #   b = a.split :group => %w[first_name last_name]
+    #   a.greg_brown.length     #=> 2
+    #   a["greg_gibson"].length #=> 1
+    #   a.greg_brown[0].x       #=> "foo"
     def split(options={})
       if options[:group].kind_of? Array
         group = map { |r| options[:group].map { |e| r[e] } }.uniq

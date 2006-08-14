@@ -45,7 +45,7 @@ class TestMailer < Test::Unit::TestCase
     mailer = Ruport::Mailer.new :default
     assert_mailer_equal @default_opts, mailer
 
-    mailer.select_mailer :other
+    mailer.send(:select_mailer, :other)
     assert_mailer_equal @other_opts, mailer
   end
 
