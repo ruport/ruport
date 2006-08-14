@@ -1,3 +1,4 @@
+class ActionAlreadyDefinedError < RuntimeError; end
 module Ruport
   # This module provides a few tools for doing some manipulations of the
   # eigenclass on an object.  These are used in the implementation of Ruport's
@@ -38,6 +39,7 @@ module Ruport
     #
     #   A.bar(3) #=> 4
     def action(name,&block)
+      raise ActionAlreadyDefinedError if respond_to? name
       singleton_class.send(:define_method, name, &block)
     end
   end
