@@ -107,4 +107,12 @@ class TestSet < Test::Unit::TestCase
     assert_equal(Set.new(:data => [ %w[x y z], [1,2,3] ]), set3)
   end
   
+  # sets only hold one of any item, so adding again does nothing
+  def test_set_semantics
+      set = Set.new
+      set << %w[ a b c]
+      set2 = set.dup
+      set2 << %w[ a b c]
+      assert_equal set, set2
+  end
 end
