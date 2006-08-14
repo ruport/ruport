@@ -542,6 +542,18 @@ and email columns:
     :find => { :conditions => "email like '%foo%'", :order => 'id' }                                      
 </code></pre>
 
+Create a PDF file containing all the records that have an email address
+containing 'foo', and then send it back to the browser as 
+'emails_with_foo.pdf':
+
+<pre><code>
+  report = User.formatted_table :pdf, :columns => %w[id email], 
+    :find => { :conditions => "email like '%foo%'", :order => 'id' }  
+
+  send_data report, :type => 'application/x-pdf', 
+    :disposition => 'inline', :filename => 'emails_with_foo.pdf'
+</code></pre>
+
 Keep in mind that your finds are just ActiveRecord finds and the results are
 just the same as Ruport's DataSets and Table outputs.  This means you are free
 to use the best of both AR and Ruport to accomplish your tasks.
