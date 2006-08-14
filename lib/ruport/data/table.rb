@@ -121,7 +121,7 @@ module Ruport::Data
       dup.reorder! *indices
     end
 
-    # adds an extra column to the table. Accepts an options Hash as its
+    # Adds an extra column to the table. Accepts an options Hash as its
     # only parameter which should contain 2 keys - :name and :fill.
     # :name specifies the new columns name, and :fill the default value to 
     # use for the column in existing rows.
@@ -136,6 +136,18 @@ module Ruport::Data
         each { |r| r.data << options[:fill] }
       end
     end
+
+   # Removes a column from the table. Any values in the specified column are
+   # lost.
+   #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+   #   data.append_column({:name => 'new_column', :fill => 1)
+   #   data.remove_column({:name => 'new_column')
+   #   data == Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+   #     => true
+   def remove_column(options={})
+     raise ArgumentError unless column_names.include? options[:name]
+     reorder! column_names - [options[:name]]
+   end
 
     # Create a shallow copy of the table: the same data elements are referenced
     # by both the old and new table.

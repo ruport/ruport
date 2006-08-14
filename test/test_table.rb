@@ -74,6 +74,15 @@ class TestTable < Test::Unit::TestCase
     
   end
 
+  def test_remove_column
+    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    a.append_column(:name => "c")
+    assert_not_equal [[1,2],[3,4],[5,6]].to_table(%w[a b]), a 
+    a.remove_column(:name => "c")
+    assert_equal [[1,2],[3,4],[5,6]].to_table(%w[a b]), a 
+    assert_raises(ArgumentError){a.remove_column(:name => "frank")}
+  end
+
   def test_split
     table = Ruport::Data::Table.new :column_names => %w[c1 c2 c3]
     table << ['a',2,3]
