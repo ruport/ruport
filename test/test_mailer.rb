@@ -48,5 +48,58 @@ class TestMailer < Test::Unit::TestCase
     mailer.select_mailer :other
     assert_mailer_equal @other_opts, mailer
   end
+
+  def test_to
+    @default_mailer.instance_eval "@mail.to = ['foo@bar.com']"
+    assert_equal ['foo@bar.com'], @default_mailer.to
+  end
+
+  def test_to_equals
+    @default_mailer.to = ['foo@bar.com']
+    assert_equal ['foo@bar.com'], @default_mailer.to    
+  end
+
+  def test_from
+    @default_mailer.instance_eval "@mail.from = ['foo@bar.com']"
+    assert_equal ['foo@bar.com'], @default_mailer.from
+  end
+
+  def test_from_equals
+    @default_mailer.from = ['foo@bar.com']
+    assert_equal ['foo@bar.com'], @default_mailer.from
+  end
+
+  def test_subject
+    @default_mailer.instance_eval "@mail.subject = ['RuportDay!']"
+    assert_equal ['RuportDay!'], @default_mailer.subject
+  end
+
+  def test_subject_equals
+    @default_mailer.subject = ['RuportDay!']
+    assert_equal ['RuportDay!'], @default_mailer.subject
+  end
+
+  # def test_html
+ #    @default_mailer.instance_eval "@mail.html = 'RuportDay!'"
+ #    assert_equal 'RuportDay!', @default_mailer.html
+ #  end
+ # 
+ #  def test_html_equals
+ #    @default_mailer.html = 'RuportDay!'
+ #    assert_equal 'RuportDay!', @default_mailer.html
+ #  end
+ # 
+ #  def test_text
+ #    @default_mailer.instance_eval "@mail.text = 'RuportDay!'"
+ #    assert_equal 'RuportDay!', @default_mailer.text
+ #  end
+ # 
+ #  def test_text_equals
+ #    @default_mailer.text = 'RuportDay!'
+ #    assert_equal 'RuportDay!', @default_mailer.text
+ #  end
+
+
   
 end
+
