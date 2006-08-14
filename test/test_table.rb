@@ -1,5 +1,6 @@
 require "test/unit"
 require "ruport"
+begin; require "rubygems"; rescue LoadError; nil; end
 
 class TestTable < Test::Unit::TestCase
   def test_constructors
