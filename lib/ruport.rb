@@ -14,7 +14,7 @@ module Ruport
   
   #begin; require 'rubygems'; rescue LoadError; nil end
   
-  VERSION = "0.4.99"
+  VERSION = "0.5.99"
   
   # Ruports logging and error interface.
   # Can generate warnings or raise fatal errors

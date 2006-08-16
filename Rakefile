@@ -23,7 +23,7 @@ end
 
 spec = Gem::Specification.new do |spec|
 	spec.name = LEAN ? "lean-ruport" : "ruport"
-	spec.version = "0.4.99"
+	spec.version = "0.5.99"
 	spec.platform = Gem::Platform::RUBY
 	spec.summary = "A generalized Ruby report generation and templating engine."
 	spec.files =  Dir.glob("{examples,lib,test,bin}/**/**/*") +
