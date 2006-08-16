@@ -22,8 +22,8 @@ module Ruport::Data
   # of its source (a database, manual arrays, ActiveRecord, CSVs, etc.).
   # 
   # Table is intended to be used as the data store for structured, tabular
-  # data - Ruport::Data::Set is an alternate intermediary data store intended
-  # for less structured data.
+  # data - Ruport::Data::Set is an alternate data store intended for less 
+	# structured data.
   #
   # Once your data is in a Ruport::Data::Table object, it can be manipulated
   # to suit your needs, then used to build a report.
