@@ -1,0 +1,508 @@
+The current version of Ruby Reports is 0.4.99
+
+changes since 0.4.23
+
+- Removed the legacy Format::Document|Element|Page|OpenNode classes
+
+- Added lots of API documentation
+
+- actions now will throw an error if they are already defined.
+  (Temporary collision remedy)
+
+- You can now dup Sets
+
+- Unit tests should no longer explode when PDF::Writer is not installed
+
+- Added a simplistic Rake task for building the recipe book
+
+- Added intuitive error message for invalid plugins
+
+- Fixed an error in Tag duplication for Data::Record
+
+- Ruport now has charting support via SVG::Graph
+
+- reordering now has intuitive error messages
+
+- Trimmed down system_extensions.rb to only include the relevant terminal
+  geometry code
+
+- Record/Table reordering can now be expressed either as a splatted list or an
+  array.  Eg %w[a b c] and "a","b","c" are both acceptable as arguments.
+
+changes since 0.4.21
+
+- JH's invoice engine integrated
+
+- Added rope, a tool for building a friendly environment for reports that use
+  Ruport.
+
+- Fixed very broken Ruport::Query (DataSet aftermath)
+  We need to figure out a way to test this class better.
+
+- Added Data::Table#add_column which is useful for calculated fields. (#19)
+
+- Data::Table.reorder now works properly. 
+  (Can use integer indices or attributes)
+
+- Moved Data::Table.to_format to Collection, but be warned that the plugins must
+  support the collection you call them on.  (Set is not fully supported yet)
+
+- Renamed Query#to_dataset to Query#to_table
+
+- Array#to_table now supports just passing an array of column_names if you do
+  not need other keyword arguments.  This makes the interface support to_ds
+  style calls.
+
+changes since 0.4.19
+- Added a rake task to run rcov
+
+- Removed DataSet / DataRow.  Farewell good friends
+
+- Added Array#to_table, dropped Array#to_ds
+
+- You can now convert Sets to Tables and vice-versa
+
+- acts_as_reportable converted to use Data::Table
+
+- Data::Record's constructor can now take a hash
+
+- Added initial Data::Set implementation
+
+- Added smart Data::Table.to_format method_missing functionality
+
+changes since 0.4.17
+
+- Made method_missing a lot more friendly all around.
+
+- Made minor interface changes.
+
+- Data::Table and Data::Record now dup correctly
+
+- Fixed some serious issues between Data::Table and TextPlugin
+
+- Report#eval_template now returns an ERb string instead of printing to STDOUT
+
+- Added Data::Table#split which allows basic grouping operations
+
+- Added Report#load_csv convenience method 
+
+- Tightened up Data::Table#<< to ensure column_names match record attributes
+
+- Fixed appending a Record in Data::Table#<<
+
+changes since 0.4.15
+
+- Fixed a packaging bug
+
+changes since 0.4.13
+
+- Began building a new data handling system, which is much faster than
+  DataSet/DataRow and takes up less memory.  It is also very young, though.
+  (See Data::Table and Data::Record)
+
+- Added init_plugin hooks
+
+- Added DataSet#rename_columns
+
+- Added taggable mixin
+
+- Added an options accessor to help solve ticket #8
+
+- Alioth now has a powerful hook back into the engine from plugins via helpers
+
+- added action / attribute methods for format engine / plugin via MetaTools
+
+- added accessor style methods to DataRow via method_missing
+
+- added prune method for Table formatting. 
+
+changes since 0.4.11
+
+- Added high level hook Report#text_processor which essentially works like
+  Format.register_filter
+
+- Report can now run single or multiple reports and do things such as send them
+  via email or write/append them to files.
+
+- Report has been overhauled to have a simple DSL
+
+- Mailfactory is now a gem dependency.  If you install via setup.rb or building
+  the gem yourself, you only need it if you plan to use Ruport::Mailer
+
+- Report#query now has an 'as' method that allows direct translation of a query
+  to a particular format, e.g.
+
+  query "select * from ruport", :as => :pdf
+
+- Lots of bug fixes and cleanup
+
+- Ruport is now on Trac.
+  http://stonecode.svnrepository.com/ruport/
+
+- I apparently never knew how to use inject.  
+  Injects are all functional now.
+
+- Fixed a bug in DataSet that made fields not get duped properly
+
+changes since 0.4.9
+
+- DataSet#column_names and DataRow#column_names have been added as alias to
+  fields.
+
+- Plugins are now safely copied when used via DataSet#as or the generated
+  Format::simple_interface(Format.table,Format.document,etc)
+
+- Dropped insert_row / insert_column from Format::Engine::Table.
+  These are no longer needed.
+
+- Reworked format engine unit tests to decouple from specific plugins.
+
+- vendored SystemExtensions from HighLine to get terminal_width /
+  terminal_height functions
+
+- DataSet#add_columns and DataSet#add_columns! has been added
+
+- Added pre and post hooks for Plugins.  Individual plugins choose if and 
+  how to implement them.
+
+- Parser is gone
+
+- Format::Builder is gone
+
+- fixed a bug in rails support. :columns now works properly.
+
+- fieldnames can now be disabled in CSV loading
+
+- DataSet.load now loads empty cells as nil instead "" by default
+
+- fixed HTML table output in HTMLPlugin
+
+- Select / Remove columns now accepts ordinal indexes 
+
+changes since 0.4.5:
+
+- Added acts_as_reportable for ActiveRecord / rails.  whoo
+
+- Mailer now can handle attachments and html emails.
+  API Breakage. Needs mailfactory unless you use the hooks for other
+  mailers.
+
+- Added a rewrite_column action to the tabular engine
+
+- Added Ruport.configure shortcut interface
+
+- went back to the old style of output for DataSet.to_s 
+  Modified TextPlugin to accomplish this
+
+- Crackrock feature:  Engine forwards enumerable methods to it's data.
+
+- DataSets and DataRows can now be created without specifying field names.
+
+- Added uport.rb .  I needed to steal from RubyGems :)
+
+- Fixed some requires
+
+- Temporarily removed mail support from Ruport::Report
+
+- Added Ruport::Mailer#deliver simple mail interface
+
+- Ruport::Report::Mailer is now Ruport::Mailer
+
+changes since 0.4.4:
+
+- DataRow constructor now matches DataSet style.
+
+- DataSet picked up a ton of array-like functionality
+
+- DataSet#load now optionally accepts a block that acts something
+  like inject.
+
+- Added a DataSet#select_columns!() method
+
+- What the heck was Format#filter_ruby?  It's gone now
+
+- DataSet#as() now hooked to the new formatting system.
+  note API breakage in block forms
+
+- DataSet set operations (DF)
+
+- Much smarter DataSet#<< (Dudley Flanders)
+
+- Ruport now has pseudo keyword support in DataSets.
+ (Thanks to Dudley Flanders!)
+
+changes since 0.4.2:
+
+- Fixed a packaging bug.
+
+changes since 0.4.0:
+
+- Brand new formatting system.
+  See: http://ruport.infogami.com/Formatting_System_HOWTO
+
+- DataSet#<< now returns self, e.g.
+  some_data << [1,2,3] << [4,5,6]
+
+- Removed fascist opt_require feature and Ruport::Base
+
+- Fixed bug in DataRow constructor which destroyed arrays.
+
+- Examples now included in gems
+
+changes since 0.3.8:
+
+- added DataRow#to_h
+
+- Ruport::Format.register_filter now passes the content it will modify via a
+  block. e.g.
+
+  Ruport::Format.register_filter :reverser { |content| content.reverse }
+
+- Modified the license terms of Ruport so that it uses specifically the GPLv2.
+  Further versions of Ruport may not be distributed under later versions of the
+  GPL without explicit permission.
+
+- DataSet#[]= now passes rvals to DataRow constructor with fields from the
+  DataSet it is called on.
+
+- Optional dependencies should now be forceably protected by opt_require.
+
+- Fixed a problem with Ruport.complain that caused it to force you to use a
+  logger to make it work.
+
+- DataRow#eql? is fixed and now has a test covering it.
+
+- DataRow/DataSet can now be dup'ed / cloned 
+  (But may still have some dragons)
+
+- DataRow#+ now returns DataRows instead of arrays
+
+- Format::Builder rendering methods can now be registered through
+  Format::Builder.register_rendering_method()
+
+- DataRow["somekeythatdoesntexist"] no longer throws an error 
+  (now returns nil)
+
+- Now some_data_row[:foo] and some_data_row["foo"] are equivalent
+
+- Fixed Query so it throws appropriate errors.  No more magic nil. (I hope)
+
+- Ruport::Config.default_source now defaults to nil
+
+- Ruport::Config now has improved error detection.
+
+- additional Test coverage, documentation and logging.
+
+- DataSet#sigma (a.k.a DataSet#sum) added for summations. 
+
+- Format::Builder#render_pdf renamed to Format:Builder#render_pdf_document
+
+- Format::Builder#render_pdf_table added. (Thanks Simon Claret!)
+
+- Fixed bug in remove_columns
+
+key features of Ruport 0.3.8:
+
+- New configuration system
+
+- New query model
+
+- New formatting system
+
+- Total API redesign
+
+- Lots more API documentation
+
+- A parser adapted from Parse::Input
+
+- ruport executable was deprecated
+
+[ Code was redesigned completely after 0.2.9 ]
+
+changes since Ruport 0.2.9:
+
+- Report::SQL dropped.
+
+- Fixed a bug in query that made ODBC driver not work at ALL!
+  (AFAIK, this bug was ONLY in Ruport 0.2.9)
+
+- removed render() from the engine and implemented DataSet#render_as()
+  example:
+  @report = render(data) do |builder| builder.format = :some_format end
+  is now: @report = data.render_as(:some_format)
+  which takes an optional block that works as before.
+
+- removed method DataSet#select_field() because it was the same as 
+  DataSet#select_fields() and of limited utility.
+
+- added method DataSet#remove_fields and DataSet#remove_fields!
+  to make data manipulation easier.
+
+- added DataSet#empty?
+
+- added DataSet#clone which will actually deep copy a DataSet.
+
+- cleaned up incredibly annoying DataSet constructor so you can now pass
+  field names and data to new()
+
+- Report::DataSet now documented
+
+- added hacks.rb which will include a random collection of potentially
+  useful functions.  (Already cool for making Ruport easy to use with irb).
+
+- added Document class and unit tests.  Needs to be completed.
+
+- added Report::DataSet.clone for making deep copies of DataSets.
+
+- added Element, Section, Page, and Document formatting classes.
+
+- restructured unit tests, adding ts_format and ts_report
+  and moving all non-testcase data into test/samples
+
+- restuctured library, adding ruport/format.rb and ruport/report.rb
+	made format and report into classes, with nested classes within.
+	
+- Moved the Report::Engine class into Report
+	
+- reorginized DataSet#<< to be more efficient. Thanks Francis!
+
+- added OpenNode.  Which is a little scary.
+
+- Francis Hwang has added SqlSplit, which has been tied into query.
+  Now multiple statement SQL dumps can be processed by ruport.
+
+- DataSet can now safely execute commands that return no rows.
+  (This was a bug in RubyDBI which ruport now has a workaround for)
+
+- require "ruportlib" becomes require "ruport"
+
+
+changes since Ruport 0.2.5:
+
+- Added a new examples package with a 666 line walkthrough and more enjoyable
+  demonstratons
+
+- Added support for multiple DSN's via add_dsn and select_dsn
+
+- Added Tagging support for DataSets.
+
+- Added DataSet#select_field and DataSet#select_fields to simplify grabbing
+  data by column
+
+- Report::DataSet now implements to_s, for pretty printing goodness.
+
+- render_text now implemented in Format::Builder
+
+- Format::Builder now accepts headers and footers.
+
+- Format::Builder now can generate complete html via output_type
+
+- Ruport now uses FasterCSV, which is now a dependency.  Yay!  Dependencies!
+  (But it IS 9x faster than the CSV lib that ships with Ruby)
+
+- Added tests to the gem spec... so you can use -t now.
+
+- DataRow#+ implemented.
+
+- Format::Builder#range implemented. (Can now format partial DataSets)
+
+- Fixed a bug in the unit tests that required Ruport to be installed.
+  Now you can test BEFORE you install.  (Sorry about that one...) 
+
+- Commands that return no rows no longer crash the application
+  (But writing to the database is still not fun nor easy)
+
+- templates/ folder now more aptly named scripts/
+
+- Report::Engine#query now returns a DataSet so chaining is possible
+
+changes since Ruport 0.2.2:
+
+- Report::DataSet and Report::DataRow are now enumerable
+
+- DataSet#eql? fixed
+
+- Format::Builder has been added to handle formatting
+  (Supports CSV / HTML currently)
+
+- Format::Builder is easily extendable via send("render_#{@type}")
+
+- DataSet#to_html convenience method added
+
+- DataSet#fields can now be arbitrary objects (does not need to be Strings)
+
+- Dropped DataRow#middle? because it was useless. (And poorly named)
+
+- FakeMailer added for testing goodness.
+
+- Dropped select() and execute() in favor of query()
+
+changes since Ruport 0.2.0:
+
+- Report becomes Engine
+- MockDB becomes FakeDB
+- MockReport becomes MockEngine
+
+- Modules are added so now,
+
+   Ruport::Report::Engine,
+   Ruport::Report::DataSet is the full name of these classes.
+
+- 'require ruportlib' runs include Ruport,
+   so you can type Report::Engine.new instead of Ruport::Report::Engine.new
+
+- The assert that was supposed to be an assert_equal that
+  David Black caught was fixed.
+
+- Examples are updated and now on the RubyForge FRS in many formats.
+  (With .DS_Store and other garbage files removed! ;) )
+
+- Formatting of code was cleaned up and improved.
+
+- Generates a test.rb that does not use deprecated functions now.
+
+changes since Ruport 0.1.0:
+
+CLEANUP / ORGANIZATION:
+
+- Parseinput dependency removed for now
+
+- setup.rb support removed
+
+- gem install will now only install a single executable
+
+- dropped undocumented YAML override feature
+
+- Query class now called Report
+
+- Project split into two parts lib/ruport/db and lib/ruport/format
+
+- dropped questionable ruport_query manager function
+
+- finally turned on expandtab and tabstop=2 for Ruby style ;)
+
+FEATURES:
+
+- require 'ruportlib' lets ruport be used as a library
+
+- MockDB and MockReport added to simplify testing
+
+- DataRow and DataSet added to provide munging with ease
+  (to_csv, DataSet.load("some.csv"), etc
+
+- DataSet.load() can restore DataSet's that were YAML.dump()'ed
+
+- load_file now supports absolute and relative paths
+
+- added many automation features to templates
+
+- added @pre and @post to Report which accept lambdas to execute
+  before and after generate_report()
+
+- logger added.
+
+- some friendly error messages added
+ 
+- new method query() will eventually replace select() / execute()
+
+- {examples}[http://ruport.rubyforge.org/] available for download

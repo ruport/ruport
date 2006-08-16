@@ -1,0 +1,198 @@
+# ------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# 
+# NOTE:
+#
+# The most up to date information can be found at:
+# http://reporting.stonecode.org
+#
+# Contents:
+# 
+#  - What Ruport Is.
+#  - Installation
+#  - Getting Started
+#  - Caveats.
+#  - Resources
+#  - Background and Summary 
+#
+# = What Ruport Is. 
+#
+# Ruby Reports is a software library that aims to make the task of reporting
+# less tedious and painful.  It provides tools for data acquisition, database
+# interaction, formatting, and parsing/munging.  Designed to be extensible,
+# it is possible to use Ruport for quick specific tasks as well as to build
+# robust reporting applications.
+#
+# = Installation 
+#
+# Dependencies:
+#   
+#   Ruport has a number of dependencies.
+#     
+#   Ruby/DBI and appropriate dbds: Makes Query useable 
+#   (must be installed manually)
+#
+#   FasterCSV: Enables fast CSV parsing
+#   (available via rubygems)
+#     
+#   RedCloth:  Enables textile/markdown filtering
+#   (available via rubygems)
+#    
+#   PDF::Writer: Enables printable documents 
+#   (available via rubygems)
+#
+#   MailFactory: For email support. 
+#
+# Note that by installing any of the dependencies, either via gems or manually,
+# their functionality will automatically be enabled.
+#
+# To install ruport via rubygems with all it's dependencies (except DBI):
+#   
+#   sudo gem install ruport
+#
+# To install ruport manually via setup.rb:
+# 
+#   sudo ruby setup.rb
+#
+# To not install ruport at all:
+#
+#   ruby -Ipath/to/ruport/lib my_script.rb
+#
+# Check to see if it installed properly:
+#
+#   ruby -rubygems -e "require 'ruport'; puts Ruport::VERSION"
+#   (omit the -rubygems flag if installed manually)
+#
+# If you get an error, please consult the mailing list. 
+#
+# = Getting Started
+#
+# Building a report can be broadly broken up into two phases. 
+#
+# == Data Collection and Manipulation
+# 
+# To begin, your data must be read from its source and stored in Ruports 
+# standard data structures. Ruport::Data::Set, Ruport::Data::Table and 
+# Ruport::Data::Record have further information on how to work with with
+# and store data in ruport.
+#
+# If you wish to retrieve your data using Ruby on Rails and ActiveRecord,
+# Ruport::Reportable has some useful information; To pull your data directly
+# from a database, Ruport::Query will be useful, and to build it manually
+# Array has been extended with a convenience function or two.
+# 
+# == Report Generation
+#
+# Once the data is ready, it can be rendered using a combination of
+# Ruport::Format, Ruport::Format::Engine and Ruport::Format::Plugin. 
+# The engine defines the report type (tablular, invoice, graph, etc), and 
+# the plugin renders the engine into a final format (PDF, CSV, HTML, SVG). 
+# Engines will often interact with more than one plugin, to allow the same
+# report to be rendered in multiple ways ie. as HTML and a PDF.
+# 
+# To tie these together, a basic DSL is provided by Ruport::Report
+#
+# For further reading and specific examples, please explore the examples/ 
+# directory in the source tree and read the Ruport Cookbook.
+#
+# = Caveats 
+#
+# Ruport is experimental software.  It's not completely tested and the API is
+# changing rapidly from version to version.  Test suites are becoming
+# increasingly robust, but have not identified all possible edge cases.  If
+# Ruport goes wild on you, it's because it hasn't been tamed yet.
+#
+# The functionality is also not complete yet.  There is a lot left to be added
+# and there is a lot to think about.  If you find yourself wondering why
+# feature foo is in Ruport, chances are it just hasn't been written yet.
+#
+# Documentation so far is something that is a struggle to keep up with.  As of
+# this release, there is at least partial documentation for the API.  This
+# will continue to get better as time goes on.
+#
+# Platform independence is a priority, but I don't absolutely always have
+# access to every OS / DBMS combination, so if something breaks on your
+# system, please feel free to yell loud at the mailing list.
+#
+# That having been said, I do use ruport in my daily work.  That means that it
+# will probably have at least something you will find useful.  Or so I hope.
+#
+# = Resources
+#
+# The best way to get help and make suggestions is the Ruport mailing list.
+# This software is on the move, so the list is the most reliable way of getting
+# up to date information.
+#
+# - You can sign up and/or view the archives here:
+#   http://lists.stonecode.org/listinfo.cgi/ruport-stonecode.org
+#
+# Please do not hesitate to use this list!  I am happily accepting patches and
+# documentation, as well as encouraging design discussions and also am quite
+# curious about what people use or want to use ruport for.
+#
+# I will announce Ruport releases on RubyTalk, on the Ruport mailing list, on
+# Freshmeat, RAA, and the new_haven.rb mailing list.  If you would like to
+# keep an eye out for releases, please monitor one of those places.
+#
+#   - You may download Ruport's source from the project page:
+#     http://rubyforge.org/projects/ruport
+#
+#   - The latest stable API documentation is available at:
+#     http://reporting.stonecode.org/docs
+#
+# There also will be some tutorials on ruport.infogami.com
+#
+# If you are interested in developing Ruport, please *never* study code in
+# official releases.  As this software is in it's early stages, it's essential
+# to keep an eye on the subversion repository.  If you let me know you are
+# interested in working on something, I will let you know if I'm actively
+# working on that section.
+#
+# - Grabbing the code from the svn trunk is simple:
+#
+#   svn co svn://rubyforge.org//var/svn/ruport/trunk/
+#
+# Those who would like to become regular contributors will be given write
+# access.  Also, anyone interested in the internal design and project
+# management aspects of Ruport can request to be added to our Trac
+# account.  This is primarily intended for people who are working on the
+# project actively, though.
+#
+# = Background / Summary 
+#  
+# Ruport aims to help you fetch data from various sources, perform 
+# manipulations on them as needed, and then output them in a variety
+# of formats easily.  The powerful ERb templating engine is integrated
+# to let you embed Ruport code into your formatted data. Also, Ruport
+# provides a high level interface to databases, to make getting
+# your data easy.
+#
+# The core of Ruport is it's datastructures.  Data::Record, Data::Table, and
+# Data::Set provide tools that help with manipulation and preperation of data
+# for reporting.
+#
+# The rest of the code is organized into three main models, Report, Query,
+# and Format.  Each is meant to be a high level interface to Ruport.
+# The inner classes can be used where a decent level of customization
+# is needed.
+#
+# Report is in some sense the 'controller' of your application, and provides
+# methods to help you write a Reporting application
+#
+# Format provides support for building filters and specialized formatting
+# systems. 
+# 
+# Query currently provides a high level interface to DBI.
+# If you would like to query a database or load a sql dump, 
+# this class can help you do that.  It can generate Data::Table objects on 
+# the fly, or feed you DBI:Rows, depending on what you need.
+#
+# Finally, Please consult the API documentation and/or source code for more
+# information. (http://reporting.stonecode.org/docs).  Not all classes have been
+# documented but the ones that have may be easier to understand when their docs
+# have been read.  Also, feel free to contribute documentation.
+#
+# If you have any questions or concerns, hop on the mailing list and fire away!
+#
+# Thanks for downloading my software and I hope you enjoy it!
+# -Greg

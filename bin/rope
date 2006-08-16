@@ -1,0 +1,109 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+include FileUtils
+
+if ARGV.empty?
+  puts "Usage: rope project_name"
+  exit
+end
+project = ARGV[0]
+
+RAKEFILE = <<END_RAKEFILE
+begin; require "rubygems"; rescue LoadError; end
+require "rake/testtask"
+
+task :default => [:test]
+
+Rake::TestTask.new do |test|
+  test.libs    << "test"
+  test.pattern =  'test/**/test_*.rb'
+  test.verbose =  true
+end
+END_RAKEFILE
+
+CONFIG = <<END_CONFIG
+require "ruport"
+
+# For details, see Ruport::Config documentation
+Ruport.configure { |c|
+  c.source :default, :user     => "root", 
+                     :dsn      =>  "dbi:mysql:mydb"
+  c.log_file "log/ruport.log"
+}
+END_CONFIG
+
+BUILD = <<'END_BUILD'
+def format_class_name(string)
+  string.downcase.split("_").map { |s| s.capitalize }.join
+end
+
+unless ARGV.length > 1
+  puts "usage build.rb [command] [options]"
+  exit
+end
+
+class_name = format_class_name(ARGV[1])
+
+exit if File.exist? "app/reports/#{ARGV[1]}.rb"
+if ARGV[0].eql? "report"
+  File.open("app/reports.rb", "a") { |f| 
+    f << "require \"app/reports/#{ARGV[1]}\""
+  }
+REP = <<EOR
+begin; require "rubygems"; rescue LoadError; end
+require "ruport"
+require "config/ruport_config"
+
+class #{class_name} < Ruport::Report
+  
+  #optional
+  prepare { }
+  
+  #mandatory
+  generate { }
+
+  #optional
+  cleanup  { }
+
+end
+
+##{class_name}.run { |res| puts res.results }
+EOR
+
+TEST = <<EOR
+begin; require "rubygems"; rescue LoadError; end
+require "ruport"
+require "test/unit"
+require "app/reports/#{ARGV[1]}"
+require "config/ruport_config"
+
+class Test#{class_name} < Test::Unit::TestCase
+  def test_flunk
+    flunk "Write your real tests here or in any test/test_* file"
+  end
+end
+EOR
+  File.open("app/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
+  File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST } 
+end
+END_BUILD
+
+SQL_EXEC = <<'END_SQL'
+begin; require "rubygems"; rescue LoadError; end
+require "ruport"
+require "config/ruport_config"
+
+puts Ruport::Query.new(ARGF.read).result
+END_SQL
+
+mkdir project
+%w[test config output data app app/reports templates sql log util].each do |d|
+  mkdir "#{project}/#{d}"
+end
+
+touch("#{project}/app/reports.rb")
+File.open("#{project}/config/ruport_config.rb","w") { |f| f << CONFIG }
+File.open("#{project}/Rakefile","w") { |f| f << RAKEFILE }
+File.open("#{project}/util/build.rb","w") { |f| f << BUILD }
+File.open("#{project}/util/sql_exec.rb","w") { |f| f << SQL_EXEC }

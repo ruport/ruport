@@ -1,7 +1,0 @@
-require "test/tc_format"
-require "test/tc_document"
-require "test/tc_element"
-require "test/tc_section"
-require "test/tc_page"
-require "test/tc_format_engine"
-require "test/tc_plugin"
