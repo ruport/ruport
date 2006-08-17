@@ -18,9 +18,34 @@ class TSVPlugin < Format::Plugin
     FasterCSV.generate(:col_sep => "\t") { |csv| data.each { |r| csv << r } }
   end
 
+  helper(:foo, :engine => :table_engine) { }
+  helper(:bar, :engines => [:table_engine,:invoice_engine]) { }
+  helper(:baz) {}
+
   plugin_name :tsv
-  register_on Format::Engine::Table
+  register_on :table_engine
+
+  # wont work, just for helper tests
+  register_on :invoice_engine
+  register_on :document_engine
   
+end
+
+class TestPlugin < Test::Unit::TestCase
+  def test_helper
+    t = Ruport::Format.table_object :data => [[1,2]], :plugin => :tsv
+    i = Ruport::Format.invoice_object :data => [[1,2]].to_table(%w[a b]), :plugin => :tsv
+    d = Ruport::Format.document_object :data => "foo", :plugin => :tsv
+    assert_nothing_raised { t.foo }
+    assert_nothing_raised { t.bar }
+    assert_nothing_raised { t.baz }
+    assert_nothing_raised { i.bar }
+    assert_nothing_raised { i.baz }
+    assert_nothing_raised { d.baz }
+    assert_raise(NoMethodError) { i.foo }
+    assert_raise(NoMethodError) { d.foo }
+    assert_raise(NoMethodError) { d.bar }
+  end
 end
 
 class CSVPluginTest < Test::Unit::TestCase
