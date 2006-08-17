@@ -10,8 +10,21 @@ module Ruport
       
       include MetaTools
 
-      def helper(name,&block)
-        singleton_class.send( :define_method, "#{name}_helper", &block )
+      def helper(name,options={},&block)
+        if options[:engines]
+          options[:engines].each { |e| 
+            helpers[e].send(:define_method, "#{name}_helper", &block)
+          }
+        elsif options[:engine]
+          helpers[options[:engine]].send(  :define_method, 
+                                         "#{name}_helper", &block)
+        else
+          singleton_class.send( :define_method, "#{name}_helper", &block )
+        end
+      end
+
+      def helpers
+        @helpers ||= Hash.new { |h,k| h[k] = Module.new }
       end
 
       private :singleton_class, :attribute, :attributes, :action
@@ -51,7 +64,7 @@ module Ruport
     
     class CSVPlugin < Format::Plugin
       
-      helper(:init_plugin) { require "fastercsv" }
+      helper(:init_plugin) { |eng| require "fastercsv" }
 
       format_field_names do
         FasterCSV.generate { |csv| csv << data.column_names }
@@ -223,25 +236,25 @@ module Ruport
       renderer(:invoice) { pdf.render }
 
       # Company Information in top lefthand corner
-      helper(:build_company_header) { |eng| 
+      helper(:build_company_header, :engine => :invoice_engine) { |eng| 
         @tod = pdf.y
         text_box(eng.company_info)
       }
 
-      helper(:build_headers) { |eng|
+      helper(:build_headers, :engine => :invoice_engine) { |eng|
         build_company_header_helper(eng)
         build_customer_header_helper(eng)
         build_title_helper(eng)
         build_order_header_helper(eng)
       }
 
-      helper(:build_order_header) { |eng|
+      helper(:build_order_header, :engine => :invoice_engine) { |eng|
         if eng.order_info
           text_box(eng.order_info, :position => 350)
         end
       }
 
-      helper(:build_title) { |eng|
+      helper(:build_title, :engine => :invoice_engine) { |eng|
         pdf.y = @tod
         if eng.title
           pdf.text eng.title, :left => 350, :font_size => 14
@@ -249,7 +262,7 @@ module Ruport
         end
       }
 
-      helper(:build_footer) { |eng|
+      helper(:build_footer, :engine => :invoice_engine) { |eng|
         # footer
         pdf.open_object do |footer|
           pdf.save_state
@@ -270,7 +283,7 @@ module Ruport
         pdf.stop_page_numbering(true, :current)
       } 
        
-      helper(:build_body) do
+      helper(:build_body, :engine => :invoice_engine) do
        pdf.start_page_numbering(500, 20, 8, :right)
        
         # order contents 
@@ -288,7 +301,7 @@ module Ruport
       end
 
       # Order details
-      helper(:build_customer_header) { |eng| 
+      helper(:build_customer_header, :engine => :invoice_engine) { |eng| 
         pdf.y -= 10
         text_box(eng.customer_info)
       }

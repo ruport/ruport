@@ -12,7 +12,7 @@ class TestReport < Test::Unit::TestCase
   def setup
       @report = Report.new
   end
-  
+
   def test_render
     result = @report.render "<%= 2 + 3 %>", 
                             :filters => [:erb]

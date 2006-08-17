@@ -25,6 +25,7 @@ module Ruport
       end
       
       def alias_engine(klass,name)
+        singleton_class.send(:define_method,:engine_name) { name }
         Format::Engine.engine_classes ||= {}
         Format::Engine.engine_classes[name] = klass
       end
@@ -92,6 +93,7 @@ module Ruport
       end 
       
       def method_missing(id,*args)
+        active_plugin.extend active_plugin.helpers[engine_name]
         super unless active_plugin.respond_to?("#{id}_helper")
         return active_plugin.send("#{id}_helper",self)
       end
