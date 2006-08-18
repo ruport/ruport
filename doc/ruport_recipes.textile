@@ -8,8 +8,8 @@ h1. Introduction
 Thank you for taking the time to learn about Ruby Reports.  
 
 In a nutshell, Ruport is a free software library that is designed
-specifically to make the task of reporting less painful.  I've been developing a
-number of toolsets to make my life easier, and I hope that they can do this for
+specifically to make the task of reporting less painful.  We've been developing a
+number of toolsets to make our lives easier, and we hope that they can do this for
 you as well.
 
 Some of the functionality Ruport currently provides include:
@@ -19,11 +19,12 @@ Some of the functionality Ruport currently provides include:
   
 * Data normalization into a standardized and well integrated datastructure.
 
-* Data formatting including tabular formatting, text filters, and structured documents
+* Data formatting including tabular formatting, text filters, and structured
+* document support.
 
 * Data delivery as part of an HTML page, via email, or out to a file.
 
-Ruby Reports provides an extendable formatting system, so you can add in 
+Ruby Reports provides an extensible formatting system, so you can add in 
 arbitrary formatting support as needed.  The tools provided can be used in a 
 stand-alone command-line application, integrated into a Rails application,
 or in any other Ruby program.

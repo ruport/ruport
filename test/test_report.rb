@@ -10,9 +10,12 @@ class TestReport < Test::Unit::TestCase
   include Ruport
 
   def setup
-      @report = Report.new
+    @report = Report.new
+    Ruport::Config.source :default, :dsn => "ruport:test", :user => "foo", :password => "bar" 
+    @query1 = Ruport::Query.new "select * from foo", :cache_enabled => true 
+    @query1.cached_data = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
   end
-
+  
   def test_render
     result = @report.render "<%= 2 + 3 %>", 
                             :filters => [:erb]
@@ -27,6 +30,18 @@ class TestReport < Test::Unit::TestCase
                               :filters => [:erb, :red_cloth]
       assert_equal('<p><a href="http://foo.com">5</a></p>',result)
     end
+  end
+
+  def test_query
+    assert_kind_of Ruport::Data::Table, 
+      @report.query("blah",:query_obj => @query1)
+    expected = [[1,2,3],[4,5,6],[7,8,9]]
+    @report.query("blah",:query_obj => @query1, :yield_type => :by_row) { |r|
+      assert_equal expected.shift, r.data
+      assert_equal %w[a b c], r.attributes
+    }
+    assert_equal "a,b,c\n1,2,3\n4,5,6\n7,8,9\n", 
+       @report.query("blah",:query_obj => @query1, :as => :csv)
   end
 
   class MyReport < Report; end

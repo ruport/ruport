@@ -82,6 +82,12 @@ class TestTable < Test::Unit::TestCase
     a.remove_column(:name => "c")
     assert_equal [[1,2],[3,4],[5,6]].to_table(%w[a b]), a 
     assert_raises(ArgumentError){a.remove_column(:name => "frank")}
+    a.remove_column(0)
+    assert_equal [[2],[4],[6]].to_table(%w[b]), a
+    assert_equal %w[b], a.column_names
+    a = [[1,2],[3,4],[5,6]].to_table
+    a.remove_column(0)
+    assert_equal [[2],[4],[6]].to_table, a
   end
 
   def test_split

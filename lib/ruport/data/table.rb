@@ -106,10 +106,12 @@ module Ruport::Data
     #   data.reorder!([1,0])  
     def reorder!(*indices)
       indices = indices[0] if indices[0].kind_of? Array
-      @column_names = if indices.all? { |i| i.kind_of? Integer }
-        indices.map { |i| @column_names[i] }
-      else
-        indices 
+      if @column_names
+        @column_names = if indices.all? { |i| i.kind_of? Integer }
+          indices.map { |i| @column_names[i] }
+        else
+          indices 
+        end
       end
       @data.each { |r| r.reorder! *indices }; self
     end
@@ -138,17 +140,25 @@ module Ruport::Data
       end
     end
 
-   # Removes a column from the table. Any values in the specified column are
-   # lost.
-   #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
-   #   data.append_column({:name => 'new_column', :fill => 1)
-   #   data.remove_column({:name => 'new_column')
-   #   data == Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
-   #     => true
-   def remove_column(options={})
-     raise ArgumentError unless column_names.include? options[:name]
-     reorder! column_names - [options[:name]]
-   end
+    # Removes a column from the table. Any values in the specified column are
+    # lost.
+    #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    #   data.append_column({:name => 'new_column', :fill => 1)
+    #   data.remove_column({:name => 'new_column')
+    #   data == Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    #     #=> true
+    #     
+    #   data = [[1,2],[3,4]].to_table
+    #   data.remove_column(1)
+    #   data.eql? [[1],[3]].to_table %w[a] #=> true
+    def remove_column(options={})    
+      if options.kind_of? Integer
+        reorder!((0...data[0].length).to_a - [options])
+      else
+       raise ArgumentError unless column_names.include? options[:name]
+       reorder! column_names - [options[:name]]
+     end
+    end
 
     # Create a shallow copy of the table: the same data elements are referenced
     # by both the old and new table.

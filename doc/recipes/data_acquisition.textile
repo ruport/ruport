@@ -7,7 +7,7 @@ These are meant to cover the basics, for more complex needs, see the section on
 Extension Techniques.
 <br><br>
 
-h2. Loading CSVs
+h2. +++Loading CSVs
 
 <hr>
 
@@ -49,12 +49,12 @@ third column:
 <pre><code>
   require "ruport"
 
-  a = Ruport::DataSet.load("foo.csv")
-  a.remove_columns!(2)
+  a = Ruport::Data::Table.load("foo.csv")
+  a.remove_column(2)
 </code></pre>
 
 This kind of syntactic sugar isn't all the functionality you'll get out of using
-Ruport's DataSet loading, but it sure is sweet :)
+Ruport to load CSVs, but it sure is sweet :)
 
 h3. Access By Field Names
 
@@ -62,7 +62,7 @@ Ruport automatically takes the first row of your CSV and uses it to define field
 names.  This means you can access your data by field name as well as ordinal
 position.
 
-So for example, have a look at the DataSet below.
+So for example, have a look at the CSV below.
 
 <pre><code>
   foo,bar,baz
@@ -70,24 +70,14 @@ So for example, have a look at the DataSet below.
   4,5,6
 </pre></code>
 
-Once loaded into a DataSet, <code>my_loaded_data["bar"]</code>
-and <code>my_loaded_data[1]</code> become equivalent.
+Once loaded into a Data::Table, <code>my_loaded_data["bar"]</code>, 
+<code>my_loaded_data.bar</code> and <code>my_loaded_data[1]</code> become equivalent.
 
 If you have CSV data that does not have field names, you can tell Ruport not to
 look for them like this:
 
 <pre><code>
-a = Ruport::DataSet.load("foo.csv", :has_names => false)
-</pre></code>
-
-h3. Default Values for Empty Cells
-
-Empty cells will automatically be converted to nil. However, if you'd like 
-them to be converted to some other value, you can pass this via the
-<code>:default</code> option.
-
-<pre><code>
-a = Ruport::DataSet.load("foo.csv", :default => "empty cell")
+a = Ruport::Data::Table.load("foo.csv", :has_names => false)
 </pre></code>
 
 h3. Dealing With Big Files
@@ -96,24 +86,24 @@ Ruport doesn't use the standard library's CSV processing library, but instead us
 James Edward Gray II's fine FasterCSV library (http://fastercsv.rubyforge.org)
 
 This library is over 8 times faster than the standard CSV lib, which means that
-even though your results are converted into DataSets, you will see a much smaller
+even though your results are converted into Data::Table, you will see a much smaller
 performance hit than if Ruport used the standard library beneath it.
 
 Sometimes when dealing with very big CSVs, it's necessary to do row by row
 processing for performance reasons.  This makes it possible to create DataRows
 for only the data you're actually interested in.
 
-Below is a snippet of row by row processing for DataSet creation from CSV.  The
-block yields two objects, the first is the DataSet which will represent your
+Below is a snippet of row by row processing for Data::Table creation from CSV.  The
+block yields two objects, the first is the Data::Table which will represent your
 data, and the second is an array representing the current row.  This is useful
 for inspecting the Arrays to see if you're interested in the data before
-generating a DataRow for them.  The snippet below will create a DataSet which
+generating a DataRow for them.  The snippet below will create a Data::Table which
 consists of just rows in which the first column is an even number.
 
 <pre><code>
   require "ruport"
 
-  a = Ruport::DataSet.load("foo.csv") do |s,r|
+  a = Ruport::Data::Table.load("foo.csv") do |s,r|
     s << r if (r[0].to_i % 2).zero?
   end
 </code></pre>
@@ -121,7 +111,23 @@ consists of just rows in which the first column is an even number.
 So, this about sums up all of Ruport's CSV loading capabilities.  If you see
 anything missing that you'd like to see included in Ruport, let me know.
 
-h2. Talking to SQL Databases
+h3. Loading CSVs in the Report DSL
+
+If you are using the Report DSL, there is a shortcut for loading CSVs.
+
+The example below shows a CSV being loaded and converted to PDF
+
+<pre><code>
+  require "ruport"
+
+  class MyReport < Ruport::Report
+    generate { load_csv("foo.csv").to_pdf }
+  end
+
+  MyReport.run { |r| puts r.results }
+</code></pre>
+
+h2. +++Talking to SQL Databases
 
 <hr>
 
@@ -178,26 +184,26 @@ strings, which is important for loading things such as database dumps.  Another
 feature of Ruport's query model is that it supports treating result sets as if
 they were regular enumerable objects, which can be very useful.
 
-The general use case will be to generate a DataSet from a SQL query's results.
-This can then be used in all the ways a regular Ruport DataSet can be used. This
+The general use case will be to generate a Data::Table from a SQL query's results.
+This can then be used in all the ways a regular Ruport Data::Table can be used. This
 is quite easy to do.
 
 Assuming you already have a default source set, the example below shows how to
-run a trivial query and get back a DataSet.
+run a trivial query and get back a Data::Table.
 
 <pre><code>
-  my_data_set = Ruport::Query.new("select * from foo").result
+  my_data = Ruport::Query.new("select * from foo").result
 </code></pre>
 
 Sometimes you might want to load a complex query fom a file.  Ruport's query
 model allows this simply by setting the <code>:origin</code>
 
 <pre><code>
-  my_data_set = Ruport::Query.new("some_sql_file.sql",:origin => :file).result
+  my_data = Ruport::Query.new("some_sql_file.sql",:origin => :file).result
 </code></pre>
 
-You can also treat queries as enumerable objects, which will yield DataRows by
-default.
+You can also treat queries as enumerable objects, which will yield Data::Record 
+objects by default.
 
 The bit of code below will return an array of the values for "some_field" in
 each row of the result set.
@@ -252,7 +258,7 @@ h3. Caching
 
 Ruport's Query object has simple caching capabilities which may come in handy if
 you want to speed up access to the same result set to be used in a number of
-ways.  Think of a cached query object as a sort of 'dataset generator'.
+ways.  Think of a cached query object as a sort of 'data table generator'.
 
 When caching is enabled, the next set of data which is loaded through the query
 object will be stored, and this set of data will be returned to you for each
@@ -365,20 +371,20 @@ route to fast results is some good SQL.  Eventually, Ruport will have some sort
 of DSL to help you with this, but for now, we trust you to know your SQL. ;)
 
 Assuming you've got some decent SQL, and you still need to optimize performance,
-you should probably never, ever try to build a DataSet with greater 
+you should probably never, ever try to build a Data::Table with greater 
 than 5 or 10k records. This performance issue may be overcome in the future if I
-see sufficient need for it in the community, but for now, DataSets are really not
+see sufficient need for it in the community, but for now, Data::Table are really not
 meant to handle that much data quickly.
 
 Therefore, you will probably want to use row by row operations.  This way you
 can quickly throw out data you are uninterested in before you ever stick it in a
-DataSet.
+Data::Table.
 
 However, you'll also want to strip down the rows to something more lightweight.
 DBI::Rows are currently the lightest it gets using Ruport, which when used,
 pretty much has the same efficiency as Ruby DBI itself.
 
-The following example shows how you can build a DataSet using DBI::Rows as the
+The following example shows how you can build a Data::Table using DBI::Rows as the
 base and doing some conditional logic that will help lighten the load.
 
 <pre><code>
@@ -387,7 +393,7 @@ base and doing some conditional logic that will help lighten the load.
   a = Ruport::Query.new("select * from foo",:raw_data => true)
  
   #set up a dataset specifying only the fields I want to capture
-  data = Ruport::DataSet.new %w[fields i am interested in]
+  data = Ruport::Data::Table.new :column_names => %w[fields i am interested in]
 
   #append the data to my set if the "name" field starts with a lowercase 'g'
   a.inject(data) { |s,r|
@@ -397,7 +403,7 @@ base and doing some conditional logic that will help lighten the load.
 
 This code attacks efficiency in a lot of ways.  First of all, it throws out any
 uninteresting columns, saving space and time.  Secondly, it does a conditional
-before you load data into your DataSet, which is much better than converting all
+before you load data into your Data::Table, which is much better than converting all
 of the data and then dropping some rows.  Finally, it uses DBI::Rows instead of
 DataRows for its iterator, ensuring that a much lighter structure is used for
 comparison.
@@ -429,7 +435,7 @@ focus specifically on the features Ruport adds to ActiveRecord through the
 acts_as_reportable system.
 
 Ruport's rails support gives you a nice <code>ActiveRecord#to_ds</code> which
-allows you to convert a model or a find on a model into a DataSet.  From there,
+allows you to convert a model or a find on a model into a Data::Table.  From there,
 you are free to use all of Ruport's data manipulation tools.
 
 It also provides some formatting shortcuts

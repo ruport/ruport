@@ -132,9 +132,9 @@ module Ruport
       options[:origin] ||= :string
       options[:source] ||= @source
 
-      q = Query.new(sql, options)
+      q = options[:query_obj] || Query.new(sql, options)
       if options[:yield_type].eql?(:by_row)
-        q.each { |r| action.call(r) }
+        q.each { |r| yield(r) }
       elsif options[:as]
         Format.table :data => q.result, :plugin => options[:as]
       else
