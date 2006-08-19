@@ -1,4 +1,7 @@
 require 'bigdecimal'
+require 'tempfile'
+
+class RenderingError < RuntimeError; end
 
 module Ruport
   class Format::Plugin
@@ -76,6 +79,83 @@ module Ruport
       end
       
       plugin_name :csv
+      register_on :table_engine
+    end
+
+    class LatexPlugin < Format::Plugin
+    
+      helper(:init_plugin) { |eng|
+        @report_header = "\\documentclass[11pt]{article}\n"
+        @report_header << "\\RequirePackage{lscape,longtable}\n"
+        @report_header << "\\begin{document}\n"
+
+        @report_footer = "\\end{document}\n"
+      }
+
+      renderer :table do 
+        self.options = {} if self.options.nil?
+
+        @body = "\\begin{longtable}[c]{ "
+        @data.column_names.each do
+          @body << " p{2cm} "
+        end
+        @body << " }\n"
+        @body << "\\hline\n"
+        counter = 0
+        @data.column_names.each do |t|
+          @body << " & " unless counter == 0
+          @body << "\\textsc{#{t}}"
+          counter += 1
+        end
+        @body << "\\\\\n"
+        @body << "\\hline\n"
+        @body << "\\endhead\n"
+        @body << "\\endfoot\n"
+        @body << "\\hline\n"
+        @data.each do |r|
+          @body << r.data.join(" & ") + "\\\\\n"
+          @body << "\\hline\n"
+        end
+        unless options[:caption].nil?
+          @body << "\\caption[#{options[:caption]}]{#{options[:caption]}}\n"
+        end
+        @body << "\\end{longtable}\n"
+
+        if options[:format] == :pdf
+          generate_pdf
+        else
+          @report_header + @body + @report_footer
+        end
+      end
+     
+      # much of the code in this method is derived from the rtex rails plugin, written
+      # by Bruce Williams.
+      # http://codefluency.com/code/rtex-rails-plugin/
+      action :generate_pdf do
+
+        temp = Tempfile.new('ruport')
+        temp.binmode # For Windows
+        temp.puts @report_header + @body + @report_footer
+        temp.close
+        latex_return = ''
+        Dir.chdir(File.dirname(temp.path)) do
+          latex_return = `pdflatex --interaction=nonstopmode '#{temp.path}'`
+        end
+
+        pdfpath = temp.path.sub(/\..*?$/,'')+'.pdf'
+      
+        File.unlink temp.path.sub( /\..*?$/,'.aux')
+        File.unlink temp.path.sub( /\..*?$/,'.log')
+
+        if File.exists?(pdfpath)
+          return File.open(pdfpath,'rb'){ |f| f.read }
+          File.unlink pdfpath
+        else
+          raise RenderingError, "Could not generate PDF:\n#{latex_return}"      
+        end
+      end
+
+      plugin_name :latex
       register_on :table_engine
     end
 
