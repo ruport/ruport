@@ -149,6 +149,7 @@ module Ruport
 
         if File.exists?(pdfpath)
           return File.open(pdfpath,'rb'){ |f| f.read }
+          #FIXME: the line below will never be executed
           File.unlink pdfpath
         else
           raise RenderingError, "Could not generate PDF:\n#{latex_return}"      
