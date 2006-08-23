@@ -16,7 +16,7 @@ module Ruport
     # it using the requested plugin. If :find is specified as an option
     # it is passed directly on to ActiveRecords find method
     #
-    #   User.formatted_table(:pdf, :find => "age > 18")
+    #   User.formatted_table(:pdf, :find => {:conditions => "age > 18"})
     def formatted_table(type,options={})
       to_table(:find => options[:find],:columns => options[:columns]).as(type){ |e|
         yield(e) if block_given?
@@ -27,7 +27,7 @@ module Ruport
     # If :find is supplied as an option it is passed directly on to
     # the models find method.
     #
-    #   data = User.to_table(:find => "age > 18")
+    #   data = User.to_table(:find => {:conditions => "age > 18"})
     def to_table(options={})
       options[:columns] ||= column_names
        Ruport::Data::Table.new(
