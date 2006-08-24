@@ -7,7 +7,7 @@ These are meant to cover the basics, for more complex needs, see the section on
 Extension Techniques.
 <br><br>
 
-h2. +++Loading CSVs
+h2. Loading CSVs
 
 <hr>
 
@@ -127,7 +127,7 @@ The example below shows a CSV being loaded and converted to PDF
   MyReport.run { |r| puts r.results }
 </code></pre>
 
-h2. +++Talking to SQL Databases
+h2. Talking to SQL Databases
 
 <hr>
 
@@ -353,16 +353,6 @@ do something like this:
 
 This will return the row if it is available, otherwise, it will return nil.
 
-Please note that although Generators can be handy, they are quite slow.  This is
-because they are implemented using continuations.  So if performance is a
-concern, you should probably use some other way of iterating through your data,
-and you should probably also read the next section.
-
-For the adventurous, Generator is much faster in Ruby 1.9.  For the slightly
-less adventurous, you can probably hotswap a solution to RubyQuiz 66
-(http://rubyquiz.com/quiz66.html) if you really want to get wild and crazy.  
-For the not so adventurous, forget you read this paragraph :)
-
 h3. Optimizing for Performance
 
 The first thing to note is that SQL will (almost) always be faster than any ruby
@@ -470,16 +460,16 @@ If you want to enable Ruport support in all models, you can do this:
 
 Be forewarned however, that might be overzealous
 
-h3. Easy DataSet Conversion
+h3. Easy Data::Table Conversion
 
 If you've got a relatively small model and you need most of the data from it to
-do some reporting, it couldn't get easier to convert it into a DataSet:
+do some reporting, it couldn't get easier to convert it into a Data::Table:
 
 <pre><code>
-  User.to_ds
+  User.to_table
 </code></pre>
 
-You also can set the columns of the DataSet here, if you'd like.  
+You also can set the columns of the Data::Table here, if you'd like.  
 
 <pre><code>
   User.to_ds :columns => %w[ name email ]
@@ -492,18 +482,18 @@ columns you do not plan on displaying.
 h3. Using ActiveRecord.find
 
 For dealing with models which wrap a lot of data, sucking the entire table into
-a DataSet would be costly (and most likely painful).
+a Data::Table would be costly (and most likely painful).
 
 Therefore, you can freely use ActiveRecord's find method on the fly while you
 are converting.  To do this, pass whatever options you would pass
 ActiveRecord.find via the <tt>:find</tt> keyword:
 
 <pre><code>
-  User.to_ds :find => { :conditions => [ "name = ?", "greg" ] }
+  User.to_table :find => { :conditions => [ "name = ?", "greg" ] }
 </code></pre>
 
 The find will be executed first and then the results will be converted to a
-DataSet.
+Data::Table.
 
 h3. Formatting Shortcuts
 
@@ -511,7 +501,7 @@ Ruport will also define a formatted_table method which you might find helpful in
 your application helpers.  This is almost equivalent to: 
 
 <pre><code>
-  some_data_set.as(:format_type) { |engine| ... } 
+  some_data_table.as(:format_type) { |engine| ... } 
 </code></pre>
 
 The difference is you can take advantage of AR finds.  Here are some examples
@@ -561,5 +551,5 @@ containing 'foo', and then send it back to the browser as
 </code></pre>
 
 Keep in mind that your finds are just ActiveRecord finds and the results are
-just the same as Ruport's DataSets and Table outputs.  This means you are free
+just the same as Ruport's Data::Table and Format.table outputs.  This means you are free
 to use the best of both AR and Ruport to accomplish your tasks.

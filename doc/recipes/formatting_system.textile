@@ -10,8 +10,8 @@ behavior depending on the engine which calls them.
 These plugins and engines are then provided via a standard interface, making it
 easy to unify diverse formats in your reports.
 
-Ruport current has two built in engines(table/document) and four built in
-plugins(pdf,text,csv,html).  These will surely grow in the coming months.
+Ruport current has four built in engines(table/document/graph/invoice) and five built in
+plugins(pdf,text,csv,html,svg).  These will surely grow in the coming months.
 
 This section is about using Ruport's inbuilt formatting functionality.  For
 details on how to create your own plugins and engines, see the *Extending
@@ -139,7 +139,7 @@ you'd be in the same boat as me.
 There is a much nicer way of dealing with these tools, so long as you are using
 a DataSet or an ActiveRecord object.
 
-h4. DataSet Shortcut
+h4. Data::Collection Shortcut
 
 <tt>DataSet#as</tt> is a simple wrapper around Format.table which saves a few
 keystrokes and makes things look nicer (I think)
@@ -176,5 +176,11 @@ you are interested in making use of Ruport's hooks into it, be sure to check out
 that section.
 
 h2. Structured Documents
+
+h3. The Document Engine
+
+h3. Building Invoices with Ruport
+
+h3. Graphing support
 
 <hr>

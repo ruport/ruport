@@ -149,9 +149,12 @@ module Ruport
           }
         }
         
-        raise InvalidGraphOptionError, 'You must provide a width before rendering a graph' if eng.width.nil?
-        raise InvalidGraphOptionError, 'You must provide a height before rendering a graph' if eng.height.nil?
-        raise InvalidGraphOptionError, 'You must provide a style before rendering a graph' if eng.style.nil?
+        raise InvalidGraphOptionError, 
+        'You must provide a width before rendering a graph' if eng.width.nil?
+        raise InvalidGraphOptionError, 
+        'You must provide a height before rendering a graph' if eng.height.nil?
+        raise InvalidGraphOptionError, 
+        'You must provide a style before rendering a graph' if eng.style.nil?
         if eng.style != :area && eng.style != :bar &&
                                  eng.style != :line &&
                                  eng.style != :smiles &&

@@ -54,7 +54,6 @@ section at the end of this book for links to a number of great places to go for
 help.
 
 <%= chapter "data_acquisition" %>
-<%= chapter "data_set_manipulation" %>
 <%= chapter "formatting_system" %>
 <%= chapter "running_reports" %>
 <%= chapter "email" %>
