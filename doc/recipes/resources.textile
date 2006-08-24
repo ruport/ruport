@@ -14,7 +14,7 @@ h2. General Links
 
 * Subversion Browser
 
-  <a href="http://rubyforge.org/scm/?group_id=856">http://rubyforge.org/scm/?group_id=856</a>
+  <a href="http://stonecode.svnrepository.com/ruport/trac.cgi/browser"</a>
 
 h2. Community
 

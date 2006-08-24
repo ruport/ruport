@@ -46,7 +46,7 @@ h4. What if I don't want to display fields?
 
 If your data that you pass in to the table object does not respond to 'fields',
 it will not display the fields by default.  However, if you are working with
-DataSets or some other format that *does* display field names by default 
+Data::Table or some other format that *does* display field names by default 
 and you want to turn them off, you can easily do so:
 
 <pre><code>
@@ -56,7 +56,7 @@ and you want to turn them off, you can easily do so:
                        :show_field_names => false
  
   #Using the table object method
-  table = Ruport::Format.table_object :data => my_data_set, :plugin => :csv
+  table = Ruport::Format.table_object :data => my_data, :plugin => :csv
   table.show_field_names = false
   table.render
 
@@ -77,7 +77,7 @@ you do not want to provide a harvest for spammers, so you'd want to munge the
 output.
 
 Ruport makes this easy for you.  The code below does the proper munging on a
-DataSet which contains the field "email" :
+Data::Table which contains the field "email" :
 
 <pre><code>
 table = Format.table_object :data => my_data, :plugin => :html
@@ -97,9 +97,6 @@ This means you could have easily set all the values to a fake address:
 table.rewrite_column("email") { "none@none.com" }
 </code></pre>
 
-This functionality can also be used to implement calculated fields, see the
-section *DataSet Manipulation - Calculated Fields* to see how
-
 h3. Shortcuts for rendering tables
 
 If <tt>Format.table</tt> seems a little too basic for your needs and
@@ -107,18 +104,18 @@ If <tt>Format.table</tt> seems a little too basic for your needs and
 you'd be in the same boat as me.
 
 There is a much nicer way of dealing with these tools, so long as you are using
-a DataSet or an ActiveRecord object.
+a Data::Table or an ActiveRecord object.
 
 h4. Data::Collection Shortcut
 
-<tt>DataSet#as</tt> is a simple wrapper around Format.table which saves a few
+<tt>Data::Collection#as</tt> is a simple wrapper around Format.table which saves a few
 keystrokes and makes things look nicer (I think)
 
-The following code will output a DataSet as a CSV:
+The following code will output a Data::Table as a CSV:
 
 <pre><code>
-  ds = DataSet.new %w[a b], :data => [[1,2],[3,4]]
-  puts ds.as(:csv)
+  table = Data::Table.new :column_names => %w[a b], :data => [[1,2],[3,4]]
+  puts table.as(:csv)
 </code></pre>
 
 Now if you needed to access the engine to do any of the already mentioned tasks,
@@ -126,14 +123,14 @@ you easily could by providing a block.  For example, say you wanted to turn off
 field names:
 
 <pre><code>
-  puts ds.as(:csv) { |engine| engine.show_field_names = false }
+  puts table.as(:csv) { |engine| engine.show_field_names = false }
 </code></pre>
 
 h4. ActiveRecord shortcut
 
 You may have noticed that <tt>acts_as_reportable</tt> provides a
 formatted_table method.  This allows you to pass in an AR find
-(optionally) and then have it converted to a DataSet.  This method takes a
+(optionally) and then have it converted to a Data::Table.  This method takes a
 block which yields the table engine, so the same task shown above can be used
 to dump an AR model without it's field names:
 
