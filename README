@@ -42,6 +42,10 @@
 #   (available via rubygems)
 #
 #   MailFactory: For email support. 
+#   (available via rubygems)
+#
+#   Scruffy: For SVG Graph Support
+#   (available via rubygems)
 #
 # Note that by installing any of the dependencies, either via gems or manually,
 # their functionality will automatically be enabled.
