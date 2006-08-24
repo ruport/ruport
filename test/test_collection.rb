@@ -1,6 +1,6 @@
 require "test/unit"
 require "ruport"
-
+begin; require "rubygems"; rescue LoadError; nil; end
 class TestCollection < Test::Unit::TestCase
 
 	def setup
