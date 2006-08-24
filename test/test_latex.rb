@@ -12,16 +12,9 @@ class TestLatex < Test::Unit::TestCase
   def test_table_to_latex
     report = Ruport::Format.table_object :plugin => :latex, :data => @data
     output = report.render
-    assert_not_equal nil, output
+    assert_equal "\\documentclass", output[/\\documentclass/]
+    assert_equal "\\begin{document}", output[/\\begin\{document\}/]
+    assert_equal "\\end{document}", output[/\\end\{document\}/]
   end
 
-  def test_table_to_pdf
-    unless `pdflatex` 
-      report = Ruport::Format.table_object :plugin => :latex, :data => @data
-      report.options = {:format => :pdf}
-      output = report.render
-
-      assert_not_equal nil, output
-    end
-  end
 end

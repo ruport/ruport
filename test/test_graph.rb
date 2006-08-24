@@ -14,45 +14,36 @@ class TestGraph < Test::Unit::TestCase
   # basic test to ensure bar charts render
   def test_bar
     graph = Ruport::Format.graph_object :plugin => :svg, :data => @data
-    graph.options = {:graph_style => :bar}
+    graph.title = "A Simple Bar Graph"
+    graph.width = 600
+    graph.height = 500
+    graph.style = :bar
     output = graph.render
 
     assert_not_equal nil, output
   end
 
-  # basic test to ensure horizontal pie charts render
-  def test_bar_horizontal
-    graph = Ruport::Format.graph_object :plugin => :svg, :data => @data
-    graph.options = {:graph_style => :bar_horizontal}
-    output = graph.render
-
-    assert_not_equal nil, output
-  end
-  
   # basic test to ensure line charts render
   def test_line
     graph = Ruport::Format.graph_object :plugin => :svg, :data => @data
-    graph.options = {:graph_style => :line}
+    graph.title = "A Simple Line Graph"
+    graph.width = 600
+    graph.height = 500
+    graph.style = :line
+    
     output = graph.render
-
-    assert_not_equal nil, output
-  end
-  
-  # basic test to ensure pie charts render
-  def test_pie
-    graph = Ruport::Format.graph_object :plugin => :svg, :data => @data
-    graph.options = {:graph_style => :pie}
-    output = graph.render
-
     assert_not_equal nil, output
   end
  
   # ensure an exception is raised if the user doesn't name every column
   def test_mismatched_headings
     graph = Ruport::Format.graph_object :plugin => :svg, :data => @data_mismatched_headings
-    graph.options = {:graph_style => :line}
+    graph.title = "Mismatched Headings"
+    graph.width = 600
+    graph.height = 500
+    graph.style = :line
 
-    assert_raises(ArgumentError) {
+    assert_raises(InvalidGraphDataError) {
       output = graph.render
     }
   end
@@ -60,7 +51,10 @@ class TestGraph < Test::Unit::TestCase
   # test to ensure floats can be graphed
   def test_floats
     graph = Ruport::Format.graph_object :plugin => :svg, :data => @data_float
-    graph.options = {:graph_style => :line}
+    graph.title = "Graphing Floats"
+    graph.width = 600
+    graph.height = 500
+    graph.style = :line
     output = graph.render
 
     assert_not_equal nil, output
@@ -69,33 +63,26 @@ class TestGraph < Test::Unit::TestCase
   # ensure an exception is raised if non numeric data is graphed
   def test_not_numbers
     graph = Ruport::Format.graph_object :plugin => :svg, :data => @data_not_numbers
-    graph.options = {:graph_style => :line}
+    graph.title = "Graphing Things That Aren't Numbers"
+    graph.width = 600
+    graph.height = 500
+    graph.style = :line
     
-    assert_raises(ArgumentError) {
+    assert_raises(InvalidGraphDataError) {
       output = graph.render
     }
   end
 
-  # ensure an exception is raised if user tries to render a graph without setting any options
-  def test_no_options
+  # ensure an exception is raised if non numeric data is graphed
+  def test_missing_required_option
     graph = Ruport::Format.graph_object :plugin => :svg, :data => @data
+    graph.title = "Rendering a graph with a missing option"
+    graph.height = 500
+    graph.style = :line
     
-    assert_raises(RuntimeError) {
+    assert_raises(InvalidGraphOptionError) {
       output = graph.render
     }
-
-  end
-  
-  # test to make sure user requested options are applied to the resulting graph
-  def test_options_applied_to_rendered_graph
-    graph = Ruport::Format.graph_object :plugin => :svg, :data => @data
-    graph.options = {:graph_style => :line, :graph_title => 'Test', :show_graph_title => true, :no_css => true}
-    output = graph.render
-    
-    # ensure the requested graph title is included in the SVG output. If that's there, we can
-    # assume the rest are as well
-    assert_not_equal nil, output[/class='mainTitle'/]
-
   end
 
 end

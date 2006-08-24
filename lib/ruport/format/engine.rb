@@ -105,6 +105,8 @@ module Ruport
   
   class Format::Engine::Graph < Ruport::Format::Engine
     
+    attributes [:width, :height, :style, :title]
+
     renderer do
       super
       active_plugin.render_graph

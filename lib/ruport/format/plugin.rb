@@ -1,3 +1,6 @@
+class InvalidGraphDataError < RuntimeError; end
+class InvalidGraphOptionError < RuntimeError; end
+
 require 'bigdecimal'
 require 'tempfile'
 
@@ -121,39 +124,7 @@ module Ruport
         end
         @body << "\\end{longtable}\n"
 
-        if options[:format] == :pdf
-          generate_pdf
-        else
-          @report_header + @body + @report_footer
-        end
-      end
-     
-      # much of the code in this method is derived from the rtex rails plugin, written
-      # by Bruce Williams.
-      # http://codefluency.com/code/rtex-rails-plugin/
-      action :generate_pdf do
-
-        temp = Tempfile.new('ruport')
-        temp.binmode # For Windows
-        temp.puts @report_header + @body + @report_footer
-        temp.close
-        latex_return = ''
-        Dir.chdir(File.dirname(temp.path)) do
-          latex_return = `pdflatex --interaction=nonstopmode '#{temp.path}'`
-        end
-
-        pdfpath = temp.path.sub(/\..*?$/,'')+'.pdf'
-      
-        File.unlink temp.path.sub( /\..*?$/,'.aux')
-        File.unlink temp.path.sub( /\..*?$/,'.log')
-
-        if File.exists?(pdfpath)
-          return File.open(pdfpath,'rb'){ |f| f.read }
-          #FIXME: the line below will never be executed
-          File.unlink pdfpath
-        else
-          raise RenderingError, "Could not generate PDF:\n#{latex_return}"      
-        end
+        @report_header + @body + @report_footer
       end
 
       plugin_name :latex
@@ -166,54 +137,48 @@ module Ruport
         # check the supplied data can be used for graphing
         data.each { |r|
           if data.column_names.size != r.data.size
-            raise ArgumentError, "Column names and data do not match"           
+            raise InvalidGraphDataError, "Column names and data do not match"           
           end 
           r.data.each { |c|
             begin
               c = BigDecimal.new(c) unless c.kind_of?(Float) || 
                 c.kind_of?(Fixnum) || c.kind_of?(BigDecimal)
             rescue
-              raise ArgumentError, "Unable to convert #{c.to_s} into a number" 
+              raise InvalidGraphDataError, "Unable to convert #{c.to_s} into a number" 
             end
           }
         }
         
-        raise RuntimeError, 'You must provide an options hash before rendering a graph' if self.options.nil?
-
-        # load the appropriate SVG::Graph class based on the graph_style option
-        case options[:graph_style]
-        when :bar
-          require "SVG/Graph/Bar"
-          graphclass = SVG::Graph::Bar
-        when :bar_horizontal
-          require "SVG/Graph/BarHorizontal"
-          graphclass = SVG::Graph::BarHorizontal
-        when :line
-          require "SVG/Graph/Line" 
-          graphclass = SVG::Graph::Line
-        when :pie
-          require "SVG/Graph/Pie" 
-          graphclass = SVG::Graph::Pie
-        else
-          raise "Unsupported graph type requested"
+        raise InvalidGraphOptionError, 'You must provide a width before rendering a graph' if eng.width.nil?
+        raise InvalidGraphOptionError, 'You must provide a height before rendering a graph' if eng.height.nil?
+        raise InvalidGraphOptionError, 'You must provide a style before rendering a graph' if eng.style.nil?
+        if eng.style != :area && eng.style != :bar &&
+                                 eng.style != :line &&
+                                 eng.style != :smiles &&
+                                 eng.style != :stacked 
+          raise InvalidGraphOptionError, 'Invalid graph style'
         end
 
-        # create an instance of the graphing class
-        options[:fields] = data.column_names
-        @graph = graphclass.new(options)
+        require 'scruffy'
+        @graph = Scruffy::Graph.new
+        @graph.title = eng.title unless eng.title.nil?
+        @graph.theme = Scruffy::Themes::Mephisto.new  
+        @graph.point_markers = @data.column_names  
+        @graph_style = eng.style
+        @graph_width = eng.width
+        @graph_height = eng.height
       }
 
       renderer :graph do
         
         data.each_with_index { |r,i|
-          @graph.add_data({
-            :data => r.data,
-            :title => r.tags[0] || 'series ' + (i+1).to_s
-          })
+          @graph.add(@graph_style, 
+                     r.tags[0] || 'series ' + (i+1).to_s, 
+                     r.data)
         }
         
         # return the rendered graph
-        @graph.burn()
+        @graph.render(:size => [@graph_width, @graph_height])
       end
       
       plugin_name :svg
