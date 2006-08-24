@@ -14,7 +14,9 @@ h2. General Links
 
 * Subversion Browser
 
-  <a href="http://stonecode.svnrepository.com/ruport/trac.cgi/browser"</a>
+  <a href="http://stonecode.svnrepository.com/ruport/trac.cgi/browser"
+  http://stonecode.svnrepository.com/ruport/trac.cgi/browser
+  </a>
 
 h2. Community
 
