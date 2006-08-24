@@ -1,5 +1,5 @@
 require 'ruport'
-require 'rubygems' rescue LoadError nil
+begin; require 'rubygems'; rescue LoadError; nil; end
 require 'test/unit'
 
 class MockPlugin < Ruport::Format::Plugin
