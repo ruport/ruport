@@ -1,6 +1,6 @@
 require "test/unit"
 require "ruport"
-require "rubygems" rescue LoadError nil
+begin; require "rubygems"; rescue LoadError; nil; end
 
 include Ruport
 
