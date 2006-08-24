@@ -22,7 +22,9 @@ module Ruport::Data
     #
     # my_collection.as(:csv) #=> "1,2,3\n4,5,6"
     def as(type)
-      Ruport::Format.table :data => self, :plugin => type
+      eng = Ruport::Format.table_object :data => self, :plugin => type
+      yield(eng) if block_given?
+      eng.render
     end
 
     # Converts any Collection object to a Data::Set

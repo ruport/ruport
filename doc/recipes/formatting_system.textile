@@ -37,40 +37,10 @@ most basic usage of this method would be something like:
 However, most of the time you are going to want to do something with your data
 at output time, and it is possible to do that.  In this section we will field
 name pretty printing, rewriting columns as you render them, and shortcuts for
-using the formatting system with ActiveRecord and with DataSets.
+using the formatting system with ActiveRecord and with Ruport's Data::Collection
+objects.
 
 h3. Pretty Field Names
-
-The first thing the formatting engine does is make a copy of your data.  This
-means you are free to make modifications to the data stored in your engine.
-Most of the time we will be dealing with DataSets inside of the formatting
-system, especially since ActiveRecord objects are converted to DataSets when
-used within Ruport.  One nice trick about a DataSet is that it maintains field
-names seperate from its DataRows.
-
-This means we can easily reassign the field names to something nice.
-For example, the code below shows a basic DataSet which is given pretty field
-names at rendering time.
-
-Notice that for this, we need to pull the engine object itself to make the
-modification, rather than just rendering directly.  There are shortcuts for
-this, which you can see at the end of this section.
-
-<pre><code>
-  d = Ruport::DataSet.new %w[a b], :data => [[1,2],[3,4]]
-  table = Ruport::Format.table_object :data => d, :plugin => :csv
-  table.data.fields = %w[Apples Bananas]
-  puts table.render #=> "Apples,Bananas\n1,2\n3,4\n"
-</code></pre>
-
-The neat thing about the above code is that since you stored a reference to a
-Table object, you can go ahead and print out an html table from the same data
-set with just two additional lines
-
-<pre><code>
-table.plugin = :html
-puts table.render
-</code></pre>
 
 h4. What if I don't want to display fields?
 

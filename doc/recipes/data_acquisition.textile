@@ -90,14 +90,14 @@ even though your results are converted into Data::Table, you will see a much sma
 performance hit than if Ruport used the standard library beneath it.
 
 Sometimes when dealing with very big CSVs, it's necessary to do row by row
-processing for performance reasons.  This makes it possible to create DataRows
+processing for performance reasons.  This makes it possible to create Records
 for only the data you're actually interested in.
 
 Below is a snippet of row by row processing for Data::Table creation from CSV.  The
 block yields two objects, the first is the Data::Table which will represent your
 data, and the second is an array representing the current row.  This is useful
 for inspecting the Arrays to see if you're interested in the data before
-generating a DataRow for them.  The snippet below will create a Data::Table which
+generating a Record for them.  The snippet below will create a Data::Table which
 consists of just rows in which the first column is an even number.
 
 <pre><code>
@@ -395,7 +395,7 @@ This code attacks efficiency in a lot of ways.  First of all, it throws out any
 uninteresting columns, saving space and time.  Secondly, it does a conditional
 before you load data into your Data::Table, which is much better than converting all
 of the data and then dropping some rows.  Finally, it uses DBI::Rows instead of
-DataRows for its iterator, ensuring that a much lighter structure is used for
+Records for its iterator, ensuring that a much lighter structure is used for
 comparison.
 
 This should result in a hefty performance gain.
