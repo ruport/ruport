@@ -1,11 +1,12 @@
 require "ruport"
+
 begin; require 'rubygems'; rescue LoadError; nil; end
 require "test/unit"
 
-class TestGraph < Test::Unit::TestCase
+begin
+  require 'scruffy'
 
-  module GraphTests
-
+  class TestGraph < Test::Unit::TestCase
     def setup
       @data = [[1,2,3,2],[3,4,5,6]].to_table(%w[a b c d])
       @data_mismatched_headings = [[3,2],[3,4]].to_table(%w[a b c])
@@ -87,12 +88,6 @@ class TestGraph < Test::Unit::TestCase
       }
    end
   end
-  begin 
-    require 'scruffy'
-    include GraphTests
-  rescue LoadError
-    def test_skip(); assert true; end
-    puts "Skipping Graph Tests (needs scruffy)"
-  end
-
+rescue LoadError
+  puts "Skipping Graph Tests (needs scruffy)"
 end
