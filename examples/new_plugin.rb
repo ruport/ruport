@@ -1,9 +1,11 @@
 require "rubygems"
 require "ruport"
 
+# this shows how you can alter an existing plugin's rendering.
+
 include Ruport
 
-class Format::Plugin::Text < Ruport::Format::Plugin
+class Text < Ruport::Format::Plugin
   renderer :table do
     data.inject(rendered_field_names) { |s,r| 
       s << r.to_a.join("()") << "\n" 
@@ -14,6 +16,7 @@ class Format::Plugin::Text < Ruport::Format::Plugin
     data.column_names.join("---") << "\n"
   end
 
+  plugin_name :text
   register_on :table_engine
 end
 

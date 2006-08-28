@@ -1,3 +1,4 @@
+#this demonstrates how to create a complete engine / plugin setup.
 require "ruport"
 
 include Ruport

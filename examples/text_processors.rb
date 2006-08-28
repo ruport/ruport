@@ -1,6 +1,5 @@
 require "ruport"
 
-
 class MyReport < Ruport::Report
   prepare {
     self.results = "Foo Bar Baz"

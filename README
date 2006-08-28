@@ -44,7 +44,7 @@
 #   MailFactory: For email support. 
 #   (available via rubygems)
 #
-#   Scruffy: For SVG Graph Support
+#   Scruffy: For Graph Support
 #   (available via rubygems)
 #
 # Note that by installing any of the dependencies, either via gems or manually,
@@ -99,28 +99,6 @@
 # For further reading and specific examples, please explore the examples/ 
 # directory in the source tree and read the Ruport Cookbook.
 #
-# = Caveats 
-#
-# Ruport is experimental software.  It's not completely tested and the API is
-# changing rapidly from version to version.  Test suites are becoming
-# increasingly robust, but have not identified all possible edge cases.  If
-# Ruport goes wild on you, it's because it hasn't been tamed yet.
-#
-# The functionality is also not complete yet.  There is a lot left to be added
-# and there is a lot to think about.  If you find yourself wondering why
-# feature foo is in Ruport, chances are it just hasn't been written yet.
-#
-# Documentation so far is something that is a struggle to keep up with.  As of
-# this release, there is at least partial documentation for the API.  This
-# will continue to get better as time goes on.
-#
-# Platform independence is a priority, but I don't absolutely always have
-# access to every OS / DBMS combination, so if something breaks on your
-# system, please feel free to yell loud at the mailing list.
-#
-# That having been said, I do use ruport in my daily work.  That means that it
-# will probably have at least something you will find useful.  Or so I hope.
-#
 # = Resources
 #
 # The best way to get help and make suggestions is the Ruport mailing list.
@@ -144,7 +122,7 @@
 #   - The latest stable API documentation is available at:
 #     http://reporting.stonecode.org/docs
 #
-# There also will be some tutorials on ruport.infogami.com
+# There also will be some tutorials on reporting.stonecode.org
 #
 # If you are interested in developing Ruport, please *never* study code in
 # official releases.  As this software is in it's early stages, it's essential
@@ -156,47 +134,16 @@
 #
 #   svn co svn://rubyforge.org//var/svn/ruport/trunk/
 #
+# - Or if you are interested in the latest updates to the stable branch
+#
+#   svn co svn://rubyforge.org//var/svn/ruport/branches/stable
+#
 # Those who would like to become regular contributors will be given write
 # access.  Also, anyone interested in the internal design and project
 # management aspects of Ruport can request to be added to our Trac
 # account.  This is primarily intended for people who are working on the
-# project actively, though.
 #
-# = Background / Summary 
-#  
-# Ruport aims to help you fetch data from various sources, perform 
-# manipulations on them as needed, and then output them in a variety
-# of formats easily.  The powerful ERb templating engine is integrated
-# to let you embed Ruport code into your formatted data. Also, Ruport
-# provides a high level interface to databases, to make getting
-# your data easy.
 #
-# The core of Ruport is it's datastructures.  Data::Record, Data::Table, and
-# Data::Set provide tools that help with manipulation and preperation of data
-# for reporting.
-#
-# The rest of the code is organized into three main models, Report, Query,
-# and Format.  Each is meant to be a high level interface to Ruport.
-# The inner classes can be used where a decent level of customization
-# is needed.
-#
-# Report is in some sense the 'controller' of your application, and provides
-# methods to help you write a Reporting application
-#
-# Format provides support for building filters and specialized formatting
-# systems. 
-# 
-# Query currently provides a high level interface to DBI.
-# If you would like to query a database or load a sql dump, 
-# this class can help you do that.  It can generate Data::Table objects on 
-# the fly, or feed you DBI:Rows, depending on what you need.
-#
-# Finally, Please consult the API documentation and/or source code for more
-# information. (http://reporting.stonecode.org/docs).  Not all classes have been
-# documented but the ones that have may be easier to understand when their docs
-# have been read.  Also, feel free to contribute documentation.
+# Thanks for checking out Ruport!
 #
 # If you have any questions or concerns, hop on the mailing list and fire away!
-#
-# Thanks for downloading my software and I hope you enjoy it!
-# -Greg
