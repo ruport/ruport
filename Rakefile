@@ -35,7 +35,7 @@ spec = Gem::Specification.new do |spec|
   spec.bindir = "bin"
   spec.executables = FileList["rope"]
 	spec.has_rdoc = true
-	spec.extra_rdoc_files = %w{README LICENSE TODO AUTHORS CHANGELOG}
+	spec.extra_rdoc_files = %w{README LICENSE TODO AUTHORS}
 	spec.rdoc_options << '--title' << 'Ruport Documentation' <<
 	                     '--main'  << 'README' << '-q'
   unless LEAN
