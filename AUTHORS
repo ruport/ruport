@@ -2,8 +2,16 @@
 
 - {Gregory Brown}[mailto:gregory.t.brown@gmail.com]
 - {Dudley Flanders}[mailto:dudley@misnomer.us]
+- {James Healy}[mailto:jimmy@deefa.com]
+- Dinko Mehinovic
 
 = Contributors / People we've (legally) stolen from:
+
+Ian Broadfoot:
+- RuportDay 2006 Participant
+
+Eric Pugh:
+- RuportDay 2006 Participant
 
 James Edward Gray II:
   - Original inspiration via query.rb
@@ -13,17 +21,4 @@ Francis Hwang:
 - SQLSplit
 
 Simon Claret:
-- PDF table support 
-
-Dinko Mehinovic:
-- util/release/raa.rb
-- util/release/freshmeat.rb
-
-James Healy:
-- original inspiration for Invoice engine
-- SVG::Graph integration
-
-The SVG Graph support is made possible by SVG::Graph, which we have vendored
-because a gem is not available.  
-See: http://www.germane-software.com/software/SVG/SVG::Graph/
-
+- Initial PDF table support (now deprecated)
