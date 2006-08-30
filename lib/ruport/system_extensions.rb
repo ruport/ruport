@@ -60,14 +60,15 @@ module Ruport
        `stty size`.split.map { |x| x.to_i }.reverse
       end
 
-      def terminal_width
-        terminal_size.first
-      end
+   end
+   
+   def terminal_width
+     terminal_size.first
+   end
 
-      def terminal_height
-        terminal_size.last
-      end
-      
-    end
+   def terminal_height
+    terminal_size.last
+   end
+
   end
 end
