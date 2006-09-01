@@ -36,4 +36,9 @@ class TestCollection < Test::Unit::TestCase
     assert_equal @ghost_collection.to_csv, @ghost_collection.as(:csv)
   end
 
+  def test_invalid_plugin_throws_an_error
+    assert_raise(InvalidPluginError) { @ghost_collection.to_papyrus_scroll }
+    assert_raise(InvalidPluginError) { @ghost_collection.as(:stone_tablet)}
+  end
+    
 end
