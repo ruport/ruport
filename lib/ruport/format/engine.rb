@@ -102,6 +102,6 @@ module Ruport
     
     private_class_method :new
     engines = %w[graph invoice table document]
-    engines.each { |e| require "lib/ruport/format/engine/#{e}" }
+    engines.each { |e| require "ruport/format/engine/#{e}" }
   end
 end
