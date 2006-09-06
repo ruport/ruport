@@ -2,7 +2,7 @@ require "test/unit"
 require "ruport"
 
 
-class RecordTest < Test::Unit::TestCase
+class TestRecord < Test::Unit::TestCase
 
   include Ruport::Data
 

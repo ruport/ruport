@@ -53,8 +53,12 @@ class TestTable < Test::Unit::TestCase
 
     b = [[1,2,3],[4,5,6]].to_table(%w[a b c]).reorder(%w[a c])
     rows = [[1,3],[4,6]]
-    b.each { |r| assert_equal rows.shift, r.data
-                 assert_equal %w[a c], r.attributes }
+    b.each { |r| 
+      assert_equal rows.shift, r.data
+      assert_equal %w[a c], r.attributes 
+      assert_equal b.column_names.object_id,
+                   r.instance_eval{@attributes}.object_id
+    }
   end
 
   def test_append_column

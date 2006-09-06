@@ -139,12 +139,7 @@ module Ruport::Data
     
     # Same as Record#reorder but is destructive
     def reorder!(*indices)
-      indices = indices[0] if indices[0].kind_of?(Array) 
-      indices.each do |i| 
-        self[i] rescue raise ArgumentError, 
-                "you may have specified an invalid column" 
-      end
-      @data = indices.map { |i| self[i] }
+      indices = reorder_data!(*indices)
       if @attributes
         if indices.all? { |e| e.kind_of? Integer }
           @attributes = indices.map { |i| @attributes[i] }
@@ -153,6 +148,17 @@ module Ruport::Data
         end
       end; self
     end
+
+    def reorder_data!(*indices)
+      indices = indices[0] if indices[0].kind_of?(Array) 
+      indices.each do |i| 
+        self[i] rescue raise ArgumentError, 
+                "you may have specified an invalid column" 
+      end
+      @data = indices.map { |i| self[i] }
+      return indices;
+    end
+
     
     # Makes a fresh copy of the Record
     def dup

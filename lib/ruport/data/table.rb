@@ -107,13 +107,17 @@ module Ruport::Data
     def reorder!(*indices)
       indices = indices[0] if indices[0].kind_of? Array
       if @column_names
-        @column_names = if indices.all? { |i| i.kind_of? Integer }
+        x = if indices.all? { |i| i.kind_of? Integer }
           indices.map { |i| @column_names[i] }
         else
           indices 
         end
+        @column_names = x
       end
-      @data.each { |r| r.reorder! *indices }; self
+      @data.each { |r| 
+        r.reorder_data! *indices
+        r.attributes = @column_names
+      }; self
     end
 
     # Returns a copy of the table with its columns in the requested order.
