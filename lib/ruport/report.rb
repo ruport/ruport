@@ -178,9 +178,6 @@ module Ruport
       string
     end
     
-    # preserved for backwards compatibility. please do not use.
-    alias_method :render, :process_text
-
     # This allows you to create filters to be used by process_text
     #
     # The block is evaluated in the context of the instance.

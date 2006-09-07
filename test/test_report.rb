@@ -16,17 +16,17 @@ class TestReport < Test::Unit::TestCase
     @query1.cached_data = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
   end
   
-  def test_render
-    result = @report.render "<%= 2 + 3 %>", 
+  def test_process_text
+    result = @report.process_text "<%= 2 + 3 %>", 
                             :filters => [:erb]
     assert_equal("5",result)
     
     if defined? RedCloth
-      result = @report.render '"foo":http://foo.com', 
+      result = @report.process_text '"foo":http://foo.com', 
                                :filters => [:red_cloth]
                             
       assert_equal('<p><a href="http://foo.com">foo</a></p>',result)
-      result = @report.render %{"<%= 2 + 3%>":http://foo.com },
+      result = @report.process_text %{"<%= 2 + 3%>":http://foo.com },
                               :filters => [:erb, :red_cloth]
       assert_equal('<p><a href="http://foo.com">5</a></p>',result)
     end
