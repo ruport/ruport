@@ -48,7 +48,7 @@ class_name = format_class_name(ARGV[1])
 exit if File.exist? "app/reports/#{ARGV[1]}.rb"
 if ARGV[0].eql? "report"
   File.open("app/reports.rb", "a") { |f| 
-    f << "require \"app/reports/#{ARGV[1]}\""
+    f.puts("require \"app/reports/#{ARGV[1]}\"")
   }
 REP = <<EOR
 begin; require "rubygems"; rescue LoadError; end
