@@ -224,6 +224,11 @@ class TextPluginTest < Test::Unit::TestCase
     a = Format.table_object :plugin => :text, :data => [[1,2],[300,4]]
     assert_equal(nil,a.active_plugin.right_margin)
   end
+
+  def test_graceful_failure_on_empty_table
+
+  end
+
   
 end
 

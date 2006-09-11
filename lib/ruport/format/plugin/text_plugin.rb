@@ -8,6 +8,7 @@ module Ruport
       renderer :table do 
         require "ruport/system_extensions" 
         
+        return "" if data.length == 0; 
         th = "#{rendered_field_names}#{hr}"
        
         data.each { |r|
@@ -28,6 +29,7 @@ module Ruport
       end
       
       format_field_names do
+        return "" if data.length == 0;
         data.column_names.each_with_index { |f,i| 
           data.column_names[i] = f.to_s.center(max_col_width(i))
         }
@@ -50,9 +52,8 @@ module Ruport
       action :table_width do
         f = data.column_names if data.respond_to? :column_names
         d = Data::Table.new:column_names => f, :data => data 
-
+        
         f = d[0].attributes || (0...d[0].length)
-
         f.inject(0) { |s,e| s + max_col_width(e) }
       end
 
