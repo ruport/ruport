@@ -226,7 +226,8 @@ class TextPluginTest < Test::Unit::TestCase
   end
 
   def test_graceful_failure_on_empty_table
-
+    assert_nothing_raised { [].to_table.to_text }
+    assert_nothing_raised { [].to_table(%w[a b c]).to_text }
   end
 
   
