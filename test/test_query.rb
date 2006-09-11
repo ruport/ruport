@@ -19,6 +19,12 @@ class TestQuery < Test::Unit::TestCase
     assert_nothing_raised { @query1.result }
     assert_equal([[1,2,3],[4,5,6],[7,8,9]],@query1.result)
   end
+
+  def test_auto_resolve_file
+    q = Ruport::Query.new "test/samples/query_test.sql"
+    assert_equal "select * from foo", q.sql
+  end
+
   
   def test_each
     data = [[1,2,3],[4,5,6],[7,8,9]]
@@ -59,11 +65,6 @@ class TestQuery < Test::Unit::TestCase
     assert_equal [4,5,6], gen.next 
     assert_equal [7,8,9], gen.next 
     assert_raise(EOFError) { gen.next }
-  end
-
-  def test_to_dataset
-    # query needs to be re-worked for a test like this
-    # to be written
   end
 
   def test_caching_triggers

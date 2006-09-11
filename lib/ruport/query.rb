@@ -59,11 +59,15 @@ module Ruport
     #     :user => "greg", :password => "chunky_bacon" )
     #
     #   # uses a SQL file stored on disk
-    #   Ruport::Query.new("my_query.sql",:origin => :file)
+    #   Ruport::Query.new("my_query.sql")
+    #
+    #   # explicitly use a file, even if it doesn't end in .sql
+    #   Ruport::Query.new("foo",:origin => :file)
     def initialize(sql, options={})
       options = { :source => :default, :origin => :string }.merge(options)
-      @sql = sql
+      options[:origin] = :file if sql =~ /.sql$/
       @statements = SqlSplit.new(get_query(options[:origin],sql))
+      @sql = @statements.join
       
       if options[:dsn]
         Ruport::Config.source :temp, :dsn      => options[:dsn],

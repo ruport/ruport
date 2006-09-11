@@ -41,7 +41,7 @@ class TestReport < Test::Unit::TestCase
       assert_equal %w[a b c], r.attributes
     }
     assert_equal "a,b,c\n1,2,3\n4,5,6\n7,8,9\n", 
-       @report.query("blah",:query_obj => @query1, :as => :csv)
+       @report.query("blah",:query_obj => @query1, :as => :csv)       
   end
 
   class MyReport < Report; end
