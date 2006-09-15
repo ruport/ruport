@@ -48,26 +48,29 @@ module Ruport
       end
 
       def register_on(klass)
-        
+         
         if klass.kind_of? Symbol
           klass = Format::Engine.engine_classes[klass]
         end
         
         klass.accept_format_plugin(self)
+        
+      rescue NoMethodError
+        p caller
       end
       
       def rendering_options(hash={})
-        @options ||= {}
-        @options.merge!(hash)
-        @options.dup
+        @rendering_options ||= {}
+        @rendering_options.merge!(hash)
+        @rendering_options.dup
       end
      
       attr_accessor :rendered_field_names
       attr_accessor :pre, :post
       attr_accessor :header, :footer
       
-      plugins = %w[text csv pdf latex svg html]
-      plugins.each { |p| require "ruport/format/plugin/#{p}_plugin" }
     end
   end       
 end
+plugins = %w[text csv pdf svg html latex]
+plugins.each { |p| require "ruport/format/plugin/#{p}_plugin" }

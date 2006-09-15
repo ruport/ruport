@@ -88,7 +88,7 @@ module Ruport::Data
       when Array
         @data << Record.new(other, :attributes => @column_names)
       when Hash
-        raise unless @column_names
+        raise ArgumentError unless @column_names
         arr = @column_names.map { |k| other[k] }
         @data << Record.new(arr, :attributes => @column_names)
       when Record

@@ -29,6 +29,8 @@ class TSVPlugin < Format::Plugin
   register_on :invoice_engine
   register_on :document_engine
   
+  rendering_options :boring => :true
+  
 end
 
 class TestPlugin < Test::Unit::TestCase
@@ -44,8 +46,18 @@ class TestPlugin < Test::Unit::TestCase
     assert_nothing_raised { d.baz }
     assert_raise(NoMethodError) { i.foo }
     assert_raise(NoMethodError) { d.foo }
-    assert_raise(NoMethodError) { d.bar }
+    assert_raise(NoMethodError) { d.bar } 
   end
+
+  def test_rendering_options
+    t = Ruport::Format.table_object(:data => [[1,2]], :plugin => :tsv)
+    assert t.active_plugin.respond_to?(:options)
+    assert t.active_plugin.respond_to?(:rendering_options)
+    assert t.active_plugin.rendering_options[:boring]
+    assert_nil t.active_plugin.options
+    assert_nil t.options
+  end
+
 end
 
 class CSVPluginTest < Test::Unit::TestCase

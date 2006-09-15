@@ -64,7 +64,7 @@ module Ruport
  
       def render
         raise "No plugin specified" unless plugin
-        active_plugin.data = data.dup
+        active_plugin.data = data.dup if data 
         if active_plugin.respond_to? :init_plugin_helper
            active_plugin.init_plugin_helper(self)
         end
@@ -101,7 +101,8 @@ module Ruport
     end
     
     private_class_method :new
-    engines = %w[graph invoice table document]
-    engines.each { |e| require "ruport/format/engine/#{e}" }
   end
 end
+
+engines = %w[graph invoice table document]
+engines.each { |e| require "ruport/format/engine/#{e}" }

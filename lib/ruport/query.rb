@@ -65,8 +65,11 @@ module Ruport
     #   Ruport::Query.new("foo",:origin => :file)
     def initialize(sql, options={})
       options = { :source => :default, :origin => :string }.merge(options)
+      options[:binding] ||= binding
       options[:origin] = :file if sql =~ /.sql$/
-      @statements = SqlSplit.new(get_query(options[:origin],sql))
+      q = Format.document :data => get_query(options[:origin],sql),
+                          :plugin => :text, :class_binding => options[:binding]
+      @statements = SqlSplit.new(q)
       @sql = @statements.join
       
       if options[:dsn]

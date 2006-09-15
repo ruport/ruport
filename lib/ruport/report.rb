@@ -131,7 +131,7 @@ module Ruport
     def query(sql, options={})
       options[:origin] ||= :string
       options[:source] ||= @source
-
+      options[:binding] ||= binding
       q = options[:query_obj] || Query.new(sql, options)
       if options[:yield_type].eql?(:by_row)
         q.each { |r| yield(r) }

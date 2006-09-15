@@ -1,5 +1,9 @@
 = TODO
 
-Any future plans are available on Ruports Trac website
+- register_on should be able to accept a list of engines
+
+  E.g. register_on :table_engine, :document_engine
+
+Any future plans are available on Ruport's Trac website
   
   http://stonecode.svnrepository.com/ruport/trac.cgi

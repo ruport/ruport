@@ -2,6 +2,12 @@ require 'ruport'
 begin; require 'rubygems'; rescue LoadError; nil; end
 require 'test/unit'
 
+class Naked < Ruport::Format::Engine
+  alias_engine Naked, :naked_engine 
+  Ruport::Format.build_interface_for Naked, :naked
+end
+
+
 class MockPlugin < Ruport::Format::Plugin
   
   renderer(:table) { "#{rendered_field_names}#{data}" }
@@ -24,9 +30,39 @@ class MockPlugin < Ruport::Format::Plugin
     eng.rewrite_column(0) { "a" } if apple 
   }
 
+  helper(:init_plugin) { |eng|
+    eng.options ||= {}
+    eng.options = options.merge!(:init_ran => true)
+  }
+
   plugin_name :mock
   register_on :table_engine
   register_on :document_engine
+  register_on :naked_engine
+
+end
+
+class TestFormatEngine < Test::Unit::TestCase
+
+  def test_no_data_required
+    assert_nothing_raised { 
+      Ruport::Format.naked_object(:plugin => :mock).render 
+    }
+  end
+  
+  def test_init_plugin_helper
+    a = Ruport::Format.naked_object(:plugin => :mock)
+    a.render
+    assert a.options[:init_ran]
+  end
+
+  def test_options_hash 
+    a = Ruport::Format.naked_object(:plugin => :mock, :data => [1,2,3])
+    assert(a.respond_to?(:options))
+    assert(a.active_plugin.respond_to?(:options))
+    a.render
+    assert_equal a.options, a.active_plugin.options
+  end
 
 end
 

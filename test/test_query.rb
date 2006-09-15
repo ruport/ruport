@@ -25,7 +25,12 @@ class TestQuery < Test::Unit::TestCase
     assert_equal "select * from foo", q.sql
   end
 
-  
+  def test_erb_replacement
+    @table = 'bar'
+    q = Ruport::Query.new "test/samples/erb_test.sql", :binding => binding
+    assert_equal "select * from bar", q.sql
+  end
+
   def test_each
     data = [[1,2,3],[4,5,6],[7,8,9]]
     @query1.each do |r|
