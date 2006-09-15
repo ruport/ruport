@@ -9,6 +9,7 @@
 %w[erb yaml date logger fileutils].each { |lib| require lib }
 
 require "ruport/report/invoice"
+require "ruport/report/graph"
 require "forwardable"
 
 module Ruport

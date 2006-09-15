@@ -157,11 +157,15 @@ module Ruport::Data
     #   data.eql? [[1],[3]].to_table %w[a] #=> true
     def remove_column(options={})    
       if options.kind_of? Integer
-        reorder!((0...data[0].length).to_a - [options])
+        return reorder!((0...data[0].length).to_a - [options])
+      elsif options.kind_of? Hash
+       name = options[:name]
       else
-       raise ArgumentError unless column_names.include? options[:name]
-       reorder! column_names - [options[:name]]
-     end
+       name = options
+      end
+      
+      raise ArgumentError unless column_names.include? name
+      reorder! column_names - [name]
     end
 
     # Create a shallow copy of the table: the same data elements are referenced

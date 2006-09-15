@@ -81,6 +81,10 @@ class TestTable < Test::Unit::TestCase
 
   def test_remove_column
     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    b = a.dup
+
+    b.remove_column("b")
+    assert_equal [[1],[3],[5]].to_table(%w[a]), b
     a.append_column(:name => "c")
     assert_not_equal [[1,2],[3,4],[5,6]].to_table(%w[a b]), a 
     a.remove_column(:name => "c")
