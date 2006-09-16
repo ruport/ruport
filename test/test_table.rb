@@ -20,6 +20,15 @@ class TestTable < Test::Unit::TestCase
     tables.zip([[],[],[a],[b]]).each { |t,n| assert_equal n, t.data }
   end
 
+  def test_sigma
+    table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
+    assert table.respond_to? :sigma
+    assert table.respond_to? :sum
+    assert_equal(9,table.sigma(0))
+    assert_equal(9,table.sigma("col1"))
+    assert_equal(21,table.sigma { |r| r.col1 + r.col2 })
+  end
+
   def test_append_record  
     table = Ruport::Data::Table.new :column_names => %w[a b c]
     table << Ruport::Data::Record.new([1,2,3], :attributes => %w[a b c])

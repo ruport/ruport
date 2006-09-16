@@ -260,5 +260,26 @@ module Ruport::Data
       end
     end
     
+    # Calculates sums.  If a column name or index is given, it will try to
+    # convert each element of that column to an integer and add it together 
+    #
+    # If a block is given, yields each Record so that you can do a calculation.
+    #
+    # Example:
+    #
+    #
+    # table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
+    # table.sigma("col1") #=> 9
+    # table.sigma(0)      #=> 9
+    # table.sigma { |r| r.col1 + r.col2 } #=> 21
+    # table.sigma { |r| r.col2 + 1 } #=> 15
+    #
+    # For the non-mathy, this has been aliased as Table#sum
+    def sigma(column=nil)
+      inject(0) { |s,r| s + (column ? r[column] : yield(r)) }
+    end
+
+    alias_method :sum, :sigma
+    
   end
 end
