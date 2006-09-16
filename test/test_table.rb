@@ -22,8 +22,8 @@ class TestTable < Test::Unit::TestCase
 
   def test_sigma
     table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
-    assert table.respond_to? :sigma
-    assert table.respond_to? :sum
+    assert table.respond_to?(:sigma)
+    assert table.respond_to?(:sum)
     assert_equal(9,table.sigma(0))
     assert_equal(9,table.sigma("col1"))
     assert_equal(21,table.sigma { |r| r.col1 + r.col2 })
