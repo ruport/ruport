@@ -47,14 +47,14 @@ module Ruport
         singleton_class.send( :define_method, :build_field_names, &block)
       end
 
-      def register_on(klass)
-         
-        if klass.kind_of? Symbol
-          klass = Format::Engine.engine_classes[klass]
-        end
+      def register_on(*args)
+        args.each { |klass|
+          if klass.kind_of? Symbol
+            klass = Format::Engine.engine_classes[klass]
+          end
         
-        klass.accept_format_plugin(self)
-        
+          klass.accept_format_plugin(self)
+        }
       rescue NoMethodError
         p caller
       end

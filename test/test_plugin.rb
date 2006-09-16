@@ -33,6 +33,11 @@ class TSVPlugin < Format::Plugin
   
 end
 
+class NakedPlugin < Ruport::Format::Plugin
+  plugin_name :naked
+end
+
+
 class TestPlugin < Test::Unit::TestCase
   def test_helper
     t = Ruport::Format.table_object :data => [[1,2]], :plugin => :tsv
@@ -56,6 +61,23 @@ class TestPlugin < Test::Unit::TestCase
     assert t.active_plugin.rendering_options[:boring]
     assert_nil t.active_plugin.options
     assert_nil t.options
+  end
+
+  def test_register_on
+     a = NakedPlugin.dup
+     assert a.respond_to?(:register_on)
+     assert_raise(InvalidPluginError) { 
+       Ruport::Format.table_object(:plugin => :naked) 
+     }
+     assert_raise(InvalidPluginError) { 
+       Ruport::Format.document_object(:plugin => :naked) 
+     }
+     a.register_on :table_engine, :document_engine
+     assert_nothing_raised {
+       Ruport::Format.table_object(:plugin => :naked) 
+       Ruport::Format.document_object(:plugin => :naked) 
+     }
+
   end
 
 end
