@@ -115,7 +115,7 @@ module Ruport::Data
         @column_names = x
       end
       @data.each { |r| 
-        r.reorder_data! *indices
+        r.reorder_data!(*indices)
         r.attributes = @column_names
       }; self
     end
@@ -125,7 +125,7 @@ module Ruport::Data
     #   one = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
     #   two = one.reorder!([1,0])  
     def reorder(*indices)
-      dup.reorder! *indices
+      dup.reorder!(*indices)
     end
 
     # Adds an extra column to the table. Accepts an options Hash as its

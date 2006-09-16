@@ -110,7 +110,7 @@ module Ruport
         "no block given!", :status => :fatal,
         :level => :log_only, :exception => LocalJumpError 
       ) unless action
-      fetch &action
+      fetch(&action)
     end
     
     # Grabs the result set as a Data::Table or if in raw_data mode, an array of

@@ -134,7 +134,7 @@ module Ruport::Data
     #   b.attributes #=> ["a","d","b"]
     #   b.data #=> [1,4,2]
     def reorder(*indices)
-      dup.reorder! *indices
+      dup.reorder!(*indices)
     end
     
     # Same as Record#reorder but is destructive
