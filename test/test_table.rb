@@ -15,6 +15,7 @@ class TestTable < Test::Unit::TestCase
     end
     
     a = Ruport::Data::Record.new [1,2,3]
+    assert a.respond_to?(:[])
     b = a.dup
     b.attributes = %w[col1 col2 col3]
     tables.zip([[],[],[a],[b]]).each { |t,n| assert_equal n, t.data }
@@ -116,7 +117,11 @@ class TestTable < Test::Unit::TestCase
     table << ['d',9,10]
 
     group = table.split :group => "c1"
-  
+    assert group.respond_to?(:each_group)
+    expected = %w[a d b]
+
+    group.each_group { |g| assert_equal(expected.shift, g) }
+
     t = table.reorder("c2","c3")
 
     data = [[t[0],t[2]],[t[1],t[4]],[t[3]]]
@@ -129,6 +134,11 @@ class TestTable < Test::Unit::TestCase
     table << ['d',9,11]
 
     group = table.split :group => %w[c1 c2]
+    assert group.respond_to?(:each_group)
+    expected = %w[a_2 d_5 a_4 b_3 d_9]
+
+    group.each_group { |g| assert_equal(expected.shift, g) }
+
     t = table.reorder("c3")
     data = [[t[0],t[5]],[t[1]],[t[2]],[t[3]],[t[4],t[6]]]
 

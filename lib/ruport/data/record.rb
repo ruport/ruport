@@ -124,8 +124,7 @@ module Ruport::Data
     # Sets the attribute list for this Record
     #
     #   my_record.attributes = %w[foo bar baz]
-    def attributes=(a); @attributes=a; end
-
+    attr_writer :attributes
     # Allows you to change the order of or reduce the number of columns in a
     # Record.  Example:
     #

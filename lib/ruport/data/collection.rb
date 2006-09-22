@@ -45,7 +45,7 @@ module Ruport::Data
     end
     
     attr_reader :data
-    def_delegators :@data, :each, :length, :size, :[], :empty?
+    def_delegators :@data, :each, :length, :size, :empty?
   end
 end
 

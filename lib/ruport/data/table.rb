@@ -46,15 +46,15 @@ module Ruport::Data
     end
 
     attr_reader :column_names
-
+    def_delegator :@data, :[]
     # Sets the column names for this table. The single parameter should be 
     # an array listing the names of the columns.
     #
     #   tbl = Table.new({:data => [1,2,3], [3,4,5], :column_names => %w[a b c]})
     #   tbl.column_names = %w[e f g]
     def column_names=(other)
-      @column_names = other.dup
-      map { |r| r.attributes = @column_names }
+      @column_names ||= other.dup
+      @column_names.replace(other.dup)
     end
 
     # Compares this table to another table and returns true if
@@ -66,6 +66,7 @@ module Ruport::Data
     def eql?(other)
       data.eql?(other.data) && column_names.eql?(other.column_names) 
     end
+
     alias_method :==, :eql?
 
     # Uses Ruport's built-in text plugin to render this table into a string
@@ -252,12 +253,15 @@ module Ruport::Data
           :column_names => c
         )
       }
-      if options[:group].kind_of? Array
+      rec = if options[:group].kind_of? Array
         Ruport::Data::Record.new(data, 
           :attributes => group.map { |e| e.join("_") } )
       else
         Ruport::Data::Record.new data, :attributes => group
       end
+      class << rec
+        def each_group; attributes.each { |a| yield(a) }; end
+      end; rec
     end
     
     # Calculates sums.  If a column name or index is given, it will try to
