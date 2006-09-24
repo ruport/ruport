@@ -96,6 +96,8 @@ module Ruport::Data
         raise ArgumentError unless column_names.eql? other.attributes
         @data << Record.new(other.data, :attributes => @column_names)
         @data.last.tags = other.tags.dup
+      else
+        raise ArgumentError
       end
       self
     end

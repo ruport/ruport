@@ -38,6 +38,8 @@ class TestTable < Test::Unit::TestCase
     rec = table[0].dup
     rec.attributes = %w[a b c d]
     assert_raise(ArgumentError) { table << rec }
+    assert_raise(ArgumentError) { table << Object.new }
+    assert_raise(ArgumentError) { table << [].to_table }
   end
 
   def test_csv_load
