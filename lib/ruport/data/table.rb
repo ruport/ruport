@@ -106,6 +106,19 @@ module Ruport::Data
       self
     end
   
+    # Used to combine two tables. Throws an ArgumentError if the tables don't
+    # have identical columns.
+    #
+    #   inky = Table.new(:data => [[1,2], [3,4]], :column_names => %w[a b])
+    #   blinky = Table.new(:data => [[5,6]], :column_names => %w[a b])
+    #   sue = inky + blinky
+    #   sue.data #=> [[1,2],[3,4],[5,6]]
+    
+    def +(other)
+      raise ArgumentError unless other.column_names == @column_names
+      Table.new(:column_names => @column_names, :data => @data + other.data)
+    end
+  
     # Reorders the columns that exist in the table. Operates directly 
     # on this table.
     #

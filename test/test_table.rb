@@ -42,6 +42,19 @@ class TestTable < Test::Unit::TestCase
     assert_raise(ArgumentError) { table << [].to_table }
   end
 
+  def test_append_table
+    first = Ruport::Data::Table.new :column_names => %w[a b c],
+      :data => [[1,2,3],[4,5,6]]
+    
+    second = Ruport::Data::Table.new :column_names => %w[a b c],
+      :data => [[7,8,9],[10,11,12]]
+      
+    combo = first + second
+    
+    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c], 
+      :data => [[1,2,3],[4,5,6],[7,8,9],[10,11,12]]), combo
+  end
+
   def test_csv_load
     table = Ruport::Data::Table.load("test/samples/data.csv")
     assert_equal %w[col1 col2 col3], table.column_names
