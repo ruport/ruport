@@ -53,7 +53,11 @@ module Ruport::Data
     #   tbl = Table.new({:data => [1,2,3], [3,4,5], :column_names => %w[a b c]})
     #   tbl.column_names = %w[e f g]
     def column_names=(other)
-      @column_names ||= other.dup
+      #FIXME: This will need to be removed when the column_names change is made
+      unless @column_names
+        @column_names = other.dup
+        each { |r| r.attributes = @column_names }
+      end
       @column_names.replace(other.dup)
     end
 
