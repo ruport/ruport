@@ -154,14 +154,14 @@ module Ruport::Data
     # use for the column in existing rows.
     #   
     #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
-    #   data.append_coulmn({:name => 'new_column', :fill => 1)
+    #   data.append_column({:name => 'new_column', :fill => 1)
     def append_column(options={})
       self.column_names += [options[:name]]  if options[:name]
       if block_given?
         each { |r| r.data << yield(r) || options[:fill] }
       else
         each { |r| r.data << options[:fill] }
-      end
+      end; self
     end
 
     # Removes a column from the table. Any values in the specified column are
