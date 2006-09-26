@@ -83,6 +83,7 @@ module Ruport
       
       @raw_data = options[:raw_data]
       @cache_enabled  = options[:cache_enabled]
+      @params = options[:params]
       @cached_data = nil
     end
     
@@ -163,18 +164,22 @@ module Ruport
 
     private
     
-    def query_data( query_text )
+    def query_data( query_text, params=@params )
       
       require "dbi"
       
       data = @raw_data ? [] : Data::Table.new
       DBI.connect(@dsn, @user, @password) do |dbh|
-        dbh.execute(query_text) do |sth|
-            return unless sth.fetchable?
-            results = sth.fetch_all  
-            data.column_names = sth.column_names unless @raw_data
-            results.each { |row| data << row.to_a }
+        if params
+          sth = dbh.execute(query_text,*params)
+        else
+          sth = dbh.execute(query_text)
         end
+        return unless sth.fetchable?
+        results = sth.fetch_all  
+        data.column_names = sth.column_names unless @raw_data
+        results.each { |row| data << row.to_a }
+        sth.finish
       end
       data
       rescue NoMethodError; nil
