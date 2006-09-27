@@ -5,7 +5,7 @@ module Ruport
   # formatting system, and might be helpful for other things.
   #
   module MetaTools
-    # allows you to define an attribute accessor on the singleton_class.
+    # Allows you to define an attribute accessor on the singleton_class.
     #
     # Example:
     # 
@@ -21,14 +21,14 @@ module Ruport
       self.send("#{sym}=",value)
     end
 
-    # same as attribute, but takes an array of attributes
+    # Same as attribute, but takes an array of attributes
     #
     # e.g. attributes [:foo,:bar,:baz]
     def attributes(syms)
       syms.each { |s| attribute s }
     end
     
-    # allows you to define a method on the singleton_class
+    # Allows you to define a method on the singleton_class
     #
     # Example:
     #
