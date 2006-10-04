@@ -12,4 +12,4 @@ class MyReport < Ruport::Report
   generate { eval_template TEMPLATE }
 end
 
-MyReport.run
+MyReport.run { |r| puts r.results }
