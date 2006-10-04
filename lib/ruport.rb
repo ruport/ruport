@@ -12,7 +12,7 @@
 
 module Ruport
   
-  VERSION = "0.5.99"
+  VERSION = "0.6.99"
   
   # Ruports logging and error interface.
   # Can generate warnings or raise fatal errors
