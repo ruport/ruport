@@ -278,7 +278,7 @@ module Ruport
       m = Mailer.new
       m.to = adds
       yield(m)
-      m.select_mailer @mailer
+      m.send(:select_mailer,@mailer)
       m.deliver :from => m.from, :to => m.to
     end
     

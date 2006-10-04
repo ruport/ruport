@@ -32,6 +32,7 @@ class SVG < Format::Plugin
     } << "</g></svg>"
   end
  
+  plugin_name :svg
   register_on :line_plotting_engine
 end
 
