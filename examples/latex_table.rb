@@ -14,4 +14,4 @@ report = Ruport::Format.table_object(:plugin => :latex, :data => data)
 report.options = { :format => :pdf }
 
 # save the resulting report to a file on the filesystem
-File.open( "table.pdf","w") { |f| f.puts report.render }
+File.open( "table.tex","w") { |f| f.puts report.render }
