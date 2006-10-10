@@ -235,4 +235,14 @@ class TestTable < Test::Unit::TestCase
 
   end
 
+  def test_ensure_coerce_sum
+    
+    s = [["1"],["3"],["5"] ].to_table
+    t = [["1.23"],["1.5"]].to_table
+    
+    assert_equal(9,s.sum(0))
+    assert_equal(2.73,t.sum(0))
+
+  end
+
 end
