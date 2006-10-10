@@ -82,7 +82,7 @@ class TestPlugin < Test::Unit::TestCase
 
 end
 
-class CSVPluginTest < Test::Unit::TestCase
+class TestCSVPlugin < Test::Unit::TestCase
 
   def test_basic
     a = Format.table_object :plugin => :csv, :data => [[1,2],[3,4]]
@@ -105,7 +105,7 @@ class CSVPluginTest < Test::Unit::TestCase
 
 end
 
-class PDFPluginTest < Test::Unit::TestCase
+class TestPDFPlugin < Test::Unit::TestCase
 
   def test_ensure_fails_on_array
     begin
@@ -146,7 +146,7 @@ class PDFPluginTest < Test::Unit::TestCase
   
 end
 
-class HTMLPluginTest < Test::Unit::TestCase
+class TestHTMLPlugin < Test::Unit::TestCase
 
   def test_basic
     a = Format.table_object :plugin => :html, :data => [[1,2],[3,nil]]
@@ -167,7 +167,7 @@ end
 
   
 #this test is intended to ensure proper functionality of the plugin system.
-class NewPluginTest < Test::Unit::TestCase
+class TestNewPlugin < Test::Unit::TestCase
     
   def test_basic
     a = Format.table_object :plugin => :tsv, :data => [[1,2],[3,4]]
