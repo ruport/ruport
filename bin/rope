@@ -68,7 +68,11 @@ class #{class_name} < Ruport::Report
 
 end
 
-##{class_name}.run { |res| puts res.results }
+# uncomment the line below to let the report be run directly
+#
+# if __FILE__ == $0
+#   #{class_name}.run { |res| puts res.results }
+# end
 EOR
 
 TEST = <<EOR
