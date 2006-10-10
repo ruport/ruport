@@ -42,7 +42,12 @@ module Ruport::Data
     def initialize(options={})
       @column_names = options[:column_names].dup if options[:column_names]
       @data         = []
-      options[:data].each { |e| self << e }  if options[:data]
+      if options[:data]
+        if options[:data].all? { |r| r.kind_of? Record }
+          options[:data] = options[:data].map { |r| r.to_a } 
+        end 
+        options[:data].each { |e| self << e }  
+      end
     end
 
     attr_reader :column_names

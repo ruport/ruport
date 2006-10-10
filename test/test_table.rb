@@ -21,6 +21,34 @@ class TestTable < Test::Unit::TestCase
     tables.zip([[],[],[a],[b]]).each { |t,n| assert_equal n, t.data }
   end
 
+  def test_ensure_table_creation_allows_record_coercion
+    table = [[1,2,3],[4,5,6],[7,8,9]].to_table
+    table_with_names = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
+   
+    a,b,c = nil
+    assert_nothing_raised { a = table.to_a.to_table(%w[a b c]) }
+    assert_nothing_raised { b = table.to_a.to_table(%w[d e f]) }
+    assert_nothing_raised { c = table_with_names.to_a.to_table }
+
+    [a,b,c].each { |t| assert_equal(3,t.length) }
+    assert_equal %w[a b c], a.column_names
+    a.each { |r|
+      assert_equal %w[a b c], r.attributes
+      assert_nothing_raised { r.a; r.b; r.c }
+      [r.a,r.b,r.c].each { |i| assert(i.kind_of?(Numeric)) }
+    }
+    assert_equal %w[d e f], b.column_names
+    b.each { |r|
+      assert_equal %w[d e f], r.attributes
+      assert_nothing_raised { r.d; r.e; r.f }
+      [r.d,r.e,r.f].each { |i| assert(i.kind_of?(Numeric)) }
+    }
+    c.each { |r|
+      assert_nothing_raised { r[0]; r[1]; r[2] }
+      [r[0],r[1],r[2]].each { |i| assert(i.kind_of?(Numeric)) }
+    }
+  end
+
   def test_sigma
     table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
     assert table.respond_to?(:sigma)
