@@ -3,19 +3,24 @@ module Ruport
     class HTMLPlugin < Format::Plugin
    
       rendering_options :red_cloth_enabled => true, :erb_enabled => true
-      
+
       renderer :document 
       
       renderer :table do
-        rc = data.inject(rendered_field_names) { |s,r| 
+        data.inject("\t<table>\n" + rendered_field_names) do |s,r| 
           row = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
-          s + "|#{row.to_a.join('|')}|\n" 
-        }
-        Format.document :data => rc, :plugin => :html 
+          classstr = defined?(r.tags) ? 
+            r.tags.inject("") {|cs,c| cs + " class='#{c}'" } : ""
+          s + "\t\t<tr#{classstr}>\n\t\t\t<td#{classstr}>" +
+            row.to_a.join("</td>\n\t\t\t<td#{classstr}>") + 
+            "</td>\n\t\t</tr>\n"
+        end + "\t</table>" 
       end
 
       format_field_names do
-        s = "|_." + data.column_names.join(" |_.") + "|\n"
+        "\t\t<tr>\n\t\t\t<th>" + 
+          data.column_names.join("</th>\n\t\t\t<th>") + 
+          "</th>\n\t\t</tr>\n"
       end
 
       plugin_name :html

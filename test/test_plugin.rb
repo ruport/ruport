@@ -150,18 +150,25 @@ class TestHTMLPlugin < Test::Unit::TestCase
 
   def test_basic
     a = Format.table_object :plugin => :html, :data => [[1,2],[3,nil]]
-    assert_equal("<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2</td>"+
+    assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2</td>"+
                  "\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>3</td>\n\t\t\t<td>&nbsp;"+
                  "</td>\n\t\t</tr>\n\t</table>",a.render)
     a.data = a.data.to_table(:column_names => %w[a b])
-    assert_equal("<table>\n\t\t<tr>\n\t\t\t<th>a </th>\n\t\t\t<th>b</th>"+
+    assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
                  "\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>"+
                  "2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>3</td>\n\t\t\t<td>"+
                  "&nbsp;</td>\n\t\t</tr>\n\t</table>",a.render)
     a.show_field_names = false
-    assert_equal("<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2</td>"+
+    assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2</td>"+
                  "\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>3</td>\n\t\t\t<td>&nbsp;"+
                  "</td>\n\t\t</tr>\n\t</table>",a.render)
+    a.data[0].tag(:odd)
+    a.data[1].tag(:even)
+    assert_equal("\t<table>\n\t\t<tr class='odd'>\n\t\t\t<td class='odd'>"+
+                 "1</td>\n\t\t\t<td class='odd'>2</td>\n\t\t</tr>\n\t\t"+
+                 "<tr class='even'>\n\t\t\t<td class='even'>3</td>\n\t\t\t"+
+                 "<td class='even'>&nbsp;</td>\n\t\t</tr>\n\t</table>",
+                 a.render)
   end
 end
 
