@@ -4,6 +4,7 @@ class GraphSample < Ruport::Report
   include Graph
 
   prepare do
+    self.file = "bar.svg"
     @data = [[5,7,9,12,14,16,18]].to_table(%w[jan feb mar apr may jun jul])
   end
 
@@ -18,6 +19,6 @@ class GraphSample < Ruport::Report
   end
 end
 
-GraphSample.run { |r| puts r.results }
+GraphSample.run { |r| puts r.write }
 
 

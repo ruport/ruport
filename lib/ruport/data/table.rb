@@ -44,9 +44,11 @@ module Ruport::Data
       @data         = []
       if options[:data]
         if options[:data].all? { |r| r.kind_of? Record }
+          record_tags = options[:data].map { |r| r.tags }
           options[:data] = options[:data].map { |r| r.to_a } 
         end 
         options[:data].each { |e| self << e }  
+        each { |r| r.tags = record_tags.shift } if record_tags
       end
     end
 

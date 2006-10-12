@@ -72,5 +72,5 @@ module Ruport
     end
   end       
 end
-plugins = %w[text csv pdf svg html latex]
+plugins = %w[text csv pdf svg html latex xml_swf]
 plugins.each { |p| require "ruport/format/plugin/#{p}_plugin" }

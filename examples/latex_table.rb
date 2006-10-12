@@ -11,7 +11,7 @@ report = Ruport::Format.table_object(:plugin => :latex, :data => data)
 # By default, the latex plugin will return plain text latex source
 # changing the format option asks Ruport to attempt to render
 # the source into a PDF using pdflatex
-report.options = { :format => :pdf }
+#report.options = { :format => :pdf }
 
 # save the resulting report to a file on the filesystem
 File.open( "table.tex","w") { |f| f.puts report.render }
