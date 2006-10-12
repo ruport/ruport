@@ -198,38 +198,29 @@ class TextPluginTest < Test::Unit::TestCase
 
   def test_max_col_width
     a = Format.table_object :plugin => :text, :data => [[1,2],[300,4]]
-    assert_equal(3,a.active_plugin.max_col_width(0))
-    assert_equal(1,a.active_plugin.max_col_width(1))
+    a.active_plugin.calculate_max_col_widths
+    assert_equal(3,a.active_plugin.max_col_width[0])
+    assert_equal(1,a.active_plugin.max_col_width[1])
 
-    a.data = [[1,2],[300,4]].to_table(:column_names => %w[a b])
-
-    assert_equal(3,a.active_plugin.max_col_width("a"))
-    assert_equal(1,a.active_plugin.max_col_width("b"))
-    assert_equal(3,a.active_plugin.max_col_width(0))
+    a.data = [[1,2],[300,4]].to_table(:column_names => %w[a ba])
+    a.active_plugin.calculate_max_col_widths
+    assert_equal(3,a.active_plugin.max_col_width[0])
+    assert_equal(2,a.active_plugin.max_col_width[1])
 
     a.data = [[1,2],[3,40000]].to_table(:column_names => %w[foo bazz])
-    assert_equal(3,a.active_plugin.max_col_width("foo"))
-    assert_equal(5,a.active_plugin.max_col_width("bazz"))
-
-    assert_equal(3,a.active_plugin.max_col_width(0))
-    assert_equal(5,a.active_plugin.max_col_width(1))  
-  end
-
-  def test_table_width
-    a = Format.table_object :plugin => :text, :data => [[1,2],[300,4]]
-    assert_equal(4,a.active_plugin.table_width)
-    
-    a.data = [[1,2],[3,40000]].to_table(:column_names =>%w[foo bazz])
-    assert_equal(8,a.active_plugin.table_width)
+    a.active_plugin.calculate_max_col_widths
+    assert_equal(3,a.active_plugin.max_col_width[0])
+    assert_equal(5,a.active_plugin.max_col_width[1])  
   end
 
   def test_hr
     a = Format.table_object :plugin => :text, :data => [[1,2],[300,4]]
-    
+    a.active_plugin.calculate_max_col_widths
     assert_equal("+---------+\n",a.active_plugin.hr)
 
 
     a.data = [[1,2],[3,40000]].to_table(:column_names => %w[foo bazz])
+    a.active_plugin.calculate_max_col_widths
     assert_equal "+-------------+\n", a.active_plugin.hr
     
   end

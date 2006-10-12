@@ -8,17 +8,22 @@
 = Contributors / People we've (legally) stolen from:
 
 Iain Broadfoot:
-- RuportDay 2006 Participant
+ - RuportDay 2006 Participant
 
 Eric Pugh:
-- RuportDay 2006 Participant
+ - RuportDay 2006 Participant
 
 James Edward Gray II:
   - Original inspiration via query.rb
   - system_extensions.rb
 
+Mathijs Mohlmann:
+ - Performance Enhancement
+     TextPlugin r264
+     HTMLPlugin r265
+
 Francis Hwang:
-- SQLSplit
+ - SQLSplit
 
 Simon Claret:
-- Initial PDF table support (now deprecated)
+ - Initial PDF table support (now deprecated)
