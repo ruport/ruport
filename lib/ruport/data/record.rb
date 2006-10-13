@@ -47,7 +47,7 @@ module Ruport::Data
         end
       else
         @data = data.dup
-        @attributes = options[:attributes]
+        @attributes = options[:attributes] || []
       end
     end
     

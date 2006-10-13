@@ -40,7 +40,7 @@ module Ruport::Data
     #   table = Table.new({:data => [1,2,3], [3,4,5], 
     #                      :column_names => %w[a b c]})
     def initialize(options={})
-      @column_names = options[:column_names].dup if options[:column_names]
+      @column_names = options[:column_names] ? options[:column_names].dup : []
       @data         = []
       if options[:data]
         if options[:data].all? { |r| r.kind_of? Record }
@@ -60,8 +60,7 @@ module Ruport::Data
     #   tbl = Table.new({:data => [1,2,3], [3,4,5], :column_names => %w[a b c]})
     #   tbl.column_names = %w[e f g]
     def column_names=(other)
-      #FIXME: This will need to be removed when the column_names change is made
-      unless @column_names
+      unless @column_names.empty?
         @column_names = other.dup
         each { |r| r.attributes = @column_names }
       end
@@ -133,7 +132,8 @@ module Ruport::Data
     #   data.reorder!([1,0])  
     def reorder!(*indices)
       indices = indices[0] if indices[0].kind_of? Array
-      if @column_names
+
+      if @column_names && !@column_names.empty?
         x = if indices.all? { |i| i.kind_of? Integer }
           indices.map { |i| @column_names[i] }
         else

@@ -5,7 +5,11 @@ module Ruport
       helper(:init_plugin) { |eng| require "fastercsv" }
 
       format_field_names do
-        FasterCSV.generate { |csv| csv << data.column_names }
+        if data.column_names.empty?
+          ""
+        else
+          FasterCSV.generate { |csv| csv << data.column_names }
+        end
       end
       
       renderer :table do

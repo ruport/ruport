@@ -10,7 +10,7 @@ class TestTable < Test::Unit::TestCase
     table4 = Ruport::Data::Table.new :column_names => %w[col1 col2 col3], 
                                      :data => [[1,2,3]]
     tables = [table,table2,table3,table4]
-    tables.zip([nil,%w[a b c], nil, %w[col1 col2 col3]]).each do |t,n|
+    tables.zip([[],%w[a b c], [], %w[col1 col2 col3]]).each do |t,n|
       assert_equal n, t.column_names
     end
     
@@ -220,7 +220,7 @@ class TestTable < Test::Unit::TestCase
   def test_array_hack
     t = [[1,2],[3,4],[5,6]].to_table 
     assert_instance_of Ruport::Data::Table, t
-    assert_equal nil, t.column_names
+    assert_equal [], t.column_names
     assert_equal Ruport::Data::Record.new([3,4]), t[1]
     t = [[1,2],[3,4],[5,6]].to_table :column_names => %w[a b]
     table = Ruport::Data::Table.new :column_names => %w[a b], 
