@@ -245,4 +245,19 @@ class TestTable < Test::Unit::TestCase
 
   end
 
+  def test_setting_column_names_changes_record_attributes
+    table = Ruport::Data::Table.new :column_names => %w[a b c], 
+      :data => [[1,2,3],[4,5,6]]
+    
+    assert_equal %w[a b c], table.column_names
+    assert_equal %w[a b c], table.data[0].attributes
+    assert_equal %w[a b c], table.data[1].attributes
+
+    table.column_names = %w[d e f]
+
+    assert_equal %w[d e f], table.column_names
+    assert_equal %w[d e f], table.data[0].attributes
+    assert_equal %w[d e f], table.data[1].attributes
+  end
+
 end

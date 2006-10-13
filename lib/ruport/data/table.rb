@@ -60,10 +60,6 @@ module Ruport::Data
     #   tbl = Table.new({:data => [1,2,3], [3,4,5], :column_names => %w[a b c]})
     #   tbl.column_names = %w[e f g]
     def column_names=(other)
-      unless @column_names.empty?
-        @column_names = other.dup
-        each { |r| r.attributes = @column_names }
-      end
       @column_names.replace(other.dup)
     end
 
