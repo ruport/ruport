@@ -75,7 +75,7 @@ module Ruport
           options[:auto_render] = false; simple_interface(engine,options) })
     end
 
-    %w[engine plugin].each { |lib|
+    %w[engine plugin renderer].each { |lib|
        require "ruport/format/#{lib}" 
     }
 
