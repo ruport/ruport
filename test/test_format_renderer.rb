@@ -137,4 +137,10 @@ class TestFormatRenderer < Test::Unit::TestCase
 
   end
 
+  def test_execute_action
+    @renderer.define_action(:foo) { "banana" }
+    assert_equal Object, @renderer.execute_action(:class, Object.new)
+    assert_equal "banana", @renderer.execute_action(:foo)
+  end
+
 end

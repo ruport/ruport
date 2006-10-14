@@ -4,7 +4,7 @@ module Ruport
     
     def self.for(obj)
       r = self.new(obj)
-      yield(r); r
+      yield(r) if block_given?; r
     end
 
     def initialize(obj)
@@ -34,8 +34,7 @@ module Ruport
     def render
       o = @renderable_object.dup
       @properties.each { |k,v| o.send("#{k}=",v) }
-
-      @actions.map { |a| (b=@defined_actions[a]) ? b[o] : o.send(a) }.last
+      @actions.map { |a| execute_action(a,o) }.last
     end
 
     def insert_action(name,option={})
@@ -58,6 +57,10 @@ module Ruport
       elsif @renderable_object.respond_to? old
         @defined_actions[new] = lambda { |o| o.send old }
       end
+    end
+
+    def execute_action(name,obj=nil)
+      (b=@defined_actions[name]) ? b[obj] : obj.send(name) 
     end
 
   end
