@@ -89,6 +89,15 @@ class TestTable < Test::Unit::TestCase
     rows = [%w[a b c],["d",nil,"e"]]
     table.each { |r| assert_equal rows.shift, r.data
                      assert_equal %w[col1 col2 col3], r.attributes }
+    expected = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    
+    # ticket:94
+    
+    table = Ruport::Data::Table.load( "test/samples/data.tsv", 
+                                      :csv_options => { :col_sep => "\t" } )
+    # FIXME: Get csv_options to FasterCSV
+    #
+    #assert_equal expected, table 
   end
 
   def test_reorder

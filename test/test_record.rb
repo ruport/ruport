@@ -170,11 +170,32 @@ class TestRecord < Test::Unit::TestCase
   end
   
   def test_records_with_differing_attrs_and_data_hash_differently
-    r = Record.new :attributes => %w[a b], :data => [1,2]
-    s = Record.new :attributes => %w[a b]
+    r = Record.new [1,2],:attributes => %w[a b]
+    s = Record.new [nil,nil],:attributes => %w[a b]
     assert r.hash != s.hash
     
-    t = Record.new :attributes => %w[a b], :data => [1,3]
+    t = Record.new [1,3],:attributes => %w[a b]
     assert r.hash != t.hash
+  end
+
+  # ticket:71
+  def test_record_has_indifferent_access
+    t = Record.new [1,2,3], :attributes => %w[a b c]
+    assert_equal [1,2,3], [t[0],t[1],t[2]]
+    assert_equal [1,2,3], [t["a"],t["b"],t["c"]]
+    assert_equal [1,2,3], [t.a,t.b,t.c]
+
+    #FIXME: Dinko, the commented out tests need to pass
+    
+    # assert_equal [1,2,3], [t[:a],t[:b],t[:c]]
+    
+    x = Record.new [1,2,3], :attributes => [:a,:b,:c]
+    assert_equal [1,2,3], [x[0],x[1],x[2]]
+    assert_equal [1,2,3], [x[:a],x[:b],x[:c]]
+
+    #FIXME: ...
+
+    #assert_equal [1,2,3], [x["a"],x["b"],x["c"]]
+    #assert_equal [1,2,3], [x.a,x.b,x.c]
   end
 end

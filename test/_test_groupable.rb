@@ -5,6 +5,7 @@ class Ruport::Data::Table
   include Ruport::Data::Groupable
 end
 
+# ticket:96
 class TestGroupable < Test::Unit::TestCase
   def test_simple
     a = [[1,2],[3,4],[5,6],[7,8]].to_table(%w[a b])
