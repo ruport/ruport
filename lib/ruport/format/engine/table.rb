@@ -1,24 +1,16 @@
 module Ruport
   class Format::Engine
     class Table < Format::Engine      
-
-      include MetaTools
- 
+          
        renderer do
-        super
-        renderer_object.render
+          super
+          active_plugin.rendered_field_names = "" 
+          build_field_names if (data.respond_to?(:column_names) && 
+                                data.column_names && show_field_names)
+          a = active_plugin.render_table
        end
-       
-       action(:renderer_object) {
-        @renderer_object ||= Format::Renderer.for(self) do |renderer|
-          renderer.actions = [ :init_plugin_field_names, 
-                               :build_field_names,
-                               :call_plugin_render_table ]
-        end
-       }
 
       class << self
-
 
         def rewrite_column(key,&block)
           data.each { |r| r[key] = block[r] }
@@ -44,22 +36,10 @@ module Ruport
         private
         
         def build_field_names
-          return unless data.respond_to?(:column_names) &&
-                        data.column_names && !data.column_names.empty? && 
-                        show_field_names 
-
           if active_plugin.respond_to?(:build_field_names)
             active_plugin.rendered_field_names = 
               active_plugin.build_field_names
           end
-        end
-
-        def init_plugin_field_names
-          active_plugin.rendered_field_names = "" 
-        end
-
-        def call_plugin_render_table
-          active_plugin.render_table
         end
 
       end  
