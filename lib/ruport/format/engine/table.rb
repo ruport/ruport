@@ -45,7 +45,8 @@ module Ruport
         
         def build_field_names
           return unless data.respond_to?(:column_names) &&
-                        data.column_names && show_field_names 
+                        data.column_names && !data.column_names.empty? && 
+                        show_field_names 
 
           if active_plugin.respond_to?(:build_field_names)
             active_plugin.rendered_field_names = 
