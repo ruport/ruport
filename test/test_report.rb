@@ -44,6 +44,11 @@ class TestReport < Test::Unit::TestCase
        @report.query("blah",:query_obj => @query1, :as => :csv)       
   end
 
+  #  ticket:86
+  def test_table_shortcut
+    # FIXME: Dinko, look at ticket and implement feature
+  end
+
   class MyReport < Report; end
   
   def test_klass_methods

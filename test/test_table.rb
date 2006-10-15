@@ -100,6 +100,17 @@ class TestTable < Test::Unit::TestCase
     #assert_equal expected, table 
   end
 
+  # ticket:76
+  def test_parse
+    #table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n")
+    #assert_equal [[1,2,3],[4,5,6]].to_table(%w[a b c]), table
+
+    #FIXME: Dinko, get the above to pass, then get this to act just like
+    # Table#load, allowing all options to be given to it that load()
+    # understands...
+  end
+
+
   def test_reorder
     table = Ruport::Data::Table.load("test/samples/data.csv")
     table.reorder! *%w[col1 col3]
