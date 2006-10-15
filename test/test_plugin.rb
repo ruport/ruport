@@ -257,6 +257,16 @@ class TextPluginTest < Test::Unit::TestCase
     assert_equal(nil,a.active_plugin.right_margin)
   end
 
+
+  def test_make_sure_this_damn_column_names_bug_dies_a_horrible_death!
+    a = Format.table :plugin => :text, :data => [[1,2,3]].to_table
+    expected = "+-----------+\n"+
+               "| 1 | 2 | 3 |\n"+
+               "+-----------+\n"
+    assert_equal(expected,a)
+
+  end
+
   def test_graceful_failure_on_empty_table
     assert_nothing_raised { [].to_table.to_text }
     assert_nothing_raised { [].to_table(%w[a b c]).to_text }

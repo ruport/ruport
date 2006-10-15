@@ -5,7 +5,8 @@ module Ruport
        renderer do
           super
           active_plugin.rendered_field_names = "" 
-          build_field_names if (data.respond_to?(:column_names) && 
+          build_field_names if (data.respond_to?(:column_names) &&
+                                !data.column_names.empty? &&
                                 data.column_names && show_field_names)
           a = active_plugin.render_table
        end

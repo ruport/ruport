@@ -42,6 +42,16 @@ class MockPlugin < Ruport::Format::Plugin
 
 end
 
+class MockForTestingTableEngine < Ruport::Format::Plugin
+
+  renderer(:table) {}
+
+  format_field_names { raise }
+  plugin_name :table_mock
+  register_on :table_engine
+
+end
+
 class TestFormatEngine < Test::Unit::TestCase
 
   def test_no_data_required
@@ -79,6 +89,13 @@ class TestTabularFormatEngine < Test::Unit::TestCase
     @engine.active_plugin.apple = :banana
     assert_equal :banana, @engine.active_plugin.apple
   end
+
+  def test_ensure_column_names_only_rendered_if_non_empty
+    @engine.plugin = :mock
+    @engine.data = [[1,2,3]].to_table
+    assert_nothing_raised { @engine.render }
+  end
+
   def test_basic_render
      @engine.plugin = :mock
      @engine.data = [[1,2,3],[4,5,6],[7,8,9]]
