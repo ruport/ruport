@@ -192,8 +192,8 @@ module Ruport
     # Writes the contents of <tt>results</tt> to file.  If a filename is
     # specified, it will use it.  Otherwise, it will try to write to the file
     # specified by the <tt>file</tt> attribute.
-    def write(my_file=file)
-      File.open(my_file,"w") { |f| f << results }
+    def write(my_file=file,my_results=results)
+      File.open(my_file,"w") { |f| f << my_results=results }
     end
 
     # Like Report#write, but will append to a file rather than overwrite it if
