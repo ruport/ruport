@@ -206,12 +206,21 @@ module Ruport::Data
     #   
     #   data = Table.load('mydata.csv')
     def self.load(csv_file, options={})
-      options = {:has_names => true}.merge(options)
+        get_table_from_csv(:foreach, csv_file, options)
+    end
+      
+    def self.parse(string, options={})
+      get_table_from_csv(:parse,string,options)
+    end
+    
+    def self.get_table_from_csv(msg,param,options={})
+      options = {:has_names => true,
+                 :csv_options => {} }.merge(options)
       require "fastercsv"
       loaded_data = self.new
 
       first_line = true
-      FasterCSV.foreach(csv_file, options[:csv_options]) do |row|
+      FasterCSV.send(msg,param,options[:csv_options]) do |row|
         if first_line && options[:has_names]
           loaded_data.column_names = row
           first_line = false
@@ -221,25 +230,6 @@ module Ruport::Data
           yield(loaded_data,row)
         end
       end ; loaded_data
-    end
-    
-    def self.parse(string, options={})
-    options = {:has_names => true,
-               :csv_options => {}  }.merge(options)
-      require "fastercsv"
-      loaded_data = self.new
-
-      first_line = true
-      FasterCSV.parse(string, options[:csv_options]) do |row|
-        if first_line && options[:has_names]
-          loaded_data.column_names = row
-          first_line = false
-        elsif !block_given?
-          loaded_data << row
-        else
-          yield(loaded_data,row)
-        end
-      end ; loaded_data  
     end
 
     # Allows you to split tables into multiple tables for grouping.

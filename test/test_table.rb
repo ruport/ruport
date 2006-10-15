@@ -121,6 +121,16 @@ class TestTable < Test::Unit::TestCase
     assert_equal([%w[a b c],%w[1 2 3], %w[4 5 6]].to_table, table) 
     
   end
+  
+  def test_csv_block_form
+    expected = [%w[a b],%w[1 2],%w[3 4]]
+    t = Ruport::Data::Table.send(:get_table_from_csv, 
+                                 :parse, "a,b\n1,2\n3,4", :has_names => false) do |s,r|
+      assert_equal expected.shift, r
+      s << r    
+    end
+    assert_equal [%w[a b],%w[1 2],%w[3 4]].to_table, t
+  end
 
 
   def test_reorder
