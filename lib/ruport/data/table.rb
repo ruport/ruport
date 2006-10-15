@@ -222,6 +222,25 @@ module Ruport::Data
         end
       end ; loaded_data
     end
+    
+    def self.parse(string, options={})
+    options = {:has_names => true,
+               :csv_options => {}  }.merge(options)
+      require "fastercsv"
+      loaded_data = self.new
+
+      first_line = true
+      FasterCSV.parse(string, options[:csv_options]) do |row|
+        if first_line && options[:has_names]
+          loaded_data.column_names = row
+          first_line = false
+        elsif !block_given?
+          loaded_data << row
+        else
+          yield(loaded_data,row)
+        end
+      end ; loaded_data  
+    end
 
     # Allows you to split tables into multiple tables for grouping.
     #

@@ -92,22 +92,34 @@ class TestTable < Test::Unit::TestCase
     expected = [%w[1 2 3],%w[4 5 6]].to_table(%w[a b c])
     
     # ticket:94
-    
     table = Ruport::Data::Table.load( "test/samples/data.tsv", 
                                       :csv_options => { :col_sep => "\t" } )
-    # FIXME: Get csv_options to FasterCSV
     assert_equal expected, table 
+    
+    table = Ruport::Data::Table.load("test/samples/data.csv", :has_names => false)
+    assert_equal([],table.column_names)
+    assert_equal([%w[col1 col2 col3],%w[a b c],["d",nil,"e"]].to_table, table)
+    
   end
 
   # ticket:76
   def test_parse
-    #table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n")
-    #assert_equal [[1,2,3],[4,5,6]].to_table(%w[a b c]), table
+    
+    assert_nothing_raised { 
+      Ruport::Data::Table.parse("a,b,c\n1,2,3\n") 
+    }
+    
+    table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n")
+    expected = [%w[1 2 3],%w[4 5 6]].to_table(%w[a b c])
+    
+    table = Ruport::Data::Table.parse( "a\tb\tc\n1\t2\t3\n4\t5\t6\n", 
+                                      :csv_options => { :col_sep => "\t" } )
+    assert_equal expected, table 
 
-    #
-    #Dinko, get the above to pass, then get this to act just like
-    # Table#load, allowing all options to be given to it that load()
-    # understands...
+    table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n", :has_names => false)
+    assert_equal([],table.column_names)
+    assert_equal([%w[a b c],%w[1 2 3], %w[4 5 6]].to_table, table) 
+    
   end
 
 
