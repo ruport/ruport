@@ -205,13 +205,13 @@ module Ruport::Data
     # Loads a CSV file directly into a table using the fasterCSV library.
     #   
     #   data = Table.load('mydata.csv')
-    def self.load(csv_file, options = {})
+    def self.load(csv_file, options={})
       options = {:has_names => true}.merge(options)
       require "fastercsv"
       loaded_data = self.new
 
       first_line = true
-      FasterCSV.foreach(csv_file) do |row|
+      FasterCSV.foreach(csv_file, options[:csv_options]) do |row|
         if first_line && options[:has_names]
           loaded_data.column_names = row
           first_line = false
@@ -222,8 +222,6 @@ module Ruport::Data
         end
       end ; loaded_data
     end
-
-    
 
     # Allows you to split tables into multiple tables for grouping.
     #

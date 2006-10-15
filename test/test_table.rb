@@ -89,15 +89,14 @@ class TestTable < Test::Unit::TestCase
     rows = [%w[a b c],["d",nil,"e"]]
     table.each { |r| assert_equal rows.shift, r.data
                      assert_equal %w[col1 col2 col3], r.attributes }
-    expected = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    expected = [%w[1 2 3],%w[4 5 6]].to_table(%w[a b c])
     
     # ticket:94
     
     table = Ruport::Data::Table.load( "test/samples/data.tsv", 
                                       :csv_options => { :col_sep => "\t" } )
     # FIXME: Get csv_options to FasterCSV
-    #
-    #assert_equal expected, table 
+    assert_equal expected, table 
   end
 
   # ticket:76
@@ -105,7 +104,8 @@ class TestTable < Test::Unit::TestCase
     #table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n")
     #assert_equal [[1,2,3],[4,5,6]].to_table(%w[a b c]), table
 
-    #FIXME: Dinko, get the above to pass, then get this to act just like
+    #
+    #Dinko, get the above to pass, then get this to act just like
     # Table#load, allowing all options to be given to it that load()
     # understands...
   end
