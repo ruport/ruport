@@ -68,8 +68,9 @@ module Ruport::Data
         raise "Invalid index" unless index < @data.length
         @data[index]
       else
-        raise "Invalid index" unless @attributes.index(index)
-        @data[@attributes.index(index)]
+        index = index.to_s
+        raise "Invalid index" unless attributes.index(index)
+        @data[attributes.index(index)]
       end
     end
 
@@ -86,6 +87,7 @@ module Ruport::Data
         raise "Invalid index" unless index < @data.length
         @data[index] = value
       else
+        index = index.to_s
         raise "Invalid index" unless @attributes.index(index)
         @data[attributes.index(index)] = value
       end
@@ -119,7 +121,7 @@ module Ruport::Data
     #
     #   a = Data::Record.new([1,2],:attributes => %w[a b])
     #   a.attributes #=> ["a","b"]
-    def attributes; @attributes && @attributes.dup; end
+    def attributes; @attributes.map { |a| a.to_s } ; end
 
     # Sets the attribute list for this Record
     #
@@ -180,7 +182,7 @@ module Ruport::Data
     #   my_record.foo #=> 2
     def method_missing(id,*args)
       id = id.to_s.gsub(/=$/,"")
-      if @attributes.include?(id)
+      if attributes.include?(id)
         args.empty? ? self[id] : self[id] = args.first
       else
         super

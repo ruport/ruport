@@ -185,17 +185,16 @@ class TestRecord < Test::Unit::TestCase
     assert_equal [1,2,3], [t["a"],t["b"],t["c"]]
     assert_equal [1,2,3], [t.a,t.b,t.c]
 
-    #FIXME: Dinko, the commented out tests need to pass
+    assert_equal [1,2,3], [t[:a],t[:b],t[:c]]
     
-    # assert_equal [1,2,3], [t[:a],t[:b],t[:c]]
-    
+    t[:c] = 4
+    assert_equal [1,2,4], [t["a"],t["b"],t["c"]]
+
     x = Record.new [1,2,3], :attributes => [:a,:b,:c]
     assert_equal [1,2,3], [x[0],x[1],x[2]]
     assert_equal [1,2,3], [x[:a],x[:b],x[:c]]
 
-    #FIXME: ...
-
-    #assert_equal [1,2,3], [x["a"],x["b"],x["c"]]
-    #assert_equal [1,2,3], [x.a,x.b,x.c]
+    assert_equal [1,2,3], [x["a"],x["b"],x["c"]]
+    assert_equal [1,2,3], [x.a,x.b,x.c]
   end
 end
