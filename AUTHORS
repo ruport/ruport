@@ -27,3 +27,7 @@ Francis Hwang:
 
 Simon Claret:
  - Initial PDF table support (now deprecated)
+
+Daniel Berger:
+ - we vendored and modified attempt.rb to support it directly in Report.
+   Original website: http://raa.ruby-lang.org/project/attempt/

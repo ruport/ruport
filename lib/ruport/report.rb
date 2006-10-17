@@ -231,22 +231,39 @@ module Ruport
       # (print something out, write to file, email, etc)
       # 
       # Finally, it tries to call cleanup.
-      def run(*reports)
-        reports[0] ||= self.new
-        reports.each { |rep|
-          rep.prepare if rep.respond_to? :prepare;
-          rep.results = rep.generate;
-          yield(rep) if block_given?
-          rep.cleanup if rep.respond_to? :cleanup;
-        }
+      def run(options={})
+        options[:reports] ||= [self.new]
+
+        process = lambda do
+          options[:reports].each { |rep|
+            rep.prepare if rep.respond_to? :prepare
+            rep.results = rep.generate
+            yield(rep) if block_given?
+            rep.cleanup if rep.respond_to? :cleanup
+          }
+        end
+
+        if options[:tries] && (options[:interval] || options[:timeout])
+          code = Attempt.new { |a| 
+            a.tries = options[:tries]
+            a.interval = options[:interval] if options[:interval]
+            a.timeout = options[:timeout] if options[:timeout]
+            a.log_level = options[:log_level]
+          }
+          code.attempt(&process)
+        else
+          process.call
+        end
       end
+
     end
 
     # this method passes <tt>self</tt> to Report.run 
     #
     # Please see the class method for details.
-    def run(&block)
-      self.class.run(self,&block)
+    def run(options={},&block)
+      options[:reports] ||= [self]
+      self.class.run(options,&block)
     end
 
 

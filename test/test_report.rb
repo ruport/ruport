@@ -78,9 +78,29 @@ class TestReport < Test::Unit::TestCase
 
     expected = %w[foo bar]
 
-    rep_klass.run(report1,report2) do |rep|
+    rep_klass.run :reports => [report1,report2] do |rep|
       assert_equal expected.shift, rep.results
     end
+
+  end
+
+
+  def test_timeout
+    rep_klass = MyReport.dup
+    rep_klass.generate { raise }
+
+    assert_raises(RuntimeError){ 
+      rep_klass.run(:tries => 3, :interval => 1, :log_level => :log_only)
+    }
+    
+    rep_klass.generate { sleep 1.1 }
+
+    assert_raises(Timeout::Error) {
+      rep_klass.run( :tries    => 2, 
+                     :timeout  => 1, 
+                     :interval => 1,
+                     :log_level => :log_only)
+    }
 
   end
 
