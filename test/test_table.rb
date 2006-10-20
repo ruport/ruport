@@ -12,6 +12,13 @@ class TestTable < Test::Unit::TestCase
     tables = [table,table2,table3,table4]
     tables.zip([[],%w[a b c], [], %w[col1 col2 col3]]).each do |t,n|
       assert_equal n, t.column_names
+
+    t = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    t[0].tag :foo
+    t[1].tag :bar
+    table_from_records = t.data.to_table(t.column_names)
+    assert_equal [:foo], table_from_records[0].tags
+    assert_equal [:bar], table_from_records[1].tags
     end
     
     a = Ruport::Data::Record.new [1,2,3]
