@@ -193,7 +193,7 @@ module Ruport
     # specified, it will use it.  Otherwise, it will try to write to the file
     # specified by the <tt>file</tt> attribute.
     def write(my_file=file,my_results=results)
-      File.open(my_file,"w") { |f| f << my_results=results }
+      File.open(my_file,"w") { |f| f << my_results }
     end
 
     # Like Report#write, but will append to a file rather than overwrite it if
