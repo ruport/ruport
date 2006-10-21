@@ -11,6 +11,7 @@
 require "forwardable"
 
 module Ruport
+
   # === Overview
   #
   # The Ruport::Report class povides a high level interface to most of Ruport's
@@ -71,6 +72,7 @@ module Ruport
   class Report   
     extend Forwardable
     
+    include Ruport::Data::TableHelper
     # When initializing a report, you can provide a default mailer and source by
     # giving a name of a valid source or mailer you've defined via
     # Ruport::Config
@@ -183,7 +185,7 @@ module Ruport
     #
     # E.g
     #
-    #  text_processor(:unix_newlines) { results.gsub!(/\r\n/,"\n") }
+    #  text_processor(:unix_newlines) { |r| r.gsub(/\r\n/,"\n") }
     def text_processor(label,&block)
       Format.register_filter(label, &block)
     end

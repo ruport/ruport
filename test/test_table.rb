@@ -294,6 +294,17 @@ class TestTable < Test::Unit::TestCase
 
   end
 
+  def test_table_shortcut
+    self.class.send(:include,Ruport::Data::TableHelper)
+
+    a = table(%w[a b c]) do |t|
+      [[1,2,3],[4,5,6]].each { |r| t << r }
+    end
+
+   assert_equal([[1,2,3],[4,5,6]].to_table(%w[a b c]),a)
+
+  end
+
   def test_setting_column_names_changes_record_attributes
     table = Ruport::Data::Table.new :column_names => %w[a b c], 
       :data => [[1,2,3],[4,5,6]]

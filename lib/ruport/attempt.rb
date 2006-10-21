@@ -52,7 +52,6 @@ class Attempt
          if @tries > 0
             msg = "Error on attempt # #{count}: #{error}; retrying"
             count += 1
-            #warn msg if @warnings
             Ruport.log(msg, :level => log_level)
             @interval += @increment if @increment
             sleep @interval

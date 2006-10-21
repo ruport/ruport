@@ -19,6 +19,6 @@ class GraphSample < Ruport::Report
   end
 end
 
-GraphSample.run { |r| puts r.write }
+GraphSample.run(:tries => 3, :timeout => 1) { |r| sleep 2; puts r.results }
 
 

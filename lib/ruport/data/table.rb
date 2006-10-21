@@ -33,7 +33,7 @@ module Ruport::Data
   #
   # For building a table using ActiveRecord, have a look at Ruport::Reportable. 
   class Table < Collection
-
+    include Groupable
     # Creates a new table based on the supplied options.
     # Valid options are :data and :column_names.
     #
@@ -326,5 +326,13 @@ module Ruport::Data
 
     alias_method :sum, :sigma
     
+  end
+
+end
+
+module Ruport::Data::TableHelper
+  def table(names=[])
+    t = [].to_table(names)
+    yield(t) if block_given?; t
   end
 end
