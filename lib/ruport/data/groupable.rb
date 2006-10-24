@@ -6,7 +6,10 @@ module Ruport::Data
       d = r_tags.map do |t| 
 	      select {|row| row.tags.include? t }.to_table(column_names)      
       end
-      Record.new d, :attributes => r_tags
+      r = Record.new d, :attributes => r_tags
+      class << r
+        def each_group; attributes.each { |a| yield(a) }; end
+      end; r
     end
 
     def create_tag_group(label,&block)

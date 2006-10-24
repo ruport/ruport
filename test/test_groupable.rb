@@ -36,6 +36,7 @@ class TestGroupable < Test::Unit::TestCase
 
     assert_equal expected, a.group_by_tag
   end
+
 end
 
 
