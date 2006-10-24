@@ -104,5 +104,5 @@ module Ruport
   end
 end
 
-engines = %w[graph invoice table document]
+engines = %w[graph table document]
 engines.each { |e| require "ruport/format/engine/#{e}" }

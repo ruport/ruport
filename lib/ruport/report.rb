@@ -7,7 +7,7 @@
 
 #load the needed standard libraries.
 %w[erb yaml date logger fileutils].each { |lib| require lib }
-%w[invoice graph].each { |lib| require "ruport/report/"+lib }
+%w[graph].each { |lib| require "ruport/report/"+lib }
 require "forwardable"
 
 module Ruport
