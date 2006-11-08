@@ -4,8 +4,9 @@ class GraphSample < Ruport::Report
   include Graph
 
   prepare do
-    self.file = "bar.svg"
-    @data = [[5,7,9,12,14,16,18]].to_table(%w[jan feb mar apr may jun jul])
+    @data = table(%w[jan feb mar apr may jun jul]) do |t|
+      t << [5,7,9,12,14,16,18]
+    end
   end
 
   generate do
@@ -19,6 +20,6 @@ class GraphSample < Ruport::Report
   end
 end
 
-GraphSample.run(:tries => 3, :timeout => 1) { |r| sleep 2; puts r.results }
+GraphSample.run { |r| r.write "line_graph.svg" }
 
 
