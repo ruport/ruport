@@ -6,7 +6,11 @@
 
 module Ruport::Data
   
-  # This is the base class for Ruport's Data structures.
+  #
+  # This is the base class for Ruport's Data structures. It mixes in the 
+  # <tt>Taggable</tt> module and provides methods for converting between 
+  # <tt>Data::Set</tt>s and <tt>Data::Table</tt>s.
+  #
   class Collection
     require "forwardable"
     extend Forwardable
@@ -17,28 +21,29 @@ module Ruport::Data
       @data = data.dup if data
     end
 
-    # Simple formatting tool which allows you to quickly generate a formatted
-    # table from a Collection object, eg
+    # A simple formatting tool which allows you to quickly generate a formatted
+    # table from a <tt>Collection</tt> object.
     #
-    # my_collection.as(:csv) #=> "1,2,3\n4,5,6"
+    # Example:
+    #   my_collection.as(:csv)  #=> "1,2,3\n4,5,6"
     def as(type)
       eng = Ruport::Format.table_object :data => self, :plugin => type
       yield(eng) if block_given?
       eng.render
     end
 
-    # Converts any Collection object to a Data::Set
+    # Converts a <tt>Collection</tt> object to a <tt>Data::Set</tt>.
     def to_set
       Set.new :data => data
     end
    
-    # Converts any Collection object to a Data::Table
+    # Converts a <tt>Collection</tt> object to a <tt>Data::Table</tt>.
     def to_table(options={})
       Table.new({:data => data.map { |r| r.to_a }}.merge(options))
     end
 
-    # Provides a shortcut for the as() method by converting as(:format_name)
-    # into to_format_name
+    # Provides a shortcut for the <tt>as()</tt> method by converting a call to
+    # <tt>as(:format_name)</tt> into a call to <tt>to_format_name</tt>
     def method_missing(id,*args)
      return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
      super
