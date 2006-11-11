@@ -5,10 +5,13 @@
 # Copyright 2006 by respective content owners, all rights reserved.
 
 class Array
+  #
   # Converts an array to a Ruport::Data::Table object, ready to
   # use in your reports.
   #
+  # Example:
   #   [[1,2],[3,4]].to_table(%w[a b])
+  #
   def to_table(options={})
     options = { :column_names => options } if options.kind_of? Array 
     Ruport::Data::Table.new({:data => self}.merge(options))
@@ -16,7 +19,8 @@ class Array
 end
 
 module Ruport::Data
-  
+
+  #
   # This class is one of the core classes for building and working with data 
   # in Ruport. The idea is to get your data into a standard form, regardless 
   # of its source (a database, manual arrays, ActiveRecord, CSVs, etc.).
@@ -28,17 +32,21 @@ module Ruport::Data
   # Once your data is in a Ruport::Data::Table object, it can be manipulated
   # to suit your needs, then used to build a report.
   #
-  # Included in this class are methods to create Tables manually and from CSV
-  # files.
-  #
-  # For building a table using ActiveRecord, have a look at Ruport::Reportable. 
   class Table < Collection
     include Groupable
-    # Creates a new table based on the supplied options.
-    # Valid options are :data and :column_names.
+    
     #
-    #   table = Table.new({:data => [1,2,3], [3,4,5], 
-    #                      :column_names => %w[a b c]})
+    # Creates a new table based on the supplied options.
+    # Valid options: 
+    # <b><tt>:data</tt></b>::         An Array of Arrays representing the 
+    #                                 records in this Table
+    # <b><tt>:column_names</tt></b>:: An Array containing the column names 
+    #                                 for this Table.
+    # Example:
+    #
+    #   table = Table.new :data => [[1,2,3], [3,4,5]], 
+    #                     :column_names => %w[a b c]
+    #
     def initialize(options={})
       @column_names = options[:column_names] ? options[:column_names].dup : []
       @data         = []
@@ -52,44 +60,70 @@ module Ruport::Data
       end
     end
 
+    # This Table's column names.
     attr_reader :column_names
     def_delegator :@data, :[]
-    # Sets the column names for this table. The single parameter should be 
-    # an array listing the names of the columns.
+    
     #
-    #   tbl = Table.new({:data => [1,2,3], [3,4,5], :column_names => %w[a b c]})
-    #   tbl.column_names = %w[e f g]
-    def column_names=(other)
+    # Sets the column names for this table. <tt>new_column_names</tt> should 
+    # be an array listing the names of the columns.
+    #
+    # Example:
+    #
+    #   table = Table.new :data => [1,2,3], [3,4,5], 
+    #                     :column_names => %w[a b c]
+    #
+    #   table.column_names = %w[e f g]
+    #
+    def column_names=(new_column_names)
       @column_names.replace(other.dup)
     end
 
-    # Compares this table to another table and returns true if
-    # both the data and column names are equal
     #
-    #   one = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
-    #   two = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    # Compares this Table to another Table and returns <tt>true</tt> if
+    # both the <tt>data</tt> and <tt>column_names</tt> are equal.
+    #
+    # Example:
+    #
+    #   one = Table.new :data => [1,2], [3,4], 
+    #                   :column_names => %w[a b]
+    #
+    #   two = Table.new :data => [1,2], [3,4], 
+    #                   :column_names => %w[a b]
+    #
     #   one.eql?(two) #=> true
+    #
     def eql?(other)
       data.eql?(other.data) && column_names.eql?(other.column_names) 
     end
 
     alias_method :==, :eql?
 
-    # Uses Ruport's built-in text plugin to render this table into a string
+    #
+    # Uses Ruport's built-in text plugin to render this Table into a String
     # 
-    #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    # Example:
+    # 
+    #   data = Table.new :data => [1,2], [3,4], 
+    #                    :column_names => %w[a b]
     #   puts data.to_s
+    # 
     def to_s
       as(:text)
     end
 
-    # Used to add extra data to the table. The single parameter can be an 
-    # Array, Hash or Ruport::Data::Record.
     #
-    #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    # Used to add extra data to the Table. <tt>other</tt> can be an Array, 
+    # Hash or Record.
+    #
+    # Example:
+    #
+    #   data = Table.new :data => [1,2], [3,4], 
+    #                    :column_names => %w[a b]
     #   data << [8,9]
     #   data << { :a => 4, :b => 5}
-    #   data << Ruport::Data::Record.new [5,6], :attributes => %w[a b]
+    #   data << Record.new [5,6], :attributes => %w[a b]
+    #
     def <<(other)
       case other
       when Array
@@ -108,24 +142,37 @@ module Ruport::Data
       self
     end
   
-    # Used to combine two tables. Throws an ArgumentError if the tables don't
+    #
+    # Used to combine two Tables. Throws an ArgumentError if the Tables don't
     # have identical columns.
     #
-    #   inky = Table.new(:data => [[1,2], [3,4]], :column_names => %w[a b])
-    #   blinky = Table.new(:data => [[5,6]], :column_names => %w[a b])
+    # Example:
+    #
+    #   inky = Table.new :data => [[1,2], [3,4]], 
+    #                    :column_names => %w[a b]
+    #
+    #   blinky = Table.new :data => [[5,6]], 
+    #                      :column_names => %w[a b]
+    #
     #   sue = inky + blinky
     #   sue.data #=> [[1,2],[3,4],[5,6]]
-    
+    #
     def +(other)
       raise ArgumentError unless other.column_names == @column_names
       Table.new(:column_names => @column_names, :data => @data + other.data)
     end
   
-    # Reorders the columns that exist in the table. Operates directly 
-    # on this table.
     #
-    #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    # Reorders the columns that exist in the Table. Modifies this Table 
+    # in-place.
+    #
+    # Example:
+    #
+    #   data = Table.new :data => [1,2], [3,4], 
+    #                    :column_names => %w[a b]
+    #
     #   data.reorder!([1,0])  
+    #
     def reorder!(*indices)
       indices = indices[0] if indices[0].kind_of? Array
 
@@ -143,21 +190,34 @@ module Ruport::Data
       }; self
     end
 
-    # Returns a copy of the table with its columns in the requested order.
     #
-    #   one = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    # Returns a copy of the Table with its columns in the requested order.
+    #
+    # Example:
+    # 
+    #   one = Table.new :data => [1,2], [3,4], 
+    #                   :column_names => %w[a b]
+    #
     #   two = one.reorder!([1,0])  
+    #
     def reorder(*indices)
       dup.reorder!(*indices)
     end
 
-    # Adds an extra column to the table. Accepts an options Hash as its
-    # only parameter which should contain 2 keys - :name and :fill.
-    # :name specifies the new columns name, and :fill the default value to 
-    # use for the column in existing rows.
+    #
+    # Adds an extra column to the Table. Required options:
+    #
+    # <b><tt>:name</tt></b>:: The new column's name
+    # <b><tt>:fill</tt></b>:: The default value to use for the column in 
+    #                         existing rows.
     #   
-    #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
-    #   data.append_column({:name => 'new_column', :fill => 1)
+    # Example:
+    #
+    #   data = Table.new :data => [1,2], [3,4], 
+    #                    :column_names => %w[a b]
+    #
+    #   data.append_column :name => 'new_column', :fill => 1
+    #
     def append_column(options={})
       self.column_names += [options[:name]]  if options[:name]
       if block_given?
@@ -167,17 +227,21 @@ module Ruport::Data
       end; self
     end
 
-    # Removes a column from the table. Any values in the specified column are
+    # 
+    # Removes a column from the Table. Any values in the specified column are
     # lost.
-    #   data = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
-    #   data.append_column({:name => 'new_column', :fill => 1)
-    #   data.remove_column({:name => 'new_column')
-    #   data == Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
-    #     #=> true
-    #     
+    #
+    # Example:
+    #
+    #   data = Table.new :data => [[1,2], [3,4]], :column_names => %w[a b]
+    #   data.append_column :name => 'new_column', :fill => 1
+    #   data.remove_column :name => 'new_column'
+    #   data == Table.new :data => [[1,2], [3,4]], 
+    #                     :column_names => %w[a b] #=> true
     #   data = [[1,2],[3,4]].to_table
     #   data.remove_column(1)
     #   data.eql? [[1],[3]].to_table %w[a] #=> true
+    #
     def remove_column(options={})    
       if options.kind_of? Integer
         return reorder!((0...data[0].length).to_a - [options])
@@ -191,30 +255,38 @@ module Ruport::Data
       reorder! column_names - [name]
     end
 
-    # Create a shallow copy of the table: the same data elements are referenced
-    # by both the old and new table.
     #
-    #   one = Table.new({:data => [1,2], [3,4], :column_names => %w[a b]})
+    # Create a shallow copy of the Table: the same data elements are referenced
+    # by both the old and new Table.
+    #
+    # Example:
+    #
+    #   one = Table.new :data => [1,2], [3,4], 
+    #                   :column_names => %w[a b]
     #   two = one.dup
+    #
     def dup
       a = self.class.new(:data => @data, :column_names => @column_names)
       a.tags = tags.dup
       return a
     end
 
-    # Loads a CSV file directly into a table using the fasterCSV library.
+    #
+    # Loads a CSV file directly into a Table using the FasterCSV library.
+    #
+    # Example:
     #   
-    #   data = Table.load('mydata.csv')
+    #   table = Table.load('mydata.csv')
+    #
     def self.load(csv_file, options={})
         get_table_from_csv(:foreach, csv_file, options)
     end
-
-      
-    def self.parse(string, options={})
+    
+    def self.parse(string, options={}) #:nodoc:
       get_table_from_csv(:parse,string,options)
     end
     
-    def self.get_table_from_csv(msg,param,options={})
+    def self.get_table_from_csv(msg,param,options={}) #:nodoc:
       options = {:has_names => true,
                  :csv_options => {} }.merge(options)
       require "fastercsv"
@@ -233,7 +305,8 @@ module Ruport::Data
       end ; loaded_data
     end
 
-    # Allows you to split tables into multiple tables for grouping.
+    # 
+    # Allows you to split Tables into multiple Tables for grouping.
     #
     # Example:
     #
@@ -248,8 +321,8 @@ module Ruport::Data
     #   b.greg.eql? [[1,2,3],[7,8,9]].to_table(%w[a b c]) #=> true
     #   b["joe"].eql? [[2,3,4],[1,2,3]].to_table(%w[a b c]) #=> true
     #
-    # You can also pass an array to :group, and the resulting attributes in
-    # the group will be joined by an underscore. 
+    # You can also pass an Array to <tt>:group</tt>, and the resulting 
+    # attributes in the group will be joined by an underscore. 
     # 
     # Example:
     #
@@ -262,6 +335,7 @@ module Ruport::Data
     #   a.greg_brown.length     #=> 2
     #   a["greg_gibson"].length #=> 1
     #   a.greg_brown[0].x       #=> "foo"
+    #
     def split(options={})
       if options[:group].kind_of? Array
         group = map { |r| options[:group].map { |e| r[e] } }.uniq
@@ -294,12 +368,13 @@ module Ruport::Data
       end; rec
     end
     
-    # Calculates sums.  If a column name or index is given, it will try to
+    # 
+    # Calculates sums. If a column name or index is given, it will try to
     # convert each element of that column to an integer or float 
-    # and add it together 
+    # and add them together.
     #
-    # If a block is given, yields each Record so that you can do a calculation.
-    #
+    # If a block is given, it yields each Record so that you can do your own 
+    # calculation.
     #
     # Example:
     #
@@ -309,7 +384,6 @@ module Ruport::Data
     #   table.sigma { |r| r.col1 + r.col2 } #=> 21
     #   table.sigma { |r| r.col2 + 1 } #=> 15
     #
-    # For the non-mathy, this has been aliased as Table#sum
     def sigma(column=nil)
       inject(0) { |s,r| 
         if column
@@ -325,7 +399,7 @@ module Ruport::Data
     end
 
     alias_method :sum, :sigma
-
+    
   end
 
 end
