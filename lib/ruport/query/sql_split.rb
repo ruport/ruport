@@ -12,7 +12,7 @@ module Ruport
   class Query
     # This class properly splits up multi-statement SQL input for use with
     # Ruby/DBI
-    class SqlSplit < Array
+    class SqlSplit < Array  #:nodoc:
 			def initialize( sql )
 				super()
 				next_sql = ''
