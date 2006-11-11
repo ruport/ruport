@@ -1,6 +1,6 @@
 require 'timeout'
 
-class Attempt
+class Attempt # :nodoc:
    VERSION = '0.1.0'
    
    # Number of attempts to make before failing.  The default is 3.
