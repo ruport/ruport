@@ -29,7 +29,7 @@ module Ruport
   #  require "ruport"
   #  require "fileutils"
   #  class MyReport < Ruport::Report
-  #    prepare do
+  #    def prepare
   #      log_file "f.log"
   #      log "preparing report", :status => :info
   #      source :default, 
@@ -40,12 +40,12 @@ module Ruport
   #        :address => "gregory.t.brown@gmail.com"
   #    end
   #      
-  #    generate do
+  #    def generate
   #      log "generated csv from query", :status => :info
   #      query "select * from bar", :as => :csv 
   #    end
   #
-  #    cleanup do
+  #    def cleanup
   #      log "removing foo.csv", :status => :info
   #      FileUtils.rm("foo.csv") 
   #    end
@@ -63,24 +63,26 @@ module Ruport
   #  } 
   #
   # 
-  # This class can also be used to run templates and process text filters
+  # This class can also be used to run templates and process text filters.
   #
   # See the examples in the documentation below to see how to use these
-  # features. (Namely Report#process_text , Report#text_processor, and
-  # Report#eval_template )
+  # features (namely Report#process_text , Report#text_processor, and
+  # Report#eval_template).
   #
   class Report   
     extend Forwardable
     
     include Ruport::Data::TableHelper
+    # 
     # When initializing a report, you can provide a default mailer and source by
     # giving a name of a valid source or mailer you've defined via
-    # Ruport::Config
+    # Ruport::Config.
     #
     # If your report does not need any sort of specialized information, you can
-    # simply use Report.run (Or MyReportName.run if you've inherited)
+    # simply use Report.run (Or MyReportName.run if you've inherited).
     #
     # This will auto-initialize a report.
+    #
     def initialize( source_name=:default, mailer_name=:default )
       use_source source_name
       use_mailer mailer_name
@@ -89,46 +91,49 @@ module Ruport
       @file        = nil
     end
     
-    #by default, this file will be used by Report#write
+    # By default, this file will be used by Report#write.
     attr_accessor :file
 
-    #this attribute will get the results of Report#generate when the report is
-    #run.
+    #
+    # This attribute will get the results of Report#generate when the report is
+    # run.
+    #
     attr_accessor :results
 
-    # Simplified interface to Ruport::Query
+    # This is a simplified interface to Ruport::Query.
     #
-    # === Can read SQL statements from file or string
+    # You can use it to read SQL statements from file or string:
     #  
-    #  #from string 
-    #  result = query "select * from foo"
+    #   #from string 
+    #   result = query "select * from foo"
     #
-    #  #from file 
-    #  result = query "my_query.sql", :origin => :file
+    #   #from file 
+    #   result = query "my_query.sql", :origin => :file
     # 
-    # === Can use multistatement SQL
+    # You can use multistatement SQL:
     #
-    #  # will return the value of the last statement, "select * from foo"
-    #  result = query "insert into foo values(1,2); select * from foo"
+    #   # will return the value of the last statement, "select * from foo"
+    #   result = query "insert into foo values(1,2); select * from foo"
     # 
-    # === Can iterate by row or return entire set
+    # You can iterate by row or return the entire set:
     #  
-    #  query("select * from foo", :yield_type => :by_row) { |r|
+    #   query("select * from foo", :yield_type => :by_row) { |r|
     #     #do something with the rows here
-    #  }
+    #   }
     # 
-    # === Can return raw DBI:Row objects or Ruport's data structures.
+    # query() can return raw DBI:Row objects or Ruport's data structures:
     # 
-    #  # will return an Array of DBI::Row objects
-    #  result = query "select * from foo", :raw_data => true
+    #   # will return an Array of DBI::Row objects
+    #   result = query "select * from foo", :raw_data => true
     #
-    # === Can quickly output in a number of formats
+    # You can quickly output in a number of formats:
     # 
-    #  result = query "select * from foo", :as => :csv
-    #  result = query "select * from foo", :as => :html
-    #  result = query "select * from foo", :as => :pdf
+    #   result = query "select * from foo", :as => :csv
+    #   result = query "select * from foo", :as => :html
+    #   result = query "select * from foo", :as => :pdf
     #
-    # See source of this function and methods of Ruport::Query for details.
+    # See Ruport::Query for details.
+    #
     def query(sql, options={})
       options[:origin] ||= :string
       options[:source] ||= @source
@@ -142,27 +147,29 @@ module Ruport
         block_given? ? yield(q.result) : q.result
       end
     end
-   
-    # FIXME: Sucks!
-    # Evaluates _code_ from _filename_ as pure ruby code for files ending in
-    # .rb, and as ERb templates for anything else.
+    
     #
-    # This code will be evaluated in the context of the instance on which it is
-    # called.
+    # Evaluates <tt>code</tt> from <tt>filename</tt> as pure ruby code for 
+    # files ending in .rb, and as ERb templates for anything else.
+    #
+    # This code will be evaluated in the context of the instance on which it 
+    # is called.
+    #
     def eval_template( code, filename=nil )
       filename =~ /\.rb/ ? eval(code) : ERB.new(code, 0, "%").result(binding)
     end
    
-    # sets the active source to the Ruport::Config source requested by label.
+    # Sets the active source to the Ruport::Config source requested by <tt>label</tt>.
     def use_source(label)
       @source = label
     end
 
-    # sets the active mailer to the Ruport::Config source requested by label.
+    # Sets the active mailer to the Ruport::Config source requested by <tt>label</tt>.
     def use_mailer(label)
       @mailer = label
     end
     
+    #
     # Provides a nice way to execute templates and filters.
     #
     # Example:
@@ -171,6 +178,7 @@ module Ruport
     #
     # This method automatically passes a binding into the filters, so you are
     # free to access data from your Report instance in your templates.
+    #
     def process_text(string, options)
       options[:filters].each do |f|
         format = Format.new(binding)
@@ -180,60 +188,70 @@ module Ruport
       string
     end
     
-    # This allows you to create filters to be used by process_text
+    #
+    # This allows you to create filters to be used by process_text.
     #
     # The block is evaluated in the context of the instance.
     #
-    # E.g
+    # Example:
     #
     #  text_processor(:unix_newlines) { |r| r.gsub(/\r\n/,"\n") }
+    #
     def text_processor(label,&block)
       Format.register_filter(label, &block)
     end
 
-
-    # Writes the contents of <tt>results</tt> to file.  If a filename is
+    #
+    # Writes the contents of <tt>results</tt> to a file.  If a filename is
     # specified, it will use it.  Otherwise, it will try to write to the file
     # specified by the <tt>file</tt> attribute.
+    #
     def write(my_file=file,my_results=results)
       File.open(my_file,"w") { |f| f << my_results }
     end
 
+    #
     # Like Report#write, but will append to a file rather than overwrite it if
-    # the file already exists
+    # the file already exists.
+    #
     def append(my_file=file)
       File.open(my_file,"a") { |f| f << results }
     end
 
     class << self
 
-      # Defines an instance method which will be run before the
-      # <tt>generate</tt> method when Ruport.run is executed
       #
-      # Good for setting config info and perhaps files and/or loggers
+      # Defines an instance method which will be run before the
+      # <tt>generate</tt> method when Ruport.run is executed.
+      #
+      # Good for setting config info and perhaps files and/or loggers.
       #
       def prepare(&block); define_method(:prepare,&block) end
       
-      # Defines an instance method which will be executed by Report.run
+      #
+      # Defines an instance method which will be executed by Report.run.
       #
       # The return value of this method is assigned to the <tt>results</tt>
-      # attribute
+      # attribute.
       #
       def generate(&block); define_method(:generate,&block) end
       
+      #
       # Defines an instance method which will be executed after the object is
-      # yielded in Report.run 
+      # yielded in Report.run.
       #
       def cleanup(&block); define_method(:cleanup,&block) end
       
+      #
       # Runs the reports specified.  If no reports are specified, then it
-      # creates a new instance via <tt>self.new</tt>
+      # creates a new instance via <tt>self.new</tt>.
       #
       # Tries to execute the prepare instance method, then runs generate.
       # It then yields the object so that you may do something with it
-      # (print something out, write to file, email, etc)
+      # (print something out, write to file, email, etc.).
       # 
       # Finally, it tries to call cleanup.
+      #
       def run(options={})
         options[:reports] ||= [self.new]
 
@@ -261,23 +279,26 @@ module Ruport
 
     end
 
-    # this method passes <tt>self</tt> to Report.run 
+    #
+    # This method passes <tt>self</tt> to Report.run.
     #
     # Please see the class method for details.
+    #
     def run(options={},&block)
       options[:reports] ||= [self]
       self.class.run(options,&block)
     end
 
-
-    # loads a CSV in from file.
     #
-    # Example
+    # Loads a CSV in from  a file.
     #
-    # my_table = load_csv "foo.csv" #=> Data::Table
-    # my_array = load_csv "foo.csv", :as => :array #=> Array
+    # Example:
     #
-    # See also, Ruport::Data::Table.load
+    #   my_table = load_csv "foo.csv"                 #=> Data::Table
+    #   my_array = load_csv "foo.csv", :as => :array  #=> Array
+    #
+    # See also Ruport::Data::Table.load
+    #
     def load_csv(file,options={})
       case options[:as]
       when :array
@@ -288,11 +309,15 @@ module Ruport
       end
     end
     
-    # Allows logging and other fun stuff. See Ruport.log
+    #
+    # Allows logging and other fun stuff. 
+    # See also Ruport.log
+    #
     def log(*args); Ruport.log(*args) end
    
+    #
     # Creates a new Mailer and sets the <tt>to</tt> attribute to the addresses
-    # specified.  Yields a Mailer object, which can be modified before delivery.
+    # specified. Yields a Mailer object, which can be modified before delivery.
     #
     def send_to(adds)
       m = Mailer.new
