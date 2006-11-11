@@ -78,7 +78,11 @@ module Ruport
   end
 end
 
-
-%w[attempt config data meta_tools report format query mailer].each { |lib|
-  require "ruport/#{lib}" 
-}
+require "ruport/attempt" 
+require "ruport/config" 
+require "ruport/data" 
+require "ruport/meta_tools" 
+require "ruport/report" 
+require "ruport/format" 
+require "ruport/query" 
+require "ruport/mailer"
