@@ -1,4 +1,4 @@
-# ruport.rb : Ruby Reports toplevel module
+# ruport.rb : Ruby Reports top level module
 #
 # Author: Gregory T. Brown (gregory.t.brown at gmail dot com)
 #
@@ -14,30 +14,34 @@ module Ruport
   
   VERSION = "0.6.99"
   
-  # Ruports logging and error interface.
-  # Can generate warnings or raise fatal errors
-  # 
-  # Takes a message to display and a set of options.
-  # Will log to the file defined by Config::log_file
   #
-  # Options:
-  # <tt>:status</tt>::    sets the severity level. defaults to <tt>:warn</tt>
-  # <tt>:output</tt>::    optional 2nd output, defaults to <tt>$stderr</tt>
-  # <tt>:level</tt>::     set to <tt>:log_only</tt> to disable secondary output
-  # <tt>:exception</tt>:: exception to throw on fail.  Defaults to RunTimeError
+  # This method is Ruport's logging and error interface. It can generate 
+  # warnings or raise fatal errors, logging +message+ to the file defined by 
+  # <tt>Config::log_file</tt>.
   # 
-  # The status <tt>:warn</tt> will invoke Logger#warn.  A status of
-  # <tt>:fatal</tt> will invoke Logger#fatal and raise an exception
-  # 
-  # By default, <tt>log()</tt> will also print warnings to $stderr
-  # You can redirect this to any I/O object via <tt>:output</tt>
+  # You can configure the logging preferences with the +options+ hash. 
+  # Available options are:
   #
-  # You can prevent messages from appearing on the secondary output by setting
-  # <tt>:level</tt> to <tt>:log_only</tt>
+  # <b><tt>:status</tt></b>::    Sets the severity level. This defaults to 
+  #                              <tt>:warn</tt>, which will invoke 
+  #                              <tt>Logger#warn</tt>. A status of 
+  #                              <tt>:fatal</tt> will invoke 
+  #                              <tt>Logger#fatal</tt> and raise an exception.    
+  # <b><tt>:output</tt></b>::    Optional 2nd output. By default, <tt>log()</tt>
+  #                              will print warnings to <tt>$stderr</tt> in
+  #                              addition to <tt>Config::log_file</tt>. You
+  #                              can redirect this to any I/O object with this
+  #                              option.
+  # <b><tt>:level</tt></b>::     Set this to <tt>:log_only</tt> to disable 
+  #                              secondary output. If you want to globally 
+  #                              override this setting for all calls to 
+  #                              <tt>log()</tt> (which can be useful for 
+  #                              debugging), you can set 
+  #                              <tt>Config::enable_paranoia</tt>.
+  # <b><tt>:exception</tt></b>:: The +Exception+ to throw on failure.  This 
+  #                              defaults to +RunTimeError+.
   # 
-  # If you want to recover these messages to secondary output for debugging, you
-  # can use Config::enable_paranoia 
-  def self.log(message,options={})
+  def self.log(message, options={})
     options = {:status => :warn, :output => $stderr}.merge(options)
     options[:output].puts "[!!] #{message}" unless 
       options[:level].eql?(:log_only) and not Ruport::Config.paranoid?
@@ -47,18 +51,28 @@ module Ruport
     end
   end
  
-  #Alias for Ruport.log
+  # Alias for <tt>Ruport.log</tt>.
   def self.complain(*args); Ruport.log(*args) end
- 
-  # yields a Ruport::Config object, allowing you to specify configuration
-  # options.
+  
+  #
+  # This method yields a <tt>Ruport::Config</tt> object, allowing you to 
+  # set the configuration options for your application.
   #
   # Example: 
   #
   #   Ruport.configure do |c|
-  #     c.source :default, :dsn => "dbi:mysql:foo",
-  #                        :user => "clyde", :password => "pman"
+  #
+  #     c.source :default, 
+  #              :dsn => "dbi:mysql:foo",
+  #              :user => "clyde", 
+  #              :password => "pman"
+  #
+  #     c.mailer :default, 
+  #              :host => "mail.example.com", 
+  #              :address => "inky@example.com"
+  #
   #   end
+  #
   def self.configure(&block)
     block.call(Ruport::Config)
   end
