@@ -1,1 +1,6 @@
-%w[groupable taggable record collection table set].each { |l| require "ruport/data/#{l}" }
+require "ruport/data/groupable" 
+require "ruport/data/taggable" 
+require "ruport/data/record" 
+require "ruport/data/collection" 
+require "ruport/data/table" 
+require "ruport/data/set"
