@@ -142,7 +142,8 @@ module Ruport
         block_given? ? yield(q.result) : q.result
       end
     end
-    
+   
+    # FIXME: Sucks!
     # Evaluates _code_ from _filename_ as pure ruby code for files ending in
     # .rb, and as ERb templates for anything else.
     #

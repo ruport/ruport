@@ -208,6 +208,7 @@ module Ruport::Data
     def self.load(csv_file, options={})
         get_table_from_csv(:foreach, csv_file, options)
     end
+
       
     def self.parse(string, options={})
       get_table_from_csv(:parse,string,options)
@@ -302,12 +303,11 @@ module Ruport::Data
     #
     # Example:
     #
-    #
-    # table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
-    # table.sigma("col1") #=> 9
-    # table.sigma(0)      #=> 9
-    # table.sigma { |r| r.col1 + r.col2 } #=> 21
-    # table.sigma { |r| r.col2 + 1 } #=> 15
+    #   table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
+    #   table.sigma("col1") #=> 9
+    #   table.sigma(0)      #=> 9
+    #   table.sigma { |r| r.col1 + r.col2 } #=> 21
+    #   table.sigma { |r| r.col2 + 1 } #=> 15
     #
     # For the non-mathy, this has been aliased as Table#sum
     def sigma(column=nil)
@@ -325,7 +325,7 @@ module Ruport::Data
     end
 
     alias_method :sum, :sigma
-    
+
   end
 
 end
