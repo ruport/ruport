@@ -6,37 +6,43 @@
 #  See LICENSE for details
 require "net/smtp"
 require "forwardable"
-module Ruport  
 
-    # This class uses SMTP to provide a simple mail sending mechanism.
-    # It also uses MailFactory to provide attachment and HTML email support. 
-    #
-    # Here is a simple example of a message which attaches a readme file:
-    #
-    #   require "ruport"
-    #     
-    #   Ruport.configure do |conf| 
-    #     conf.mailer :default, 
-    #       :host => "mail.adelphia.net", :address => "gregory.t.brown@gmail.com"
-    #   end
-    #
-    #   mailer = Ruport::Mailer.new
-    #
-    #   mailer.attach "README"
-    #
-    #   mailer.deliver :to      => "gregory.t.brown@gmail.com",
-    #                  :from    => "gregory.t.brown@gmail.com",
-    #                  :subject => "Hey there",               
-    #                  :text    => "This is what you asked for"
+module Ruport
+  
+  #
+  # This class uses SMTP to provide a simple mail sending mechanism.
+  # It also uses MailFactory to provide attachment and HTML email support. 
+  #
+  # Here is a simple example of a message which attaches a README file:
+  #
+  #   require "ruport"
+  #     
+  #   Ruport.configure do |config| 
+  #     config.mailer :default, 
+  #                   :host    => "mail.adelphia.net", 
+  #                   :address => "gregory.t.brown@gmail.com"
+  #   end
+  #
+  #   mailer = Ruport::Mailer.new
+  #
+  #   mailer.attach "README"
+  #
+  #   mailer.deliver :to      => "gregory.t.brown@gmail.com",
+  #                  :from    => "gregory.t.brown@gmail.com",
+  #                  :subject => "Hey there",               
+  #                  :text    => "This is what you asked for"
+  #
   class Mailer
     extend Forwardable
    
-    
-    # Creates a new Mailer object.  Optionally, can select a mailer specified
-    # by Ruport::Config.
     #
-    #   a = Mailer.new # uses the :default mailer
-    #   a = Mailer.new :foo # uses :foo mail config from Ruport::Config
+    # Creates a new Mailer object. Optionally, you can select a mailer 
+    # specified by Ruport::Config.
+    #
+    # Example:
+    #
+    #   a = Mailer.new        # uses the :default mailer
+    #   a = Mailer.new :foo   # uses :foo mail config from Ruport::Config
     #
     def initialize( mailer_label=:default )
       select_mailer(mailer_label); 
@@ -49,10 +55,14 @@ module Ruport
                            :subject, :subject=, :attach, 
                            :text, :text=, :html, :html= )
    
-    # sends the message
+    # 
+    # Sends the message.
+    #
+    # Example:
     #
     #   mailer.deliver :from => "gregory.t.brown@gmail.com",
     #                  :to   => "greg7224@gmail.com"
+    #
     def deliver(options={})
       options.each { |k,v| send("#{k}=",v) if respond_to? "#{k}=" }
       
