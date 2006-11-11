@@ -5,6 +5,7 @@
 # Copyright 2006 by respective content owners, all rights reserved.
 
 class Array
+
   #
   # Converts an array to a Ruport::Data::Table object, ready to
   # use in your reports.
@@ -20,6 +21,8 @@ end
 
 module Ruport::Data
 
+  # 
+  # === Overview
   #
   # This class is one of the core classes for building and working with data 
   # in Ruport. The idea is to get your data into a standard form, regardless 
@@ -404,7 +407,7 @@ module Ruport::Data
 
 end
 
-module Ruport::Data::TableHelper
+module Ruport::Data::TableHelper #:nodoc:
   def table(names=[])
     t = [].to_table(names)
     yield(t) if block_given?; t

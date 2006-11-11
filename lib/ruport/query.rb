@@ -2,7 +2,10 @@ require "generator"
 require "ruport/query/sql_split"
 
 module Ruport
+  
   #
+  # === Overview
+  # 
   # Query offers a way to interact with databases via DBI. It supports
   # returning result sets in either Ruport's native Data::Table, or in their 
   # raw form as DBI::Rows.

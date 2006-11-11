@@ -6,6 +6,8 @@
 module Ruport::Data
 
   #
+  # === Overview
+  # 
   # Data::Records are the work horse of Ruport's data model. These can behave
   # as Array-like, Hash-like, or Struct-like objects.  They are used as the 
   # base element in both Tables and Sets.

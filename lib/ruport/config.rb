@@ -12,12 +12,16 @@
 require "ostruct"
 module Ruport
   #
+  # === Overview
+  #
   # This class serves as the configuration system for Ruport.
   #  
   # The source and mailer defined as <tt>:default</tt> will become the 
   # fallback values if you don't specify one in <tt>Report::Mailer</tt> or 
   # <tt>Query</tt>, but you may define as many sources as you like and switch 
   # between them later.
+  #
+  # === Example
   #
   # The most common way to access your application configuration is through 
   # the <tt>Ruport.configure</tt> method, like this:

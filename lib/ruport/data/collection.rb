@@ -7,6 +7,8 @@
 module Ruport::Data
   
   #
+  # === Overview
+  #
   # This is the base class for Ruport's Data structures. It mixes in the 
   # <tt>Taggable</tt> module and provides methods for converting between 
   # <tt>Data::Set</tt>s and <tt>Data::Table</tt>s.

@@ -10,8 +10,12 @@ require "forwardable"
 module Ruport
   
   #
+  # === Overview
+  #
   # This class uses SMTP to provide a simple mail sending mechanism.
   # It also uses MailFactory to provide attachment and HTML email support. 
+  #
+  # === Example
   #
   # Here is a simple example of a message which attaches a README file:
   #

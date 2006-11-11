@@ -2,6 +2,9 @@
 class ActionAlreadyDefinedError < RuntimeError; end
 
 module Ruport
+
+  # 
+  # === Overview
   #
   # This module provides a few tools for doing some manipulations of the
   # singleton class of an object.  These are used in the implementation of 

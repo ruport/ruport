@@ -6,6 +6,8 @@
 module Ruport::Data
   
   #
+  # === Overview
+  # 
   # This module provides a simple mechanism for tagging arbitrary objects.  
   # It provides the necessary methods to set and retrieve tags which can 
   # consist of any Ruby object.

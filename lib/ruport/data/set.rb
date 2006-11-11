@@ -8,6 +8,8 @@ require 'set'
 module Ruport::Data
   
   #
+  # === Overview
+  #
   # This class is one of the core classes for building and working with data 
   # in Ruport. The idea is to get your data into a standard form, regardless 
   # of its source (a database, manual arrays, ActiveRecord, CSVs, etc.).

@@ -1,7 +1,11 @@
 module Ruport::Data
 
+  #
+  # === Overview
+  #
   # This module provides a simple mechanism for grouping objects based on 
   # tags.
+  #
   module Groupable
 
     #
