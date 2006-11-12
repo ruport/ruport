@@ -79,7 +79,7 @@ module Ruport::Data
     #   table.column_names = %w[e f g]
     #
     def column_names=(new_column_names)
-      @column_names.replace(other.dup)
+      @column_names.replace(new_column_names.dup)
     end
 
     #
