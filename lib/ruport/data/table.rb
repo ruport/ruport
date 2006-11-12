@@ -284,8 +284,9 @@ module Ruport::Data
     #   # do not assume the data has column_names
     #   table = Table.load('mydata.csv',:has_names => false)
     #
-    #   # pass in FasterCSV options, such as column seperators
+    #   # pass in FasterCSV options, such as column separators
     #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
+    #
     def self.load(csv_file, options={})
         get_table_from_csv(:foreach, csv_file, options)
     end
@@ -295,6 +296,7 @@ module Ruport::Data
     # additional examples.
     #
     #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
+    #
     def self.parse(string, options={}) 
       get_table_from_csv(:parse,string,options)
     end
