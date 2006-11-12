@@ -208,11 +208,11 @@ module Ruport::Data
     end
 
     #
-    # Adds an extra column to the Table. Required options:
+    # Adds an extra column to the Table. Available Options:
     #
-    # <b><tt>:name</tt></b>:: The new column's name
+    # <b><tt>:name</tt></b>:: The new column's name (required)
     # <b><tt>:fill</tt></b>:: The default value to use for the column in 
-    #                         existing rows.
+    #                         existing rows. Set to nil if not specified.
     #   
     # Example:
     #
@@ -259,8 +259,7 @@ module Ruport::Data
     end
 
     #
-    # Create a shallow copy of the Table: the same data elements are referenced
-    # by both the old and new Table.
+    # Create a copy of the Table: records will be copied as well.
     #
     # Example:
     #
@@ -279,13 +278,24 @@ module Ruport::Data
     #
     # Example:
     #   
+    #   # treat first row as column_names
     #   table = Table.load('mydata.csv')
     #
+    #   # do not assume the data has column_names
+    #   table = Table.load('mydata.csv',:has_names => false)
+    #
+    #   # pass in FasterCSV options, such as column seperators
+    #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
     def self.load(csv_file, options={})
         get_table_from_csv(:foreach, csv_file, options)
     end
     
-    def self.parse(string, options={}) #:nodoc:
+    #
+    # Creates a Table from a CSV string using FasterCSV.  See Table.load for
+    # additional examples.
+    #
+    #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
+    def self.parse(string, options={}) 
       get_table_from_csv(:parse,string,options)
     end
     
