@@ -79,7 +79,7 @@ module Ruport
        require "ruport/format/#{lib}" 
     }
 
-    @filters = Hash.new
+    @@filters ||= Hash.new
     
     # To hook up a Format object to your current class, you need to pass it a
     # binding.  This way, when filters are being processed, they will be
@@ -124,11 +124,11 @@ module Ruport
     #     content.gsub(/O/i,"")
     #   end
     def self.register_filter(name,&filter_proc)
-      @filters["filter_#{name}".to_sym] = filter_proc 
+      @@filters["filter_#{name}".to_sym] = filter_proc 
     end
 
     def method_missing(m,*args)
-      @filters[m] ? @filters[m][@content] : super
+      @@filters[m] ? @@filters[m][@content] : super
     end
 
 
