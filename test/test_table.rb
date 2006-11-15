@@ -320,4 +320,22 @@ class TestTable < Test::Unit::TestCase
     assert_equal %w[d e f], table.data[1].attributes
   end
 
+  def test_sort_rows_by
+    table = Ruport::Data::Table.new :column_names => %w[a b c]
+    table << [1,2,3] << [6,1,8] << [9,1,4]
+
+    sorted_table_a = Ruport::Data::Table.new :column_names => %w[a b c]
+    sorted_table_a << [1,2,3] << [6,1,8] << [9,1,4]
+
+    sorted_table_b = Ruport::Data::Table.new :column_names => %w[a b c]
+    sorted_table_b << [6,1,8] << [9,1,4] << [1,2,3]
+    
+    sorted_table_bc = Ruport::Data::Table.new :column_names => %w[a b c]
+    sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3]
+  
+    assert_equal sorted_table_a,  table.sort_rows_by {|r| r['a']}
+    assert_equal sorted_table_b,  table.sort_rows_by(:column_names=>['b'])
+    assert_equal sorted_table_bc, table.sort_rows_by(:column_names=>['b', 'c'])
+  end
+
 end

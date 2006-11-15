@@ -415,6 +415,47 @@ module Ruport::Data
 
     alias_method :sum, :sigma
     
+    #
+    # Returns a sorted table. If options has a key <tt>:column_names</tt>, 
+    # the block is ignored and the table is sorted by the named columns. All
+    # options are used in constructing the new Table (see Array#to_table
+    # for details).
+    #
+    # Example:
+    #
+    #   table = [[4, 3], [2, 5], [7, 1]].to_table(%w[col1 col2 ])
+    #
+    #   # returns a new table sorted by col1
+    #   table.sort_rows_by {|r| r["col1"]}
+    #
+    #   # returns a new table sorted by col2
+    #   table.sort_rows_by(:column_names=>["col2"])
+    #
+    #   # returns a new table sorted by col1, then col2
+    #   table.sort_rows_by(:column_names=>["col1", "col2"])
+    #
+    def sort_rows_by(options={}, &block)
+      # stabilizer is needed because of 
+      # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/170565
+      stabilizer = 0
+
+      data_array =
+        if options[:column_names]
+          sort_by do |r| 
+            stabilizer += 1
+            [options[:column_names].map {|col| r[col]}, stabilizer] 
+          end
+        else
+          sort_by(&block)
+        end
+
+      table = 
+        data_array.to_table(options.merge(:column_names => @column_names))
+
+      table.tags = self.tags
+      return table
+    end
+        
   end
 
 end
