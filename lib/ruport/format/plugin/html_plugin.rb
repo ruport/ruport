@@ -12,9 +12,9 @@ module Ruport
           classstr = defined?(r.tags) ? 
             r.tags.inject("") {|cs,c| cs + " class='#{c}'" } : ""
           s + "\t\t<tr#{classstr}>\n\t\t\t<td#{classstr}>" +
-            row.to_a.join("</td>\n\t\t\t<td#{classstr}>") + 
+            row.to_a.join("</td>\n\t\t\t<td#{classstr}>") +
             "</td>\n\t\t</tr>\n"
-        end 
+        end + "\t</table>"
       end
 
       format_field_names do
