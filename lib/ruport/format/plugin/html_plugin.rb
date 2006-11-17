@@ -14,7 +14,7 @@ module Ruport
           s + "\t\t<tr#{classstr}>\n\t\t\t<td#{classstr}>" +
             row.to_a.join("</td>\n\t\t\t<td#{classstr}>") + 
             "</td>\n\t\t</tr>\n"
-        end + "\t</table>" 
+        end 
       end
 
       format_field_names do
