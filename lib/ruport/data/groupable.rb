@@ -41,11 +41,12 @@ module Ruport::Data
     #      +----------------+
     #
     def group_by_tag
-      r_tags = data.map {|row| row.tags}.flatten.uniq
-      d = r_tags.map do |t| 
-	      select {|row| row.tags.include? t }.to_table(column_names)      
-      end
-      r = Record.new d, :attributes => r_tags
+      r_tags = map { |r| r.tags }.flatten.uniq
+      tables_hash = Hash.new { |h,k| h[k] = [].to_table(column_names) }
+      each { |row|
+        row.tags.each { |t| tables_hash[t] << row }
+      }
+      r = Record.new tables_hash, :attributes => r_tags
       class << r
         def each_group; attributes.each { |a| yield(a) }; end
       end; r
@@ -72,8 +73,10 @@ module Ruport::Data
     #      +----------------+
     #
     def create_tag_group(label,&block)
-      select(&block).each { |r| r.tag label }
+      each { |r| block[r] && r.tag(label) }
+      #select(&block).each { |r| r.tag label }
     end
+    alias_method :tag_group, :create_tag_group
 
   end
 end
