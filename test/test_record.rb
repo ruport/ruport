@@ -72,6 +72,12 @@ class TestRecord < Test::Unit::TestCase
     assert_equal @record.d, @record["d"]
   end
 
+  def test_nonexistent_accessor
+    assert_raise NoMethodError do
+      @record.e
+    end
+  end
+  
   def test_attribute_setting
     @record.a = 10
     @record.b = 20

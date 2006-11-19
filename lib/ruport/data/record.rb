@@ -220,12 +220,12 @@ module Ruport::Data
     #   my_record.foo = 2
     #   my_record.foo #=> 2
     #
-    def method_missing(id,*args)
-      id = id.to_s.gsub(/=$/,"")
+    def method_missing(mname, *args)
+      id = mname.to_s.gsub(/=$/,"")
       if attributes.include?(id)
         args.empty? ? self[id] : self[id] = args.first
       else
-        super
+        super(mname, *args)
       end
     end
 

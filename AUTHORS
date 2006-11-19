@@ -31,3 +31,6 @@ Simon Claret:
 Daniel Berger:
  - we vendored and modified attempt.rb to support it directly in Report.
    Original website: http://raa.ruby-lang.org/project/attempt/
+
+Marshall T. Vandegrift:
+ - Fixed a bug in Record's struct-like accessors (method_missing)
