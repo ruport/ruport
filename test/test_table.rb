@@ -139,6 +139,24 @@ class TestTable < Test::Unit::TestCase
     assert_equal [%w[a b],%w[1 2],%w[3 4]].to_table, t
   end
 
+  def test_ensure_using_csv_block_mode_works
+    expected = [%w[a b],%w[1 2],%w[3 4]]
+    t = Ruport::Data::Table.parse("a,b\n1,2\n3,4",:has_names => false) { |s,r|
+      assert_equal expected.shift, r
+      s << r    
+      s << r
+    }
+    assert_equal [%w[a b],%w[a b],%w[1 2], %w[1 2],
+                  %w[3 4],%w[3 4]].to_table, t
+    x = Ruport::Data::Table.load("test/samples/data.csv") { |s,r|
+      assert_kind_of Ruport::Data::Table, s
+      assert_kind_of Array, r
+      s << r
+      s << r
+    }
+    assert_equal 4, x.length
+  end
+
 
   def test_reorder
     table = Ruport::Data::Table.load("test/samples/data.csv")

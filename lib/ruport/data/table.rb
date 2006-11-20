@@ -287,8 +287,8 @@ module Ruport::Data
     #   # pass in FasterCSV options, such as column separators
     #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
     #
-    def self.load(csv_file, options={})
-        get_table_from_csv(:foreach, csv_file, options)
+    def self.load(csv_file, options={},&block)
+        get_table_from_csv(:foreach, csv_file, options,&block)
     end
     
     #
@@ -297,11 +297,11 @@ module Ruport::Data
     #
     #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
     #
-    def self.parse(string, options={}) 
-      get_table_from_csv(:parse,string,options)
+    def self.parse(string, options={},&block) 
+      get_table_from_csv(:parse,string,options,&block)
     end
     
-    def self.get_table_from_csv(msg,param,options={}) #:nodoc:
+    def self.get_table_from_csv(msg,param,options={},&block) #:nodoc:
       options = {:has_names => true,
                  :csv_options => {} }.merge(options)
       require "fastercsv"
@@ -312,10 +312,10 @@ module Ruport::Data
         if first_line && options[:has_names]
           loaded_data.column_names = row
           first_line = false
-        elsif !block_given?
+        elsif !block
           loaded_data << row
         else
-          yield(loaded_data,row)
+         block[loaded_data,row]
         end
       end ; loaded_data
     end
