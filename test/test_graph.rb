@@ -85,6 +85,7 @@ begin
       
       assert_raises(InvalidGraphOptionError) {
         output = graph.render
+      
       }
    end
   end

@@ -53,9 +53,9 @@ class TestReport < Test::Unit::TestCase
   
   def test_klass_methods
     rep_klass = MyReport.dup
-    rep_klass.prepare  { self.file = "foo.csv" }
-    rep_klass.generate { "hello dolly" }
-    rep_klass.cleanup { @foo = "bar" }
+    rep_klass.send(:prepare)  { self.file = "foo.csv" }
+    rep_klass.send(:generate) { "hello dolly" }
+    rep_klass.send(:cleanup) { @foo = "bar" }
     report = rep_klass.new
     report.run { |rep|  
       assert_equal("foo.csv",rep.file)
@@ -74,7 +74,7 @@ class TestReport < Test::Unit::TestCase
     report1.file = "foo"
     report2.file = "bar"
 
-    rep_klass.generate { file }
+    rep_klass.send(:generate) { file }
 
     expected = %w[foo bar]
 
@@ -87,13 +87,13 @@ class TestReport < Test::Unit::TestCase
 
   def test_timeout
     rep_klass = MyReport.dup
-    rep_klass.generate { raise }
+    rep_klass.send(:generate) { raise }
 
     assert_raises(RuntimeError){ 
       rep_klass.run(:tries => 3, :interval => 1, :log_level => :log_only)
     }
     
-    rep_klass.generate { sleep 1.1 }
+    rep_klass.send(:generate) { sleep 1.1 }
 
     assert_raises(Timeout::Error) {
       rep_klass.run( :tries    => 2, 
