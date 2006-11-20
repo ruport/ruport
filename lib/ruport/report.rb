@@ -252,6 +252,9 @@ module Ruport
       # 
       # Finally, it tries to call cleanup.
       #
+
+      private :prepare, :generate, :cleanup
+
       def run(options={})
         options[:reports] ||= [self.new]
 
