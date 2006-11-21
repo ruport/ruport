@@ -130,6 +130,7 @@ module Ruport
         :level => :log_only, :exception => LocalJumpError 
       ) unless action
       fetch(&action)
+      self
     end
     
     #
@@ -190,26 +191,31 @@ module Ruport
 
     private
     
-    def query_data( query_text, params=@params )
-      
+    def query_data(query_text, params=@params)
       require "dbi"
       
       data = @raw_data ? [] : Data::Table.new
       DBI.connect(@dsn, @user, @password) do |dbh|
-        if params
-          sth = dbh.execute(query_text,*params)
-        else
-          sth = dbh.execute(query_text)
+        dbh.execute(query_text, *(params || [])) do |sth|
+          # Work-around for inconsistent DBD behavior w/ resultless queries
+          names = sth.column_names rescue []
+          if names.empty?
+            # Work-around for SQLite3 DBD bug
+            sth.cancel rescue nil
+            return nil
+          end
+          
+          data.column_names = names unless @raw_data
+          sth.each do |row|
+            row = row.to_a
+            row = Data::Record.new(row, :attributes => names) unless @raw_data
+            yield row if block_given?
+            data << row if !block_given? || @cache_enabled
+          end
         end
-        return unless sth.fetchable?
-        results = sth.fetch_all  
-        data.column_names = sth.column_names unless @raw_data
-        results.each { |row| data << row.to_a }
-        sth.finish
       end
       data
-      rescue NoMethodError; nil
-    end 
+    end
     
     def get_query(type,query)
       type.eql?(:file) ? load_file( query ) : query
@@ -222,17 +228,19 @@ module Ruport
       end
     end
     
-    def fetch
+    def fetch(&block)
       data = nil
       if @cache_enabled and @cached_data
         data = @cached_data
+        data.each { |r| yield(r) } if block_given?
       else
-        @statements.each { |query_text| data = query_data( query_text ) }
+        final = @statements.size - 1
+        @statements.each_with_index do |query_text, index|
+          data = query_data(query_text, &(index == final ? block : nil))
+        end
+        @cached_data = data if @cache_enabled
       end
-      data.each { |r| yield(r) } if block_given? 
-      @cached_data = data if @cache_enabled
       return data
     end
-
   end
 end
