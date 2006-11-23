@@ -44,7 +44,9 @@ module Ruport::Data
       r_tags = map { |r| r.tags }.flatten.uniq
       tables_hash = Hash.new { |h,k| h[k] = [].to_table(column_names) }
       each { |row|
-        row.tags.each { |t| tables_hash[t] << row }
+        row.tags.each { |t| 
+          tables_hash[t].instance_variable_get(:@data) << row
+        }
       }
       r = Record.new tables_hash, :attributes => r_tags
       class << r

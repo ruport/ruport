@@ -1,5 +1,6 @@
 module Ruport
   class Generator
+  extend FileUtils
 
   begin
     require "rubygems"
@@ -78,6 +79,8 @@ Ruport.configure { |c|
 END_CONFIG
 
 BUILD = <<'END_BUILD'
+require 'fileutils'
+include FileUtils
 
 def format_class_name(string)
   string.downcase.split("_").map { |s| s.capitalize }.join
