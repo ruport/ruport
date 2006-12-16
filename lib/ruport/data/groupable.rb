@@ -76,7 +76,6 @@ module Ruport::Data
     #
     def create_tag_group(label,&block)
       each { |r| block[r] && r.tag(label) }
-      #select(&block).each { |r| r.tag label }
     end
     alias_method :tag_group, :create_tag_group
 

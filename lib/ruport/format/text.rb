@@ -32,7 +32,7 @@ module Ruport
       end
 
       def hr
-        len = layout.max_col_width.inject(data[0].to_a.length * 3) {|s,e| s+e} + 1
+        len = layout.max_col_width.inject(data[0].to_a.length * 3) {|s,e|s+e}+1
         "+" + "-"*(len-2) + "+\n"
       end
 
