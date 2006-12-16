@@ -78,8 +78,8 @@ module Ruport
       options = { :source => :default, :origin => :string }.merge(options)
       options[:binding] ||= binding
       options[:origin] = :file if sql =~ /.sql$/
-      q = Format.document :data => get_query(options[:origin],sql),
-                          :plugin => :text, :class_binding => options[:binding]
+
+      q = ERB.new(get_query(options[:origin],sql)).result(options[:binding])
       @statements = SqlSplit.new(q)
       @sql = @statements.join
       
@@ -181,7 +181,7 @@ module Ruport
 
     # Returns a csv dump of the query.
     def to_csv
-      Format.table :plugin => :csv, :data => fetch
+      fetch.to_csv
     end
 
     # Returns a Generator object of the result set.

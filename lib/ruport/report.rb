@@ -14,7 +14,7 @@ module Ruport
 
   # === Overview
   #
-  # The Ruport::Report class povides a high level interface to most of Ruport's
+  # The Ruport::Report class provides a high level interface to most of Ruport's
   # functionality.  It is designed to allow you to build and run reports easily.
   # If your needs are complicated, you will probably need to take a look at the
   # individual classes of the library, but if they are fairly simple, you may be
@@ -142,7 +142,7 @@ module Ruport
       if options[:yield_type].eql?(:by_row)
         q.each { |r| yield(r) }
       elsif options[:as]
-        Format.table :data => q.result, :plugin => options[:as]
+        q.result.as(options[:as])
       else
         block_given? ? yield(q.result) : q.result
       end

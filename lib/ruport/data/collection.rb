@@ -29,9 +29,10 @@ module Ruport::Data
     # Example:
     #   my_collection.as(:csv)  #=> "1,2,3\n4,5,6"
     def as(type)
-      eng = Ruport::Format.table_object :data => self, :plugin => type
-      yield(eng) if block_given?
-      eng.render
+      Ruport::Renderer::Table.render(type) do |rend|
+        rend.data = self
+        yield(rend) if block_given?
+      end
     end
 
     # Converts a <tt>Collection</tt> object to a <tt>Data::Set</tt>.
