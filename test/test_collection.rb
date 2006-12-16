@@ -27,18 +27,4 @@ class TestCollection < Test::Unit::TestCase
     assert_equal @ghost_set, @ghost_collection.to_set
   end
 
-  def test_to_csv
-    assert_equal "inky,blue\nblinky,red\nclyde,orange\n", 
-                 @ghost_collection.to_csv
-  end
-  
-  def test_as_csv
-    assert_equal @ghost_collection.to_csv, @ghost_collection.as(:csv)
-  end
-
-  def test_invalid_plugin_throws_an_error
-    assert_raise(InvalidPluginError) { @ghost_collection.to_papyrus_scroll }
-    assert_raise(InvalidPluginError) { @ghost_collection.as(:stone_tablet)}
-  end
-    
 end
