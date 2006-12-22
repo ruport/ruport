@@ -13,9 +13,9 @@ class Array
   # Example:
   #   [[1,2],[3,4]].to_table(%w[a b])
   #
-  def to_table(options={})
-    options = { :column_names => options } if options.kind_of? Array 
-    Ruport::Data::Table.new({:data => self}.merge(options))
+  def to_table(column_names=nil)
+#    options = { :column_names => options } if options.kind_of? Array 
+    Ruport::Data::Table.new({:data => self, :column_names => column_names})
   end
 end
 
@@ -416,7 +416,7 @@ module Ruport::Data
     alias_method :sum, :sigma
     
     #
-    # Returns a sorted table. If options has a key <tt>:column_names</tt>, 
+    # Returns a sorted table. If col_names is specified, 
     # the block is ignored and the table is sorted by the named columns. All
     # options are used in constructing the new Table (see Array#to_table
     # for details).
@@ -429,28 +429,28 @@ module Ruport::Data
     #   table.sort_rows_by {|r| r["col1"]}
     #
     #   # returns a new table sorted by col2
-    #   table.sort_rows_by(:column_names=>["col2"])
+    #   table.sort_rows_by ["col2"]
     #
     #   # returns a new table sorted by col1, then col2
-    #   table.sort_rows_by(:column_names=>["col1", "col2"])
+    #   table.sort_rows_by ["col1", "col2"]
     #
-    def sort_rows_by(options={}, &block)
+    def sort_rows_by(col_names=nil, &block)
       # stabilizer is needed because of 
       # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/170565
       stabilizer = 0
 
       data_array =
-        if options[:column_names]
+        if col_names
           sort_by do |r| 
             stabilizer += 1
-            [options[:column_names].map {|col| r[col]}, stabilizer] 
+            [col_names.map {|col| r[col]}, stabilizer] 
           end
         else
           sort_by(&block)
         end
 
       table = 
-        data_array.to_table(options.merge(:column_names => @column_names))
+        data_array.to_table(@column_names)
 
       table.tags = self.tags
       return table
@@ -460,9 +460,44 @@ module Ruport::Data
 
 end
 
-module Ruport::Data::TableHelper #:nodoc:
-  def table(names=[])
-    t = [].to_table(names)
-    yield(t) if block_given?; t
+
+module Kernel
+  
+  # Shortcut interface for creating Data::Tables
+  #
+  # Examples:
+  #
+  #   t = Table(%w[a b c])   #=> creates a new empty table w. cols a,b,c
+  #   t = Table("a","b","c") #=> creates a new empty table w. cols a,b,c
+  #
+  #   # allows building table inside of block, returns table object
+  #   t = Table(%w[a b c]) { |t| t << [1,2,3] } 
+  #
+  #   # allows loading table from CSV
+  #   # accepts all Data::Table.load options, but block form yields table,
+  #   # not row!
+  #
+  #   t = Table("foo.csv")
+  #   t = Table("bar.csv", :has_names => false)
+  def Table(*args,&block)
+    table=
+    if args.length == 1 
+      case(args[0])
+      when Array
+        [].to_table(args[0])
+      when String
+        Ruport::Data::Table.load(args[0])
+      end
+    else
+      if args[0] =~ /.csv/
+        Ruport::Data::Table.load(*args)
+      else
+        [].to_table(args)
+      end
+    end
+
+    block[table] if block
+
+    return table
   end
 end

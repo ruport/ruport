@@ -72,7 +72,6 @@ module Ruport
   class Report   
     extend Forwardable
     
-    include Ruport::Data::TableHelper
     # 
     # When initializing a report, you can provide a default mailer and source by
     # giving a name of a valid source or mailer you've defined via

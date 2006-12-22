@@ -284,24 +284,6 @@ class TestTable < Test::Unit::TestCase
     assert_equal a,b
   end
   
-  def test_array_hack
-    t = [[1,2],[3,4],[5,6]].to_table 
-    assert_instance_of Ruport::Data::Table, t
-    assert_equal [], t.column_names
-    assert_equal Ruport::Data::Record.new([3,4]), t[1]
-    t = [[1,2],[3,4],[5,6]].to_table :column_names => %w[a b]
-    table = Ruport::Data::Table.new :column_names => %w[a b], 
-                                    :data => [[1,2],[3,4],[5,6]]
-    
-    assert_equal t, table 
-    
-    # test short form
-    table2 = [[1,2],[3,4],[5,6]].to_table %w[a b]
-  
-    assert_equal table, table2
-
-  end
-
   def test_ensure_coerce_sum
     
     s = [["1"],["3"],["5"] ].to_table
@@ -309,17 +291,6 @@ class TestTable < Test::Unit::TestCase
     
     assert_equal(9,s.sum(0))
     assert_equal(2.73,t.sum(0))
-
-  end
-
-  def test_table_shortcut
-    self.class.send(:include,Ruport::Data::TableHelper)
-
-    a = table(%w[a b c]) do |t|
-      [[1,2,3],[4,5,6]].each { |r| t << r }
-    end
-
-   assert_equal([[1,2,3],[4,5,6]].to_table(%w[a b c]),a)
 
   end
 
@@ -352,8 +323,41 @@ class TestTable < Test::Unit::TestCase
     sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3]
   
     assert_equal sorted_table_a,  table.sort_rows_by {|r| r['a']}
-    assert_equal sorted_table_b,  table.sort_rows_by(:column_names=>['b'])
-    assert_equal sorted_table_bc, table.sort_rows_by(:column_names=>['b', 'c'])
+    assert_equal sorted_table_b,  table.sort_rows_by(['b'])
+    assert_equal sorted_table_bc, table.sort_rows_by(['b', 'c'])
+  end
+
+  def test_array_hack
+    t = [[1,2],[3,4],[5,6]].to_table 
+    assert_instance_of Ruport::Data::Table, t
+    assert_equal [], t.column_names
+    table = Ruport::Data::Table.new :column_names => %w[a b], 
+                                    :data => [[1,2],[3,4],[5,6]]
+    
+    table2 = [[1,2],[3,4],[5,6]].to_table %w[a b]
+  
+    assert_equal table, table2
+
+  end
+
+
+
+end
+
+class TestTableKernelHack < Test::Unit::TestCase
+  
+  def test_simple
+    assert_equal [].to_table(%w[a b c]), Table(%w[a b c]) 
+    assert_equal [].to_table(%w[a b c]), Table("a","b","c")
+    assert_equal Ruport::Data::Table.load("test/samples/addressbook.csv"),
+                 Table("test/samples/addressbook.csv")
+    assert_equal Ruport::Data::Table.load(
+                   "test/samples/addressbook.csv", :has_names => false),
+                 Table('test/samples/addressbook.csv', :has_names => false) 
+    Table("a","b","c") do |t|
+      t << [1,2,3]
+      assert_equal([[1,2,3]].to_table(%w[a b c]), t)
+    end
   end
 
 end
