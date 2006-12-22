@@ -22,7 +22,12 @@ module Ruport
         data.each { |r|
           line = Array.new
           r.each_with_index { |f,i|
-            line << f.to_s.center(layout.max_col_width[i])
+            if layout.alignment.eql? :center
+              line << f.to_s.center(layout.max_col_width[i])
+            else
+              align = f.is_a?(Numeric) ? :rjust : :ljust
+              line << f.to_s.send(align, layout.max_col_width[i])
+            end
           }
           s += "| #{line.join(' | ')} |\n"
         }

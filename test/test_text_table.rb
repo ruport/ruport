@@ -12,46 +12,26 @@ class TextPluginTest < Test::Unit::TestCase
     
   end
 
-  #def test_max_col_width
-  #  a = Format.table_object :plugin => :text, :data => [[1,2],[300,4]]
-  #  a.active_plugin.calculate_max_col_widths
-  #  assert_equal(3,a.active_plugin.max_col_width[0])
-  #  assert_equal(1,a.active_plugin.max_col_width[1])
-
-  #  a.data = [[1,2],[300,4]].to_table(:column_names => %w[a ba])
-  #  a.active_plugin.calculate_max_col_widths
-  #  assert_equal(3,a.active_plugin.max_col_width[0])
-  #  assert_equal(2,a.active_plugin.max_col_width[1])
-
-  #  a.data = [[1,2],[3,40000]].to_table(:column_names => %w[foo bazz])
-  #  a.active_plugin.calculate_max_col_widths
-  #  assert_equal(3,a.active_plugin.max_col_width[0])
-  #  assert_equal(5,a.active_plugin.max_col_width[1])  
-  #end
-
-  #def test_hr
-  #  a = Format.table_object :plugin => :text, :data => [[1,2],[300,4]]
-  #  a.active_plugin.calculate_max_col_widths
-  #  assert_equal("+---------+\n",a.active_plugin.hr)
-
-
-  #  a.data = [[1,2],[3,40000]].to_table(:column_names => %w[foo bazz])
-  #  a.active_plugin.calculate_max_col_widths
-  #  assert_equal "+-------------+\n", a.active_plugin.hr
-    
-  #end
 
   def test_centering
     tf = "+---------+\n" 
 
     a = [[1,2],[300,4]].to_table
-    assert_equal("#{tf}|  1  | 2 |\n| 300 | 4 |\n#{tf}",a.to_text)
+    assert_equal( "#{tf}|  1  | 2 |\n| 300 | 4 |\n#{tf}",
+                  a.as(:text) { |e| e.layout.alignment = :center })
 
     tf = "+------------+\n"
     a.column_names = %w[a bark]
     assert_equal("#{tf}|  a  | bark |\n#{tf}|  1  |  2   |\n"+
-                 "| 300 |  4   |\n#{tf}",a.to_text)
+                 "| 300 |  4   |\n#{tf}",
+                  a.as(:text) { |e| e.layout.alignment = :center })
     
+  end
+
+  def test_justified
+    tf = "+----------+\n"
+    a = [[1,'Z'],[300,'BB']].to_table
+    assert_equal "#{tf}|   1 | Z  |\n| 300 | BB |\n#{tf}", a.to_s
   end
 
   def test_wrapping  
@@ -59,7 +39,7 @@ class TextPluginTest < Test::Unit::TestCase
       r.layout { |l| l.table_width = 10 }
     }
 
-    assert_equal("+------->>\n|  1  | >>\n| 300 | >>\n+------->>\n",a)
+    assert_equal("+------->>\n|   1 | >>\n| 300 | >>\n+------->>\n",a)
   end
 
 
