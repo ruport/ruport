@@ -57,7 +57,8 @@ module Ruport
     rescue LoadError             # If we're not on Windows try...
       # A Unix savvy method to fetch the console columns, and rows.
       def terminal_size
-       `stty size`.split.map { |x| x.to_i }.reverse
+        size = `stty size 2>/dev/null`.split.map { |x| x.to_i }.reverse
+        return $? == 0 ? size : [80,24]
       end
 
    end
