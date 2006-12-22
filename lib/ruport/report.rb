@@ -139,12 +139,12 @@ module Ruport
       options[:source] ||= @source
       options[:binding] ||= binding
       q = options[:query_obj] || Query.new(sql, options)
-      if options[:yield_type].eql?(:by_row)
+      if block_given?
         q.each { |r| yield(r) }
       elsif options[:as]
         q.result.as(options[:as])
       else
-        block_given? ? yield(q.result) : q.result
+        q.result
       end
     end
     
