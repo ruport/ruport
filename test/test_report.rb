@@ -87,5 +87,17 @@ class TestReport < Test::Unit::TestCase
     }
 
   end
+  
+  def test_return_value
+    rep_klass = MyReport.dup
+    rep_klass.send(:generate) { "hello dolly" }
+
+    # single report
+    assert_equal "hello dolly", rep_klass.run 
+
+    # multiple reports
+    assert_equal ["hello dolly", "hello dolly"],
+      rep_klass.run(:reports => [rep_klass.new,rep_klass.new])
+  end
 
 end

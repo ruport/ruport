@@ -256,6 +256,8 @@ module Ruport
       # 
       # Finally, it tries to call cleanup.
       #
+      # This method will return the contents of Report#results, as a single
+      # value for single reports, and an array of outputs for multiple reports.
 
       private :prepare, :generate, :cleanup
 
@@ -282,6 +284,14 @@ module Ruport
         else
           process.call
         end
+
+        outs = options[:reports].map { |r| r.results }
+        if outs.length == 1
+          outs.last
+        else
+          outs
+        end
+        
       end
 
     end
