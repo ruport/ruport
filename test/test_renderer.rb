@@ -66,9 +66,9 @@ class TestRenderer < Test::Unit::TestCase
     end
 
     assert_equal "body\n", rend.plugin { build_body }.output
-    assert_equal foo="shiggy wiggy", 
-                 rend.plugin { |p| p.output.replace foo }.output
 
+    rend.plugin.clear_output
+    assert_equal "", rend.plugin.output
   end
 
 end

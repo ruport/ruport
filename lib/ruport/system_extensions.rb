@@ -67,9 +67,5 @@ module Ruport
      terminal_size.first
    end
 
-   def terminal_height
-    terminal_size.last
-   end
-
   end
 end

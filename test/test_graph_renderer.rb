@@ -32,9 +32,21 @@ class TestGraphRenderer < Test::Unit::TestCase
       end
     end
 
-    assert_equal("preparebuildfinalize",out)
+    assert_equal("preparebuildfinalize",out)    
+  end
 
-    
+  def test_report_shortcut
+    a = Ruport::Report.new
+    a.extend(Ruport::Report::Graph)
+
+    p = lambda { |e| e.data = [[1,2,3]].to_table(%w[a b c]) }
+
+    b = a.build_graph(&p)
+    c = b.run
+    assert_not_nil b.plugin.output
+
+    assert_equal c, a.render_graph(&p)
+
   end
   
 end

@@ -4,20 +4,6 @@
 # This is Free Software.  For details, see LICENSE and COPYING
 # Copyright 2006 by respective content owners, all rights reserved.
 
-class Array
-
-  #
-  # Converts an array to a Ruport::Data::Table object, ready to
-  # use in your reports.
-  #
-  # Example:
-  #   [[1,2],[3,4]].to_table(%w[a b])
-  #
-  def to_table(column_names=nil)
-#    options = { :column_names => options } if options.kind_of? Array 
-    Ruport::Data::Table.new({:data => self, :column_names => column_names})
-  end
-end
 
 module Ruport::Data
 
@@ -485,11 +471,14 @@ module Kernel
       case(args[0])
       when Array
         [].to_table(args[0])
-      when String
+      when /\.csv/
         Ruport::Data::Table.load(args[0])
+      else
+        # for Table("a")
+        [].to_table([args[0]])
       end
     else
-      if args[0] =~ /.csv/
+      if args[0] =~ /\.csv/
         Ruport::Data::Table.load(*args)
       else
         [].to_table(args)
@@ -501,3 +490,18 @@ module Kernel
     return table
   end
 end
+
+class Array
+
+  #
+  # Converts an array to a Ruport::Data::Table object, ready to
+  # use in your reports.
+  #
+  # Example:
+  #   [[1,2],[3,4]].to_table(%w[a b])
+  #
+  def to_table(column_names=nil)
+    Ruport::Data::Table.new({:data => self, :column_names => column_names})
+  end
+end
+

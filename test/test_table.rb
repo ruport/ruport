@@ -358,6 +358,9 @@ class TestTableKernelHack < Test::Unit::TestCase
       t << [1,2,3]
       assert_equal([[1,2,3]].to_table(%w[a b c]), t)
     end
+
+    assert_equal Table("a"), Table(%w[a])
+    assert_equal Table(:a), Table([:a])
   end
 
 end

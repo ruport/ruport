@@ -2,12 +2,12 @@ module Ruport
   class Report
     module Graph #:nodoc:
       def build_graph
-        a = Ruport::Format.graph_object :plugin => :svg
+        a = Ruport::Renderer::Graph.build(:svg)
         yield(a); return a
       end
 
       def render_graph(&block)
-        build_graph(&block).render
+        build_graph(&block).run
       end
     end
   end
