@@ -65,12 +65,12 @@ class TestConfiguration < Test::Unit::TestCase
     
   end
 
-  def test_paranoia
-    assert_equal(false, Ruport::Config.paranoid?)
-    Ruport::Config.enable_paranoia
-    assert_equal(true, Ruport::Config.paranoid?)
-    Ruport::Config.disable_paranoia
-    assert_equal(false, Ruport::Config.paranoid?)
+  def test_debug
+    assert_equal(false, Ruport::Config.debug_mode?)
+    Ruport::Config.debug_mode = true 
+    assert_equal(true, Ruport::Config.debug_mode?)
+    Ruport::Config.debug_mode = false
+    assert_equal(false, Ruport::Config.debug_mode?)
   end
    
 end

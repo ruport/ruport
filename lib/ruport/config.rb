@@ -161,16 +161,12 @@ module Ruport
     def logger; @logger; end
 
     # Forces all messages marked <tt>:log_only</tt> to print anyway.
-    def enable_paranoia; @paranoid = true; end
+    #    def enable_paranoia; @paranoid = true; end
 
     # Disables the printing of <tt>:log_only</tt> messages.
-    def disable_paranoia; @paranoid = false; end
+    #def disable_paranoia; @paranoid = false; end
 
-    # Sets paranoid status.
-    def paranoid=(val); @paranoid = val; end
-
-    # Checks to see if paranoia is enabled.
-    def paranoid?; !!@paranoid; end
+    def debug_mode?; !!@debug_mode; end
     
     # Verifies that you have provided a DSN for your source.
     def check_source(settings,label) # :nodoc:
@@ -192,6 +188,10 @@ module Ruport
           :exception => ArgumentError
         )
       end
+    end
+
+    def debug_mode=(something)
+      @debug_mode = !!something
     end
     
   end

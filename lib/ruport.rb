@@ -44,7 +44,7 @@ module Ruport
   def self.log(message, options={})
     options = {:status => :warn, :output => $stderr}.merge(options)
     options[:output].puts "[!!] #{message}" unless 
-      options[:level].eql?(:log_only) and not Ruport::Config.paranoid?
+      options[:level].eql?(:log_only) and not Ruport::Config.debug_mode?
     Ruport::Config::logger.send(options[:status],message) if Config.logger
     if options[:status].eql? :fatal
       raise(options[:exception] || RuntimeError, message) 
