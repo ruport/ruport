@@ -467,22 +467,14 @@ module Kernel
   #   t = Table("bar.csv", :has_names => false)
   def Table(*args,&block)
     table=
-    if args.length == 1 
-      case(args[0])
+    case(args[0])
       when Array
         [].to_table(args[0])
       when /\.csv/
-        Ruport::Data::Table.load(args[0])
-      else
-        # for Table("a")
-        [].to_table([args[0]])
-      end
-    else
-      if args[0] =~ /\.csv/
         Ruport::Data::Table.load(*args)
       else
+        # for Table("a")
         [].to_table(args)
-      end
     end
 
     block[table] if block
