@@ -468,13 +468,12 @@ module Kernel
   def Table(*args,&block)
     table=
     case(args[0])
-      when Array
-        [].to_table(args[0])
-      when /\.csv/
-        Ruport::Data::Table.load(*args)
-      else
-        # for Table("a")
-        [].to_table(args)
+    when Array
+      [].to_table(args[0])
+    when /\.csv/
+      Ruport::Data::Table.load(*args)
+    else
+       [].to_table(args)
     end
 
     block[table] if block
