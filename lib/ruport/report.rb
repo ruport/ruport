@@ -201,7 +201,26 @@ module Ruport
         Data::Table.load(file,options)
       end
     end
-    
+
+    #
+    # Executes an erb template.  If a filename is given which matches the
+    # pattern /\.r\w+$/ (eg foo.rhtml, bar.rtxt, etc), 
+    # it will be loaded and evaluated.  Otherwise, the string will be processed
+    # directly.
+    #
+    # Examples:
+    #
+    #  @foo = 'greg'
+    #  erb "My name is <%= @foo %>" #=> "My name is greg"
+    #
+    #  erb "foo.rhtml" #=> contents of evaluated text in foo.rhtml
+    def erb(s)
+      if s =~ /\.r\w+$/
+        ERB.new(File.read(s)).result(binding)
+      else
+        ERB.new(s).result(binding)
+      end
+    end
     #
     # Allows logging and other fun stuff. 
     # See also Ruport.log

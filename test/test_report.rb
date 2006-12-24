@@ -15,6 +15,13 @@ class TestReport < Test::Unit::TestCase
     @query1 = Ruport::Query.new "select * from foo", :cache_enabled => true 
     @query1.cached_data = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
   end
+
+  def test_erb
+    @report = Report.new
+    @report.results = "foo"
+    assert_equal "foo", @report.erb("<%= @results %>")
+    assert_equal "foo\n4\n---\n", @report.erb("test/samples/foo.rtxt")
+  end
   
   def test_query
     assert_kind_of Ruport::Data::Table, 
@@ -26,11 +33,6 @@ class TestReport < Test::Unit::TestCase
     }
     assert_equal "a,b,c\n1,2,3\n4,5,6\n7,8,9\n", 
        @report.query("blah",:query_obj => @query1, :as => :csv)       
-  end
-
-  #  ticket:86
-  def test_table_shortcut
-    # FIXME: Dinko, look at ticket and implement feature
   end
 
   class MyReport < Report; end
