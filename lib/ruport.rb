@@ -12,7 +12,7 @@
 
 module Ruport
   
-  VERSION = "0.6.99"
+  VERSION = "0.7.99"
   
   #
   # This method is Ruport's logging and error interface. It can generate 
