@@ -214,6 +214,7 @@ module Ruport
     #  erb "My name is <%= @foo %>" #=> "My name is greg"
     #
     #  erb "foo.rhtml" #=> contents of evaluated text in foo.rhtml
+    #
     def erb(s)
       if s =~ /\.r\w+$/
         ERB.new(File.read(s)).result(binding)
@@ -221,6 +222,18 @@ module Ruport
         ERB.new(s).result(binding)
       end
     end
+
+    # uses RedCloth to turn a string containing textile markup into HTML.
+    #
+    # Example:
+    #
+    # textile "*bar*" #=> "<p><strong>foo</strong></p>"
+    #
+    def textile(s)
+      require "redcloth"
+      RedCloth.new(s).to_html
+    end
+    
     #
     # Allows logging and other fun stuff. 
     # See also Ruport.log
