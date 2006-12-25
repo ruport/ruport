@@ -12,8 +12,8 @@ class SampleReport < Ruport::Report
       i.options do |o|
         o.company_info  = "Stone Code Productions\n43 Neagle Street"
         o.customer_info = "Gregory Brown\n200 Foo Ave."
-        o.comments      = "Shut Up!"
-        o.order_info    = "What up?"
+        o.comments      = "J. Random Comment"
+        o.order_info    = "Some info\nabout your order"
         o.title         = "Hey There"
       end
 
