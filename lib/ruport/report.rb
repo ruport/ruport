@@ -227,7 +227,7 @@ module Ruport
     #
     # Example:
     #
-    # textile "*bar*" #=> "<p><strong>foo</strong></p>"
+    #   textile "*bar*" #=> "<p><strong>foo</strong></p>"
     #
     def textile(s)
       require "redcloth"

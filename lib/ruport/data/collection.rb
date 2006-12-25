@@ -18,8 +18,8 @@ module Ruport::Data
     extend Forwardable
     include Enumerable
     include Taggable
-
-    def initialize(data=nil,options={})
+    
+    def initialize(data=nil,options={}) #:nodoc:
       @data = data.dup if data
     end
 

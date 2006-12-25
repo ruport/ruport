@@ -24,7 +24,7 @@
 #  This is Free Software.  See LICENSE and COPYING for details.
 
 module Ruport
-  module SystemExtensions
+  module SystemExtensions #:nodoc:
     module_function
     
     #

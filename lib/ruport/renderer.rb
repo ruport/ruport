@@ -13,7 +13,7 @@
 # This class can easily be extended to build custom formatting engines, but if
 # you do not need that, may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
-  module Helpers
+  module Helpers #:nodoc:
     def prepare(name)
       maybe "prepare_#{name}"
     end

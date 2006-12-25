@@ -1,1 +1,1 @@
-require "ruport/layout/component"
+require "ruport/layout/component" #:nodoc:

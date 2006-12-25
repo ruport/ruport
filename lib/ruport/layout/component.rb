@@ -1,7 +1,7 @@
 require "ostruct"
 module Ruport
-  class Layout
-    class Component < OpenStruct
+  class Layout #:nodoc:
+    class Component < OpenStruct #:nodoc:
     end
   end
 end

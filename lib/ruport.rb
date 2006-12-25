@@ -37,7 +37,7 @@ module Ruport
   #                              override this setting for all calls to 
   #                              <tt>log()</tt> (which can be useful for 
   #                              debugging), you can set 
-  #                              <tt>Config::enable_paranoia</tt>.
+  #                              <tt>Config.debug_mode</tt>.
   # <b><tt>:exception</tt></b>:: The +Exception+ to throw on failure.  This 
   #                              defaults to +RunTimeError+.
   # 
@@ -81,7 +81,6 @@ end
 require "ruport/attempt" 
 require "ruport/config" 
 require "ruport/data" 
-require "ruport/meta_tools" 
 require "ruport/report" 
 require "ruport/format" 
 require "ruport/query" 

@@ -17,6 +17,10 @@ module Ruport::Format
       end
     end
     
+    # Generates the <tr> and <td> tags for each row, calling to_s on each
+    # element of the Record.  If the Record has been tagged, the tags will be
+    # converted into class attributes in the HTML output.
+    #
     def build_table_body
       output << data.inject("") do |s,r| 
         row = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
@@ -27,6 +31,7 @@ module Ruport::Format
       end 
     end
 
+    # Simply closes the table tag. 
     def build_table_footer
       output << "\t</table>"
     end

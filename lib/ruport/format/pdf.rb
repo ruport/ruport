@@ -1,4 +1,16 @@
 module Ruport::Format
+
+  # PDF generation plugin
+  #
+  #  layout options:
+  #     General:
+  #       * paper_size  #=> "LETTER"
+  #       * orientation #=> :center
+  #     
+  #     Table:
+  #       * table_width
+  #       * max_table_width #=> 500
+  #
   class PDF < Plugin
     attr_writer :pdf_writer
     attr_accessor :table_header_proc
