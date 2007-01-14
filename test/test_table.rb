@@ -141,19 +141,18 @@ class TestTable < Test::Unit::TestCase
     }
   end
 
-  def test_append_column
+  def test_add_column
     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
-    a.append_column(:name => "c")
+    a.add_column("c")
     assert_equal [[1,2,nil],[3,4,nil],[5,6,nil]].to_table(%w[a b c]), a
     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
-    a.append_column(:name => "c",:fill => "x")
+    a.add_column("c",:fill => "x")
     assert_equal [[1,2,'x'],[3,4,'x'],[5,6,'x']].to_table(%w[a b c]), a
-    a.append_column(:name => "d") { |r| r[0]+r[1] }
+    a.add_column("d") { |r| r[0]+r[1] }
     assert_equal( 
     [ [1,2,'x',3],
       [3,4,'x',7],
       [5,6,'x',11] ].to_table(%w[a b c d]), a)
-    
   end
   
   def test_append_chain

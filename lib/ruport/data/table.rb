@@ -191,15 +191,13 @@ module Ruport::Data
     #
     def reorder!(*indices)
       indices = indices[0] if indices[0].kind_of? Array
-
-      if @column_names && !@column_names.empty?
-        x = if indices.all? { |i| i.kind_of? Integer }
-          indices.map { |i| @column_names[i] }
-        else
-          indices 
-        end
-        @column_names = x
-      end
+      
+      if indices.all? { |i| i.kind_of? Integer }  
+        indices.map! { |i| @column_names[i] }  
+      end    
+      
+      @column_names = indices
+                 
       @data.each { |r| 
         r.attributes = @column_names
       }; self
@@ -233,12 +231,12 @@ module Ruport::Data
     #
     #   data.append_column :name => 'new_column', :fill => 1
     #
-    def append_column(options={})
-      self.column_names += [options[:name]] 
+    def add_column(name,options={})
+      self.column_names += [name] 
       if block_given?
-        each { |r| r[options[:name]] = yield(r) || options[:fill] }
+        each { |r| r[name] = yield(r) || options[:fill] }
       else
-        each { |r| r[options[:name]] = options[:fill] }
+        each { |r| r[name] = options[:fill] }
       end; self
     end     
     
