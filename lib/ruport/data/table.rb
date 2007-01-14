@@ -4,7 +4,6 @@
 # This is Free Software.  For details, see LICENSE and COPYING
 # Copyright 2006 by respective content owners, all rights reserved.
 
-
 module Ruport::Data
 
   # 
@@ -87,19 +86,6 @@ module Ruport::Data
     end
 
     alias_method :==, :eql?
-
-    #
-    # Uses Ruport's built-in text plugin to render this Table into a String
-    # 
-    # Example:
-    # 
-    #   data = Table.new :data => [1,2], [3,4], 
-    #                    :column_names => %w[a b]
-    #   puts data.to_s
-    # 
-    def to_s
-      as(:text)
-    end
 
     #
     # Used to add extra data to the Table. <tt>other</tt> can be an Array, 
@@ -214,133 +200,8 @@ module Ruport::Data
       else
         each { |r| r[options[:name]] = options[:fill] }
       end; self
-    end
-
-    # Create a copy of the Table: records will be copied as well.
-    #
-    # Example:
-    #
-    #   one = Table.new :data => [1,2], [3,4], 
-    #                   :column_names => %w[a b]
-    #   two = one.dup
-    #
-    def dup
-      a = self.class.new(:data => @data, :column_names => @column_names)
-      a.tags = tags.dup
-      return a
-    end
-
-    #
-    # Loads a CSV file directly into a Table using the FasterCSV library.
-    #
-    # Example:
-    #   
-    #   # treat first row as column_names
-    #   table = Table.load('mydata.csv')
-    #
-    #   # do not assume the data has column_names
-    #   table = Table.load('mydata.csv',:has_names => false)
-    #
-    #   # pass in FasterCSV options, such as column separators
-    #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
-    #
-    def self.load(csv_file, options={},&block)
-        get_table_from_csv(:foreach, csv_file, options,&block)
-    end
+    end     
     
-    #
-    # Creates a Table from a CSV string using FasterCSV.  See Table.load for
-    # additional examples.
-    #
-    #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
-    #
-    def self.parse(string, options={},&block) 
-      get_table_from_csv(:parse,string,options,&block)
-    end
-    
-    def self.get_table_from_csv(msg,param,options={},&block) #:nodoc:
-      options = {:has_names => true,
-                 :csv_options => {} }.merge(options)
-      require "fastercsv"
-      loaded_data = self.new
-
-      first_line = true
-      FasterCSV.send(msg,param,options[:csv_options]) do |row|
-        if first_line && options[:has_names]
-          loaded_data.column_names = row
-          first_line = false
-        elsif !block
-          loaded_data << row
-        else
-         block[loaded_data,row]
-        end
-      end ; loaded_data
-    end
-
-    # 
-    # Allows you to split Tables into multiple Tables for grouping.
-    #
-    # Example:
-    #
-    #   a = Table.new(:column_name => %w[name a b c])
-    #   a << ["greg",1,2,3]
-    #   a << ["joe", 2,3,4]
-    #   a << ["greg",7,8,9]
-    #   a << ["joe", 1,2,3]
-    #
-    #   b = a.split :group => "name"
-    #
-    #   b.greg.eql? [[1,2,3],[7,8,9]].to_table(%w[a b c]) #=> true
-    #   b["joe"].eql? [[2,3,4],[1,2,3]].to_table(%w[a b c]) #=> true
-    #
-    # You can also pass an Array to <tt>:group</tt>, and the resulting 
-    # attributes in the group will be joined by an underscore. 
-    # 
-    # Example:
-    #
-    #   a = Table.new(:column_names => %w[first_name last_name x]
-    #   a << %w[greg brown foo]
-    #   a << %w[greg gibson bar]
-    #   a << %w[greg brown baz]
-    #
-    #   b = a.split :group => %w[first_name last_name]
-    #   a.greg_brown.length     #=> 2
-    #   a["greg_gibson"].length #=> 1
-    #   a.greg_brown[0].x       #=> "foo"
-    #
-    def split(options={})
-      if options[:group].kind_of? Array
-        group = map { |r| options[:group].map { |e| r[e] } }.uniq
-         data = group.inject([]) { |s,g|
-           s + [select { |r| options[:group].map { |e| r[e] }.eql?(g) }]
-         }
-         c = column_names - options[:group]
-      else
-        group = map { |r| r[options[:group]] }.uniq 
-        data = group.inject([]) { |s,g| 
-          s + [select { |r| r[options[:group]].eql?(g) }] 
-        }
-        c = column_names - [options[:group]]
-
-      end 
-      data.map! { |g| 
-        Ruport::Data::Table.new(
-          :data => g.map { |x| x.reorder(*c) },
-          :column_names => c
-        )
-      }
-      rec = if options[:group].kind_of? Array
-        Ruport::Data::Record.new(data, 
-          :attributes => group.map { |e| e.join("_") } )
-      else
-        Ruport::Data::Record.new data, :attributes => group
-      end
-      class << rec
-        def each_group; attributes.each { |a| yield(a) }; end
-      end; rec
-    end
-    
-    # 
     # Calculates sums. If a column name or index is given, it will try to
     # convert each element of that column to an integer or float 
     # and add them together.
@@ -371,7 +232,7 @@ module Ruport::Data
     end
 
     alias_method :sum, :sigma
-    
+
     #
     # Returns a sorted table. If col_names is specified, 
     # the block is ignored and the table is sorted by the named columns. All
@@ -412,9 +273,85 @@ module Ruport::Data
       table.tags = self.tags
       return table
     end
-        
-  end
+                                                                                
+    # Create a copy of the Table: records will be copied as well.
+    #
+    # Example:
+    #
+    #   one = Table.new :data => [1,2], [3,4], 
+    #                   :column_names => %w[a b]
+    #   two = one.dup
+    #
+    def dup
+      a = self.class.new(:data => @data, :column_names => @column_names)
+      a.tags = tags.dup
+      return a
+    end     
+    
+    #
+    # Uses Ruport's built-in text plugin to render this Table into a String
+    # 
+    # Example:
+    # 
+    #   data = Table.new :data => [1,2], [3,4], 
+    #                    :column_names => %w[a b]
+    #   puts data.to_s
+    # 
+    def to_s
+      as(:text)
+    end     
+                             
+    # NOTE: does not respect tainted status
+    alias_method :clone, :dup
 
+    # Loads a CSV file directly into a Table using the FasterCSV library.
+    #
+    # Example:
+    #   
+    #   # treat first row as column_names
+    #   table = Table.load('mydata.csv')
+    #
+    #   # do not assume the data has column_names
+    #   table = Table.load('mydata.csv',:has_names => false)
+    #
+    #   # pass in FasterCSV options, such as column separators
+    #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
+    #
+    def self.load(csv_file, options={},&block)
+        get_table_from_csv(:foreach, csv_file, options,&block)
+    end
+    
+    #
+    # Creates a Table from a CSV string using FasterCSV.  See Table.load for
+    # additional examples.
+    #
+    #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
+    #
+    def self.parse(string, options={},&block) 
+      get_table_from_csv(:parse,string,options,&block)
+    end
+
+    private
+    
+    def self.get_table_from_csv(msg,param,options={},&block) #:nodoc:
+      options = {:has_names => true,
+                 :csv_options => {} }.merge(options)
+      require "fastercsv"
+      loaded_data = self.new
+
+      first_line = true
+      FasterCSV.send(msg,param,options[:csv_options]) do |row|
+        if first_line && options[:has_names]
+          loaded_data.column_names = row
+          first_line = false
+        elsif !block
+          loaded_data << row
+        else
+         block[loaded_data,row]
+        end
+      end ; loaded_data
+    end      
+  end
 end
 
 
@@ -445,16 +382,14 @@ module Kernel
       Ruport::Data::Table.load(*args)
     else
        [].to_table(args)
-    end
-
+    end             
+    
     block[table] if block
-
     return table
   end
 end
 
 class Array
-
   #
   # Converts an array to a Ruport::Data::Table object, ready to
   # use in your reports.
@@ -466,4 +401,3 @@ class Array
     Ruport::Data::Table.new({:data => self, :column_names => column_names})
   end
 end
-

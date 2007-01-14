@@ -26,45 +26,8 @@ class TestTable < Test::Unit::TestCase
     b = Ruport::Data::Record.new [1,2,3], :attributes => %w[col1 col2 col3]
     tables.zip([[],[],[a],[b]]).each { |t,n| 
       assert_equal n, t.data }
-  end
-
-  def test_ensure_table_creation_allows_record_coercion
-    table = [[1,2,3],[4,5,6],[7,8,9]].to_table
-    table_with_names = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
-   
-    a,b,c = nil
-    assert_nothing_raised { a = table.to_a.to_table(%w[a b c]) }
-    assert_nothing_raised { b = table.to_a.to_table(%w[d e f]) }
-    assert_nothing_raised { c = table_with_names.to_a.to_table }
-
-    [a,b,c].each { |t| assert_equal(3,t.length) }
-    assert_equal %w[a b c], a.column_names
-    a.each { |r|
-      assert_equal %w[a b c], r.attributes
-      assert_nothing_raised { r.a; r.b; r.c }
-      [r.a,r.b,r.c].each { |i| assert(i.kind_of?(Numeric)) }
-    }
-    assert_equal %w[d e f], b.column_names
-    b.each { |r|
-      assert_equal %w[d e f], r.attributes
-      assert_nothing_raised { r.d; r.e; r.f }
-      [r.d,r.e,r.f].each { |i| assert(i.kind_of?(Numeric)) }
-    }
-    c.each { |r|
-      assert_nothing_raised { r[0]; r[1]; r[2] }
-      [r[0],r[1],r[2]].each { |i| assert(i.kind_of?(Numeric)) }
-    }
-  end
-
-  def test_sigma
-    table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
-    assert table.respond_to?(:sigma)
-    assert table.respond_to?(:sum)
-    assert_equal(9,table.sigma(0))
-    assert_equal(9,table.sigma("col1"))
-    assert_equal(21,table.sigma { |r| r.col1 + r.col2 })
-  end
-
+  end   
+  
   def test_append_record  
     table = Ruport::Data::Table.new :column_names => %w[a b c]
     table << Ruport::Data::Record.new([1,2,3], :attributes => %w[a b c])
@@ -75,6 +38,15 @@ class TestTable < Test::Unit::TestCase
     assert_raise(ArgumentError) { table << rec }
     assert_raise(ArgumentError) { table << Object.new }
     assert_raise(ArgumentError) { table << [].to_table }
+  end
+
+  def test_sigma
+    table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
+    assert table.respond_to?(:sigma)
+    assert table.respond_to?(:sum)
+    assert_equal(9,table.sigma(0))
+    assert_equal(9,table.sigma("col1"))
+    assert_equal(21,table.sigma { |r| r.col1 + r.col2 })
   end
 
   def test_append_table
@@ -139,25 +111,6 @@ class TestTable < Test::Unit::TestCase
     assert_equal [%w[a b],%w[1 2],%w[3 4]].to_table, t
   end
 
-  def test_ensure_using_csv_block_mode_works
-    expected = [%w[a b],%w[1 2],%w[3 4]]
-    t = Ruport::Data::Table.parse("a,b\n1,2\n3,4",:has_names => false) { |s,r|
-      assert_equal expected.shift, r
-      s << r    
-      s << r
-    }
-    assert_equal [%w[a b],%w[a b],%w[1 2], %w[1 2],
-                  %w[3 4],%w[3 4]].to_table, t
-    x = Ruport::Data::Table.load("test/samples/data.csv") { |s,r|
-      assert_kind_of Ruport::Data::Table, s
-      assert_kind_of Array, r
-      s << r
-      s << r
-    }
-    assert_equal 4, x.length
-  end
-
-
   def test_reorder
     table = Ruport::Data::Table.load("test/samples/data.csv")
     table.reorder! *%w[col1 col3]
@@ -195,50 +148,6 @@ class TestTable < Test::Unit::TestCase
       [5,6,'x',11] ].to_table(%w[a b c d]), a)
     
   end
-
-  def test_split
-    table = Ruport::Data::Table.new :column_names => %w[c1 c2 c3]
-    table << ['a',2,3]
-    table << ['d',5,6]
-    table << ['a',4,5]
-    table << ['b',3,4]
-    table << ['d',9,10]
-
-    group = table.split :group => "c1"
-    assert group.respond_to?(:each_group)
-    expected = %w[a d b]
-
-    group.each_group { |g| assert_equal(expected.shift, g) }
-
-    t = table.reorder("c2","c3")
-
-    data = [[t[0],t[2]],[t[1],t[4]],[t[3]]]
-    c1 = Ruport::Data::Record.new data, :attributes => %w[a d b]
-    assert_equal c1.a, group.a.to_a
-    assert_equal c1.d, group.d.to_a
-    assert_equal c1.b, group.b.to_a
-
-    table << ['a',2,7]
-    table << ['d',9,11]
-
-    group = table.split :group => %w[c1 c2]
-    assert group.respond_to?(:each_group)
-    expected = %w[a_2 d_5 a_4 b_3 d_9]
-
-    group.each_group { |g| assert_equal(expected.shift, g) }
-
-    t = table.reorder("c3")
-    data = [[t[0],t[5]],[t[1]],[t[2]],[t[3]],[t[4],t[6]]]
-
-    c1 = Ruport::Data::Record.new data, :attributes => %w[a_2 d_5 a_4 b_3 d_9]  
-    
-    assert_equal c1.a_2, group.a_2.to_a
-    assert_equal c1.d_5, group.d_5.to_a
-    assert_equal c1.a_4, group.a_4.to_a
-    assert_equal c1.b_3, group.b_3.to_a
-    assert_equal c1.d_9, group.d_9.to_a
-    
-  end
   
   def test_append_chain
     table = Ruport::Data::Table.new :column_names => %w[a b c]
@@ -261,21 +170,6 @@ class TestTable < Test::Unit::TestCase
     assert_equal(9,s.sum(0))
     assert_equal(2.73,t.sum(0))
 
-  end
-
-  def test_setting_column_names_changes_record_attributes
-    table = Ruport::Data::Table.new :column_names => %w[a b c], 
-      :data => [[1,2,3],[4,5,6]]
-    
-    assert_equal %w[a b c], table.column_names
-    assert_equal %w[a b c], table.data[0].attributes
-    assert_equal %w[a b c], table.data[1].attributes
-
-    table.column_names = %w[d e f]
-
-    assert_equal %w[d e f], table.column_names
-    assert_equal %w[d e f], table.data[0].attributes
-    assert_equal %w[d e f], table.data[1].attributes
   end
 
   def test_sort_rows_by
@@ -307,9 +201,70 @@ class TestTable < Test::Unit::TestCase
   
     assert_equal table, table2
 
+  end       
+  
+  ## BUG Traps -------------------------------------------------
+  
+  def test_ensure_setting_column_names_changes_record_attributes
+    table = Ruport::Data::Table.new :column_names => %w[a b c], 
+      :data => [[1,2,3],[4,5,6]]
+    
+    assert_equal %w[a b c], table.column_names
+    assert_equal %w[a b c], table.data[0].attributes
+    assert_equal %w[a b c], table.data[1].attributes
+
+    table.column_names = %w[d e f]
+
+    assert_equal %w[d e f], table.column_names
+    assert_equal %w[d e f], table.data[0].attributes
+    assert_equal %w[d e f], table.data[1].attributes
+  end    
+  
+  def test_ensure_table_creation_allows_record_coercion
+    table = [[1,2,3],[4,5,6],[7,8,9]].to_table
+    table_with_names = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
+   
+    a,b,c = nil
+    assert_nothing_raised { a = table.to_a.to_table(%w[a b c]) }
+    assert_nothing_raised { b = table.to_a.to_table(%w[d e f]) }
+    assert_nothing_raised { c = table_with_names.to_a.to_table }
+
+    [a,b,c].each { |t| assert_equal(3,t.length) }
+    assert_equal %w[a b c], a.column_names
+    a.each { |r|
+      assert_equal %w[a b c], r.attributes
+      assert_nothing_raised { r.a; r.b; r.c }
+      [r.a,r.b,r.c].each { |i| assert(i.kind_of?(Numeric)) }
+    }
+    assert_equal %w[d e f], b.column_names
+    b.each { |r|
+      assert_equal %w[d e f], r.attributes
+      assert_nothing_raised { r.d; r.e; r.f }
+      [r.d,r.e,r.f].each { |i| assert(i.kind_of?(Numeric)) }
+    }
+    c.each { |r|
+      assert_nothing_raised { r[0]; r[1]; r[2] }
+      [r[0],r[1],r[2]].each { |i| assert(i.kind_of?(Numeric)) }
+    }
+  end   
+  
+  def test_ensure_using_csv_block_mode_works
+    expected = [%w[a b],%w[1 2],%w[3 4]]
+    t = Ruport::Data::Table.parse("a,b\n1,2\n3,4",:has_names => false) { |s,r|
+      assert_equal expected.shift, r
+      s << r    
+      s << r
+    }
+    assert_equal [%w[a b],%w[a b],%w[1 2], %w[1 2],
+                  %w[3 4],%w[3 4]].to_table, t
+    x = Ruport::Data::Table.load("test/samples/data.csv") { |s,r|
+      assert_kind_of Ruport::Data::Table, s
+      assert_kind_of Array, r
+      s << r
+      s << r
+    }
+    assert_equal 4, x.length
   end
-
-
 
 end
 
