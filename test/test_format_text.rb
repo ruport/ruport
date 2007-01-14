@@ -1,4 +1,6 @@
-class TextPluginTest < Test::Unit::TestCase
+require "test/unit"
+require "ruport"
+class TestFormatText < Test::Unit::TestCase
   
   def test_basic
 

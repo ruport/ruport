@@ -4,7 +4,7 @@ begin; require "rubygems"; rescue LoadError; nil; end
 
 class TestTable < Test::Unit::TestCase
   def test_constructors
-    table = Ruport::Data::Table.new
+    table  = Ruport::Data::Table.new
     table2 = Ruport::Data::Table.new :column_names => %w[a b c]
     table3 = Ruport::Data::Table.new :data => [[1,2,3]]
     table4 = Ruport::Data::Table.new :column_names => %w[col1 col2 col3], 
