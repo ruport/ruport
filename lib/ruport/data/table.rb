@@ -220,19 +220,40 @@ module Ruport::Data
     #
     # Adds an extra column to the Table. Available Options:
     #
-    # <b><tt>:name</tt></b>:: The new column's name (required)
     # <b><tt>:fill</tt></b>:: The default value to use for the column in 
     #                         existing rows. Set to nil if not specified.
+    # 
+    # <b><tt>:position</tt></b>:: Inserts the column at the indicated position
+    #                             number.
+    #
+    # <b><tt>:before</tt></b>:: Inserts the new column before the column 
+    #                           indicated. (by name)
+    #
+    # <b><tt>:after</tt></b>:: Inserts the new column after the column
+    #                           indicated. (by name)
+    #
+    # If a block is provided, it will be used to build up the column.
+    #      
     #   
     # Example:
     #
     #   data = Table.new :data => [1,2], [3,4], 
     #                    :column_names => %w[a b]
     #
-    #   data.append_column :name => 'new_column', :fill => 1
+    #   data.append_column 'new_column', :fill => 1
     #
-    def add_column(name,options={})
-      self.column_names += [name] 
+    def add_column(name,options={})  
+      if pos = options[:position]
+        column_names.insert(pos,name)   
+      elsif pos = options[:after]
+        column_names.insert(column_names.index(pos)+1,name)   
+      elsif pos = options[:before]
+        column_names.insert(column_names.index(pos),name)
+      else
+        column_names << name
+      end 
+
+        
       if block_given?
         each { |r| r[name] = yield(r) || options[:fill] }
       else
