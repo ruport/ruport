@@ -25,9 +25,8 @@ class TestRuport < Test::Unit::TestCase
 
   def test_fatal_log_only 
     assert_raise(RuntimeError) {
-      Ruport::complain "Default problem", :status => :fatal,
-                                          :output => @output,
-                                          :level  => :log_only
+      Ruport::complain "Default problem", 
+      :status => :fatal, :output => @output, :level  => :log_only
     }
     @output.rewind
     assert_equal("",@output.read)

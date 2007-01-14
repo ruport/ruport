@@ -39,6 +39,13 @@ class TestTable < Test::Unit::TestCase
     assert_raise(ArgumentError) { table << Object.new }
     assert_raise(ArgumentError) { table << [].to_table }
   end
+  
+  def test_append_hash
+    table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    table << { "a" => 7, "c" => 9, "b" => 8 }
+    
+    assert_equal [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]), table
+  end
 
   def test_sigma
     table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
@@ -201,8 +208,15 @@ class TestTable < Test::Unit::TestCase
   
     assert_equal table, table2
 
-  end       
-  
+  end    
+                   
+  # for those in a meta-mood (mostly just a collection coverage )
+  def test_table_to_table
+   a = [[1,2,3]].to_table 
+   assert_kind_of Ruport::Data::Table, a
+   assert_equal [[1,2,3]].to_table(%w[a b c]), 
+                a.to_table(:column_names => %w[a b c])
+  end
   ## BUG Traps -------------------------------------------------
   
   def test_ensure_setting_column_names_changes_record_attributes
