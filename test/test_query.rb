@@ -77,11 +77,13 @@
      assert_nothing_raised { query.result }
      assert_equal @data[1], get_raw(query.result)
      assert_equal @data[2], get_raw(query.result)
+
    end
    
    def test_result_cache_enabled
      return unless Object.const_defined? :Mocha
      query = @query[:cached]
+
      setup_mock_dbi(1)
      
      assert_nothing_raised { query.result }
@@ -136,8 +138,9 @@
      return unless Object.const_defined? :Mocha
      query = @query[:cached]
      setup_mock_dbi(2)
- 
+      
      assert_equal @data[0], get_raw(query.result)
+
      query.clear_cache
      assert_equal nil,      query.cached_data
      assert_equal @data[1], get_raw(query.result)
@@ -303,7 +306,7 @@
      @dbh = mock("database_handle")
      @sth = mock("statement_handle")
      def @dbh.execute(*a, &b); execute__(*a, &b); ensure; sth__.finish if b; end
-     def @sth.each; data__.each { |x| yield(x) }; end
+     def @sth.each; data__.each { |x| yield(x.dup) }; end
      def @sth.fetch_all; data__; end
      
      DBI.expects(:connect).
@@ -332,7 +335,7 @@
    end
  
    def get_raw(table)
-     table.collect { |row| row.to_a }
+     table.map { |row| row.to_a }
    end
 
 end

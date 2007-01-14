@@ -116,7 +116,8 @@ module Ruport::Data
     def <<(other)
       case other
       when Array
-        @data << Record.new(other, :attributes => @column_names)
+        attributes = @column_names.empty? ? nil : @column_names
+        @data << Record.new(other, :attributes => attributes)
       when Hash
         raise ArgumentError unless @column_names
         arr = @column_names.map { |k| other[k] }
@@ -174,7 +175,6 @@ module Ruport::Data
         @column_names = x
       end
       @data.each { |r| 
-        r.reorder_data!(*indices)
         r.attributes = @column_names
       }; self
     end
@@ -208,43 +208,14 @@ module Ruport::Data
     #   data.append_column :name => 'new_column', :fill => 1
     #
     def append_column(options={})
-      self.column_names += [options[:name]]  if options[:name]
+      self.column_names += [options[:name]] 
       if block_given?
-        each { |r| r.data << yield(r) || options[:fill] }
+        each { |r| r[options[:name]] = yield(r) || options[:fill] }
       else
-        each { |r| r.data << options[:fill] }
+        each { |r| r[options[:name]] = options[:fill] }
       end; self
     end
 
-    # 
-    # Removes a column from the Table. Any values in the specified column are
-    # lost.
-    #
-    # Example:
-    #
-    #   data = Table.new :data => [[1,2], [3,4]], :column_names => %w[a b]
-    #   data.append_column :name => 'new_column', :fill => 1
-    #   data.remove_column :name => 'new_column'
-    #   data == Table.new :data => [[1,2], [3,4]], 
-    #                     :column_names => %w[a b] #=> true
-    #   data = [[1,2],[3,4]].to_table
-    #   data.remove_column(1)
-    #   data.eql? [[1],[3]].to_table %w[a] #=> true
-    #
-    def remove_column(options={})    
-      if options.kind_of? Integer
-        return reorder!((0...data[0].length).to_a - [options])
-      elsif options.kind_of? Hash
-       name = options[:name]
-      else
-       name = options
-      end
-      
-      raise ArgumentError unless column_names.include? name
-      reorder! column_names - [name]
-    end
-
-    #
     # Create a copy of the Table: records will be copied as well.
     #
     # Example:

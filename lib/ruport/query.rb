@@ -192,9 +192,11 @@ module Ruport
     private
     
     def query_data(query_text, params=@params)
+
       require "dbi"
       
       data = @raw_data ? [] : Data::Table.new
+
       DBI.connect(@dsn, @user, @password) do |dbh|
         dbh.execute(query_text, *(params || [])) do |sth|
           # Work-around for inconsistent DBD behavior w/ resultless queries
@@ -206,6 +208,7 @@ module Ruport
           end
           
           data.column_names = names unless @raw_data
+
           sth.each do |row|
             row = row.to_a
             row = Data::Record.new(row, :attributes => names) unless @raw_data

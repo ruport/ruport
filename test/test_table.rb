@@ -10,6 +10,7 @@ class TestTable < Test::Unit::TestCase
     table4 = Ruport::Data::Table.new :column_names => %w[col1 col2 col3], 
                                      :data => [[1,2,3]]
     tables = [table,table2,table3,table4]
+
     tables.zip([[],%w[a b c], [], %w[col1 col2 col3]]).each do |t,n|
       assert_equal n, t.column_names
 
@@ -22,10 +23,9 @@ class TestTable < Test::Unit::TestCase
     end
     
     a = Ruport::Data::Record.new [1,2,3]
-    assert a.respond_to?(:[])
-    b = a.dup
-    b.attributes = %w[col1 col2 col3]
-    tables.zip([[],[],[a],[b]]).each { |t,n| assert_equal n, t.data }
+    b = Ruport::Data::Record.new [1,2,3], :attributes => %w[col1 col2 col3]
+    tables.zip([[],[],[a],[b]]).each { |t,n| 
+      assert_equal n, t.data }
   end
 
   def test_ensure_table_creation_allows_record_coercion
@@ -185,37 +185,15 @@ class TestTable < Test::Unit::TestCase
     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
     a.append_column(:name => "c")
     assert_equal [[1,2,nil],[3,4,nil],[5,6,nil]].to_table(%w[a b c]), a
-    a = [[1,2],[3,4],[5,6]].to_table
-    a.append_column 
-    assert_equal [[1,2,nil],[3,4,nil],[5,6,nil]].to_table, a
     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
     a.append_column(:name => "c",:fill => "x")
     assert_equal [[1,2,'x'],[3,4,'x'],[5,6,'x']].to_table(%w[a b c]), a
-    a.append_column(:name => "d") { |r| r.to_a.join("|") }
+    a.append_column(:name => "d") { |r| r[0]+r[1] }
     assert_equal( 
-    [ [1,2,'x','1|2|x'],
-      [3,4,'x',"3|4|x"],
-      [5,6,'x','5|6|x']].to_table(%w[a b c d]), a)
+    [ [1,2,'x',3],
+      [3,4,'x',7],
+      [5,6,'x',11] ].to_table(%w[a b c d]), a)
     
-  end
-
-  def test_remove_column
-    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
-    b = a.dup
-
-    b.remove_column("b")
-    assert_equal [[1],[3],[5]].to_table(%w[a]), b
-    a.append_column(:name => "c")
-    assert_not_equal [[1,2],[3,4],[5,6]].to_table(%w[a b]), a 
-    a.remove_column(:name => "c")
-    assert_equal [[1,2],[3,4],[5,6]].to_table(%w[a b]), a 
-    assert_raises(ArgumentError){a.remove_column(:name => "frank")}
-    a.remove_column(0)
-    assert_equal [[2],[4],[6]].to_table(%w[b]), a
-    assert_equal %w[b], a.column_names
-    a = [[1,2],[3,4],[5,6]].to_table
-    a.remove_column(0)
-    assert_equal [[2],[4],[6]].to_table, a
   end
 
   def test_split
@@ -273,15 +251,6 @@ class TestTable < Test::Unit::TestCase
     table = Ruport::Data::Table.new :column_names => %w[a b], 
                                     :data => [[1,2],[3,4],[5,6]]
     assert_equal("a,b\n1,2\n3,4\n5,6\n",table.to_csv)
-  end
-  
-  def test_to_set
-    table = Ruport::Data::Table.new :column_names => %w[a b], 
-                                    :data => [[1,2],[3,4],[5,6]]
-    a = table.to_set
-    b = Ruport::Data::Set.new :data => [table[1],table[0],table[2]] 
-
-    assert_equal a,b
   end
   
   def test_ensure_coerce_sum

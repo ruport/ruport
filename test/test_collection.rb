@@ -9,7 +9,6 @@ class TestCollection < Test::Unit::TestCase
 		@ghost_records = @ghost_list.map {|x| Ruport::Data::Record.new x }
 		@ghost_collection = Ruport::Data::Collection.new @ghost_records
 		@ghost_table = Ruport::Data::Table.new :data => @ghost_list
-		@ghost_set = Ruport::Data::Set.new :data => @ghost_list
 	end
 
 	def test_size
@@ -23,8 +22,4 @@ class TestCollection < Test::Unit::TestCase
     assert_equal @ghost_table, @ghost_collection.to_table
   end
   
-  def test_to_set
-    assert_equal @ghost_set, @ghost_collection.to_set
-  end
-
 end

@@ -22,6 +22,7 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 4, @record["d"]
     assert_equal 2, @record.b
     assert_equal 3, @record.c
+    assert_raise(NoMethodError) { @record.f }
   end
   
   def test_hash_constructor
@@ -29,6 +30,7 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 1, record[:a]
     assert_equal 2, record[:b]
     assert_equal 3, record[:c]
+    assert_equal 3, record.c
   end
   
   def test_hash_constructor_with_attributes
@@ -36,6 +38,7 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 1, record[:a]
     assert_equal 2, record[:b]
     assert_equal 3, record[:c]
+    assert_equal 3, record.c
     
     assert_equal 3, record[0]
     assert_equal 2, record[1]
@@ -52,6 +55,7 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 2, @record["b"]
     assert_equal 3, @record["c"]
     assert_equal 4, @record["d"]
+    assert_equal 4, @record.d
   end
   
   def test_bracket_equals
@@ -128,22 +132,22 @@ class TestRecord < Test::Unit::TestCase
 
   def test_reordering
     r = @record.reorder "a","d","b","c"
-    assert_equal [1,4,2,3], r.data
+    assert_equal [1,4,2,3], r.to_a
     assert_equal %w[a d b c], r.attributes
 
-    assert_equal [1,2,3,4], @record.data
+    assert_equal [1,2,3,4], @record.to_a
     assert_equal %w[a b c d], @record.attributes
     
     @record.reorder! "a","d","b","c"
-    assert_equal [1,4,2,3], @record.data
+    assert_equal [1,4,2,3], @record.to_a
     assert_equal %w[a d b c], @record.attributes
 
     @record.reorder! 3,1,2
-    assert_equal [3,4,2], @record.data
+    assert_equal [3,4,2], @record.to_a
     assert_equal %w[c d b], @record.attributes
 
     r.reorder! %w[a b c]
-    assert_equal [1,2,3], r.data
+    assert_equal [1,2,3], r.to_a
     assert_equal %w[a b c], r.attributes
 
     assert_raise(ArgumentError) { r.reorder "foo" }
@@ -162,8 +166,8 @@ class TestRecord < Test::Unit::TestCase
 
     rec2.tag(:apple)
 
-    assert_equal [1,2,3,4], rec1.data
-    assert_equal [5,7,9,4], rec2.data
+    assert_equal [1,2,3,4], rec1.to_a
+    assert_equal [5,7,9,4], rec2.to_a
 
     assert_equal [], rec1.tags
     assert_equal [:apple], rec2.tags
@@ -184,23 +188,24 @@ class TestRecord < Test::Unit::TestCase
     assert r.hash != t.hash
   end
 
-  # ticket:71
-  def test_record_has_indifferent_access
-    t = Record.new [1,2,3], :attributes => %w[a b c]
-    assert_equal [1,2,3], [t[0],t[1],t[2]]
-    assert_equal [1,2,3], [t["a"],t["b"],t["c"]]
-    assert_equal [1,2,3], [t.a,t.b,t.c]
-
-    assert_equal [1,2,3], [t[:a],t[:b],t[:c]]
-    
-    t[:c] = 4
-    assert_equal [1,2,4], [t["a"],t["b"],t["c"]]
-
-    x = Record.new [1,2,3], :attributes => [:a,:b,:c]
-    assert_equal [1,2,3], [x[0],x[1],x[2]]
-    assert_equal [1,2,3], [x[:a],x[:b],x[:c]]
-
-    assert_equal [1,2,3], [x["a"],x["b"],x["c"]]
-    assert_equal [1,2,3], [x.a,x.b,x.c]
+  def test_length_and_size
+    r = Record.new({:a => 1, :b => 2, :c => 3})
+    assert_equal 3,r.length
+    assert_equal 3,r.size
   end
+
+  def test_ensure_records_dup_source_data
+    a = [1,2,3]
+    b = Record.new(a)
+    b[0] += 1
+    assert_equal 2, b[0]
+    assert_equal 1, a[0]
+
+    a = { "a" => 1, "b" => 2, "c" => 3 }
+    b = Record.new(a)
+    b["a"] += 1
+    assert_equal 2, b["a"]
+    assert_equal 1, a["a"]
+  end
+
 end

@@ -15,14 +15,14 @@ class TestGroupable < Test::Unit::TestCase
 
     expected = Ruport::Data::Record.new( [ [[1,2],[7,8]].to_table(%w[a b]),
                                            [[3,4],[5,6]].to_table(%w[a b]) ], 
-                                           :attributes => ["foo","bar"] )
+                                           :attributes => [:foo,:bar] )
     assert_equal expected, a.group_by_tag
 
     a[0].tag(:bar)
 
     expected = Ruport::Data::Record.new( [ [[1,2],[7,8]].to_table(%w[a b]),
                                            [[1,2],[3,4],[5,6]].to_table(%w[a b]) ], 
-                                           :attributes => ["foo","bar"] )
+                                           :attributes => [:foo,:bar] )
     assert_equal expected, a.group_by_tag
   end
 
@@ -31,8 +31,8 @@ class TestGroupable < Test::Unit::TestCase
     expected = Ruport::Data::Record.new( [ [[1,2,3],[7,8,9]].to_table(%w[a b c]),
                                           [[4,5,6]].to_table(%w[a b c]) ],
                                            :attributes => %w[starts_odd starts_even])
-    a.create_tag_group(:starts_odd) { |r| (r[0] % 2) != 0 }
-    a.create_tag_group(:starts_even) { |r| (r[0] % 2).zero? }
+    a.create_tag_group("starts_odd") { |r| (r[0] % 2) != 0 }
+    a.create_tag_group("starts_even") { |r| (r[0] % 2).zero? }
 
     assert_equal expected, a.group_by_tag
   end
