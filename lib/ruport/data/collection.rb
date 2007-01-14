@@ -34,11 +34,6 @@ module Ruport::Data
         yield(rend) if block_given?
       end
     end
-
-    # Converts a <tt>Collection</tt> object to a <tt>Data::Set</tt>.
-    def to_set
-      Set.new :data => data
-    end
    
     # Converts a <tt>Collection</tt> object to a <tt>Data::Table</tt>.
     def to_table(options={})

@@ -4,7 +4,43 @@
 # This is Free Software.  For details, see LICENSE and COPYING
 # Copyright 2006 by respective content owners, all rights reserved.
 
-module Ruport::Data
+module Ruport::Data            
+  
+  #
+  # === Overview
+  #
+  # This class implements some base features for Ruport::Data::Table,
+  # and may be used to make interaction with Data::Table like classes
+  # easier
+  module Collection
+    include Enumerable
+    include Taggable
+
+    # A simple formatting tool which allows you to quickly generate a formatted
+    # table from a <tt>Collection</tt> object.
+    #
+    # Example:
+    #   my_collection.as(:csv)  #=> "1,2,3\n4,5,6"
+    def as(type)
+      Ruport::Renderer::Table.render(type) do |rend|
+        rend.data = self
+        yield(rend) if block_given?
+      end
+    end
+   
+    # Converts a <tt>Collection</tt> object to a <tt>Data::Table</tt>.
+    def to_table(options={})
+      Table.new({:data => data.map { |r| r.to_a }}.merge(options))
+    end
+
+    # Provides a shortcut for the <tt>as()</tt> method by converting a call to
+    # <tt>as(:format_name)</tt> into a call to <tt>to_format_name</tt>
+    def method_missing(id,*args)
+     return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
+     super
+    end
+    
+  end
 
   # 
   # === Overview
@@ -20,9 +56,12 @@ module Ruport::Data
   # Once your data is in a Ruport::Data::Table object, it can be manipulated
   # to suit your needs, then used to build a report.
   #
-  class Table < Collection
-    include Groupable
+  class Table 
+    include Collection
+    include Groupable      
     
+    require "forwardable"
+    extend Forwardable
     #
     # Creates a new table based on the supplied options.
     # Valid options: 
@@ -50,7 +89,8 @@ module Ruport::Data
 
     # This Table's column names.
     attr_reader :column_names
-    def_delegator :@data, :[]
+    attr_reader :data
+    def_delegators :@data, :each, :length, :size, :empty?, :[]
     
     #
     # Sets the column names for this table. <tt>new_column_names</tt> should 
@@ -387,7 +427,7 @@ module Kernel
     block[table] if block
     return table
   end
-end
+end  
 
 class Array
   #
