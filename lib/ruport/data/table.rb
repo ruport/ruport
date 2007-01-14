@@ -237,10 +237,9 @@ module Ruport::Data
     #   
     # Example:
     #
-    #   data = Table.new :data => [1,2], [3,4], 
-    #                    :column_names => %w[a b]
+    #   data = Table("a","b") { |t| t << [1,2] << [3,4] }
     #
-    #   data.append_column 'new_column', :fill => 1
+    #   data.append_column 'new_column', :default => 1
     #
     def add_column(name,options={})  
       if pos = options[:position]
@@ -255,9 +254,9 @@ module Ruport::Data
 
         
       if block_given?
-        each { |r| r[name] = yield(r) || options[:fill] }
+        each { |r| r[name] = yield(r) || options[:default] }
       else
-        each { |r| r[name] = options[:fill] }
+        each { |r| r[name] = options[:default] }
       end; self
     end     
     

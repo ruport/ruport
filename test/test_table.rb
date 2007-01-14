@@ -148,7 +148,7 @@ class TestTable < Test::Unit::TestCase
     assert_equal [[1,2,nil],[3,4,nil],[5,6,nil]].to_table(%w[a b c]), a
     
     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
-    a.add_column("c",:fill => "x")
+    a.add_column("c",:default => "x")
     assert_equal [[1,2,'x'],[3,4,'x'],[5,6,'x']].to_table(%w[a b c]), a    
     
     b = a.dup
