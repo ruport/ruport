@@ -298,7 +298,19 @@ module Ruport::Data
     def replace_column(old_col,new_col,&block)
       add_column(new_col,:after => old_col,&block)
       remove_column(old_col)
-    end    
+    end         
+    
+    def sub_table(columns=column_names,range=nil)      
+       Table(columns) do |t|
+         if range
+           data[range].each { |r| t << r.to_h }
+         elsif block_given?
+           data.each { |r| t << r.to_h if yield(r) }
+         else
+           data.each { |r| t << r.to_h } 
+         end
+       end
+    end
     
     # Calculates sums. If a column name or index is given, it will try to
     # convert each element of that column to an integer or float 
