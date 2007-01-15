@@ -105,7 +105,7 @@ class TestRecord < Test::Unit::TestCase
      assert_equal 2, @record["x"]
      assert_equal 2, @record.x
      assert_equal 2, @record[1]
-  end
+  end   
 
   def test_equality
 
@@ -139,29 +139,29 @@ class TestRecord < Test::Unit::TestCase
   end
 
   def test_reordering
-    r = @record.reorder "a","d","b","c"
+    r = @record.dup.reorder "a","d","b","c"
     assert_equal [1,4,2,3], r.to_a
     assert_equal %w[a d b c], r.attributes
 
     assert_equal [1,2,3,4], @record.to_a
     assert_equal %w[a b c d], @record.attributes
     
-    @record.reorder! "a","d","b","c"
+    @record.reorder "a","d","b","c"
     assert_equal [1,4,2,3], @record.to_a
     assert_equal %w[a d b c], @record.attributes
 
-    @record.reorder! 3,1,2
+    @record.reorder 3,1,2
     assert_equal [3,4,2], @record.to_a
     assert_equal %w[c d b], @record.attributes
 
-    r.reorder! %w[a b c]
+    r.reorder %w[a b c]
     assert_equal [1,2,3], r.to_a
     assert_equal %w[a b c], r.attributes
 
-    assert_raise(ArgumentError) { r.reorder "foo" }
-    assert_raise(ArgumentError) { r.reorder 0,5 }
-    assert_nothing_raised { r.reorder 0 }
-    assert_nothing_raised { r.reorder "a","b" }
+    assert_raise(ArgumentError) { r.dup.reorder "foo" }
+    assert_raise(ArgumentError) { r.dup.reorder 0,5 }
+    assert_nothing_raised { r.dup.reorder 0 }
+    assert_nothing_raised { r.dup.reorder "a","b" }
   end
 
   def test_dup
