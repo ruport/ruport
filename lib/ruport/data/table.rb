@@ -150,7 +150,7 @@ module Ruport::Data
         @data << Record.new(arr, :attributes => @column_names)
       when Record
         raise ArgumentError unless column_names.eql? other.attributes
-        @data << Record.new(other.data, :attributes => @column_names)
+        @data << Record.new(other.to_a, :attributes => @column_names)
         @data.last.tags = other.tags.dup
       else
         raise ArgumentError
@@ -258,6 +258,12 @@ module Ruport::Data
       else
         each { |r| r[name] = options[:default] }
       end; self
+    end
+    
+    def remove_column(col)        
+      col = column_names[col] if col.kind_of? Fixnum           
+      column_names.delete(col)
+      each { |r| r.send(:delete,col) }
     end     
     
     # Calculates sums. If a column name or index is given, it will try to

@@ -31,7 +31,7 @@ class TestTable < Test::Unit::TestCase
   def test_append_record  
     table = Ruport::Data::Table.new :column_names => %w[a b c]
     table << Ruport::Data::Record.new([1,2,3], :attributes => %w[a b c])
-    assert_equal([1,2,3],table[0].data)
+    assert_equal([1,2,3],table[0].to_a)
     assert_equal(%w[a b c],table[0].attributes)
     rec = table[0].dup
     rec.attributes = %w[a b c d]
@@ -73,7 +73,7 @@ class TestTable < Test::Unit::TestCase
     table = Ruport::Data::Table.load("test/samples/data.csv")
     assert_equal %w[col1 col2 col3], table.column_names
     rows = [%w[a b c],["d",nil,"e"]]
-    table.each { |r| assert_equal rows.shift, r.data
+    table.each { |r| assert_equal rows.shift, r.to_a
                      assert_equal %w[col1 col2 col3], r.attributes }
     expected = [%w[1 2 3],%w[4 5 6]].to_table(%w[a b c])
     
@@ -123,18 +123,18 @@ class TestTable < Test::Unit::TestCase
     table.reorder! *%w[col1 col3]
     assert_equal %w[col1 col3], table.column_names
     rows = [%w[a c], %w[d e]]
-    table.each { |r| assert_equal rows.shift, r.data
+    table.each { |r| assert_equal rows.shift, r.to_a
                      assert_equal %w[col1 col3], r.attributes }
     a = [[1,2,3],[4,5,6]].to_table(%w[a b c]).reorder 2,0
     rows = [[3,1],[6,4]]
-    a.each { |r| assert_equal rows.shift, r.data 
+    a.each { |r| assert_equal rows.shift, r.to_a 
                  assert_equal %w[c a], r.attributes }
     assert_equal %w[c a], a.column_names
 
     b = [[1,2,3],[4,5,6]].to_table(%w[a b c]).reorder(%w[a c])
     rows = [[1,3],[4,6]]
     b.each { |r| 
-      assert_equal rows.shift, r.data
+      assert_equal rows.shift, r.to_a
       assert_equal %w[a c], r.attributes 
       assert_equal b.column_names.object_id,
                    r.instance_eval{@attributes}.object_id
@@ -175,6 +175,21 @@ class TestTable < Test::Unit::TestCase
     [ [1,nil,2,'x',3],
       [3,nil,4,'x',7],
       [5,nil,6,'x',11] ].to_table(%w[a x b c d]), a)          
+    
+  end
+  
+  def test_remove_column
+    a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
+    b = a.dup
+    
+    a.remove_column("b")
+    assert_equal Table(%w[a c]) { |t| t << [1,3] << [4,6] }, a        
+    
+    b.remove_column(2)
+    assert_equal Table(%w[a b]) { |t| t << [1,2] << [4,5] }, b
+  end   
+  
+  def test_rename_column
     
   end
   

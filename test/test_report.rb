@@ -33,7 +33,7 @@ class TestReport < Test::Unit::TestCase
       @report.query("blah",:query_obj => @query1)
     expected = [[1,2,3],[4,5,6],[7,8,9]]
     @report.query("blah",:query_obj => @query1, :yield_type => :by_row) { |r|
-      assert_equal expected.shift, r.data
+      assert_equal expected.shift, r.to_a
       assert_equal %w[a b c], r.attributes
     }
     assert_equal "a,b,c\n1,2,3\n4,5,6\n7,8,9\n", 

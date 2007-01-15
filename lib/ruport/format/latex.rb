@@ -33,7 +33,7 @@ module Ruport::Format
 
     def build_table_body
       data.each do |r|
-        output << r.data.join(" & ") + "\\\\\n"
+        output << r.to_a.join(" & ") + "\\\\\n"
         output << "\\hline\n"
       end
       if caption

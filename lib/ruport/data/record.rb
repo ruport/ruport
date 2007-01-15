@@ -15,8 +15,8 @@ module Ruport::Data
   class Record
 
     include Taggable
-    include Enumerable
-
+    include Enumerable  
+    
     def initialize(data,options={})
       data = data.dup
       case(data)
@@ -27,7 +27,7 @@ module Ruport::Data
         @data = data.dup
         @attributes = options[:attributes] || data.keys
       end
-    end
+    end 
 
     def [](index)
       case(index)
@@ -58,8 +58,9 @@ module Ruport::Data
 
     def to_h
       @data.dup
-    end
-    alias_method :data,:to_a
+    end          
+    
+    #alias_method :data,:to_a
 
     def attributes
       @attributes.dup
@@ -72,12 +73,12 @@ module Ruport::Data
 
     def ==(other)
        @attributes.eql?(other.attributes) &&
-       data == other.data
+       to_a == other.to_a
     end
     alias_method :eql?, :==
 
     def each 
-      data.each { |e| yield(e) }
+      to_a.each { |e| yield(e) }
     end
       
     def reorder!(*indices)
@@ -111,6 +112,12 @@ module Ruport::Data
       else
        super
      end
+    end 
+    
+    private
+    
+    def delete(key)
+      @data.delete(key)
     end
   end
 

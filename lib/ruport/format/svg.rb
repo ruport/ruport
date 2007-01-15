@@ -25,7 +25,7 @@ module Ruport::Format
 
     def build_graph
       data.each_with_index do |r,i|
-        add_line(r.data,r.tags[0] || "series #{i+1}")
+        add_line(r.to_a,r.tags[0] || "series #{i+1}")
       end
 
       output << @graph.render(:size => [layout.width, layout.height])

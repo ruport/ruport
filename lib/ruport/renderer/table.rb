@@ -20,7 +20,7 @@ module Ruport
     #   table.as(:text){ |r| r.rewrite_column("col1") { |a| a[0] + 5 }
     #   table.as(:csv) { |r| r.rewrite_column(2) { |a| a.capitalize }
     def rewrite_column(key,&block)
-      data.each { |r| r[key] = block[r] }
+      data.to_a.each { |r| r[key] = block[r] }
     end
 
     # Gets the number of columns in a table.  Useful in formatting plugins.
