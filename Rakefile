@@ -59,7 +59,7 @@ end
 
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include( "README",
-                           "TODO", "CHANGELOG",
+                           "TODO", #"CHANGELOG",
                            "AUTHORS", "COPYING",
                            "LICENSE", "lib/" )
   rdoc.main     = "README"

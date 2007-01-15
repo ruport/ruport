@@ -192,17 +192,16 @@ module Ruport::Data
     end
   
     #
-    # Reorders the columns that exist in the Table. Modifies this Table 
-    # in-place.
+    # Reorders the table's columns.
     #
     # Example:
+    # 
+    #   one = Table.new :data => [1,2], [3,4], 
+    #                   :column_names => %w[a b]
     #
-    #   data = Table.new :data => [1,2], [3,4], 
-    #                    :column_names => %w[a b]
+    #   two = one.reorder!([1,0])  
     #
-    #   data.reorder!([1,0])  
-    #
-    def reorder!(*indices)
+    def reorder(*indices)
       indices = indices[0] if indices[0].kind_of? Array
       
       if indices.all? { |i| i.kind_of? Integer }  
@@ -214,21 +213,7 @@ module Ruport::Data
       @data.each { |r| 
         r.attributes = @column_names
       }; self
-    end
-
-    #
-    # Returns a copy of the Table with its columns in the requested order.
-    #
-    # Example:
-    # 
-    #   one = Table.new :data => [1,2], [3,4], 
-    #                   :column_names => %w[a b]
-    #
-    #   two = one.reorder!([1,0])  
-    #
-    def reorder(*indices)
-      dup.reorder!(*indices)
-    end
+    end     
 
     #
     # Adds an extra column to the Table. Available Options:
@@ -243,7 +228,7 @@ module Ruport::Data
     #                           indicated. (by name)
     #
     # <b><tt>:after</tt></b>:: Inserts the new column after the column
-    #                           indicated. (by name)
+    #                          indicated. (by name)
     #
     # If a block is provided, it will be used to build up the column.
     #      
@@ -251,9 +236,19 @@ module Ruport::Data
     # Example:
     #
     #   data = Table("a","b") { |t| t << [1,2] << [3,4] }
+    #   
+    #    #basic usage, column full of 1's
+    #   data.add_column 'new_column', :default => 1
+    #        
+    #   #new empty column before new_column
+    #   data.add_column 'new_col2', :before => 'new_column'
     #
-    #   data.append_column 'new_column', :default => 1
+    #   # new column placed just after column a
+    #   data.add_column  'new_col3', :position => 1
     #
+    #   # new column built via a block, added at the end of the table
+    #   data.add_column("new_col4") { |r| r.a + r.b }
+    #   
     def add_column(name,options={})  
       if pos = options[:position]
         column_names.insert(pos,name)   
@@ -272,17 +267,53 @@ module Ruport::Data
       end; self
     end
     
+    # Removes the given column from the table.  May use name or position.
+    #
+    # Example:
+    #
+    #    table.remove_column(0) #=> removes the first column
+    #    table.remove_column("apple") #=> removes column named apple
     def remove_column(col)        
       col = column_names[col] if col.kind_of? Fixnum           
       column_names.delete(col)
       each { |r| r.send(:delete,col) }
     end 
     
+    # Renames a column.  Will update Record attributes as well
+    # 
+    # Example:
+    #
+    #   old_values = table.map { |r| r.a }
+    #   table.rename_column("a","zanzibar")
+    #   new_values = table.map { |r| r.zanzibar }
+    #   old_values == new_values #=> true
+    #   table.column_names.include?("a") #=> false
     def rename_column(old_name,new_name)
       self.column_names[column_names.index(old_name)] = new_name
       each { |r| r.rename_attribute(old_name,new_name,false)} 
     end
     
+    
+    #  Exchanges one column with another.
+    #
+    #  Example: 
+    #
+    #    >> a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] } 
+    #    >> puts a
+    #       +-----------+
+    #       | a | b | c |
+    #       +-----------+
+    #       | 1 | 2 | 3 |
+    #       | 4 | 5 | 6 |
+    #       +-----------+
+    #    >> a.swap_column("a","c")
+    #    >> puts a
+    #       +-----------+
+    #       | c | b | a |
+    #       +-----------+
+    #       | 3 | 2 | 1 |
+    #       | 6 | 5 | 4 |
+    #       +-----------+
     def swap_column(a,b)    
       if [a,b].all? { |r| r.kind_of? Fixnum }
        col_a,col_b = column_names[a],column_names[b]
@@ -294,12 +325,53 @@ module Ruport::Data
         column_names[a_ind] = b
       end
     end
-    
+       
+    #  Allows you to specify a new column to replace an existing column
+    #  in your table via a block.
+    #
+    #  Example:
+    #
+    #  >> a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
+    #  >> a.replace_column("c","c2") { |r| r.c * 2 + r.a }
+    #
+    #  >> puts a
+    #     +------------+
+    #     | a | b | c2 |
+    #     +------------+
+    #     | 1 | 2 |  7 |
+    #     | 4 | 5 | 16 |
+    #     +------------+
     def replace_column(old_col,new_col,&block)
       add_column(new_col,:after => old_col,&block)
       remove_column(old_col)
     end         
-    
+          
+    #  Generates a sub table
+    #  
+    #  Examples:
+    #   
+    #    table = [[1,2,3,4],[5,6,7,8],[9,10,11,12]].to_table(%w[a b c d])
+    #
+    #  Using column_names and a range:
+    #
+    #     sub_table = table.sub_table(%w[a b],1..-2)
+    #     sub_table == [[1,2],[3,4]].to_table(%w[a b]) #=> true
+    #
+    #  Using just column_names:
+    #
+    #     sub_table = table.sub_table(%w[a d])
+    #     sub_table == [[1,4],[5,8],[9,12]].to_table(%w[a d]) #=> true
+    #
+    #  Using column_names and a block:
+    # 
+    #     sub_table = table.sub_table(%w[d b]) { |r| r.a < 6 } 
+    #     sub_table == [[4,2],[8,6]].to_table(%w[b d]) #=> true
+    #
+    #  Using just a block:
+    #      
+    #     sub_table = table.sub_table { |r| r.c > 10 }
+    #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
+    #
     def sub_table(columns=column_names,range=nil)      
        Table(columns) do |t|
          if range
@@ -309,7 +381,7 @@ module Ruport::Data
          else
            data.each { |r| t << r.to_h } 
          end
-       end
+       end      
     end
     
     # Calculates sums. If a column name or index is given, it will try to
@@ -338,7 +410,7 @@ module Ruport::Data
         else
           s + yield(r)    
         end
-      }
+      }      
     end
 
     alias_method :sum, :sigma

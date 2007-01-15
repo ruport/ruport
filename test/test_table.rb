@@ -155,7 +155,7 @@ class TestTable < Test::Unit::TestCase
 
   def test_reorder
     table = Ruport::Data::Table.load("test/samples/data.csv")
-    table.reorder! *%w[col1 col3]
+    table.reorder *%w[col1 col3]
     assert_equal %w[col1 col3], table.column_names
     rows = [%w[a c], %w[d e]]
     table.each { |r| assert_equal rows.shift, r.to_a
