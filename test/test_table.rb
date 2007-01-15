@@ -26,7 +26,24 @@ class TestTable < Test::Unit::TestCase
     b = Ruport::Data::Record.new [1,2,3], :attributes => %w[col1 col2 col3]
     tables.zip([[],[],[a],[b]]).each { |t,n| 
       assert_equal n, t.data }
-  end   
+  end 
+  
+  def test_set_column_names
+    a = [[1,2,3],[4,5,6]].to_table
+    
+    assert_equal([],a.column_names)
+    assert_equal([[1,2,3],[4,5,6]],a.map { |r| r.to_a } )
+    
+    a.column_names = %w[a b c]
+    assert_equal(%w[a b c],a.column_names)
+    a.each { |r| assert_equal(%w[a b c], r.attributes) }    
+    assert_equal([[1,2,3],[4,5,6]],a.map { |r| r.to_a })
+    
+    a.column_names = %w[d e f]
+    assert_equal(%w[d e f],a.column_names)
+    a.each { |r| assert_equal(%w[d e f], r.attributes) }
+    assert_equal([[1,2,3],[4,5,6]],a.map { |r| r.to_a })   
+  end  
   
   def test_append_record  
     table = Ruport::Data::Table.new :column_names => %w[a b c]
@@ -187,10 +204,26 @@ class TestTable < Test::Unit::TestCase
     
     b.remove_column(2)
     assert_equal Table(%w[a b]) { |t| t << [1,2] << [4,5] }, b
-  end   
+  end     
   
   def test_rename_column
-    
+    a = Table(%w[a b]) { |t| t << [1,2] << [3,4] }
+    a.rename_column("b","x")
+    assert_equal Table(%w[a x]) { |t| t << [1,2] << [3,4] }, a
+  end     
+  
+  def test_swap_column
+   a = Table(%w[a b]) { |t| t << [1,2] << [3,4] }
+   a.swap_column("a","b")
+   assert_equal Table(%w[b a]) { |t| t << [2,1] << [4,3] }, a    
+   a.swap_column(1,0)
+   assert_equal  Table(%w[a b]) { |t| t << [1,2] << [3,4] }, a
+  end      
+  
+  def test_replace_column
+   a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }  
+   a.replace_column("b","d") { |r| r.b.to_s }
+   assert_equal Table(%w[a d c]) { |t| t << [1,"2",3] << [4,"5",6] }, a
   end
   
   def test_append_chain

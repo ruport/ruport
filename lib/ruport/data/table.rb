@@ -97,14 +97,27 @@ module Ruport::Data
     # be an array listing the names of the columns.
     #
     # Example:
-    #
+    #                     
     #   table = Table.new :data => [1,2,3], [3,4,5], 
     #                     :column_names => %w[a b c]
     #
     #   table.column_names = %w[e f g]
     #
-    def column_names=(new_column_names)
-      @column_names.replace(new_column_names.dup)
+    def column_names=(new_column_names)                              
+     if @column_names.empty? && @data[0] 
+       @column_names.replace(new_column_names.dup)     
+       new_column_names.each_with_index { |e,i|
+         each { |r| r.rename_attribute(i,e) }
+       } 
+     elsif @data.empty?     
+       @column_names.replace(new_column_names.dup) if @data.empty?             
+     else
+        column_names.zip(new_column_names).each { |x| 
+          rename_column x[0], x[1] if x[0] != x[1]
+        }
+     end    
+     
+     each { |r| r.instance_variable_get(:@attributes).replace(@column_names) }             
     end
 
     #
@@ -252,7 +265,6 @@ module Ruport::Data
         column_names << name
       end 
 
-        
       if block_given?
         each { |r| r[name] = yield(r) || options[:default] }
       else
@@ -264,7 +276,29 @@ module Ruport::Data
       col = column_names[col] if col.kind_of? Fixnum           
       column_names.delete(col)
       each { |r| r.send(:delete,col) }
-    end     
+    end 
+    
+    def rename_column(old_name,new_name)
+      self.column_names[column_names.index(old_name)] = new_name
+      each { |r| r.rename_attribute(old_name,new_name,false)} 
+    end
+    
+    def swap_column(a,b)    
+      if [a,b].all? { |r| r.kind_of? Fixnum }
+       col_a,col_b = column_names[a],column_names[b]
+       column_names[a] = col_b
+       column_names[b] = col_a
+      else
+        a_ind, b_ind = [column_names.index(a), column_names.index(b)] 
+        column_names[b_ind] = a
+        column_names[a_ind] = b
+      end
+    end
+    
+    def replace_column(old_col,new_col,&block)
+      add_column(new_col,:after => old_col,&block)
+      remove_column(old_col)
+    end    
     
     # Calculates sums. If a column name or index is given, it will try to
     # convert each element of that column to an integer or float 

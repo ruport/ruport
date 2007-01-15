@@ -97,6 +97,14 @@ class TestRecord < Test::Unit::TestCase
   def test_to_h
     assert_nothing_raised { @record.to_h }
     assert_equal({ "a" => 1, "b" => 2, "c" => 3, "d" => 4 }, @record.to_h)
+  end  
+  
+  def test_rename_attribute
+     @record.rename_attribute("b","x")
+     assert_equal %w[a x c d], @record.attributes
+     assert_equal 2, @record["x"]
+     assert_equal 2, @record.x
+     assert_equal 2, @record[1]
   end
 
   def test_equality

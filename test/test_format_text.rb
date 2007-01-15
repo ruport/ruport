@@ -23,7 +23,7 @@ class TestFormatText < Test::Unit::TestCase
                   a.as(:text) { |e| e.layout.alignment = :center })
 
     tf = "+------------+\n"
-    a.column_names = %w[a bark]
+    a.column_names = %w[a bark]     
     assert_equal("#{tf}|  a  | bark |\n#{tf}|  1  |  2   |\n"+
                  "| 300 |  4   |\n#{tf}",
                   a.as(:text) { |e| e.layout.alignment = :center })

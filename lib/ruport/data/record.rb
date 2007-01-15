@@ -55,6 +55,8 @@ module Ruport::Data
     def to_a
       @attributes.map { |a| @data[a] }
     end
+       
+     attr_reader :data
 
     def to_h
       @data.dup
@@ -67,9 +69,6 @@ module Ruport::Data
     end
 
     attr_writer :attributes
-    #def attributes=(other)
-    #   @attributes.replace(other)
-   # end
 
     def ==(other)
        @attributes.eql?(other.attributes) &&
@@ -95,6 +94,11 @@ module Ruport::Data
 
     def reorder(*indices)
       dup.reorder!(*indices)
+    end     
+          
+    def rename_attribute(old_name,new_name,update_index=true)
+      @attributes[@attributes.index(old_name)] = new_name if update_index
+      @data[new_name] = @data.delete(old_name)
     end
 
     def hash
