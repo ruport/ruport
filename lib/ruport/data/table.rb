@@ -384,6 +384,11 @@ module Ruport::Data
        end      
     end
     
+    # returns an array of values for the given column_name
+    def column(name)
+       map { |r| r[name] }
+    end
+    
     # Calculates sums. If a column name or index is given, it will try to
     # convert each element of that column to an integer or float 
     # and add them together.

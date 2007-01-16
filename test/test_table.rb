@@ -26,7 +26,16 @@ class TestTable < Test::Unit::TestCase
     b = Ruport::Data::Record.new [1,2,3], :attributes => %w[col1 col2 col3]
     tables.zip([[],[],[a],[b]]).each { |t,n| 
       assert_equal n, t.data }
-  end 
+  end    
+  
+  def test_column
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    assert_equal [3,6], a.column(2)
+    assert_equal [2,5], a.column("b") 
+    
+    a = [[1],[2],[3],[4]].to_table
+    assert_equal [1,2,3,4], a.column(0)
+  end
   
   def test_set_column_names
     a = [[1,2,3],[4,5,6]].to_table
