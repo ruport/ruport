@@ -21,22 +21,43 @@ class TestTableRenderer < Test::Unit::TestCase
   end
 
   def test_render_html_basic
+    
     actual = Ruport::Renderer::Table.render_html { |r|
       r.data = [[1,2,3],[4,5,6]].to_table
-    }
+    }          
+    
     assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
                  "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t"+
                  "\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
                  "\t</tr>\n\t</table>",actual)
 
-    actual = Ruport::Renderer::Table.render_html { |r|
-      r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    actual = Ruport::Renderer::Table.render_html { |r| 
+      r.data = [ [1,2,3],[4,5,6]].to_table(%w[a b c]) 
     }
+    
     assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
-                 "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
-                 "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
-                 "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
-                 "\t</tr>\n\t</table>",actual)
+      "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
+      "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
+      "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
+      "\t</tr>\n\t</table>",actual)   
+    
+  end
+    
+  def test_render_html_with_tags 
+    actual = Ruport::Renderer::Table.render_html { |r| 
+      r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+      r.data.create_group("foo") { |r| r.a < 3 }
+    } 
+    
+    expected =
+    "\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>\n\t\t\t<th>"+
+    "c</th>\n\t\t</tr>\n\t\t<tr class='grp_foo'>\n\t\t\t"+
+    "<td class='grp_foo'>1</td>\n\t\t\t<td class='grp_foo'>2</td>"+
+    "\n\t\t\t<td class='grp_foo'>3</td>\n\t\t</tr>"+
+    "\n\t\t<tr>\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t"+
+    "<td>6</td>\n\t\t</tr>\n\t</table>"             
+    
+    assert_equal(expected,actual) 
   end
 
   def test_render_latex_basic
