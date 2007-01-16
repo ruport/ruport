@@ -40,20 +40,22 @@ module Ruport::Data
     #      | clyde  |   4   |
     #      +----------------+
     #
-    def group_by_tag
-      r_tags = map { |r| r.tags }.flatten.uniq
+    def groups
+      #r_tags = map { |r| r.tags }.flatten.uniq
+      r_tags = group_names_intern
       tables_hash = Hash.new { |h,k| h[k] = [].to_table(column_names) }
-      each { |row|
-        row.tags.each { |t| 
-          tables_hash[t].instance_variable_get(:@data) << row
-        }
-      }
-      r = Record.new tables_hash, :attributes => r_tags
-      class << r
-        def each_group; attributes.each { |a| yield(a) }; end
-      end; r
+      r_tags.each { |t| 
+        tables_hash[t.gsub(/^grp_/,"")] = sub_table { |r| r.tags.include? t }}
+      r = Record.new tables_hash, :attributes => group_names
+    end  
+    
+    def group_names
+       group_names_intern.map { |r| r.gsub(/^grp_/,"") }
     end
-
+    
+    def group(tag)
+      sub_table { |r| r.tags.include?("grp_#{tag}") }
+    end
     #
     # Tags each row of the <tt>Table</tt> for which the <tt>block</tt> is not 
     # false with <tt>label</tt>.
@@ -74,10 +76,15 @@ module Ruport::Data
     #      | pinky  |   3   |
     #      +----------------+
     #
-    def create_tag_group(label,&block)
-      each { |r| block[r] && r.tag(label) }
-    end
-    alias_method :tag_group, :create_tag_group
+    def create_group(label,&block)
+      each { |r| block[r] && r.tag("grp_#{label}") }
+    end  
+    
+    private
+    
+    def group_names_intern
+       map { |r| r.tags.select { |r| r =~ /^grp_/  } }.flatten.uniq   
+    end    
 
   end
 end
