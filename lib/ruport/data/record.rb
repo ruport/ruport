@@ -219,6 +219,18 @@ module Ruport::Data
        super
      end
     end 
+
+    #indifferentish access that also can call methods
+    def get(name)
+      case name
+      when Symbol
+        send(name)
+      when String
+        self[name]
+      else
+        raise "Whatchu Talkin' Bout, Willis?"
+      end
+    end
     
     private
     

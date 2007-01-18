@@ -53,6 +53,16 @@ class TestTable < Test::Unit::TestCase
     a.each { |r| assert_equal(%w[d e f], r.attributes) }
     assert_equal([[1,2,3],[4,5,6]],a.map { |r| r.to_a })   
   end  
+
+  def test_rows_with
+    table = [[1,2,3],[1,3,4],[7,8,9]].to_table(%w[a b c])
+    
+    assert_equal([table[0],table[1]],table.rows_with("a" => 1))
+    assert_equal([table[1]],table.rows_with("a" => 1, "b" => 3))
+    assert_equal([table[0]],table.rows_with(:a => 1, :b => 2))
+    assert_equal([table[2]], table.rows_with_b(8))
+    assert_equal [table[1]], table.rows_with(%w[a b]) { |a,b| [a,b] == [1,3] }
+  end
   
   def test_append_record  
     table = Ruport::Data::Table.new :column_names => %w[a b c]
@@ -61,7 +71,6 @@ class TestTable < Test::Unit::TestCase
     assert_equal(%w[a b c],table[0].attributes)
     rec = table[0].dup
     rec.attributes = %w[a b c d]
-    assert_raise(ArgumentError) { table << rec }
     assert_raise(ArgumentError) { table << Object.new }
     assert_raise(ArgumentError) { table << [].to_table }
   end
@@ -266,16 +275,7 @@ class TestTable < Test::Unit::TestCase
     assert_equal("a,b\n1,2\n3,4\n5,6\n",table.to_csv)
   end
   
-  def test_ensure_coerce_sum
-    
-    s = [["1"],["3"],["5"] ].to_table
-    t = [["1.23"],["1.5"]].to_table
-    
-    assert_equal(9,s.sum(0))
-    assert_equal(2.73,t.sum(0))
-
-  end
-
+  
   def test_sort_rows_by
     table = Ruport::Data::Table.new :column_names => %w[a b c]
     table << [1,2,3] << [6,1,8] << [9,1,4]
@@ -314,6 +314,8 @@ class TestTable < Test::Unit::TestCase
    assert_equal [[1,2,3]].to_table(%w[a b c]), 
                 a.to_table(:column_names => %w[a b c])
   end
+
+
   ## BUG Traps -------------------------------------------------
   
   def test_ensure_setting_column_names_changes_record_attributes
@@ -376,6 +378,35 @@ class TestTable < Test::Unit::TestCase
     }
     assert_equal 4, x.length
   end
+  
+  # bug found with paul novak 2007.01.17
+  def test_ensure_column_names_length_match
+    a = [[1,2,3,8],[4,5,6,8],[7,8,9,8]].to_table(%w[a b c d])
+    assert_nothing_raised { 
+      a.column_names = %w[whats your favorite dish] 
+    }
+    assert_raise(ArgumentError) { 
+      a.column_names = %w[i'll order it from zanzibar] 
+    }
+  end
+
+  # bug found with paul novak 2007.01.17
+  def test_ensure_tags_preserved_in_subtable
+    a = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
+    a[1].tag(:foo)
+    a.create_group("bar") { |r| r.b < 6 }
+    assert_equal ["grp_bar"], a.group("bar")[0].tags
+    assert_equal [:foo,"grp_bar"], a.group("bar")[1].tags
+  end
+  
+  def test_ensure_coerce_sum
+    s = [["1"],["3"],["5"] ].to_table
+    t = [["1.23"],["1.5"]].to_table
+    
+    assert_equal(9,s.sum(0))
+    assert_equal(2.73,t.sum(0))
+  end
+
 
 end
 
@@ -397,5 +428,5 @@ class TestTableKernelHack < Test::Unit::TestCase
     assert_equal Table("a"), Table(%w[a])
     assert_equal Table(:a), Table([:a])
   end
-
+  
 end

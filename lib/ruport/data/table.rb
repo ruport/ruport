@@ -33,13 +33,6 @@ module Ruport::Data
       Table.new({:data => data.map { |r| r.to_a }}.merge(options))
     end
 
-    # Provides a shortcut for the <tt>as()</tt> method by converting a call to
-    # <tt>as(:format_name)</tt> into a call to <tt>to_format_name</tt>
-    def method_missing(id,*args)
-     return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
-     super
-    end
-    
   end
 
   # 
@@ -112,6 +105,8 @@ module Ruport::Data
      elsif @data.empty?     
        @column_names.replace(new_column_names.dup) if @data.empty?             
      else
+        raise ArgumentError, "Wrong number of column names" unless 
+          new_column_names.length == column_names.length
         column_names.zip(new_column_names).each { |x| 
           rename_column x[0], x[1] if x[0] != x[1]
         }
@@ -162,8 +157,9 @@ module Ruport::Data
         arr = @column_names.map { |k| other[k] }
         @data << Record.new(arr, :attributes => @column_names)
       when Record
-        raise ArgumentError unless column_names.eql? other.attributes
-        @data << Record.new(other.to_a, :attributes => @column_names)
+        #raise ArgumentError unless column_names.eql? other.attributes
+        #@data << Record.new(other.to_a, :attributes => @column_names)
+        self << other.to_h
         @data.last.tags = other.tags.dup
       else
         raise ArgumentError
@@ -372,14 +368,15 @@ module Ruport::Data
     #     sub_table = table.sub_table { |r| r.c > 10 }
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
+    # FIXME: loses tags
     def sub_table(columns=column_names,range=nil)      
        Table(columns) do |t|
          if range
-           data[range].each { |r| t << r.to_h }
+           data[range].each { |r| t << r }
          elsif block_given?
-           data.each { |r| t << r.to_h if yield(r) }
+           data.each { |r| t << r if yield(r) }
          else
-           data.each { |r| t << r.to_h } 
+           data.each { |r| t << r } 
          end
        end      
     end
@@ -460,6 +457,16 @@ module Ruport::Data
       table.tags = self.tags
       return table
     end
+
+    def rows_with(columns,&block) 
+      select { |r|
+        if block
+          block[*(columns.map { |c| r.get(c) })]
+        else
+          columns.all? { |k,v| r.get(k) == v }
+        end
+      }
+    end
                                                                                 
     # Create a copy of the Table: records will be copied as well.
     #
@@ -491,6 +498,15 @@ module Ruport::Data
     # NOTE: does not respect tainted status
     alias_method :clone, :dup
 
+
+    # Provides a shortcut for the <tt>as()</tt> method by converting a call to
+    # <tt>as(:format_name)</tt> into a call to <tt>to_format_name</tt>
+    def method_missing(id,*args)
+     return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
+     return rows_with($1.to_sym => args[0]) if id.to_s =~ /^rows_with_(.*)/
+     super
+    end
+    
     # Loads a CSV file directly into a Table using the FasterCSV library.
     #
     # Example:
@@ -587,4 +603,5 @@ class Array
   def to_table(column_names=nil)
     Ruport::Data::Table.new({:data => self, :column_names => column_names})
   end
+
 end
