@@ -17,7 +17,7 @@ module Ruport::Format
 
     # Calls build_csv_row for each row in the Data::Table
     def build_table_body
-      data.map { |r| build_csv_row(r) }.join("\n")
+      data.each { |r| build_csv_row(r) }
     end
 
     # Produces CSV output for a data row.
