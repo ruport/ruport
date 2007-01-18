@@ -52,7 +52,7 @@
 #
 # To install ruport via rubygems with all it's dependencies (except DBI):
 #   
-#   sudo gem install ruport
+#   sudo gem install ruport -y
 #
 # To install ruport manually via setup.rb:
 # 
@@ -75,29 +75,32 @@
 #
 # == Data Collection and Manipulation
 # 
-# To begin, your data must be read from its source and stored in Ruports 
-# standard data structures. Ruport::Data::Set, Ruport::Data::Table and 
-# Ruport::Data::Record have further information on how to work with with
+# To begin, your data must be read from its source and stored in Ruport's 
+# standard data structures. Ruport::Data::Table and  Ruport::Data::Record 
+# have further information on how to work with with
 # and store data in ruport.
 #
 # If you wish to retrieve your data using Ruby on Rails and ActiveRecord,
-# Ruport::Reportable has some useful information; To pull your data directly
-# from a database, Ruport::Query will be useful, and to build it manually
-# Array has been extended with a convenience function or two.
+# please see the acts_as_reportable plugin.
 # 
 # == Report Generation
 #
 # Once the data is ready, it can be rendered using a combination of
-# Ruport::Format, Ruport::Format::Engine and Ruport::Format::Plugin. 
-# The engine defines the report type (tablular, invoice, graph, etc), and 
+# Ruport::Renderer and Ruport::Format::Plugin. 
+# The renderer defines the report type (tablular, graph, etc), and 
 # the plugin renders the engine into a final format (PDF, CSV, HTML, SVG). 
-# Engines will often interact with more than one plugin, to allow the same
+# Renderers will often interact with more than one plugin, to allow the same
 # report to be rendered in multiple ways ie. as HTML and a PDF.
 # 
 # To tie these together, a basic DSL is provided by Ruport::Report
 #
 # For further reading and specific examples, please explore the examples/ 
-# directory in the source tree and read the Ruport Cookbook.
+# directory in the source tree.
+#
+# = Bug Reports / Feature Requests
+#
+#  Our Trac is at: http://stonecode.svnrepository.com
+#  You may use the username ruport and password blinky to file tickets
 #
 # = Resources
 #
@@ -106,14 +109,14 @@
 # up to date information.
 #
 # - You can sign up and/or view the archives here:
-#   http://lists.stonecode.org/listinfo.cgi/ruport-stonecode.org
+#   http://stonecode.svnrepository.com/ruport/trac.cgi/browser/trunk/test/test_table.rb
 #
 # Please do not hesitate to use this list!  I am happily accepting patches and
 # documentation, as well as encouraging design discussions and also am quite
 # curious about what people use or want to use ruport for.
 #
 # I will announce Ruport releases on RubyTalk, on the Ruport mailing list, on
-# Freshmeat, RAA, and the new_haven.rb mailing list.  If you would like to
+# Freshmeat, and RAAt.  If you would like to
 # keep an eye out for releases, please monitor one of those places.
 #
 #   - You may download Ruport's source from the project page:
@@ -122,7 +125,7 @@
 #   - The latest stable API documentation is available at:
 #     http://reporting.stonecode.org/docs
 #
-# There also will be some tutorials on reporting.stonecode.org
+# There also will be some tutorials on rubyreports.org
 #
 # If you are interested in developing Ruport, please *never* study code in
 # official releases.  As this software is in it's early stages, it's essential
@@ -137,12 +140,6 @@
 # - Or if you are interested in the latest updates to the stable branch
 #
 #   svn co svn://rubyforge.org//var/svn/ruport/branches/stable
-#
-# Those who would like to become regular contributors will be given write
-# access.  Also, anyone interested in the internal design and project
-# management aspects of Ruport can request to be added to our Trac
-# account.  This is primarily intended for people who are working on the
-#
 #
 # Thanks for checking out Ruport!
 #
