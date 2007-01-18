@@ -216,4 +216,15 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 1, a["a"]
   end
 
+  def test_reindex
+    assert_equal %w[a b c d], @record.attributes
+    old_object_id = @record.instance_variable_get(:@attributes).object_id
+
+    @record.send(:reindex, %w[apple banana courier django])
+    assert_equal %w[apple banana courier django], @record.attributes
+
+    new_object_id = @record.instance_variable_get(:@attributes).object_id
+    assert_equal old_object_id, new_object_id
+  end
+
 end

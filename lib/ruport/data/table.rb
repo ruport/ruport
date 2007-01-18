@@ -96,23 +96,22 @@ module Ruport::Data
     #
     #   table.column_names = %w[e f g]
     #
-    def column_names=(new_column_names)                              
-     if @column_names.empty? && @data[0] 
-       @column_names.replace(new_column_names.dup)     
-       new_column_names.each_with_index { |e,i|
-         each { |r| r.rename_attribute(i,e) }
-       } 
-     elsif @data.empty?     
-       @column_names.replace(new_column_names.dup) if @data.empty?             
-     else
-        raise ArgumentError, "Wrong number of column names" unless 
-          new_column_names.length == column_names.length
-        column_names.zip(new_column_names).each { |x| 
-          rename_column x[0], x[1] if x[0] != x[1]
-        }
-     end    
-     
-     each { |r| r.instance_variable_get(:@attributes).replace(@column_names) }             
+
+    def column_names=(new_column_names)
+      columns = new_column_names.zip(@column_names)
+      @column_names.replace(new_column_names.dup)
+      unless @data.empty?
+        each { |r|
+          columns.each_with_index { |x,i|
+            if x[1].nil?
+              r.rename_attribute(i,x[0])
+            elsif x[1] != x[0]
+              r.rename_attribute(x[1],x[0],false)
+            end
+          }
+          r.send(:reindex, @column_names)
+       }
+     end
     end
 
     #

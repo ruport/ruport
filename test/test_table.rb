@@ -380,17 +380,6 @@ class TestTable < Test::Unit::TestCase
   end
   
   # bug found with paul novak 2007.01.17
-  def test_ensure_column_names_length_match
-    a = [[1,2,3,8],[4,5,6,8],[7,8,9,8]].to_table(%w[a b c d])
-    assert_nothing_raised { 
-      a.column_names = %w[whats your favorite dish] 
-    }
-    assert_raise(ArgumentError) { 
-      a.column_names = %w[i'll order it from zanzibar] 
-    }
-  end
-
-  # bug found with paul novak 2007.01.17
   def test_ensure_tags_preserved_in_subtable
     a = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
     a[1].tag(:foo)

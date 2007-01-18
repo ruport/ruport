@@ -237,6 +237,10 @@ module Ruport::Data
     def delete(key)
       @data.delete(key)
     end
-  end
 
+
+    def reindex(new_attributes)
+      @attributes.replace(new_attributes)
+    end
+  end
 end

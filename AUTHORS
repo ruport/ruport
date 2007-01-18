@@ -41,3 +41,6 @@ Stefan Mahlitz:
 
 llasram@gmail.com
  - Improved alignment for Text Tables.
+
+Michael Milner
+ - Refactoring for Table#column_names= (r436)
