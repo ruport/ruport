@@ -50,10 +50,9 @@ spec = Gem::Specification.new do |spec|
 	spec.rubyforge_project = "ruport"
 	spec.homepage = "http://reporting.stonecode.org"
 	spec.description = <<END_DESC
-Ruport is a powerful report generation engine that allows users to generate
-custom ERb templates and easily query various forms of SQL databases via DBI.
-It provides helper methods and utilities to generate professional reports
-quickly and cleanly. 
+  Ruby Reports is a software library that aims to make the task of reporting
+  less tedious and painful. It provides tools for data acquisition,
+  database interaction, formatting, and parsing/munging.
 END_DESC
 end
 

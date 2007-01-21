@@ -2,6 +2,14 @@ require "test/unit"
 require "ruport"
 begin; require "rubygems"; rescue LoadError; nil end
 
+begin
+  require 'mocha'
+  require 'stubba'
+  require 'net/smtp'
+rescue LoadError
+  $stderr.puts "Warning: Mocha not found -- skipping some Mailer tests"
+end
+
 class TestMailer < Test::Unit::TestCase
 
   def setup
@@ -79,30 +87,79 @@ class TestMailer < Test::Unit::TestCase
     assert_equal ['RuportDay!'], @default_mailer.subject
   end
 
-  # def test_html
- #    @default_mailer.instance_eval "@mail.html = 'RuportDay!'"
- #    assert_equal 'RuportDay!', @default_mailer.html
- #  end
- # 
- #  def test_html_equals
- #    @default_mailer.html = 'RuportDay!'
- #    assert_equal 'RuportDay!', @default_mailer.html
- #  end
- # 
- #  def test_text
- #    @default_mailer.instance_eval "@mail.text = 'RuportDay!'"
- #    assert_equal 'RuportDay!', @default_mailer.text
- #  end
- # 
- #  def test_text_equals
- #    @default_mailer.text = 'RuportDay!'
- #    assert_equal 'RuportDay!', @default_mailer.text
- #  end
+  def test_send_mail_with_default
+    return unless Object.const_defined? :Mocha
+    setup_mock_mailer(1)
+    assert_equal "250 ok",
+      @default_mailer.deliver(:to      => "clyde@example.com",
+                              :from    => "sue@example.com",
+                              :subject => "Hello",
+                              :text    => "This is a test.")
+  end
 
-  def test_no_default
-    Ruport::Config.mailers[:default] = nil
-    #assert_raise(RuntimeError){ Ruport::Mailer.new }
+  def test_send_mail_with_other
+    return unless Object.const_defined? :Mocha
+    setup_mock_mailer(1, @other_mailer)
+    assert_equal "250 ok",
+      @other_mailer.deliver(:to      => "sue@example.com",
+                            :from    => "clyde@example.com",
+                            :subject => "Hello",
+                            :text    => "This is a test.")
+  end
+
+  def test_send_mail_without_to
+    return unless Object.const_defined? :Mocha
+    setup_mock_mailer(1)
+    assert_raise(Net::SMTPSyntaxError) {
+      @default_mailer.deliver(:from    => "sue@example.com",
+                              :subject => "Hello",
+                              :text    => "This is a test.")
+    }
+  end
+
+  def test_send_html_mail
+    return unless Object.const_defined? :Mocha
+    setup_mock_mailer(1)
+    assert_equal "250 ok",
+      @default_mailer.deliver(:to      => "clyde@example.com",
+                              :from    => "sue@example.com",
+                              :subject => "Hello",
+                              :html    => "<p>This is a test.</p>")
+  end
+
+  def test_send_mail_with_attachment
+    return unless Object.const_defined? :Mocha
+    setup_mock_mailer(1)
+    @default_mailer.attach 'test/samples/data.csv'
+    assert_equal "250 ok",
+      @default_mailer.deliver(:to      => "clyde@example.com",
+                              :from    => "sue@example.com",
+                              :subject => "Hello",
+                              :text    => "This is a test.")
   end
   
+  private
+  
+  def setup_mock_mailer(count, mailer=@default_mailer)
+    host      = mailer.instance_variable_get(:@host)
+    port      = mailer.instance_variable_get(:@port)
+    user      = mailer.instance_variable_get(:@user)
+    password  = mailer.instance_variable_get(:@password)
+    auth      = mailer.instance_variable_get(:@auth)
+    
+    @smtp     = mock('smtp')
+    
+    Net::SMTP.expects(:start).
+      with(host,port,host,user,password,auth).
+      yields(@smtp).
+      returns("250 ok").times(count)
+    @smtp.stubs(:send_message).
+      with {|*params| !params[2].nil? }.
+      returns("250 ok")
+    @smtp.stubs(:send_message).
+      with {|*params| params[2].nil? }.
+      raises(Net::SMTPSyntaxError)
+  end
+
 end
 
