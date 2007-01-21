@@ -272,7 +272,18 @@ module Ruport::Data
       col = column_names[col] if col.kind_of? Fixnum           
       column_names.delete(col)
       each { |r| r.send(:delete,col) }
-    end 
+    end
+   
+    # Removes multiple columns from the table.  May use name or position
+    # Will autosplat arrays.
+    #
+    # Example:
+    # table.remove_columns('a','b','c')
+    # table.remove_columns([0,1])
+    def remove_columns(*cols)
+      cols = cols[0] if cols[0].kind_of? Array
+      cols.each { |col| remove_column(col) }
+    end
     
     # Renames a column.  Will update Record attributes as well
     # 

@@ -155,7 +155,8 @@ class TestTable < Test::Unit::TestCase
                                       :csv_options => { :col_sep => "\t" } )
     assert_equal expected, table 
 
-    table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n", :has_names => false)
+    table = Ruport::Data::Table.parse( "a,b,c\n1,2,3\n4,5,6\n", 
+                                       :has_names => false)
     assert_equal([],table.column_names)
     assert_equal([%w[a b c],%w[1 2 3], %w[4 5 6]].to_table, table) 
     
@@ -164,7 +165,8 @@ class TestTable < Test::Unit::TestCase
   def test_csv_block_form
     expected = [%w[a b],%w[1 2],%w[3 4]]
     t = Ruport::Data::Table.send(:get_table_from_csv, 
-                                 :parse, "a,b\n1,2\n3,4", :has_names => false) do |s,r|
+                                 :parse, "a,b\n1,2\n3,4", 
+                                 :has_names => false) do |s,r|
       assert_equal expected.shift, r
       s << r    
     end
@@ -240,7 +242,16 @@ class TestTable < Test::Unit::TestCase
     
     b.remove_column(2)
     assert_equal Table(%w[a b]) { |t| t << [1,2] << [4,5] }, b
-  end     
+  end
+  
+  def test_remove_columns
+    a = Table(%w[a b c d]) { |t| t << [1,2,3,4] << [5,6,7,8] }
+    b = a.dup
+    a.remove_columns("b","d")
+    assert_equal Table(%w[a c]) { |t| t << [1,3] << [5,7] }, a        
+    b.remove_columns(%w[a c])
+    assert_equal Table(%w[b d]) { |t| t << [2,4] << [6,8] }, b
+  end   
   
   def test_rename_column
     a = Table(%w[a b]) { |t| t << [1,2] << [3,4] }

@@ -44,3 +44,6 @@ llasram@gmail.com
 
 Michael Milner
  - Refactoring for Table#column_names= (r436)
+
+Chris Carter
+ - Table#remove_columns (r440)
