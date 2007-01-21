@@ -102,7 +102,7 @@ module Ruport
     #
     # Creates or retrieves a mailer configuration. Available options:
     # <b><tt>:host</tt></b>::         The SMTP host to use.
-    # <b><tt>:address</tt></b>::      The email address to send to.
+    # <b><tt>:address</tt></b>::      Address the email is being sent from.
     # <b><tt>:user</tt></b>::         The username to use on the SMTP server
     # <b><tt>:password</tt></b>::     The password to use on the SMTP server. 
     #                                 Optional.
