@@ -74,7 +74,7 @@ module Ruport
   # returns the project's name
   def self.project; @project; end
 
-RAKEFILE = <<END_RAKEFILE
+RAKEFILE = <<'END_RAKEFILE'
 begin; require "rubygems"; rescue LoadError; end
 require "rake/testtask"
 
@@ -84,6 +84,14 @@ Rake::TestTask.new do |test|
   test.libs    << "test"
   test.pattern =  'test/**/test_*.rb'
   test.verbose =  true
+end
+
+task :build_report do
+  sh "ruby util/build.rb report #{ENV['name']}"
+end
+
+task :run do
+  sh "ruby app/reports/#{ENV['report']}.rb"
 end
 END_RAKEFILE
 
@@ -168,7 +176,7 @@ END_SQL
 INIT = <<END_INIT
 begin
   require "rubygems"
-  require_gem "ruport","=#{Ruport::VERSION}"
+  gem "ruport","=#{Ruport::VERSION}"
 rescue LoadError 
   nil
 end
