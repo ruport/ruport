@@ -410,7 +410,20 @@ class TestTable < Test::Unit::TestCase
     assert_equal(9,s.sum(0))
     assert_equal(2.73,t.sum(0))
   end
-
+  
+  #Ticket #142          
+  def test_ensure_constructor_dups_record_tags
+    a = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
+    b = a.dup    
+    
+    a[0].tag :foo
+    assert_equal [], b[0].tags
+    assert_equal [:foo],a[0].tags
+    
+    b[1].tag :bar
+    assert_equal [], a[1].tags
+    assert_equal [:bar], b[1].tags
+  end
 
 end
 
