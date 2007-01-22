@@ -151,7 +151,10 @@ class Test#{class_name} < Test::Unit::TestCase
   end
 end
 EOR
+  puts "report file: app/reports/#{ARGV[1]}.rb"
   File.open("app/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
+  puts "test file: test/test_#{ARGV[1]}.rb"
+  puts "class name: #{class_name}" 
   File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST } 
 end
 END_BUILD
