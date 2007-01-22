@@ -2,7 +2,7 @@ module Ruport::Format
   class XML < Plugin
 
     def prepare_graph
-      require_gem "builder"
+      gem "builder"
       @builder = Builder::XmlMarkup.new(:indent => 2)
     end
 
