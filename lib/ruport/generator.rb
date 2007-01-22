@@ -14,41 +14,61 @@ module Ruport
     build_directory_structure
     build_init
     build_config
-    build_rakefile
-    build_utils
+    build_utils         
+    build_rakefile  
+    puts "\nSuccessfully generated project: #{proj}"
   end
 
   def self.build_init
-    File.open("#{project}/app/init.rb","w") { |f| f << INIT }
+    m = "#{project}/app/init.rb" 
+    puts "  #{m}"
+    File.open(m,"w") { |f| f << INIT }
   end
 
   # Generates a trivial rakefile for use with Ruport.
   def self.build_rakefile
-    File.open("#{project}/Rakefile","w") { |f| f << RAKEFILE }
+    m = "#{project}/Rakefile"
+    puts "  #{m}"
+    File.open(m,"w") { |f| f << RAKEFILE }
   end
 
   # Generates the build.rb, sql_exec.rb, and cabinet.rb utilities
-  def self.build_utils
-    File.open("#{project}/util/build.rb","w") { |f| f << BUILD }
-    File.open("#{project}/util/sql_exec.rb","w") { |f| f << SQL_EXEC }
+  def self.build_utils           
+    
+    m = "#{project}/util/build.rb"   
+    puts "  #{m}"
+    File.open(m,"w") { |f| f << BUILD } 
+    
+    m = "#{project}/util/sql_exec.rb"  
+    puts "  #{m}"
+    File.open(m,"w") { |f| f << SQL_EXEC }
   end
 
   # sets up the basic directory layout for a Ruport application
   def self.build_directory_structure
-    mkdir project
+    mkdir project        
+    puts "creating directories.."
     %w[ test config output data app app/reports 
         templates sql log util].each do |d|
-      mkdir "#{project}/#{d}"
+      m="#{project}/#{d}" 
+      puts "  #{m}"
+      mkdir(m)
     end
-
-    touch("#{project}/app/reports.rb")
-    touch("#{project}/app/helpers.rb")
+    
+    puts "creating files.."
+    %w[reports helpers].each { |f|
+      m = "#{project}/app/#{f}.rb"
+      puts "  #{m}"
+      touch(m)
+    }
   end
 
   # Builds a file called config/ruport_config.rb which stores a Ruport::Config
   # skeleton
   def self.build_config
-    File.open("#{project}/config/ruport_config.rb","w") { |f| f << CONFIG }
+    m = "#{project}/config/ruport_config.rb"
+    puts "  #{m}"
+    File.open(m,"w") { |f| f << CONFIG }
   end
 
   # returns the project's name
