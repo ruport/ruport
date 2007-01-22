@@ -33,8 +33,12 @@ class TestTable < Test::Unit::TestCase
     assert_equal [3,6], a.column(2)
     assert_equal [2,5], a.column("b") 
     
+    assert_raise(ArgumentError) { a.column("d") }  
+    assert_raise(ArgumentError) { a.column(42) }
+    
     a = [[1],[2],[3],[4]].to_table
     assert_equal [1,2,3,4], a.column(0)
+    
   end
   
   def test_set_column_names

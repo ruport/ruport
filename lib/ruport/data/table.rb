@@ -393,6 +393,15 @@ module Ruport::Data
     
     # returns an array of values for the given column_name
     def column(name)
+      case(name)
+      when Integer
+         unless column_names.empty?
+          raise ArgumentError if name > column_names.length         
+        end
+      else
+        raise ArgumentError unless column_names.include?(name)
+      end
+         
        map { |r| r[name] }
     end
     
