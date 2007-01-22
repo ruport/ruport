@@ -48,7 +48,12 @@ class TestMailer < Test::Unit::TestCase
   def test_constructor_with_mailer_label
     assert_mailer_equal @other_opts, @other_mailer
   end
-  
+
+  def test_constructor_without_mailer
+    Ruport::Config.mailers[:default] = nil
+    assert_raise(RuntimeError) { Ruport::Mailer.new }
+  end
+ 
   def test_select_mailer
     mailer = Ruport::Mailer.new :default
     assert_mailer_equal @default_opts, mailer
