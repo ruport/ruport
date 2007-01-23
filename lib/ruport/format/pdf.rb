@@ -45,6 +45,33 @@ module Ruport::Format
     def add_text(*args)
       pdf_writer.text(*args)
     end
+    
+    def add_title( title )
+      width = layout.header_width || 200
+      height = layout.header_height || 20
+      top_left_x  = pdf_writer.absolute_right_margin - width
+      top_left_y  = pdf_writer.absolute_top_margin
+      radius = 5
+
+      font_size = 12
+      title = "<b>#{title}</b>"              
+      
+      loop do
+        sz = pdf_writer.text_width( title, font_size )
+        top_left_x + sz > top_left_x + width or break
+        font_size -= 1
+      end
+
+      pdf_writer.fill_color(Color::RGB::Gray80)
+      pdf_writer.rounded_rectangle( top_left_x, top_left_y, 
+                                    width, height, radius).fill_stroke
+      pdf_writer.fill_color(Color::RGB::Black)
+      pdf_writer.stroke_color(Color::RGB::Black)
+      add_text( title, :absolute_left => top_left_x,
+                              :absolute_right => top_left_x + width,
+                              :justification => :center,
+                              :font_size => font_size)    
+    end
 
     def move_cursor(n) 
       pdf_writer.y += n
