@@ -35,12 +35,10 @@ Daniel Berger:
 Marshall T. Vandegrift:
  - Fixed a bug in Record's struct-like accessors (method_missing)
  - Provided performance enhancements and tests for query.rb
+ - Improved alignment for Text Tables.
 
 Stefan Mahlitz:
  - Table#sort_rows_by
-
-llasram@gmail.com
- - Improved alignment for Text Tables.
 
 Michael Milner
  - Refactoring for Table#column_names= (r436)
