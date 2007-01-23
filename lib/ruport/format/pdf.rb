@@ -46,31 +46,44 @@ module Ruport::Format
       pdf_writer.text(*args)
     end
     
-    def add_title( title )
-      width = layout.header_width || 200
-      height = layout.header_height || 20
-      top_left_x  = pdf_writer.absolute_right_margin - width
-      top_left_y  = pdf_writer.absolute_top_margin
-      radius = 5
-
-      font_size = 12
-      title = "<b>#{title}</b>"              
-      
-      loop do
-        sz = pdf_writer.text_width( title, font_size )
-        top_left_x + sz > top_left_x + width or break
-        font_size -= 1
+    def add_title( title )  
+      rounded_text_box("<b>#{title}</b>") do |o|
+        o.radius    = 5  
+        o.width     = layout.header_width || 200
+        o.height    = layout.header_height || 20
+        o.font_size = layout.header_font_size || 12
+        o.x         = pdf_writer.absolute_right_margin - o.width 
+        o.y         = pdf_writer.absolute_top_margin
       end
+    end     
+    
+    def rounded_text_box(text)
+       options = OpenStruct.new
+       yield(options)
+       
+       width      = options.width 
+       height     = options.height
+       top_left_x = options.x
+       top_left_y = options.y
+       radius     = options.radius
+       font_size  = options.font_size 
+       
+       loop do
+         sz = pdf_writer.text_width( text, font_size )
+         top_left_x + sz > top_left_x + width or break
+         font_size -= 1
+       end
 
-      pdf_writer.fill_color(Color::RGB::Gray80)
-      pdf_writer.rounded_rectangle( top_left_x, top_left_y, 
-                                    width, height, radius).fill_stroke
-      pdf_writer.fill_color(Color::RGB::Black)
-      pdf_writer.stroke_color(Color::RGB::Black)
-      add_text( title, :absolute_left => top_left_x,
-                              :absolute_right => top_left_x + width,
-                              :justification => :center,
-                              :font_size => font_size)    
+       pdf_writer.fill_color(Color::RGB::Gray80)
+       pdf_writer.rounded_rectangle( top_left_x, top_left_y, 
+                                     width, height, radius).fill_stroke
+       pdf_writer.fill_color(Color::RGB::Black)
+       pdf_writer.stroke_color(Color::RGB::Black)     
+       pdf_writer.y = top_left_y
+       add_text( text,  :absolute_left  => top_left_x,
+                        :absolute_right => top_left_x + width,
+                        :justification => :center,
+                        :font_size => font_size)     
     end
 
     def move_cursor(n) 
