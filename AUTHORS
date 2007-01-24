@@ -43,6 +43,7 @@ Stefan Mahlitz:
 Michael Milner
  - Refactoring for Table#column_names= (r436)
  - Mock object for Mailer
+ - Mock object for Report (#130)
 
 Chris Carter
  - Table#remove_columns (r440)
