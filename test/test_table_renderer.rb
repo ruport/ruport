@@ -58,6 +58,32 @@ class TestTableRenderer < Test::Unit::TestCase
     "<td>6</td>\n\t\t</tr>\n\t</table>"             
     
     assert_equal(expected,actual) 
+  end      
+  
+  def test_ensure_html_tags_joined
+    actual = Ruport::Renderer::Table.render_html { |r|
+      r.data =[[1,2],[3,4]].to_table(%w[a b])
+      r.data.create_group("foo") { true }
+      r.data.create_group("bar") { true }
+    }     
+    
+    expected =  
+    "\t<table>\n"+
+    "\t\t<tr>\n" +
+    "\t\t\t<th>a</th>\n"  +
+    "\t\t\t<th>b</th>\n" +
+    "\t\t</tr>\n" +
+    "\t\t<tr class='grp_foo            grp_bar'>\n" +
+    "\t\t\t<td class='grp_foo            grp_bar'>1</td>\n" +
+    "\t\t\t<td class='grp_foo            grp_bar'>2</td>\n" +
+    "\t\t</tr>\n" +
+    "\t\t<tr class='grp_foo            grp_bar'>\n"+
+    "\t\t\t<td class='grp_foo            grp_bar'>3</td>\n"+
+    "\t\t\t<td class='grp_foo            grp_bar'>4</td>\n"+
+    "\t\t</tr>\n"+
+    "\t</table>"
+    
+    assert_equal(expected,actual)
   end
 
   def test_render_latex_basic
@@ -110,5 +136,6 @@ class TestTableRenderer < Test::Unit::TestCase
       r.layout { |l| l.show_table_headers = false }
     }
     assert_equal("1,2,3\n4,5,6\n",actual)
-  end
+  end  
+  
 end
