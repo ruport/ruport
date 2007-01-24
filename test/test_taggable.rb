@@ -15,19 +15,18 @@ class TestTaggable < Test::Unit::TestCase
     assert_equal nil, @obj.instance_variable_get(:@ruport_tags)
   end
   
-  def test_get_tags
-    @obj.instance_variable_set(:@ruport_tags, [:blue, :red])
-    assert_equal [:blue, :red], @obj.tags
-  end
-  
-  def test_set_tags
+  def test_get_and_set_tags
     @obj.tags = [:orange, :yellow]
-    assert_equal [:orange, :yellow], @obj.instance_variable_get(:@ruport_tags)
+    assert_equal Set.new([:orange, :yellow]), 
+                 @obj.instance_variable_get(:@ruport_tags)
+    assert_equal Set.new([:orange, :yellow]), @obj.tags    
   end
   
   def test_tag
     @obj.tag(:purple)
-    assert_equal [:purple], @obj.instance_variable_get(:@ruport_tags)
+    assert_equal Set.new([:purple]), 
+                 @obj.instance_variable_get(:@ruport_tags)    
+                 
   end
   
   def test_has_tag

@@ -5,6 +5,7 @@
 # Copyright 2006 by respective content owners, all rights reserved.
 module Ruport::Data
   
+  require 'set'  
   #
   # === Overview
   # 
@@ -22,7 +23,7 @@ module Ruport::Data
     #   taggable_obj.tag :spiffy
     #
     def tag(tag_name)
-      tags << tag_name unless has_tag? tag_name
+      tags << tag_name 
     end
     
     #
@@ -54,19 +55,24 @@ module Ruport::Data
     #
     #   taggable_obj.tags #=> [:spiffy, :kind_of_spiffy]
     #
-    def tags
-      @ruport_tags ||= []
+    def tags              
+      @ruport_tags ||= Set.new
     end
    
     # 
-    # Sets the tags to some Array.
+    # Sets the tags.
     #
     # Example:
     #
     #   taggable_obj.tags = [:really_dang_spiffy, :the_most_spiffy]
     #
-    def tags=(tags_list)
-      @ruport_tags = tags_list
+    def tags=(tags_list)     
+      case tags_list
+      when Array
+        @ruport_tags = Set.new(tags_list)
+      else
+        @ruport_tags = tags_list
+      end
     end
 
   end

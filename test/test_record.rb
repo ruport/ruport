@@ -177,8 +177,8 @@ class TestRecord < Test::Unit::TestCase
     assert_equal [1,2,3,4], rec1.to_a
     assert_equal [5,7,9,4], rec2.to_a
 
-    assert_equal [], rec1.tags
-    assert_equal [:apple], rec2.tags
+    assert_equal Set.new([]), rec1.tags
+    assert_equal Set.new([:apple]), rec2.tags
   end
 
   def test_records_with_same_attrs_and_data_hash_the_same

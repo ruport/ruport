@@ -18,8 +18,8 @@ class TestTable < Test::Unit::TestCase
     t[0].tag :foo
     t[1].tag :bar
     table_from_records = t.data.to_table(t.column_names)
-    assert_equal [:foo], table_from_records[0].tags
-    assert_equal [:bar], table_from_records[1].tags
+    assert_equal Set.new([:foo]), table_from_records[0].tags
+    assert_equal Set.new([:bar]), table_from_records[1].tags
     end
     
     a = Ruport::Data::Record.new [1,2,3]
@@ -399,8 +399,8 @@ class TestTable < Test::Unit::TestCase
     a = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
     a[1].tag(:foo)
     a.create_group("bar") { |r| r.b < 6 }
-    assert_equal ["grp_bar"], a.group("bar")[0].tags
-    assert_equal [:foo,"grp_bar"], a.group("bar")[1].tags
+    assert_equal Set.new(["grp_bar"]), a.group("bar")[0].tags
+    assert_equal Set.new([:foo,"grp_bar"]), a.group("bar")[1].tags
   end
   
   def test_ensure_coerce_sum
@@ -417,12 +417,12 @@ class TestTable < Test::Unit::TestCase
     b = a.dup    
     
     a[0].tag :foo
-    assert_equal [], b[0].tags
-    assert_equal [:foo],a[0].tags
+    assert_equal Set.new([]), b[0].tags
+    assert_equal Set.new([:foo]),a[0].tags
     
     b[1].tag :bar
-    assert_equal [], a[1].tags
-    assert_equal [:bar], b[1].tags
+    assert_equal Set.new([]), a[1].tags
+    assert_equal Set.new([:bar]), b[1].tags
   end
 
 end

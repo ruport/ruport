@@ -18,7 +18,7 @@ module Ruport::Format
           }
 
           data.each_with_index { |r,i|
-            label = r.tags[0] || "Region #{i}"
+            label = r.tags.to_a[0] || "Region #{i}"
             cd.row { |data_row|
               data_row.string(label)
               r.each { |e| data_row.number(e) }
