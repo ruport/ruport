@@ -6,6 +6,7 @@ class Document < Ruport::Renderer
   
   required_option :text
   required_option :author
+  option :heading
 
   stage :document_body
   finalize :document                            
@@ -17,22 +18,27 @@ class CenteredPDFTextBox < Ruport::Format::PDF
   Document.add_format self, :pdf
 
   def build_document_body
+
+    add_text "-- " << options.author << " --",
+             :justification => :center, :font_size => 20 
     
+    
+    c = pdf_writer.absolute_x_middle - 239/2
+    
+    #img,x,y,width,height
+    center_image_in_box("RWEmerson.jpg",c,325,239,359)
+ 
     rounded_text_box(options.text) do |o|
        o.radius = 5
        o.width     = layout.width  || 400
-       o.height    = layout.height || 110
+       o.height    = layout.height || 130
        o.font_size = layout.font_size || 12
+       o.heading   = options.heading
        
        o.x = pdf_writer.absolute_x_middle - o.width/2
-       o.y = 600
+       o.y = 300
     end         
-    
-    pad(10) do
-      add_text "-- " << options.author << " --",
-               :justification => :center, :font_size => 20 
-    end
-     
+
   end
   
   def finalize_document
@@ -41,7 +47,8 @@ class CenteredPDFTextBox < Ruport::Format::PDF
 end
 
 a = Document.render_pdf { |r|
-  r.author = "Ralph Waldo Emerson"
+  r.heading = "a good quote"
+  r.author  = "Ralph Waldo Emerson"
   r.text = <<EOS
 A foolish consistency is the hobgoblin of little minds, adored by little
 statesmen and philosophers and divines. With consistency a great soul has simply

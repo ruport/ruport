@@ -119,7 +119,7 @@ module Ruport::Format
                           opts.x + opts.width, opts.y - 20).stroke
          pdf_writer.fill_color(Color::RGB::Black)
          move_cursor_to(opts.y - 3)
-         pdf_writer.text("<b>#{opts.heading}</b>", 
+         add_text("<b>#{opts.heading}</b>", 
            :absolute_left => opts.x, :absolute_right => opts.x + opts.width,
            :justification => :center, :font_size => opts.font_size)
        end

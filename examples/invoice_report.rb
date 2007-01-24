@@ -14,7 +14,7 @@ class SampleReport < Ruport::Report
         o.customer_info = "Gregory Brown\n200 Foo Ave."
         o.comments      = "J. Random Comment"
         o.order_info    = "Some info\nabout your order"
-        o.title         = "Hey There"
+        o.title         = "Invoice for 12.15.2006 - 12.31.2006"
       end
 
       i.layout do |lay|

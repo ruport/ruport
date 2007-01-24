@@ -3,22 +3,18 @@ module Ruport
     class Invoice < Ruport::Renderer
 
       include Renderer::Helpers
-
-      def init_options
-        options do |o|
-          o.customer_info ||= ""
-          o.company_info  ||= ""
-          o.comments      ||= ""
-          o.order_info    ||= ""
-          o.title         ||= ""
-        end
-      end
+               
+      required_option :customer_info
+      required_option :company_info
+      required_option :order_info
+      option :title
+      required_option :comments
       
-      def run
-        init_options
-        build [:headers,:body,:footer], :invoice
-        finalize :invoice
-      end
+      stage :invoice_headers
+      stage :invoice_body
+      stage :invoice_footer
+      
+      finalize :invoice
 
       module InvoiceHelpers
         def build_company_header
@@ -27,23 +23,37 @@ module Ruport
         end
 
         def build_customer_header
-          pdf_writer.y -= 10
+          move_cursor -10
           text_box(options.customer_info)
         end
 
         def build_title
-          pdf_writer.y = @tod
-          if options.title
-            pdf_writer.text options.title, :left => 350, 
-            :font_size => layout.title_font_size || 14
-            pdf_writer.y -= 10
-          end
+          add_title(options.title) if options.title
         end
+        
+        def add_title( title )  
+          rounded_text_box("<b>#{title}</b>") do |o|
+            o.fill_color = Color::RGB::Gray80
+            o.radius    = 5  
+            o.width     = layout.header_width || 200
+            o.height    = layout.header_height || 20
+            o.font_size = layout.header_font_size || 11
+            o.x         = pdf_writer.absolute_right_margin - o.width 
+            o.y         = pdf_writer.absolute_top_margin
+          end
+        end      
 
         def build_order_header
           if options.order_info
-            text_box(options.order_info, 
-              :position => layout.order_info_position || 350)
+            rounded_text_box("<b>#{options.order_info}</b>") do |o|
+              o.radius    = 5  
+              o.heading   = "Billing Information"
+              o.width     = layout.header_width || 200
+              o.height    = layout.header_height || 80
+              o.font_size = layout.header_font_size || 10
+              o.x         = pdf_writer.absolute_right_margin - o.width 
+              o.y         = pdf_writer.absolute_top_margin - 25
+            end 
           end
         end
 
@@ -81,7 +91,7 @@ module Ruport
         def build_invoice_body
          
           pdf_writer.start_page_numbering(500,20,8,:right)
-          pdf_writer.y = 620
+          pdf_writer.y = 550
 
           Ruport::Renderer::Table.render_pdf { |r|
             r.data = data
