@@ -49,11 +49,7 @@ module Ruport
     if options[:status].eql? :fatal
       raise(options[:raises] || RuntimeError, message) 
     end
-  end
- 
-  # Alias for <tt>Ruport.log</tt>.
-  def self.complain(*args); Ruport.log(*args) end
-  
+  end 
   #
   # This method yields a <tt>Ruport::Config</tt> object, allowing you to 
   # set the configuration options for your application.

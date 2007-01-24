@@ -16,7 +16,7 @@ class TestRuport < Test::Unit::TestCase
   
   def test_fatal
     assert_raise(RuntimeError) {
-      Ruport::complain "Default problem", :status => :fatal, 
+      Ruport.log "Default problem", :status => :fatal, 
                                           :output => @output
     }
     @output.rewind
@@ -25,7 +25,7 @@ class TestRuport < Test::Unit::TestCase
 
   def test_fatal_log_only 
     assert_raise(RuntimeError) {
-      Ruport::complain "Default problem", 
+      Ruport.log "Default problem", 
       :status => :fatal, :output => @output, :level  => :log_only
     }
     @output.rewind
@@ -35,7 +35,7 @@ class TestRuport < Test::Unit::TestCase
   
   def test_warn
     assert_nothing_raised {
-      Ruport::complain "Default problem", :output => @output
+      Ruport.log "Default problem", :output => @output
     }
     @output.rewind
     assert_equal("[!!] Default problem\n",@output.read)
@@ -43,7 +43,7 @@ class TestRuport < Test::Unit::TestCase
 
   def test_warn_log_only
     assert_nothing_raised {
-      Ruport::complain "Default problem", :output => @output,
+      Ruport.log "Default problem", :output => @output,
                                           :level  => :log_only
     }
     @output.rewind

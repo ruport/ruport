@@ -171,7 +171,7 @@ module Ruport
     # Verifies that you have provided a DSN for your source.
     def check_source(settings,label) # :nodoc:
       unless settings.dsn
-        Ruport.complain( 
+        Ruport.log( 
           "Missing DSN for source #{label}!",
           :status => :fatal, :level => :log_only,
           :raises => ArgumentError 
@@ -182,7 +182,7 @@ module Ruport
     # Verifies that you have provided a host for your mailer.
     def check_mailer(settings, label) # :nodoc:
       unless settings.host
-        Ruport.complain(
+        Ruport.log(
           "Missing host for mailer #{label}",
           :status => :fatal, :level => :log_only,
           :raises => ArgumentError
