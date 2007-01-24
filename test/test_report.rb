@@ -6,12 +6,22 @@
 require "test/unit"
 require "ruport"
 begin; require "rubygems"; rescue LoadError; nil; end
+
+begin
+  require 'mocha'
+  require 'stubba'
+  require 'net/smtp'
+rescue LoadError
+  $stderr.puts "Warning: Mocha not found -- skipping some Report tests"
+end
+
 class TestReport < Test::Unit::TestCase
   include Ruport
 
   def setup
     @report = Report.new
-    Ruport::Config.source :default, :dsn => "ruport:test", :user => "foo", :password => "bar" 
+    Ruport::Config.source :default, :dsn => "ruport:test", 
+                                    :user => "foo", :password => "bar" 
     @query1 = Ruport::Query.new "select * from foo", :cache_enabled => true 
     @query1.cached_data = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
   end
@@ -106,5 +116,66 @@ class TestReport < Test::Unit::TestCase
     assert_equal ["hello dolly", "hello dolly"],
       rep_klass.run(:reports => [rep_klass.new,rep_klass.new])
   end
+  
+  def test_send_to
+     return unless Object.const_defined? :Mocha
+     setup_mock_mailer
+     @report = Report.new
+     assert_equal "250 ok", @report.send_to("clyde@example.com") { |mail|
+       mail.subject = "Test Report"
+       mail.text = "Test"
+     }
+   end
+ 
+   def test_write_to_file
+     return unless Object.const_defined? :Mocha
+     setup_mock_file
+     @report = Report.new
+     assert @report.write("foo.csv")
+   end
+ 
+   def test_append_to_file
+     return unless Object.const_defined? :Mocha
+     setup_mock_file
+     @report = Report.new
+     assert @report.append("foo.csv")
+   end
+ 
+   def test_load_csv
+     expected = [%w[a b c],['d', nil, 'e']].to_table(%w[col1 col2 col3])
+ 
+     @report = Report.new
+     table = @report.load_csv("test/samples/data.csv")
+ 
+     assert_equal expected, table
+   end
+ 
+   def test_load_csv_as_array
+     expected = [%w[a b c],['d', nil, 'e']]
+ 
+     @report = Report.new
+     array = @report.load_csv("test/samples/data.csv", :as => :array)
+ 
+     assert_equal expected, array
+   end
+ 
+   private
+ 
+   def setup_mock_mailer
+     @smtp     = mock('smtp')
+ 
+     Net::SMTP.expects(:start).
+       yields(@smtp).
+       returns("250 ok").at_least_once
+     @smtp.stubs(:send_message).
+       returns("250 ok")
+   end
+ 
+   def setup_mock_file
+     @file = mock("file")
+ 
+     File.expects(:open).yields(@file).returns(@file).at_least_once
+     @file.expects(:<<).returns(@file).at_least_once
+   end
 
 end
