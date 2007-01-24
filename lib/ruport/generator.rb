@@ -163,7 +163,9 @@ EOR
   File.open("lib/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
   puts "test file: test/test_#{ARGV[1]}.rb"
   puts "class name: #{class_name}" 
-  File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST } 
+  File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }  
+else
+  puts "Incorrect usage."
 end
 END_BUILD
 
