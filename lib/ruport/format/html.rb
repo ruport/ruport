@@ -26,7 +26,7 @@ module Ruport::Format
         row = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
         #classstr = r.tags.inject("") {|cs,c| cs + " class='#{c}'" }   
         classstr = 
-          r.tags.length > 0 ? " class='#{r.tags.to_a.join(' '*12)}'" : ""
+          r.tags.length > 0 ? " class='#{r.tags.to_a.join(' ')}'" : ""
         s + "\t\t<tr#{classstr}>\n\t\t\t<td#{classstr}>" +
           row.to_a.join("</td>\n\t\t\t<td#{classstr}>") + 
           "</td>\n\t\t</tr>\n"

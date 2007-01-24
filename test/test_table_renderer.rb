@@ -73,13 +73,13 @@ class TestTableRenderer < Test::Unit::TestCase
     "\t\t\t<th>a</th>\n"  +
     "\t\t\t<th>b</th>\n" +
     "\t\t</tr>\n" +
-    "\t\t<tr class='grp_foo            grp_bar'>\n" +
-    "\t\t\t<td class='grp_foo            grp_bar'>1</td>\n" +
-    "\t\t\t<td class='grp_foo            grp_bar'>2</td>\n" +
+    "\t\t<tr class='grp_foo grp_bar'>\n" +
+    "\t\t\t<td class='grp_foo grp_bar'>1</td>\n" +
+    "\t\t\t<td class='grp_foo grp_bar'>2</td>\n" +
     "\t\t</tr>\n" +
-    "\t\t<tr class='grp_foo            grp_bar'>\n"+
-    "\t\t\t<td class='grp_foo            grp_bar'>3</td>\n"+
-    "\t\t\t<td class='grp_foo            grp_bar'>4</td>\n"+
+    "\t\t<tr class='grp_foo grp_bar'>\n"+
+    "\t\t\t<td class='grp_foo grp_bar'>3</td>\n"+
+    "\t\t\t<td class='grp_foo grp_bar'>4</td>\n"+
     "\t\t</tr>\n"+
     "\t</table>"
     
