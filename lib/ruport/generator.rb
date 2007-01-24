@@ -20,7 +20,7 @@ module Ruport
   end
 
   def self.build_init
-    m = "#{project}/app/init.rb" 
+    m = "#{project}/lib/init.rb" 
     puts "  #{m}"
     File.open(m,"w") { |f| f << INIT }
   end
@@ -48,7 +48,7 @@ module Ruport
   def self.build_directory_structure
     mkdir project        
     puts "creating directories.."
-    %w[ test config output data app app/reports 
+    %w[ test config output data lib lib/reports 
         templates sql log util].each do |d|
       m="#{project}/#{d}" 
       puts "  #{m}"
@@ -57,7 +57,7 @@ module Ruport
     
     puts "creating files.."
     %w[reports helpers].each { |f|
-      m = "#{project}/app/#{f}.rb"
+      m = "#{project}/lib/#{f}.rb"
       puts "  #{m}"
       touch(m)
     }
@@ -91,7 +91,7 @@ task :build_report do
 end
 
 task :run do
-  sh "ruby app/reports/#{ENV['report']}.rb"
+  sh "ruby lib/reports/#{ENV['report']}.rb"
 end
 END_RAKEFILE
 
@@ -121,13 +121,13 @@ end
 
 class_name = format_class_name(ARGV[1])
 
-exit if File.exist? "app/reports/#{ARGV[1]}.rb"
+exit if File.exist? "lib/reports/#{ARGV[1]}.rb"
 if ARGV[0].eql? "report"
-  File.open("app/reports.rb", "a") { |f| 
-    f.puts("require \"app/reports/#{ARGV[1]}\"")
+  File.open("lib/reports.rb", "a") { |f| 
+    f.puts("require \"lib/reports/#{ARGV[1]}\"")
   }
 REP = <<EOR
-require "app/init"
+require "lib/init"
 class #{class_name} < Ruport::Report
   
   def prepare
@@ -151,7 +151,7 @@ EOR
 
 TEST = <<EOR
 require "test/unit"
-require "app/reports/#{ARGV[1]}"
+require "lib/reports/#{ARGV[1]}"
 
 class Test#{class_name} < Test::Unit::TestCase
   def test_flunk
@@ -159,8 +159,8 @@ class Test#{class_name} < Test::Unit::TestCase
   end
 end
 EOR
-  puts "report file: app/reports/#{ARGV[1]}.rb"
-  File.open("app/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
+  puts "report file: lib/reports/#{ARGV[1]}.rb"
+  File.open("lib/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
   puts "test file: test/test_#{ARGV[1]}.rb"
   puts "class name: #{class_name}" 
   File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST } 
@@ -168,7 +168,7 @@ end
 END_BUILD
 
 SQL_EXEC = <<'END_SQL'
-require "app/init"
+require "lib/init"
 
 puts Ruport::Query.new(ARGF.read).result
 END_SQL
@@ -181,7 +181,7 @@ rescue LoadError
   nil
 end
 require "ruport"
-require "app/helpers"
+require "lib/helpers"
 require "config/ruport_config"
 END_INIT
 
