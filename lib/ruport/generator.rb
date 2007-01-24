@@ -86,8 +86,8 @@ Rake::TestTask.new do |test|
   test.verbose =  true
 end
 
-task :build_report do
-  sh "ruby util/build.rb report #{ENV['name']}"
+task :build do
+  sh "ruby util/build.rb report #{ENV['report']}"
 end
 
 task :run do
