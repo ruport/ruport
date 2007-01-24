@@ -3,6 +3,18 @@ require "ruport"
 class TitledPDFTable < Ruport::Format::PDF
 
   Ruport::Renderer::Table.add_format self, :titled_pdf
+  
+  def add_title( title )  
+    rounded_text_box("<b>#{title}</b>") do |o|
+      o.fill_color = Color::RGB::Gray80
+      o.radius    = 5  
+      o.width     = layout.header_width || 200
+      o.height    = layout.header_height || 20
+      o.font_size = layout.header_font_size || 12
+      o.x         = pdf_writer.absolute_right_margin - o.width 
+      o.y         = pdf_writer.absolute_top_margin
+    end
+  end      
 
   def prepare_table
     layout.header_margin ||= 50
@@ -12,6 +24,7 @@ class TitledPDFTable < Ruport::Format::PDF
     add_title options.title
     move_cursor -layout.header_margin 
   end
+
 end
 
 

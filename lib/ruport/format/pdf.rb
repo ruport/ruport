@@ -45,45 +45,28 @@ module Ruport::Format
     def add_text(*args)
       pdf_writer.text(*args)
     end
-    
-    def add_title( title )  
-      rounded_text_box("<b>#{title}</b>") do |o|
-        o.radius    = 5  
-        o.width     = layout.header_width || 200
-        o.height    = layout.header_height || 20
-        o.font_size = layout.header_font_size || 12
-        o.x         = pdf_writer.absolute_right_margin - o.width 
-        o.y         = pdf_writer.absolute_top_margin
-      end
-    end     
-    
-    def rounded_text_box(text)
-       options = OpenStruct.new
-       yield(options)
        
-       width      = options.width 
-       height     = options.height
-       top_left_x = options.x
-       top_left_y = options.y
-       radius     = options.radius
-       font_size  = options.font_size 
+    def rounded_text_box(text)
+       opts = OpenStruct.new
+       yield(opts)
        
        loop do
-         sz = pdf_writer.text_width( text, font_size )
-         top_left_x + sz > top_left_x + width or break
-         font_size -= 1
+         sz = pdf_writer.text_width( text, opts.font_size )
+         opts.x + sz > opts.x + opts.width or break
+         opts.font_size -= 1
        end
 
-       pdf_writer.fill_color(Color::RGB::Gray80)
-       pdf_writer.rounded_rectangle( top_left_x, top_left_y, 
-                                     width, height, radius).fill_stroke
+       pdf_writer.fill_color(opts.fill_color || Color::RGB::White)
+       pdf_writer.stroke_color(opts.stroke_color || Color::RGB::Black)
+       pdf_writer.rounded_rectangle( opts.x, opts.y, 
+                                     opts.width, opts.height, opts.radius).fill_stroke
        pdf_writer.fill_color(Color::RGB::Black)
        pdf_writer.stroke_color(Color::RGB::Black)     
-       pdf_writer.y = top_left_y
-       add_text( text,  :absolute_left  => top_left_x,
-                        :absolute_right => top_left_x + width,
-                        :justification => :center,
-                        :font_size => font_size)     
+       pdf_writer.y = opts.y
+       add_text( text,  :absolute_left  => opts.x,
+                        :absolute_right => opts.x + opts.width,
+                        :justification => opts.justification || :center,
+                        :font_size => opts.font_size )     
     end
 
     def move_cursor(n) 
