@@ -27,6 +27,20 @@ class TrivialRenderer < Ruport::Renderer
 
 end
 
+class RendererWithHelpers < Ruport::Renderer
+  include Ruport::Renderer::Helpers
+
+  add_format DummyText, :text
+
+  option :subtitle
+
+  stage :header
+  stage :body
+  stage :footer
+
+  finalize :document
+end
+
 
 class TestRenderer < Test::Unit::TestCase
 
@@ -44,6 +58,49 @@ class TestRenderer < Test::Unit::TestCase
     assert_not_nil Ruport::Renderer.try_require(:csv)
     assert_nil Ruport::Renderer.try_require(:not_a_plugin)
   end
+
+   def test_stage_helper
+     assert RendererWithHelpers.stages.include?('body')
+   end
+ 
+   def test_finalize_helper
+     assert_equal :document, RendererWithHelpers.final_stage
+   end
+ 
+   def test_finalize_again
+     assert_raise(RuntimeError) { RendererWithHelpers.finalize :report }
+   end
+ 
+   def test_renderer_using_helpers
+     actual = RendererWithHelpers.render(:text)
+     assert_equal "header\nbody\nfooter\n", actual
+ 
+     actual = RendererWithHelpers.render_text
+     assert_equal "header\nbody\nfooter\n", actual
+   end
+ 
+   def test_option_helper
+     RendererWithHelpers.render_text do |r|
+       r.subtitle = "Test Report"
+       assert_equal "Test Report", r.options.subtitle
+     end
+   end
+ 
+   def test_required_option_helper
+     RendererWithHelpers.required_option :title
+ 
+     RendererWithHelpers.render_text do |r|
+       r.title = "Test Report"
+       assert_equal "Test Report", r.options.title
+     end
+   end
+ 
+   def test_without_required_option
+     RendererWithHelpers.required_option :title
+ 
+     assert_raise(RuntimeError) { RendererWithHelpers.render(:text) }
+   end
+
 
   def test_method_missing
     actual = TrivialRenderer.render_text

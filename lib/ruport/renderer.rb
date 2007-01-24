@@ -14,6 +14,83 @@
 # you do not need that, may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
   module Helpers #:nodoc:
+    module ClassMethods
+
+      # establish some class instance variables for storing require ddata
+      attr_accessor :final_stage
+      attr_accessor :required_options
+      attr_accessor :stages
+
+      # allow the report designer to specify what method will 
+      # render the report  e.g.
+      #   finalize :document
+      def finalize(stage)
+        raise 'final stage already defined' if final_stage
+        self.final_stage = stage
+      end
+
+      # allow the report designer to specify options that can be used to build
+      # the report. These are generally used for defining rendering options or
+      # data
+      # e.g.
+      #   option :report_title
+      #   option :table_width
+      def option(opt)
+        opt = "#{opt.to_s}="
+        define_method(opt) {|t| options.send(opt, t) }
+      end
+
+      # allow the report designer to specify a compulsory option
+      # e.g.
+      #   required_option :freight
+      #   required_option :tax
+      def required_option(opt)
+        self.required_options ||= []
+        self.required_options << opt
+        option opt
+      end
+ 
+      # allow the report designer to specify the stages that will be used to
+      # build the report
+      # e.g.
+      #   stage :document_header
+      #   stage :document_body
+      #   stage :document_footer
+      def stage(stage)
+        self.stages ||= []
+        self.stages << stage.to_s
+      end
+    end
+ 
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
+    # called automagically when the report is rendered. Uses the
+    # data collected from the earlier methods.
+    def run
+      # ensure all the required options have been set
+      unless self.class.required_options.nil?
+        self.class.required_options.each do |opt|
+          if options.__send__(opt).nil?
+            raise "Required option #{opt} not set"
+          end
+        end
+      end
+
+      # call each stage to build the report
+      unless self.class.stages.nil?
+        self.class.stages.each do |stage|
+          self.build stage
+        end
+      end
+
+      unless self.class.final_stage.nil?
+        finalize self.class.final_stage
+      end
+    end
+
+ 
     def prepare(name)
       maybe "prepare_#{name}"
     end

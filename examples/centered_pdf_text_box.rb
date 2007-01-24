@@ -1,22 +1,14 @@
 require "ruport"                             
 
 class Document < Ruport::Renderer
-   
-  def text=(other) 
-    options.text = other  
-  end     
-                            
-  def author=(other)
-    options.author = other
-  end
   
-  def run
-    plugin do 
-      build_document_body 
-      finalize
-    end
-  end
-   
+  include Ruport::Renderer::Helpers
+  
+  required_option :text
+  required_option :author
+
+  stage :document_body
+  finalize :document                            
 end
 
 
@@ -43,7 +35,7 @@ class CenteredPDFTextBox < Ruport::Format::PDF
      
   end
   
-  def finalize
+  def finalize_document
     output << pdf_writer.render
   end
 end
