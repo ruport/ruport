@@ -47,7 +47,7 @@ module Ruport
       options[:level].eql?(:log_only) and not Ruport::Config.debug_mode?
     Ruport::Config::logger.send(options[:status],message) if Config.logger
     if options[:status].eql? :fatal
-      raise(options[:exception] || RuntimeError, message) 
+      raise(options[:raises] || RuntimeError, message) 
     end
   end
  

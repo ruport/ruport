@@ -174,7 +174,7 @@ module Ruport
         Ruport.complain( 
           "Missing DSN for source #{label}!",
           :status => :fatal, :level => :log_only,
-          :exception => ArgumentError 
+          :raises => ArgumentError 
         )
       end
     end
@@ -185,7 +185,7 @@ module Ruport
         Ruport.complain(
           "Missing host for mailer #{label}",
           :status => :fatal, :level => :log_only,
-          :exception => ArgumentError
+          :raises => ArgumentError
         )
       end
     end

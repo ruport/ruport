@@ -127,7 +127,7 @@ module Ruport
     def each(&action) 
       Ruport.log(
         "no block given!", :status => :fatal,
-        :level => :log_only, :exception => LocalJumpError 
+        :level => :log_only, :raises => LocalJumpError 
       ) unless action
       fetch(&action)
       self
