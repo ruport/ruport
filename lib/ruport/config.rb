@@ -189,5 +189,11 @@ module Ruport
       @debug_mode = !!something
     end
     
+    # Allows users to set their own accessors on the Config module
+    def method_missing(key, *args)
+      @config ||= OpenStruct.new
+      @config.send(key, *args)
+    end
+    
   end
 end

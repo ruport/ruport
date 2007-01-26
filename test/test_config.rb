@@ -72,5 +72,12 @@ class TestConfiguration < Test::Unit::TestCase
     Ruport::Config.debug_mode = false
     assert_equal(false, Ruport::Config.debug_mode?)
   end
-   
+  
+  def test_adding_custom_accessors
+    assert_nothing_raised { Ruport::Config.my_new_setting = 'blinky' }
+    assert_equal('blinky', Ruport::Config.my_new_setting)
+    
+    Ruport.configure {|c| c.inky = 'blinky' }
+  end
+  
 end
