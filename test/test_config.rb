@@ -74,10 +74,15 @@ class TestConfiguration < Test::Unit::TestCase
   end
   
   def test_adding_custom_accessors
-    assert_nothing_raised { Ruport::Config.my_new_setting = 'blinky' }
+    Ruport::Config.my_new_setting = 'blinky'
     assert_equal('blinky', Ruport::Config.my_new_setting)
+    Ruport::Config.my_new_setting = 'clyde'
+    assert_equal('clyde', Ruport::Config.my_new_setting)
     
-    Ruport.configure {|c| c.inky = 'blinky' }
+    Ruport::Config.my_other_new_setting 'inky'
+    assert_equal('inky', Ruport::Config.my_other_new_setting)
+    Ruport::Config.my_other_new_setting 'sue'
+    assert_equal('sue', Ruport::Config.my_other_new_setting)
   end
   
 end

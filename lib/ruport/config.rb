@@ -190,9 +190,14 @@ module Ruport
     end
     
     # Allows users to set their own accessors on the Config module
-    def method_missing(key, *args)
+    def method_missing(meth, *args)
       @config ||= OpenStruct.new
-      @config.send(key, *args)
+      
+      if args.empty? || meth.to_s =~ /.*=/
+        @config.send(meth, *args)
+      else
+        @config.send("#{meth}=".to_sym, *args)
+      end
     end
     
   end
