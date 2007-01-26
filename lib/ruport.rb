@@ -14,7 +14,6 @@ module Ruport
   
   VERSION = "0.7.99"
   
-  #
   # This method is Ruport's logging and error interface. It can generate 
   # warnings or raise fatal errors, logging +message+ to the file defined by 
   # <tt>Config::log_file</tt>.
@@ -50,7 +49,7 @@ module Ruport
       raise(options[:raises] || RuntimeError, message) 
     end
   end 
-  #
+
   # This method yields a <tt>Ruport::Config</tt> object, allowing you to 
   # set the configuration options for your application.
   #

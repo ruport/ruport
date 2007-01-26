@@ -28,7 +28,7 @@ class SVG < Ruport::Format::Plugin
 
   def initialize
     require "builder"
-     @builder = Builder::XmlMarkup.new(:indent => 2)
+    @builder = Builder::XmlMarkup.new(:indent => 2)
   end
 
   def render_plot

@@ -11,7 +11,7 @@
 #
 require "ostruct"
 module Ruport
-  #
+
   # === Overview
   #
   # This class serves as the configuration system for Ruport.
@@ -29,7 +29,7 @@ module Ruport
   #   Ruport.configure do |config|
   #
   #     config.log_file 'foo.log'
-  #     config.enable_paranoia
+  #     config.debug_mode = true
   #
   #     config.source :default,
   #                   :dsn => "dbi:mysql:somedb:db.blixy.org",
@@ -69,7 +69,7 @@ module Ruport
   #
   module Config
     module_function
-    # 
+    
     # :call-seq:
     #   source(source_name, options)
     #
@@ -96,7 +96,6 @@ module Ruport
       check_source(sources[args.first],args.first)
     end
 
-    # 
     # :call-seq:
     #   mailer(mailer_name, options)
     #
@@ -160,12 +159,7 @@ module Ruport
     # Returns the currently active logger.
     def logger; @logger; end
 
-    # Forces all messages marked <tt>:log_only</tt> to print anyway.
-    #    def enable_paranoia; @paranoid = true; end
-
-    # Disables the printing of <tt>:log_only</tt> messages.
-    #def disable_paranoia; @paranoid = false; end
-
+    # returns true if in debug mode
     def debug_mode?; !!@debug_mode; end
     
     # Verifies that you have provided a DSN for your source.
@@ -190,6 +184,7 @@ module Ruport
       end
     end
 
+    # forces messages with :level of :log_only to be printed
     def debug_mode=(something)
       @debug_mode = !!something
     end

@@ -34,8 +34,7 @@ module Ruport::Data
     end
 
   end
-
-  # 
+ 
   # === Overview
   #
   # This class is one of the core classes for building and working with data 
@@ -55,7 +54,7 @@ module Ruport::Data
     
     require "forwardable"
     extend Forwardable
-    #
+
     # Creates a new table based on the supplied options.
     # Valid options: 
     # <b><tt>:data</tt></b>::         An Array of Arrays representing the 
@@ -85,7 +84,6 @@ module Ruport::Data
     attr_reader :data
     def_delegators :@data, :each, :length, :size, :empty?, :[]
     
-    #
     # Sets the column names for this table. <tt>new_column_names</tt> should 
     # be an array listing the names of the columns.
     #
@@ -96,7 +94,6 @@ module Ruport::Data
     #
     #   table.column_names = %w[e f g]
     #
-
     def column_names=(new_column_names)
       columns = new_column_names.zip(@column_names)
       @column_names.replace(new_column_names.dup)
@@ -114,7 +111,7 @@ module Ruport::Data
      end
     end
 
-    #
+    
     # Compares this Table to another Table and returns <tt>true</tt> if
     # both the <tt>data</tt> and <tt>column_names</tt> are equal.
     #
@@ -134,7 +131,6 @@ module Ruport::Data
 
     alias_method :==, :eql?
 
-    #
     # Used to add extra data to the Table. <tt>other</tt> can be an Array, 
     # Hash or Record.
     #
@@ -166,9 +162,9 @@ module Ruport::Data
       self
     end
   
-    #
-    # Used to combine two Tables. Throws an ArgumentError if the Tables don't
-    # have identical columns.
+    
+    # Used to merge two Tables by rows.
+    # Throws an ArgumentError if the Tables don't have identical columns.
     #
     # Example:
     #
@@ -186,7 +182,7 @@ module Ruport::Data
       Table.new(:column_names => @column_names, :data => @data + other.data)
     end
   
-    #
+    
     # Reorders the table's columns.
     #
     # Example:
@@ -210,7 +206,7 @@ module Ruport::Data
       }; self
     end     
 
-    #
+    
     # Adds an extra column to the Table. Available Options:
     #
     # <b><tt>:fill</tt></b>:: The default value to use for the column in 
