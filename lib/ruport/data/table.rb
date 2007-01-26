@@ -6,12 +6,12 @@
 
 module Ruport::Data            
   
-  #
   # === Overview
   #
   # This class implements some base features for Ruport::Data::Table,
   # and may be used to make interaction with Data::Table like classes
   # easier
+  #
   module Collection
     include Enumerable
     include Taggable
@@ -19,8 +19,13 @@ module Ruport::Data
     # A simple formatting tool which allows you to quickly generate a formatted
     # table from a <tt>Collection</tt> object.
     #
+    # If a block is given, the Renderer::Table object will be yielded
+    #
     # Example:
     #   my_collection.as(:csv)  #=> "1,2,3\n4,5,6"
+    #
+    #   my_collection.as(:csv) { |e| e.layout.show_table_headers = false }
+    #   
     def as(type)
       Ruport::Renderer::Table.render(type) do |rend|
         rend.data = self
