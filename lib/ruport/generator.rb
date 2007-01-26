@@ -35,13 +35,15 @@ module Ruport
   # Generates the build.rb, sql_exec.rb, and cabinet.rb utilities
   def self.build_utils           
     
-    m = "#{project}/util/build.rb"   
+    m = "#{project}/util/build"   
     puts "  #{m}"
     File.open(m,"w") { |f| f << BUILD } 
+    chmod(0755, m)
     
-    m = "#{project}/util/sql_exec.rb"  
+    m = "#{project}/util/sql_exec"  
     puts "  #{m}"
     File.open(m,"w") { |f| f << SQL_EXEC }
+    chmod(0755, m)
   end
 
   # sets up the basic directory layout for a Ruport application
@@ -87,7 +89,7 @@ Rake::TestTask.new do |test|
 end
 
 task :build do
-  sh "ruby util/build.rb report #{ENV['report']}"
+  sh "ruby util/build report #{ENV['report']}"
 end
 
 task :run do
@@ -107,6 +109,8 @@ Ruport.configure { |c|
 END_CONFIG
 
 BUILD = <<'END_BUILD'
+#!/usr/bin/env ruby
+
 require 'fileutils'
 include FileUtils
 
@@ -115,7 +119,7 @@ def format_class_name(string)
 end
 
 unless ARGV.length > 1
-  puts "usage build.rb [command] [options]"
+  puts "usage: build [command] [options]"
   exit
 end
 
@@ -170,6 +174,8 @@ end
 END_BUILD
 
 SQL_EXEC = <<'END_SQL'
+#!/usr/bin/env ruby
+
 require "lib/init"
 
 puts Ruport::Query.new(ARGF.read).result
