@@ -109,14 +109,14 @@
 # up to date information.
 #
 # - You can sign up and/or view the archives here:
-#   http://stonecode.svnrepository.com/ruport/trac.cgi/browser/trunk/test/test_table.rb
+#     http://groups.google.com/group/ruby-reports
 #
 # Please do not hesitate to use this list!  I am happily accepting patches and
 # documentation, as well as encouraging design discussions and also am quite
 # curious about what people use or want to use ruport for.
 #
 # I will announce Ruport releases on RubyTalk, on the Ruport mailing list, on
-# Freshmeat, and RAAt.  If you would like to
+# Freshmeat, and RAA.  If you would like to
 # keep an eye out for releases, please monitor one of those places.
 #
 #   - You may download Ruport's source from the project page:
@@ -125,7 +125,8 @@
 #   - The latest stable API documentation is available at:
 #     http://reporting.stonecode.org/docs
 #
-# There also will be some tutorials on rubyreports.org
+# There are also some tutorial available:
+# http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/TutorialsAndArticles
 #
 # If you are interested in developing Ruport, please *never* study code in
 # official releases.  As this software is in it's early stages, it's essential
