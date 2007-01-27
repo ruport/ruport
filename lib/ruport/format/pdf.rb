@@ -16,32 +16,60 @@ module Ruport::Format
     attr_accessor :table_header_proc
     attr_accessor :table_footer_proc
 
+    # Does the necessary PDF::Writer requires
     def initialize
       require "pdf/writer"
       require "pdf/simpletable"
     end
 
+    # Returns the current PDF::Writer object or creates a new one if it has not
+    # been set yet.
+    #
     def pdf_writer
       @pdf_writer ||= 
         ::PDF::Writer.new( :paper => layout.paper_size || "LETTER" )
     end
 
+    # If table_header_proc is defined, it will be executed and the PDF::Writer
+    # object will be yielded.
+    #
+    # This should be overridden by subclasses, or used as a shortcut for your
+    # own plugin implementations
+    #
+    # This method is automatically called by the table renderer
+    #
     def build_table_header
        table_header_proc[pdf_writer] if table_header_proc
     end
 
+    # Calls the draw_table method
+    #
+    # This method is automatically called by the table renderer
+    #
     def build_table_body
       draw_table
     end
 
+    # If table_footer_proc is defined, it will be executed and the PDF::Writer
+    # object will be yielded.
+    #
+    # This should be overridden by subclasses, or used as a shortcut for your
+    # own plugin implementations
+    #
+    # This method is automatically called by the table renderer
+    #
     def build_table_footer
       table_footer_proc[pdf_writer] if table_footer_proc
     end
 
+    # Appends the results of PDF::Writer#render to output for your 
+    # <tt>pdf_writer</tt> object.
+    #
     def finalize_table
       output << pdf_writer.render
     end
 
+    # Call PDF::Writer#text with the given arguments
     def add_text(*args)
       pdf_writer.text(*args)
     end

@@ -63,16 +63,9 @@ module Ruport
   #  } 
   #
   # 
-  # This class can also be used to run templates and process text filters.
-  #
-  # See the examples in the documentation below to see how to use these
-  # features (namely Report#process_text , Report#text_processor, and
-  # Report#eval_template).
-  #
   class Report   
     extend Forwardable
     
-    # 
     # When initializing a report, you can provide a default mailer and source by
     # giving a name of a valid source or mailer you've defined via
     # Ruport::Config.
@@ -93,7 +86,6 @@ module Ruport
     # By default, this file will be used by Report#write.
     attr_accessor :file
 
-    #
     # This attribute will get the results of Report#generate when the report is
     # run.
     #
@@ -114,9 +106,9 @@ module Ruport
     #   # will return the value of the last statement, "select * from foo"
     #   result = query "insert into foo values(1,2); select * from foo"
     # 
-    # You can iterate by row or return the entire set:
+    # You can iterate by row:
     #  
-    #   query("select * from foo", :yield_type => :by_row) { |r|
+    #   query("select * from foo") { |r|
     #     #do something with the rows here
     #   }
     # 
@@ -165,7 +157,6 @@ module Ruport
       File.open(my_file,"w") { |f| f << my_results }
     end
 
-    #
     # Like Report#write, but will append to a file rather than overwrite it if
     # the file already exists.
     #
@@ -182,7 +173,6 @@ module Ruport
       self.class.run(options,&block)
     end
 
-    #
     # Loads a CSV in from  a file.
     #
     # Example:
@@ -202,7 +192,6 @@ module Ruport
       end
     end
 
-    #
     # Executes an erb template.  If a filename is given which matches the
     # pattern /\.r\w+$/ (eg foo.rhtml, bar.rtxt, etc), 
     # it will be loaded and evaluated.  Otherwise, the string will be processed
@@ -234,13 +223,11 @@ module Ruport
       RedCloth.new(s).to_html
     end
     
-    #
     # Allows logging and other fun stuff. 
     # See also Ruport.log
     #
     def log(*args); Ruport.log(*args) end
    
-    #
     # Creates a new Mailer and sets the <tt>to</tt> attribute to the addresses
     # specified. Yields a Mailer object, which can be modified before delivery.
     #
@@ -256,7 +243,6 @@ module Ruport
     
     class << self
 
-      #
       # Defines an instance method which will be run before the
       # <tt>generate</tt> method when Ruport.run is executed.
       #
@@ -264,7 +250,6 @@ module Ruport
       #
       def prepare(&block); define_method(:prepare,&block) end
       
-      #
       # Defines an instance method which will be executed by Report.run.
       #
       # The return value of this method is assigned to the <tt>results</tt>
@@ -272,13 +257,13 @@ module Ruport
       #
       def generate(&block); define_method(:generate,&block) end
       
-      #
       # Defines an instance method which will be executed after the object is
       # yielded in Report.run.
       #
       def cleanup(&block); define_method(:cleanup,&block) end
+
+      private :prepare, :generate, :cleanup
       
-      #
       # Runs the reports specified.  If no reports are specified, then it
       # creates a new instance via <tt>self.new</tt>.
       #
@@ -290,9 +275,7 @@ module Ruport
       #
       # This method will return the contents of Report#results, as a single
       # value for single reports, and an array of outputs for multiple reports.
-
-      private :prepare, :generate, :cleanup
-
+      #
       def run(options={})
         options[:reports] ||= [self.new]
 

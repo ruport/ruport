@@ -1,8 +1,8 @@
 module Ruport::Format
-  class Latex < Plugin
+  class Latex < Plugin #:nodoc:
 
     attr_accessor :caption
-    
+   
     def build_table_header
       output << "\\documentclass[11pt]{article}\n"     <<
                 "\\RequirePackage{lscape,longtable}\n" <<
@@ -15,13 +15,10 @@ module Ruport::Format
         output << " }\n"
         output << "\\hline\n"
 
-        #FIXME: this ain't ruby, jh ;)
-        counter = 0
-
-        data.column_names.each do |t|
-          output << " & " unless counter == 0
+        output << "\\textsc{#{data.column_names[0]}}"
+        data.column_names[1..-1].each do |t|
+          output << " & "
           output << "\\textsc{#{t}}"
-          counter += 1
         end
 
         output << "\\\\\n"
