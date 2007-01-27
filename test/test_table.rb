@@ -2,6 +2,15 @@ require "test/unit"
 require "ruport"
 begin; require "rubygems"; rescue LoadError; nil; end
 
+
+class Person < Ruport::Data::Record
+  
+  def name
+    first_name + " " + last_name
+  end
+
+end
+
 class TestTable < Test::Unit::TestCase
   def test_constructors
     table  = Ruport::Data::Table.new
@@ -328,6 +337,29 @@ class TestTable < Test::Unit::TestCase
    assert_kind_of Ruport::Data::Table, a
    assert_equal [[1,2,3]].to_table(%w[a b c]), 
                 a.to_table(:column_names => %w[a b c])
+  end
+
+  def test_record_class
+    a = Ruport::Data::Table.new( :column_names => %w[first_name last_name c], 
+                                 :data =>[['joe','loop',3],['jim','blue',6]],
+                                 :record_class => Person )
+    assert_equal a, [
+      ['joe','loop',3],['jim','blue',6]
+    ].to_table(%w[first_name last_name c])
+    assert_kind_of Person, a[0]
+    assert_equal 'joe loop', a[0].name
+    assert_equal 'jim blue', a[1].name
+
+    b = Table(%w[first_name last_name], :record_class => Person ) do |t|
+      t << { 'first_name' => 'joe', 'last_name' => 'frasier' }
+      t << { 'first_name' => 'brian', 'last_name' => 'black' }
+    end
+
+    b.each { |r| assert_kind_of Person, r }
+
+    assert_equal ['joe frasier', 'brian black'],
+                 b.map { |r| r.name }
+
   end
 
 

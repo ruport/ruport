@@ -73,6 +73,7 @@ module Ruport::Data
     #
     def initialize(options={})
       @column_names = options[:column_names] ? options[:column_names].dup : []
+      @record_class = options[:record_class] || Record
       @data         = []
       if options[:data]
         if options[:data].all? { |r| r.kind_of? Record }
@@ -86,9 +87,11 @@ module Ruport::Data
 
     # This Table's column names.
     attr_reader :column_names
+  
     attr_reader :data
     def_delegators :@data, :each, :length, :size, :empty?, :[]
     
+
     # Sets the column names for this table. <tt>new_column_names</tt> should 
     # be an array listing the names of the columns.
     #
@@ -151,14 +154,12 @@ module Ruport::Data
       case other
       when Array
         attributes = @column_names.empty? ? nil : @column_names
-        @data << Record.new(other, :attributes => attributes)
+        @data << @record_class.new(other, :attributes => attributes)
       when Hash
         raise ArgumentError unless @column_names
         arr = @column_names.map { |k| other[k] }
-        @data << Record.new(arr, :attributes => @column_names)
-      when Record
-        #raise ArgumentError unless column_names.eql? other.attributes
-        #@data << Record.new(other.to_a, :attributes => @column_names)
+        @data << @record_class.new(arr, :attributes => @column_names)
+      when @record_class
         self << other.to_h
         @data.last.tags = other.tags.dup
       else
@@ -600,7 +601,8 @@ module Kernel
     table=
     case(args[0])
     when Array
-      [].to_table(args[0])
+      opts = args[1] || {}
+      Ruport::Data::Table.new(f={:column_names => args[0]}.merge(opts))
     when /\.csv/
       Ruport::Data::Table.load(*args)
     else
