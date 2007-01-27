@@ -1,0 +1,45 @@
+Hacking on Ruby Reports : A Guide For Contributors
+--------------------------------------------------
+
+If you'd like to help test, maintain, or develop on Ruport, 
+this document is for you.
+
+We try to be as community friendly as possible, and we welcome all sorts of
+contributions to our project.  Here are a few different ways you can help.
+
+  - Adding Tests and Hunting for bugs. 
+
+  - Improving documentation or writing tutorials
+
+  - Helping with our primary development tasks
+
+  - Helping with some secondary tasks
+
+  - Improving our visual identity / web resources
+
+  - Testing new releases and sharing your experiences.
+
+
+If any of these things sound appealing to you, there are a few things
+you should do:
+
+1) Sign up on the mailing list: http://list.rubyreports.org/
+
+2) Post and introduce yourself, letting us know what you'd like to work on OR
+   Find dudleyf,sandal,or jh in #ruport on Freenode and let us know there.
+
+3) If you plan on implementing new features, please take a look at our
+   project roadmap:
+
+   http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/ProjectRoadmap
+
+4) Also, please read the SubmittingChangeRequests, ReportingDefects, and
+   SubmittingPatches Trac wiki pages, where appropriate.
+
+5) Please pull the latest code from SVN.  If you are hunting bugs in released
+   code, please grab the latest code from branches/stable, otherwise use trunk.
+
+This should hopefully be enough to get you on the right track.  We welcome your
+questions and ideas, so don't be afraid to contact us.
+
+Happy Hacking!
