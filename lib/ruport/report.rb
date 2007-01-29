@@ -160,8 +160,8 @@ module Ruport
     # Like Report#write, but will append to a file rather than overwrite it if
     # the file already exists.
     #
-    def append(my_file=file)
-      File.open(my_file,"a") { |f| f << results }
+    def append(my_file=file,my_results=results)
+      File.open(my_file,"a") { |f| f << my_results }
     end
     
     # This method passes <tt>self</tt> to Report.run.

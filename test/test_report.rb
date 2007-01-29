@@ -129,16 +129,30 @@ class TestReport < Test::Unit::TestCase
  
    def test_write_to_file
      return unless Object.const_defined? :Mocha
-     setup_mock_file
+     file = mock("file")
+ 
+     File.expects(:open).
+       with("foo.csv","w").yields(file).returns(file).at_least_once
+
+     file.expects(:<<).
+       with("results").returns(file).at_least_once
+     
      @report = Report.new
-     assert @report.write("foo.csv")
+     assert @report.write("foo.csv", "results")
    end
  
    def test_append_to_file
      return unless Object.const_defined? :Mocha
-     setup_mock_file
+     file = mock("file")
+     
+     File.expects(:open).
+       with("foo.csv","a").yields(file).returns(file).at_least_once
+
+     file.expects(:<<).
+       with("results").returns(file).at_least_once
+ 
      @report = Report.new
-     assert @report.append("foo.csv")
+     assert @report.append("foo.csv", "results")
    end
  
    def test_load_csv
@@ -171,11 +185,4 @@ class TestReport < Test::Unit::TestCase
        returns("250 ok")
    end
  
-   def setup_mock_file
-     @file = mock("file")
- 
-     File.expects(:open).yields(@file).returns(@file).at_least_once
-     @file.expects(:<<).returns(@file).at_least_once
-   end
-
 end
