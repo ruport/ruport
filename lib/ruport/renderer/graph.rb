@@ -37,11 +37,11 @@ module Ruport
       l.style  = :line
     end
 
-    def run
-      prepare :graph
-      build :graph
-      finalize :graph
-    end
+    prepare :graph
+
+    stage :graph
+
+    finalize :graph
 
   end
 

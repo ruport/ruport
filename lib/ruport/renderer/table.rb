@@ -118,15 +118,14 @@ module Ruport
      
     add_formats :csv, :text, :html, :latex, :pdf
 
-    layout do |lay|
-      lay.show_table_headers = true
-    end
-    
-    def run
-      prepare :table
-      build [:header,:body,:footer], :table
-      finalize :table
-    end
+    layout { |lay| lay.show_table_headers = true }
 
+    prepare :table
+    
+    stage :table_header
+    stage :table_body
+    stage :table_footer
+
+    finalize :table
   end
 end

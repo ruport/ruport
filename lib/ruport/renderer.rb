@@ -87,6 +87,8 @@ class Ruport::Renderer
         end
       end
 
+      prepare self.class.first_stage if self.class.first_stage
+
       # call each stage to build the report
       unless self.class.stages.nil?
         self.class.stages.each do |stage|
@@ -94,9 +96,8 @@ class Ruport::Renderer
         end
       end
 
-      unless self.class.final_stage.nil?
-        finalize self.class.final_stage
-      end
+      finalize self.class.final_stage if self.class.final_stage
+
     end
 
  

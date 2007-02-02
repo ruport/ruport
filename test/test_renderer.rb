@@ -2,14 +2,24 @@ require 'test/unit'
 require 'ruport'
 
 class DummyText < Ruport::Format::Plugin
+  def prepare_document
+    output << "p"
+  end
+
   def build_header
     output << "header\n"
   end
+
   def build_body
     output << "body\n"
   end
+
   def build_footer
     output << "footer\n"
+  end
+
+  def finalize_document
+    output << "f"
   end
 end
 
@@ -83,10 +93,10 @@ class TestRenderer < Test::Unit::TestCase
  
    def test_renderer_using_helpers
      actual = RendererWithHelpers.render(:text)
-     assert_equal "header\nbody\nfooter\n", actual
+     assert_equal "pheader\nbody\nfooter\nf", actual
  
      actual = RendererWithHelpers.render_text
-     assert_equal "header\nbody\nfooter\n", actual
+     assert_equal "pheader\nbody\nfooter\nf", actual
    end
  
    def test_option_helper
