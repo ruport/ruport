@@ -32,6 +32,8 @@ class RendererWithHelpers < Ruport::Renderer
 
   add_format DummyText, :text
 
+  prepare :document
+
   option :subtitle
 
   stage :header
@@ -66,9 +68,17 @@ class TestRenderer < Test::Unit::TestCase
    def test_finalize_helper
      assert_equal :document, RendererWithHelpers.final_stage
    end
+
+   def test_prepare_helper
+     assert_equal :document, RendererWithHelpers.first_stage
+   end
  
    def test_finalize_again
      assert_raise(RuntimeError) { RendererWithHelpers.finalize :report }
+   end
+
+   def test_prepare_again
+     assert_raise(RuntimeError) { RendererWithHelpers.prepare :foo }
    end
  
    def test_renderer_using_helpers

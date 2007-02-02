@@ -16,17 +16,26 @@ class Ruport::Renderer
   module Helpers #:nodoc:
     module ClassMethods
 
-      # establish some class instance variables for storing require ddata
-      attr_accessor :final_stage
-      attr_accessor :required_options
-      attr_accessor :stages
+      # establish some class instance variables for storing require data
+      attr_accessor :first_stage,:final_stage,:required_options,:stages
 
       # allow the report designer to specify what method will 
       # render the report  e.g.
       #   finalize :document
+      #
       def finalize(stage)
         raise 'final stage already defined' if final_stage
         self.final_stage = stage
+      end
+
+      # allow the report designer to specify a preparation stage for their
+      # report, e.g.
+      #
+      #   prepare :document
+      #
+      def prepare(stage)
+        raise "prepare stage already defined" if first_stage
+        self.first_stage = stage
       end
 
       # allow the report designer to specify options that can be used to build
