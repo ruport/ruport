@@ -135,7 +135,7 @@ class Ruport::Renderer
     return formats[name] = format if name
 
     add_core_format(format)   
- end
+  end
 
 
   # reader for formats.  Defaults to a hash
@@ -272,7 +272,6 @@ class Ruport::Renderer
     id.to_s =~ /^render_(.*)/
     $1 ? render($1.to_sym,&block) : super
   end
-
 
 end
 

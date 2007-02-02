@@ -42,5 +42,3 @@ class TestGroupable < Test::Unit::TestCase
   end  
 
 end
-
-

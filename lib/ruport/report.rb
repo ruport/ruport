@@ -308,10 +308,6 @@ module Ruport
         end
         
       end
-
     end
-
   end
 end
-
-
