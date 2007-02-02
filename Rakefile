@@ -39,10 +39,10 @@ spec = Gem::Specification.new do |spec|
 	spec.rdoc_options << '--title' << 'Ruport Documentation' <<
 	                     '--main'  << 'README' << '-q'
   unless LEAN
-    spec.add_dependency('fastercsv', '>= 0.1.0')
-    spec.add_dependency('RedCloth',  '>= 3.0.0')
+    spec.add_dependency('fastercsv', '>= 1.1.0')
+    spec.add_dependency('RedCloth',  '>= 3.0.4')
     spec.add_dependency('pdf-writer', '>= 1.1.3')
-    spec.add_dependency("mailfactory", ">= 1.2.2")
+    spec.add_dependency("mailfactory", ">= 1.2.3")
     spec.add_dependency('scruffy', '>= 0.2.2')
   end
   spec.author = "Gregory Brown"
