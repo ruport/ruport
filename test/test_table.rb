@@ -13,7 +13,9 @@ end
 
 class TestTable < Test::Unit::TestCase
   def test_constructors
+
     table  = Ruport::Data::Table.new
+
     table2 = Ruport::Data::Table.new :column_names => %w[a b c]
     table3 = Ruport::Data::Table.new :data => [[1,2,3]]
     table4 = Ruport::Data::Table.new :column_names => %w[col1 col2 col3], 
@@ -455,6 +457,16 @@ class TestTable < Test::Unit::TestCase
     b[1].tag :bar
     assert_equal Set.new([]), a[1].tags
     assert_equal Set.new([:bar]), b[1].tags
+  end
+
+  def test_ensure_serializable
+    a = [].to_table
+    assert_nothing_raised { a.to_yaml }
+    a = Table(%w[first_name last_name],:record_class => Person) { |t| 
+      t << %w[joe loop] 
+    }
+    assert_equal "joe loop", a[0].name
+    assert_nothing_raised { a.to_yaml }
   end
 
 end
