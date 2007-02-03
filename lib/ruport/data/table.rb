@@ -73,7 +73,8 @@ module Ruport::Data
     #
     def initialize(options={})
       @column_names = options[:column_names] ? options[:column_names].dup : []
-      @record_class = options[:record_class] || Record
+      @record_class = options[:record_class] &&
+                      options[:record_class].name || "Ruport::Data::Record"
       @data         = []
       if options[:data]
         if options[:data].all? { |r| r.kind_of? Record }
@@ -154,18 +155,22 @@ module Ruport::Data
       case other
       when Array
         attributes = @column_names.empty? ? nil : @column_names
-        @data << @record_class.new(other, :attributes => attributes)
+        @data << record_class.new(other, :attributes => attributes)
       when Hash
         raise ArgumentError unless @column_names
         arr = @column_names.map { |k| other[k] }
-        @data << @record_class.new(arr, :attributes => @column_names)
-      when @record_class
+        @data << record_class.new(arr, :attributes => @column_names)
+      when record_class
         self << other.to_h
         @data.last.tags = other.tags.dup
       else
         raise ArgumentError
       end
       self
+    end
+    
+    def record_class
+      @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
     end
   
     
