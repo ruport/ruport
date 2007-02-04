@@ -1,0 +1,18 @@
+begin; require "rubygems"; rescue LoadError; end
+require "rake/testtask"
+
+task :default => [:test]
+
+Rake::TestTask.new do |test|
+  test.libs    << "test"
+  test.pattern =  'test/**/test_*.rb'
+  test.verbose =  true
+end
+
+task :build do
+  sh "ruby util/build report #{ENV['report']}"
+end
+
+task :run do
+  sh "ruby lib/reports/#{ENV['report']}.rb"
+end
