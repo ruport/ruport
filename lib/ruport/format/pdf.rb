@@ -16,10 +16,15 @@ module Ruport::Format
     attr_accessor :table_header_proc
     attr_accessor :table_footer_proc
 
-    # Does the necessary PDF::Writer requires
-    def initialize
-      require "pdf/writer"
-      require "pdf/simpletable"
+    require "pdf/writer"
+    require "pdf/simpletable"
+
+    unless ::PDF::Writer.instance_methods.include?("_post_transaction_rewind")
+      class ::PDF::Writer
+        def _post_transaction_rewind
+          @objects.each { |e| e.instance_variable_set(:@parent,self) }
+        end
+      end
     end
 
     # Returns the current PDF::Writer object or creates a new one if it has not

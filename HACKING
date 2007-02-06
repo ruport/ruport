@@ -39,6 +39,7 @@ you should do:
 5) Please pull the latest code from SVN.  If you are hunting bugs in released
    code, please grab the latest code from branches/stable, otherwise use trunk.
 
+
 This should hopefully be enough to get you on the right track.  We welcome your
 questions and ideas, so don't be afraid to contact us.
 

@@ -39,6 +39,7 @@ spec = Gem::Specification.new do |spec|
 	spec.rdoc_options << '--title' << 'Ruport Documentation' <<
 	                     '--main'  << 'README' << '-q'
   unless LEAN
+    spec.add_dependency('transaction-simple', "=1.4.0")
     spec.add_dependency('fastercsv', '>= 1.1.0')
     spec.add_dependency('RedCloth',  '>= 3.0.3')
     spec.add_dependency('pdf-writer', '>= 1.1.3')
