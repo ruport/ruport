@@ -13,6 +13,7 @@ module Ruport
 
       # Stores a string used for outputting formatted data.
       def output
+        return options.io if options.io
         @output ||= ""
       end
 

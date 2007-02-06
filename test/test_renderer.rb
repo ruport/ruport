@@ -57,12 +57,21 @@ end
 
 class TestRenderer < Test::Unit::TestCase
 
-  def test_for_you_rails_suckers
+  def test_hash_options_setters
     a = RendererWithHelpers.render(:text, :subtitle => "foo",
                                        :subsubtitle => "bar") { |r|
       assert_equal "foo", r.options.subtitle
       assert_equal "bar", r.options.subsubtitle
     }
+  end
+
+  def test_using_io
+    require "stringio"
+    out = StringIO.new
+    a = TrivialRenderer.render(:text) { |r| r.io = out }
+    out.rewind
+    assert_equal "header\nbody\nfooter\n", out.read
+    assert_equal "", out.read
   end
 
   def test_trivial

@@ -202,6 +202,10 @@ class Ruport::Renderer
     yield(plugin.options) if block_given?
     plugin.options
   end
+  
+  def io=(obj)
+    options.io=obj    
+  end
 
   def options=(o)
     plugin.options = o
