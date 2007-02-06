@@ -133,7 +133,7 @@ class TestTableRenderer < Test::Unit::TestCase
   def test_layout_header
     actual = Ruport::Renderer::Table.render_csv { |r|
       r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
-      r.layout { |l| l.show_table_headers = false }
+      r.options { |o| o.show_table_headers = false }
     }
     assert_equal("1,2,3\n4,5,6\n",actual)
   end  

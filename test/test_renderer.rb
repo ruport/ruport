@@ -45,6 +45,7 @@ class RendererWithHelpers < Ruport::Renderer
   prepare :document
 
   option :subtitle
+  option :subsubtitle
 
   stage :header
   stage :body
@@ -55,6 +56,14 @@ end
 
 
 class TestRenderer < Test::Unit::TestCase
+
+  def test_for_you_rails_suckers
+    a = RendererWithHelpers.render(:text, :subtitle => "foo",
+                                       :subsubtitle => "bar") { |r|
+      assert_equal "foo", r.options.subtitle
+      assert_equal "bar", r.options.subsubtitle
+    }
+  end
 
   def test_trivial
     actual = TrivialRenderer.render(:text)

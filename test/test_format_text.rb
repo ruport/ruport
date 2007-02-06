@@ -20,13 +20,13 @@ class TestFormatText < Test::Unit::TestCase
 
     a = [[1,2],[300,4]].to_table
     assert_equal( "#{tf}|  1  | 2 |\n| 300 | 4 |\n#{tf}",
-                  a.as(:text) { |e| e.layout.alignment = :center })
+                  a.as(:text) { |e| e.options.alignment = :center })
 
     tf = "+------------+\n"
     a.column_names = %w[a bark]     
     assert_equal("#{tf}|  a  | bark |\n#{tf}|  1  |  2   |\n"+
                  "| 300 |  4   |\n#{tf}",
-                  a.as(:text) { |e| e.layout.alignment = :center })
+                  a.as(:text) { |e| e.options.alignment = :center })
     
   end
 
@@ -38,7 +38,7 @@ class TestFormatText < Test::Unit::TestCase
 
   def test_wrapping  
     a = [[1,2],[300,4]].to_table.as(:text) { |r|
-      r.layout { |l| l.table_width = 10 }
+      r.options { |l| l.table_width = 10 }
     }
 
     assert_equal("+------->>\n|   1 | >>\n| 300 | >>\n+------->>\n",a)

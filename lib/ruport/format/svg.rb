@@ -3,9 +3,9 @@ module Ruport::Format
 
     # a hash of Scruffy themes.
     #
-    # You can use these by setting layout.theme like this:
+    # You can use these by setting options.theme like this:
     #
-    #   Graph.render_svg { |r| r.layout.theme = r.plugin.themes[:mephisto] }
+    #   Graph.render_svg { |r| r.options.theme = r.plugin.themes[:mephisto] }
     #  
     # Available themes: ( :mephisto, :keynote, :ruby_blog )
     #
@@ -28,12 +28,12 @@ module Ruport::Format
     # sets the graph title, theme, and column_names
     #
     # column_names are defined by the Data::Table,
-    # theme may be specified by layout.theme (see SVG#themes)
+    # theme may be specified by options.theme (see SVG#themes)
     # title may be specified by options.title 
     #
     def prepare_graph 
       @graph.title ||= options.title
-      @graph.theme = layout.theme if layout.theme
+      @graph.theme = options.theme if options.theme
       @graph.point_markers ||= data.column_names
 
     end
@@ -44,17 +44,17 @@ module Ruport::Format
         add_line(r.to_a,r.tags.to_a[0] || "series #{i+1}")
       end
 
-      output << @graph.render(:size => [layout.width, layout.height])
+      output << @graph.render(:size => [options.width, options.height])
     end
     
     # Uses Scruffy::Graph#add to add a new line to the graph.
     #
     # Will use the first tag on a Record as the label if present.
     #
-    # Line style is determined by layout.style
+    # Line style is determined by options.style
     #
     def add_line(row,label)
-      @graph.add( layout.style, label, row )
+      @graph.add( options.style, label, row )
     end
 
   end

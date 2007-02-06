@@ -8,7 +8,7 @@ module Ruport
   module Format
     class Plugin
 
-      attr_accessor :layout
+      attr_accessor :options
       attr_accessor :data
 
       # Stores a string used for outputting formatted data.
@@ -18,7 +18,7 @@ module Ruport
 
       # Provides a generic OpenStruct for storing plugin options
       def options
-        @options ||= OpenStruct.new
+        @options ||= Renderer::Options.new
       end 
 
       # clears output.  Useful if you are building your own interface to

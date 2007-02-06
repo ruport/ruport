@@ -23,11 +23,9 @@ module Ruport::Data
     #
     # Example:
     #   my_collection.as(:csv)  #=> "1,2,3\n4,5,6"
-    #
-    #   my_collection.as(:csv) { |e| e.layout.show_table_headers = false }
     #   
-    def as(type)
-      Ruport::Renderer::Table.render(type) do |rend|
+    def as(*args)
+      Ruport::Renderer::Table.render(*args) do |rend|
         rend.data = self
         yield(rend) if block_given?
       end

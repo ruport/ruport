@@ -118,7 +118,9 @@ module Ruport
      
     add_formats :csv, :text, :html, :latex, :pdf
 
-    layout { |lay| lay.show_table_headers = true }
+    option :show_table_headers
+
+    options { |o| o.show_table_headers = true }
 
     prepare :table
     

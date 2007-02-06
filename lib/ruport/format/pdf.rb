@@ -2,7 +2,7 @@ module Ruport::Format
 
   # PDF generation plugin
   #
-  #  layout options:
+  #  options options:
   #     General:
   #       * paper_size  #=> "LETTER"
   #       * orientation #=> :center
@@ -27,7 +27,7 @@ module Ruport::Format
     #
     def pdf_writer
       @pdf_writer ||= 
-        ::PDF::Writer.new( :paper => layout.paper_size || "LETTER" )
+        ::PDF::Writer.new( :paper => options.paper_size || "LETTER" )
     end
 
     # If table_header_proc is defined, it will be executed and the PDF::Writer
@@ -203,9 +203,9 @@ module Ruport::Format
       m = "Sorry, cant build PDFs from array like things (yet)"
       raise m if data.column_names.empty?
       ::PDF::SimpleTable.new do |table|
-        table.maximum_width = layout.max_table_width || 500
-        table.width         = layout.table_width if layout.table_width
-        table.orientation   = layout.orientation || :center
+        table.maximum_width = options.max_table_width || 500
+        table.width         = options.table_width if options.table_width
+        table.orientation   = options.orientation || :center
         table.data          = data
         table.column_order  = data.column_names
         table.render_on(pdf_writer)

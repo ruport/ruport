@@ -31,10 +31,10 @@ module Ruport
 
     add_formats :svg,:xml
 
-    layout do |l|
-      l.height = 350
-      l.width  = 500
-      l.style  = :line
+    options do |o|
+      o.height = 350
+      o.width  = 500
+      o.style  = :line
     end
 
     prepare :graph

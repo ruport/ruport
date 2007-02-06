@@ -25,7 +25,7 @@ class TestGraphRenderer < Test::Unit::TestCase
   
   def test_basics
     out = Ruport::Renderer::Graph.render_mock do |r|
-      r.layout do |l|
+      r.options do |l|
         assert l.height.kind_of?(Numeric)
         assert l.width.kind_of?(Numeric)
         assert_equal :line, l.style

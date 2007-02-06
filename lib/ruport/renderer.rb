@@ -13,6 +13,9 @@
 # This class can easily be extended to build custom formatting engines, but if
 # you do not need that, may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
+
+  require "ruport/renderer/options"
+
   module Helpers #:nodoc:
     module ClassMethods
 
@@ -143,15 +146,6 @@ class Ruport::Renderer
     @formats ||= {}
   end
 
-  # same as Renderer#layout, but can be used to specify a default layout object
-  # for the entire class.  
-  def self.layout
-    @layout ||= Ruport::Layout::Component.new
-    yield(@layout) if block_given?
-
-    return @layout
-  end
-
   # creates a new instance of the renderer
   # then looks up the formatting plugin and creates a new instance of that as
   # well.  If a block is given, the renderer instance is yielded.
@@ -159,40 +153,42 @@ class Ruport::Renderer
   # The run() method is then called on the renderer method.
   #
   # Finally, the value of the plugin's output accessor is returned
-  def self.render(format,&block)
-    rend = build format, &block
+  def self.render(*args,&block)
+    rend = build *args, &block
     rend.run
     return rend.plugin.output
   end
 
+  
+  
+  def self.options
+    @options ||= Ruport::Renderer::Options.new
+    yield(@options) if block_given?
+
+    return @options
+  end
 
   # creates a new instance of the renderer and sets it to use the specified
   # formatting plugin (by name).  If a block is given, the renderer instance is
   # yielded.  
   #
   # Returns the renderer instance.
-  def self.build(format)
+  def self.build(*args)
     rend = self.new
 
-    rend.send(:use_plugin,format)
-    rend.send(:layout=, layout.dup)
+    rend.send(:use_plugin,args[0])
+    rend.send(:options=, options.dup)
+
+    if args[1].kind_of?(Hash)
+      args[1].each {|k,v| rend.send("#{k}=",v) }
+    end
+
     yield(rend) if block_given?
     return rend
   end
 
   attr_accessor :format
   attr_reader   :data
-
-  # Generates a layout object and passes it along to the current formatting
-  # plugin.  If the block form is used, the layout object will be yielded for
-  # modification.
-  #
-  def layout
-    @layout ||= Ruport::Layout::Component.new
-    yield(@layout) if block_given?
-
-    plugin.layout = @layout
-  end
 
   # sets +data+ attribute on both the renderer and any active plugin
   def data=(val)
@@ -205,6 +201,10 @@ class Ruport::Renderer
   def options
     yield(plugin.options) if block_given?
     plugin.options
+  end
+
+  def options=(o)
+    plugin.options = o
   end
 
   # when no block is given, returns active plugin
@@ -229,11 +229,6 @@ class Ruport::Renderer
   
   attr_writer :plugin
 
-  #internal layout accessor.
-  def layout=(lay)
-    @layout = lay
-    plugin.layout = lay
-  end
 
   # tries to autoload and register a format which is part of the Ruport::Format
   # module.  For internal use only.

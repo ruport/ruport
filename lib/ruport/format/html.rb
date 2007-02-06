@@ -6,11 +6,11 @@ module Ruport::Format
     
     # Generates table headers based on the column names of your Data::Table.  
     #
-    # This method does not do anything if layout.show_table_headers is false or
+    # This method does not do anything if options.show_table_headers is false or
     # the Data::Table has no column names.
     def build_table_header
       output << "\t<table>\n"
-      unless data.column_names.empty? || !layout.show_table_headers
+      unless data.column_names.empty? || !options.show_table_headers
         output << "\t\t<tr>\n\t\t\t<th>" + 
           data.column_names.join("</th>\n\t\t\t<th>") + 
           "</th>\n\t\t</tr>\n"

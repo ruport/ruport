@@ -7,10 +7,10 @@ module Ruport::Format
     # Generates table header by turning column_names into a CSV row.
     # Uses build_csv_row to generate the actual formatted output
     #
-    # This method does not do anything if layout.show_table_headers is false or
+    # This method does not do anything if options.show_table_headers is false or
     # the Data::Table has no column names.
     def build_table_header
-      unless data.column_names.empty? || !layout.show_table_headers
+      unless data.column_names.empty? || !options.show_table_headers
         build_csv_row(data.column_names)
       end
     end

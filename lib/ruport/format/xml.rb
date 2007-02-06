@@ -8,7 +8,7 @@ module Ruport::Format
 
     def build_graph
       output << @builder.chart do |b|
-        b.chart_type(layout.style.to_s)
+        b.chart_type(options.style.to_s)
 
         b.chart_data do |cd|
           
