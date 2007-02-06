@@ -217,7 +217,7 @@ module Ruport::Format
 end
 
 module PDFWriterMemoryPatch
-  unless instance_methods.include?("_post_transaction_rewind")
+  unless self.class.instance_methods.include?("_post_transaction_rewind")
     def _post_transaction_rewind
        @objects.each { |e| e.instance_variable_set(:@parent,self) }
      end
