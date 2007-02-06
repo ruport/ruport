@@ -30,9 +30,9 @@ class CenteredPDFTextBox < Ruport::Format::PDF
  
     rounded_text_box(options.text) do |o|
        o.radius = 5
-       o.width     = layout.width  || 400
-       o.height    = layout.height || 130
-       o.font_size = layout.font_size || 12
+       o.width     = options.width  || 400
+       o.height    = options.height || 130
+       o.font_size = options.font_size || 12
        o.heading   = options.heading
        
        o.x = pdf_writer.absolute_x_middle - o.width/2
@@ -46,10 +46,9 @@ class CenteredPDFTextBox < Ruport::Format::PDF
   end
 end
 
-a = Document.render_pdf { |r|
-  r.heading = "a good quote"
-  r.author  = "Ralph Waldo Emerson"
-  r.text = <<EOS
+a = Document.render_pdf( :heading => "a good quote", 
+                         :author => "Ralph Waldo Emerson") { |r|
+r.text = <<EOS
 A foolish consistency is the hobgoblin of little minds, adored by little
 statesmen and philosophers and divines. With consistency a great soul has simply
 nothing to do. He may as well concern himself with his shadow on the wall. Speak

@@ -180,7 +180,7 @@ class Ruport::Renderer
     rend.send(:options=, options.dup)
 
     if args[1].kind_of?(Hash)
-      args[1].each {|k,v| rend.send("#{k}=",v) }
+      args[1].each {|k,v| rend.options.send("#{k}=",v) }
     end
 
     yield(rend) if block_given?
@@ -265,7 +265,7 @@ class Ruport::Renderer
   # render(:csv) to become render_csv
   def self.method_missing(id,*args,&block)
     id.to_s =~ /^render_(.*)/
-    $1 ? render($1.to_sym,&block) : super
+    $1 ? render($1.to_sym,*args,&block) : super
   end
 
 end
