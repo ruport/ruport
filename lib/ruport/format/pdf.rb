@@ -20,7 +20,6 @@ module Ruport::Format
     def initialize
       require "pdf/writer"
       require "pdf/simpletable"
-      self.class.extend PDFWriterMemoryPatch
     end
 
        # Returns the current PDF::Writer object or creates a new one if it has not
@@ -29,6 +28,7 @@ module Ruport::Format
     def pdf_writer
       @pdf_writer ||= 
         ::PDF::Writer.new( :paper => options.paper_size || "LETTER" )
+      @pdf_writer.extend(PDFWriterMemoryPatch)
     end
 
     # If table_header_proc is defined, it will be executed and the PDF::Writer
@@ -203,7 +203,6 @@ module Ruport::Format
     def draw_table
       m = "Sorry, cant build PDFs from array like things (yet)"
       raise m if data.column_names.empty?
-      p data.column_names
       ::PDF::SimpleTable.new do |table|
         table.maximum_width = options.max_table_width || 500
         table.width         = options.table_width if options.table_width
@@ -218,13 +217,9 @@ module Ruport::Format
 end
 
 module PDFWriterMemoryPatch
-  require "pdf/writer"
-   
-  unless ::PDF::Writer.instance_methods.include?("_post_transaction_rewind")
-    class ::PDF::Writer
-      def _post_transaction_rewind
-         @objects.each { |e| e.instance_variable_set(:@parent,self) }
-       end
-    end
+  unless instance_methods.include?("_post_transaction_rewind")
+    def _post_transaction_rewind
+       @objects.each { |e| e.instance_variable_set(:@parent,self) }
+     end
   end
 end
