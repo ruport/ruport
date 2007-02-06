@@ -101,7 +101,7 @@ class TestTableRenderer < Test::Unit::TestCase
       warn "skipping pdf test"; return
     end
    data = [[1,2],[3,4]].to_table
-   #assert_raise(RuntimeError) { data.to_pdf }
+   assert_raise(RuntimeError) { data.to_pdf }
 
    data.column_names = %w[a b]
    assert_nothing_raised { data.to_pdf }
