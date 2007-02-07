@@ -4,6 +4,7 @@
 - {Dudley Flanders}[mailto:dudley@misnomer.us]
 - {James Healy}[mailto:jimmy@deefa.com]
 - Dinko Mehinovic
+- {Michael Milner}[mailto:mikem836@gmail.com]
 
 = Contributors / People we've (legally) stolen from:
 
@@ -39,11 +40,6 @@ Marshall T. Vandegrift:
 
 Stefan Mahlitz:
  - Table#sort_rows_by
-
-Michael Milner
- - Refactoring for Table#column_names= (r436)
- - Mock object for Mailer
- - Mock object for Report (#130)
 
 Chris Carter
  - Table#remove_columns (r440)
