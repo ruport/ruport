@@ -22,20 +22,24 @@ module Ruport::Format
     # converted into class attributes in the HTML output.
     #
     def build_table_body
-      output << data.inject("") do |s,r| 
+      data.each do |r| 
         row = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
         #classstr = r.tags.inject("") {|cs,c| cs + " class='#{c}'" }   
         classstr = 
           r.tags.length > 0 ? " class='#{r.tags.to_a.join(' ')}'" : ""
-        s + "\t\t<tr#{classstr}>\n\t\t\t<td#{classstr}>" +
-          row.to_a.join("</td>\n\t\t\t<td#{classstr}>") + 
-          "</td>\n\t\t</tr>\n"
-      end 
+        build_html_row(row,classstr)
+     end 
     end
 
     # Simply closes the table tag. 
     def build_table_footer
       output << "\t</table>"
+    end
+
+    def build_html_row(row,classstr="")
+       output << "\t\t<tr#{classstr}>\n\t\t\t<td#{classstr}>" +
+                   row.to_a.join("</td>\n\t\t\t<td#{classstr}>") + 
+                 "</td>\n\t\t</tr>\n"
     end
 
   end

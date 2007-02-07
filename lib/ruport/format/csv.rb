@@ -23,7 +23,7 @@ module Ruport::Format
     # Produces CSV output for a data row.
     def build_csv_row(row)
       require "fastercsv"
-      output << FasterCSV.generate { |csv| csv << row } 
+      FCSV(output) { |csv| csv << row }
     end
   end
 end
