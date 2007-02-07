@@ -35,14 +35,14 @@ module Ruport::Data
     #   b.c    #=> 3
     #
     #   c = Record.new {"a" => 1, "c" => 3, "b" => 2}, :attributes => %w[a b c]
-    #   b[1]   #=> 2
-    #   b['a'] #=> 1
-    #   b.c    #=> 3
+    #   c[1]   #=> 2
+    #   c['a'] #=> 1
+    #   c.c    #=> 3
     #
-    #   c = Record.new { "a" => 1, "c" => 3, "b" => 2 }
-    #   b[1]   #=> ? (without attributes, you cannot rely on order)
-    #   b['a'] #=> 1
-    #   b.c    #=> 3
+    #   d = Record.new { "a" => 1, "c" => 3, "b" => 2 }
+    #   d[1]   #=> ? (without attributes, you cannot rely on order)
+    #   d['a'] #=> 1
+    #   d.c    #=> 3
     #
     def initialize(data,options={})
       data = data.dup

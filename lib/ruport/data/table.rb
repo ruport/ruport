@@ -45,8 +45,7 @@ module Ruport::Data
   # of its source (a database, manual arrays, ActiveRecord, CSVs, etc.).
   # 
   # Table is intended to be used as the data store for structured, tabular
-  # data - Ruport::Data::Set is an alternate data store intended for less 
-	# structured data.
+  # data.
   #
   # Once your data is in a Ruport::Data::Table object, it can be manipulated
   # to suit your needs, then used to build a report.
@@ -96,7 +95,7 @@ module Ruport::Data
     #
     # Example:
     #                     
-    #   table = Table.new :data => [1,2,3], [3,4,5], 
+    #   table = Table.new :data => [[1,2,3], [3,4,5]], 
     #                     :column_names => %w[a b c]
     #
     #   table.column_names = %w[e f g]
@@ -124,10 +123,10 @@ module Ruport::Data
     #
     # Example:
     #
-    #   one = Table.new :data => [1,2], [3,4], 
+    #   one = Table.new :data => [[1,2], [3,4]], 
     #                   :column_names => %w[a b]
     #
-    #   two = Table.new :data => [1,2], [3,4], 
+    #   two = Table.new :data => [[1,2], [3,4]], 
     #                   :column_names => %w[a b]
     #
     #   one.eql?(two) #=> true
@@ -143,7 +142,7 @@ module Ruport::Data
     #
     # Example:
     #
-    #   data = Table.new :data => [1,2], [3,4], 
+    #   data = Table.new :data => [[1,2], [3,4]], 
     #                    :column_names => %w[a b]
     #   data << [8,9]
     #   data << { :a => 4, :b => 5}
@@ -196,7 +195,7 @@ module Ruport::Data
     #
     # Example:
     # 
-    #   one = Table.new :data => [1,2], [3,4], 
+    #   one = Table.new :data => [[1,2], [3,4]], 
     #                   :column_names => %w[a b]
     #
     #   two = one.reorder!([1,0])  
@@ -237,14 +236,14 @@ module Ruport::Data
     #
     #   data = Table("a","b") { |t| t << [1,2] << [3,4] }
     #   
-    #    #basic usage, column full of 1's
+    #   # basic usage, column full of 1's
     #   data.add_column 'new_column', :default => 1
     #        
-    #   #new empty column before new_column
+    #   # new empty column before new_column
     #   data.add_column 'new_col2', :before => 'new_column'
     #
     #   # new column placed just after column a
-    #   data.add_column  'new_col3', :position => 1
+    #   data.add_column 'new_col3', :position => 1
     #
     #   # new column built via a block, added at the end of the table
     #   data.add_column("new_col4") { |r| r.a + r.b }
@@ -496,7 +495,7 @@ module Ruport::Data
     #
     # Example:
     #
-    #   one = Table.new :data => [1,2], [3,4], 
+    #   one = Table.new :data => [[1,2], [3,4]], 
     #                   :column_names => %w[a b]
     #   two = one.dup
     #
@@ -511,7 +510,7 @@ module Ruport::Data
     # 
     # Example:
     # 
-    #   data = Table.new :data => [1,2], [3,4], 
+    #   data = Table.new :data => [[1,2], [3,4]], 
     #                    :column_names => %w[a b]
     #   puts data.to_s
     # 
