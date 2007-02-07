@@ -78,7 +78,7 @@ class TestTable < Test::Unit::TestCase
     assert_equal([table[2]], table.rows_with_b(8))
     assert_equal [table[1]], table.rows_with(%w[a b]) { |a,b| [a,b] == [1,3] }
   end
-  
+
   def test_append_record  
     table = Ruport::Data::Table.new :column_names => %w[a b c]
     table << Ruport::Data::Record.new([1,2,3], :attributes => %w[a b c])

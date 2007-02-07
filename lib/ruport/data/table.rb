@@ -167,7 +167,8 @@ module Ruport::Data
     end
     
     def record_class
-      @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
+      raise unless @record_class =~ /\A(?:\w+::)*\w+\Z/
+      eval(@record_class)
     end
   
     
