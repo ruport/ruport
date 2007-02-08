@@ -10,6 +10,16 @@ module Ruport
 
       attr_accessor :options
       attr_accessor :data
+      attr_accessor :format
+
+      def self.renders(format,options={})
+        options[:for].add_format(self,format)
+        formats << format unless formats.include?(format)
+      end
+      
+      def self.formats
+        @formats ||= []
+      end
 
       # Stores a string used for outputting formatted data.
       def output
@@ -26,6 +36,14 @@ module Ruport
       # plugins.
       def clear_output
         @output.replace("")
+      end
+
+      def method_missing(id,*args)
+        if self.class.formats.include?(id)
+          yield() if format == id
+        else
+          super
+        end
       end
     end
   end

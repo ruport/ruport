@@ -37,6 +37,32 @@ class TrivialRenderer < Ruport::Renderer
 
 end
 
+class TrivialRenderer2 < TrivialRenderer; end
+
+class MultiPurposePlugin < Ruport::Format::Plugin
+
+   renders :html, :for => TrivialRenderer2
+   renders :text, :for => TrivialRenderer2
+
+   def build_header
+     a = 10
+
+     text { output << "Foo: #{a}\n" }
+     html { output << "<b>Foo: #{a}</b>\n" } 
+   end
+
+   def build_body
+     html { output << "<pre>\n" }
+     output << options.body_text
+     html { output << "\n</pre>\n" }
+   end
+    
+   # FIXME: stage should use maybe()
+   def build_footer; end
+
+end
+
+
 class RendererWithHelpers < Ruport::Renderer
   include Ruport::Renderer::Helpers
 
@@ -54,8 +80,34 @@ class RendererWithHelpers < Ruport::Renderer
   finalize :document
 end
 
-
 class TestRenderer < Test::Unit::TestCase
+
+  def test_multi_purpose
+    text = TrivialRenderer2.render_text(:body_text => "foo")
+    assert_equal "Foo: 10\nfoo", text
+    html = TrivialRenderer2.render_html(:body_text => "bar")
+    assert_equal "<b>Foo: 10</b>\n<pre>\nbar\n</pre>\n",html
+  end
+
+  def test_method_missing_hack_plugin
+    assert_equal [:html,:text], MultiPurposePlugin.formats
+
+    a = MultiPurposePlugin.new
+    a.format = :html
+    
+    visited = false
+    a.html { visited = true }
+
+    assert visited
+    
+    visited = false
+    a.text { visited = true }
+    assert !visited
+
+    assert_raises(NoMethodError) do
+      a.pdf { 'do nothing' }
+    end
+  end
 
   def test_hash_options_setters
     a = RendererWithHelpers.render(:text, :subtitle => "foo",

@@ -263,6 +263,7 @@ class Ruport::Renderer
   # selects a plugin for use by format name
   def use_plugin(format)
     self.plugin = self.class.formats[format].new
+    self.plugin.format = format
   end
 
   # provides a shortcut to render() to allow
