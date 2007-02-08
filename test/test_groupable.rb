@@ -24,7 +24,7 @@ class TestGroupable < Test::Unit::TestCase
                                            [[1,2],[3,4],[5,6]].to_table(%w[a b]) ], 
                                            :attributes => ["foo","bar"] )
     assert_equal expected, a.groups
-  end
+  end  
 
   def test_create_group
     a = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
@@ -39,6 +39,18 @@ class TestGroupable < Test::Unit::TestCase
     assert_equal([[1,2,3],[7,8,9]].to_table(%w[a b c]), a.group(:starts_odd)) 
     assert_equal([[4,5,6]].to_table(%w[a b c]), a.group("starts_even"))
     
-  end  
+  end    
+  
+  #--BUG TRAPS-------------------------------------------------------------
+   
+  #Ticket #155
+  def test_ensure_grouping_works_with_nameless_tables
+    a = [[1,2],[3,4],[5,6]].to_table
+    a.create_group("foo") { true }
+    a[1].tag("grp_bar")
+    assert_nothing_raised { a.groups }
+    assert_equal a, a.group("foo")
+    assert_equal [a[1]].to_table, a.group("bar")
+  end
 
 end

@@ -467,6 +467,18 @@ class TestTable < Test::Unit::TestCase
     }
     assert_equal "joe loop", a[0].name
     assert_nothing_raised { a.to_yaml }
+  end  
+  
+  def test_ensure_subtable_works_with_unnamed_tables
+     a = [[1,2,3],[4,5,6]].to_table
+     b = a.sub_table { |r| (r[0] % 2).zero? } 
+     assert_equal [[4,5,6]].to_table, b
+  end  
+  
+  def test_ensure_appending_records_works_with_unnamed_tables
+     a = [[1,2,3],[4,5,6]].to_table
+     a << Ruport::Data::Record.new([7,8,9])
+     assert_equal [[1,2,3],[4,5,6],[7,8,9]].to_table,a
   end
 
 end

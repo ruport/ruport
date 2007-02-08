@@ -43,7 +43,7 @@ module Ruport::Data
     def groups
       #r_tags = map { |r| r.tags }.flatten.uniq
       r_tags = group_names_intern
-      tables_hash = Hash.new { |h,k| h[k] = [].to_table(column_names) }
+      tables_hash = Hash.new { |h,k| h[k] = Table(column_names) }
       r_tags.each { |t| 
         tables_hash[t.gsub(/^grp_/,"")] = sub_table { |r| r.tags.include? t }}
       r = Record.new tables_hash, :attributes => group_names

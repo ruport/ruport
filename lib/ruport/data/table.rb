@@ -157,8 +157,12 @@ module Ruport::Data
         raise ArgumentError unless @column_names
         arr = @column_names.map { |k| other[k] }
         @data << record_class.new(arr, :attributes => @column_names)
-      when record_class
-        self << other.to_h
+      when record_class     
+        if column_names.empty?
+          self << other.to_a
+        else
+          self << other.to_h
+        end
         @data.last.tags = other.tags.dup
       else
         raise ArgumentError
