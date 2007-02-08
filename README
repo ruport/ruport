@@ -99,7 +99,7 @@
 #
 # = Bug Reports / Feature Requests
 #
-#  Our Trac is at: http://stonecode.svnrepository.com
+#  Our Trac is at: http://code.stonecode.org
 #  You may use the username ruport and password blinky to file tickets
 #
 # = Resources
@@ -123,7 +123,7 @@
 #     http://rubyforge.org/projects/ruport
 #
 #   - The latest stable API documentation is available at:
-#     http://reporting.stonecode.org/docs
+#     http://api.rubyreports.org
 #
 # There are also some tutorial available:
 # http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/TutorialsAndArticles
@@ -136,11 +136,11 @@
 #
 # - Grabbing the code from the svn trunk is simple:
 #
-#   svn co svn://rubyforge.org//var/svn/ruport/trunk/
+#   svn co svn://rubyforge.org//var/svn/ruport/trunk/ ruport
 #
 # - Or if you are interested in the latest updates to the stable branch
 #
-#   svn co svn://rubyforge.org//var/svn/ruport/branches/stable
+#   svn co svn://rubyforge.org//var/svn/ruport/branches/stable ruport
 #
 # Thanks for checking out Ruport!
 #
