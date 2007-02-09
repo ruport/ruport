@@ -172,6 +172,14 @@ class TestReport < Test::Unit::TestCase
  
      assert_equal expected, array
    end
+
+   def test_renders_with
+    klass = MyReport.dup
+    klass.renders_with Ruport::Renderer::Table
+    klass.send(:generate) { [[1,2,3],[4,5,6]].to_table(%w[a b c]) }
+    a = klass.new(:csv)
+    assert_equal "a,b,c\n1,2,3\n4,5,6\n", a.run
+   end
  
    private
  
@@ -184,5 +192,5 @@ class TestReport < Test::Unit::TestCase
      @smtp.stubs(:send_message).
        returns("250 ok")
    end
- 
+
 end

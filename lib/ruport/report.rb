@@ -75,9 +75,10 @@ module Ruport
     #
     # This will auto-initialize a report.
     #
-    def initialize( source_name=:default, mailer_name=:default )
-      use_source source_name
-      use_mailer mailer_name
+    def initialize( format=nil, options={} )
+      use_source :default
+      use_mailer :default
+      @format      = format
       @report_name = "" 
       @results     = ""
       @file        = nil
@@ -90,6 +91,8 @@ module Ruport
     # run.
     #
     attr_accessor :results
+
+    attr_accessor :format
 
     # This is a simplified interface to Ruport::Query.
     #
@@ -263,7 +266,16 @@ module Ruport
       def cleanup(&block); define_method(:cleanup,&block) end
 
       private :prepare, :generate, :cleanup
-      
+
+      def renders_with(renderer)
+        @renderer = renderer.name
+      end
+
+      def renderer
+        return unless @renderer
+        @renderer.split("::").inject(Class) { |c,el| c.const_get(el) }
+      end
+
       # Runs the reports specified.  If no reports are specified, then it
       # creates a new instance via <tt>self.new</tt>.
       #
@@ -283,6 +295,13 @@ module Ruport
           options[:reports].each { |rep|
             rep.prepare if rep.respond_to? :prepare
             rep.results = rep.generate
+
+            if renderer
+              rep.results = renderer.render(rep.format) { |r| 
+                r.data = rep.results
+              }
+            end
+
             yield(rep) if block_given?
             rep.cleanup if rep.respond_to? :cleanup
           }
