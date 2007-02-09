@@ -124,6 +124,9 @@ class Ruport::Renderer
       plugin.send something if plugin.respond_to? something
     end
   end
+  
+  include Helpers
+
   # allows you to register a format with the renderer.
   #
   # example:
