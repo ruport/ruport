@@ -104,6 +104,8 @@ class Ruport::Renderer
 
     end
 
+    alias_method :_run_, :run
+
  
     def prepare(name)
       maybe "prepare_#{name}"
