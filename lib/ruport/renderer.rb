@@ -80,7 +80,7 @@ class Ruport::Renderer
 
     # called automagically when the report is rendered. Uses the
     # data collected from the earlier methods.
-    def run
+    def _run_
 
       # ensure all the required options have been set
       unless self.class.required_options.nil?
@@ -104,9 +104,6 @@ class Ruport::Renderer
 
     end
 
-    alias_method :_run_, :run
-
- 
     def prepare(name)
       maybe "prepare_#{name}"
     end
@@ -164,7 +161,8 @@ class Ruport::Renderer
       r.setup if r.respond_to? :setup
       yield(r) if block_given?
     }
-    rend.run
+    rend.run if rend.respond_to? :run
+    rend._run_ if stages
     return rend.plugin.output
   end
 
