@@ -81,6 +81,7 @@ class Ruport::Renderer
     # called automagically when the report is rendered. Uses the
     # data collected from the earlier methods.
     def run
+
       # ensure all the required options have been set
       unless self.class.required_options.nil?
         self.class.required_options.each do |opt|
@@ -95,7 +96,7 @@ class Ruport::Renderer
       # call each stage to build the report
       unless self.class.stages.nil?
         self.class.stages.each do |stage|
-          self.build stage
+          self.build(stage)
         end
       end
 
@@ -153,8 +154,11 @@ class Ruport::Renderer
   # The run() method is then called on the renderer method.
   #
   # Finally, the value of the plugin's output accessor is returned
-  def self.render(*args,&block)
-    rend = build *args, &block
+  def self.render(*args)
+    rend = build(*args) { |r|
+      r.setup if r.respond_to? :setup
+      yield(r) if block_given?
+    }
     rend.run
     return rend.plugin.output
   end

@@ -78,6 +78,11 @@ class RendererWithHelpers < Ruport::Renderer
   stage :footer
 
   finalize :document
+
+  def setup
+    options.apple = true
+  end
+
 end
 
 class TestRenderer < Test::Unit::TestCase
@@ -168,6 +173,14 @@ class TestRenderer < Test::Unit::TestCase
      actual = RendererWithHelpers.render_text
      assert_equal "pheader\nbody\nfooter\nf", actual
    end
+
+   def test_setup
+     actual = false
+     RendererWithHelpers.render_text { |r|
+       actual = r.options.apple
+     }
+     assert actual
+   end
  
    def test_option_helper
      RendererWithHelpers.render_text do |r|
@@ -177,16 +190,32 @@ class TestRenderer < Test::Unit::TestCase
    end
  
    def test_required_option_helper
-     RendererWithHelpers.required_option :title
+     a = RendererWithHelpers.dup
+     a.required_option :title
  
-     RendererWithHelpers.render_text do |r|
+     a.render_text do |r|
        r.title = "Test Report"
        assert_equal "Test Report", r.options.title
      end
+
    end
  
    def test_without_required_option
-     RendererWithHelpers.required_option :title
+
+     a = RendererWithHelpers.dup
+     a.required_option :title
+ 
+     assert_raise(RuntimeError) { a.render(:text) }
+   end
+
+
+  def test_method_missing
+    actual = TrivialRenderer.render_text
+    assert_equal "header\nbody\nfooter\n", actual
+  end
+
+  def test_plugin
+     #RendererWithHelpers.required_option :title
  
      assert_raise(RuntimeError) { RendererWithHelpers.render(:text) }
    end
