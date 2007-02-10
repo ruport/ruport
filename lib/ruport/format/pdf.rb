@@ -26,7 +26,7 @@ module Ruport::Format
     # been set yet.
     #
     def pdf_writer
-      @pdf_writer ||= 
+      @pdf_writer ||= options.formatter ||
         ::PDF::Writer.new( :paper => options.paper_size || "LETTER" )
       @pdf_writer.extend(PDFWriterMemoryPatch)
     end
