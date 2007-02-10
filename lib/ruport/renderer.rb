@@ -78,6 +78,27 @@ class Ruport::Renderer
       base.extend ClassMethods
     end
 
+    def prepare(name)
+      maybe "prepare_#{name}"
+    end
+
+    def build(names,prefix=nil)
+      return maybe("build_#{names}") if prefix.nil?
+      names.each { |n| maybe "build_#{prefix}_#{n}" }
+    end
+
+    def finalize(name)
+      maybe "finalize_#{name}"
+    end
+
+    private 
+
+    def maybe(something)
+      plugin.send something if plugin.respond_to? something
+    end
+  end
+
+  module AutoRunner
     # called automagically when the report is rendered. Uses the
     # data collected from the earlier methods.
     def _run_
@@ -102,25 +123,6 @@ class Ruport::Renderer
 
       finalize self.class.final_stage if self.class.final_stage
 
-    end
-
-    def prepare(name)
-      maybe "prepare_#{name}"
-    end
-
-    def build(names,prefix=nil)
-      return maybe("build_#{names}") if prefix.nil?
-      names.each { |n| maybe "build_#{prefix}_#{n}" }
-    end
-
-    def finalize(name)
-      maybe "finalize_#{name}"
-    end
-
-    private 
-
-    def maybe(something)
-      plugin.send something if plugin.respond_to? something
     end
   end
   
@@ -161,8 +163,12 @@ class Ruport::Renderer
       r.setup if r.respond_to? :setup
       yield(r) if block_given?
     }
-    rend.run if rend.respond_to? :run
-    rend._run_ if stages
+    if rend.respond_to? :run
+      rend.run
+    else
+      include AutoRunner
+    end
+    rend._run_ if rend.respond_to? :_run_
     return rend.plugin.output
   end
 

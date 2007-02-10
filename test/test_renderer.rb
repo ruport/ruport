@@ -64,7 +64,6 @@ end
 
 
 class RendererWithHelpers < Ruport::Renderer
-  include Ruport::Renderer::Helpers
 
   add_format DummyText, :text
 
@@ -85,6 +84,23 @@ class RendererWithHelpers < Ruport::Renderer
 
 end
 
+class RendererWithRunHook < Ruport::Renderer
+  
+  include AutoRunner
+
+  add_format DummyText, :text
+
+  required_option :foo
+  stage :header
+  stage :body
+  stage :footer
+
+  def run
+    plugin.output << "|"
+  end
+
+end
+
 class TestRenderer < Test::Unit::TestCase
 
   def test_multi_purpose
@@ -92,6 +108,11 @@ class TestRenderer < Test::Unit::TestCase
     assert_equal "Foo: 10\nfoo", text
     html = TrivialRenderer2.render_html(:body_text => "bar")
     assert_equal "<b>Foo: 10</b>\n<pre>\nbar\n</pre>\n",html
+  end
+
+  def test_renderer_with_run_hooks
+    assert_equal "|header\nbody\nfooter\n", 
+       RendererWithRunHook.render_text(:foo => "bar")
   end
 
   def test_method_missing_hack_plugin
