@@ -41,7 +41,7 @@ module Ruport::Format
     # Generates an SVG using Scruffy.
     def build_graph
       data.each_with_index do |r,i|
-        add_line(r.to_a,r.tags.to_a[0] || "series #{i+1}")
+        add_line(r.to_a,r.tags.to_a[0].to_s || "series #{i+1}")
       end
 
       output << @graph.render(:size => [options.width, options.height])

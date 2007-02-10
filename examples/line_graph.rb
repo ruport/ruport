@@ -4,6 +4,9 @@ table = Table(%w[jan feb mar apr may jun jul]) do |t|
   t << [21,3,8,19,13,15,1]
 end
 
+table[0].tag :ghosts
+table[1].tag "pirates"
+
 results = Ruport::Renderer::Graph.
   render_svg( :width => 700, :height => 500, :style => :line,
               :title => "Simple Line Graph" ) { |r| r.data = table }
