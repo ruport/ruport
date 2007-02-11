@@ -69,8 +69,11 @@ module Ruport
 
       # Truncates a string so that it does not exceed Text#width
       def fit_to_width(s)
+        # workaround for Rails setting terminal_width to 1
+        width < 2 ? max_width = 80 : max_width = width
+        
         s.split("\n").each { |r|
-           r.gsub!(/\A.{#{width+1},}/) { |m| m[0,width-2] + ">>" }
+           r.gsub!(/\A.{#{max_width+1},}/) { |m| m[0,max_width-2] + ">>" }
         }.join("\n") + "\n"
       end
 
