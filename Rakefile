@@ -45,6 +45,7 @@ spec = Gem::Specification.new do |spec|
     spec.add_dependency('pdf-writer', '>= 1.1.3')
     spec.add_dependency("mailfactory", ">= 1.2.3")
     spec.add_dependency('scruffy', '>= 0.2.2')
+    spec.add_dependency('gem_plugin', '>=0.2.2')
   end
   spec.author = "Gregory Brown"
 	spec.email = "	gregory.t.brown@gmail.com"

@@ -81,3 +81,8 @@ require "ruport/format"
 require "ruport/query" 
 require "ruport/mailer"
 require "ruport/renderer"
+
+if defined? Gem
+  require "gem_plugin"
+  GemPlugin::Manager.instance.load "ruport" => GemPlugin::INCLUDE
+end
