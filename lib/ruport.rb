@@ -89,9 +89,8 @@ end
 
 module Kernel
 
-  # helps shut up shitty ruby libraries that forget to develop 
-  # under -w and fix their warnings
-  #
+  
+  # quiets warnings for block
   def quiet #:nodoc:
     warnings = $VERBOSE
     $VERBOSE = nil
