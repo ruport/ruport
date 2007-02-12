@@ -89,8 +89,8 @@ end
 
 module Kernel
 
-  #helps shut up shitty ruby libraries that forget to developer under -w and fix
-  #their warnings
+  # helps shut up shitty ruby libraries that forget to develop 
+  # under -w and fix their warnings
   #
   def quiet #:nodoc:
     warnings = $VERBOSE
