@@ -17,9 +17,9 @@ module Ruport::Format
 
     # generates a scruffy graph object
     def initialize
-      require 'scruffy'
+      quiet { require 'scruffy' }
       
-      @graph = Scruffy::Graph.new
+      @graph = = Scruffy::Graph.new
     end
 
     # the Scruffy::Graph object

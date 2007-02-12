@@ -86,3 +86,18 @@ if defined? Gem
   require "gem_plugin"
   GemPlugin::Manager.instance.load "ruport" => GemPlugin::INCLUDE
 end
+
+module Kernel
+
+  #helps shut up shitty ruby libraries that forget to developer under -w and fix
+  #their warnings
+  #
+  def quiet #:nodoc:
+    warnings = $VERBOSE
+    $VERBOSE = nil
+    result = yield
+    $VERBOSE = warnings
+    return result
+  end
+
+end
