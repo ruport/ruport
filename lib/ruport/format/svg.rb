@@ -19,7 +19,7 @@ module Ruport::Format
     def initialize
       quiet { require 'scruffy' }
       
-      @graph = = Scruffy::Graph.new
+      @graph = Scruffy::Graph.new
     end
 
     # the Scruffy::Graph object
