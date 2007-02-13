@@ -2,11 +2,11 @@ require "ruport"
 
 class LinePlotter < Ruport::Renderer
 
-  layout do |l|
-    l.line_color   = "green"
-    l.line_width   = 2
-    l.width        = "100%"
-    l.height       = "100%"
+   options do |o|
+    o.line_color   = "green"
+    o.line_width   = 2
+    o.width        = "100%"
+    o.height       = "100%"
   end
 
   def run
@@ -33,12 +33,12 @@ class SVG < Ruport::Format::Plugin
 
   def render_plot
 
-    opts = { :width => layout.width, :height => layout.height,
+    opts = { :width => options.width, :height => options.height,
              :xmlns => "http://www.w3.org/2000/svg" }
 
     output << @builder.svg(opts) do |builder|
-      builder.g( :stroke        => layout.line_color,
-                 "stroke-width" => layout.line_width ) do |g|
+      builder.g( :stroke        => options.line_color,
+                 "stroke-width" => options.line_width ) do |g|
         data.each { |r| render_line(r,g) }
       end
     end
