@@ -87,6 +87,27 @@ module Ruport
 
   end
   
+  # This class implements the basic renderer for table rows.
+  #
+  # == Supported Format Plugins 
+  #  
+  # * Format::CSV
+  # * Format::Text
+  # * Format::HTML
+  # * Format::Latex
+  #
+  # == Plugin hooks called (in order)
+  #  
+  # * build_row
+  #
+  class Renderer::Row < Renderer
+    add_formats :csv, :text, :html, :latex
+
+    required_option :record
+
+    stage :row
+  end
+
   # This class implements the basic tabular data renderer for Ruport.
   #
   # For a set of methods that might be helpful while working with this class,

@@ -27,8 +27,10 @@ module Ruport::Format
         #classstr = r.tags.inject("") {|cs,c| cs + " class='#{c}'" }   
         classstr = 
           r.tags.length > 0 ? " class='#{r.tags.to_a.join(' ')}'" : ""
-        build_html_row(row,classstr)
-     end 
+        Ruport::Renderer::Row.render_html(:record => row,
+          :class_str => classstr,
+          :io => output)
+      end
     end
 
     # Simply closes the table tag. 
@@ -36,10 +38,12 @@ module Ruport::Format
       output << "\t</table>"
     end
 
-    def build_html_row(row,classstr="")
-       output << "\t\t<tr#{classstr}>\n\t\t\t<td#{classstr}>" +
-                   row.to_a.join("</td>\n\t\t\t<td#{classstr}>") + 
-                 "</td>\n\t\t</tr>\n"
+    # Renders individual rows for the table
+    def build_row
+      output <<
+        "\t\t<tr#{options.class_str}>\n\t\t\t<td#{options.class_str}>" +
+        options.record.to_a.join("</td>\n\t\t\t<td#{options.class_str}>") +
+        "</td>\n\t\t</tr>\n"
     end
 
   end

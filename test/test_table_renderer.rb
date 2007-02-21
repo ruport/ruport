@@ -20,6 +20,11 @@ class TestTableRenderer < Test::Unit::TestCase
     assert_equal("a,b,c\n1,2,3\n4,5,6\n",actual)
   end
 
+  def test_render_csv_row
+    actual = Ruport::Renderer::Row.render_csv(:record => [1,2,3])
+    assert_equal("1,2,3\n", actual)
+  end
+
   def test_render_html_basic
     
     actual = Ruport::Renderer::Table.render_html { |r|
@@ -42,6 +47,12 @@ class TestTableRenderer < Test::Unit::TestCase
       "\t</tr>\n\t</table>",actual)   
     
   end
+
+  def test_render_html_row
+    actual = Ruport::Renderer::Row.render_html(:record => [1,2,3])
+    assert_equal("\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
+                 "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n",actual)
+  end
     
   def test_render_html_with_tags 
     actual = Ruport::Renderer::Table.render_html { |r| 
@@ -59,6 +70,14 @@ class TestTableRenderer < Test::Unit::TestCase
     
     assert_equal(expected,actual) 
   end      
+
+  def test_render_html_row_with_tags
+    actual = Ruport::Renderer::Row.render_html(:record => [1,2,3],
+                                               :class_str => " class='foo'")
+    assert_equal("\t\t<tr class='foo'>\n\t\t\t<td class='foo'>1</td>\n"+
+                 "\t\t\t<td class='foo'>2</td>\n\t\t\t"+
+                 "<td class='foo'>3</td>\n\t\t</tr>\n",actual)
+  end
   
   def test_ensure_html_tags_joined
     actual = Ruport::Renderer::Table.render_html { |r|
