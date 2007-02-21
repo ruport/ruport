@@ -16,28 +16,28 @@ version = File.read(lib)[/^\s*VERSION\s*=\s*(['"])(\d+\.\d+\.d+)['"]/,1]
 task :default => [:test]
 
 Rake::TestTask.new do |test|
-	test.libs << "test"
-	test.test_files = Dir[ "test/test_*.rb" ]
-	test.verbose = true
+  test.libs << "test"
+  test.test_files = Dir[ "test/test_*.rb" ]
+  test.verbose = true
 end
 
 spec = Gem::Specification.new do |spec|
-	spec.name = LEAN ? "lean-ruport" : "ruport"
-	spec.version = "0.8.99"
-	spec.platform = Gem::Platform::RUBY
-	spec.summary = "A generalized Ruby report generation and templating engine."
-	spec.files =  Dir.glob("{examples,lib,test,bin}/**/**/*") +
+  spec.name = LEAN ? "lean-ruport" : "ruport"
+  spec.version = "0.8.99"
+  spec.platform = Gem::Platform::RUBY
+  spec.summary = "A generalized Ruby report generation and templating engine."
+  spec.files =  Dir.glob("{examples,lib,test,bin}/**/**/*") +
                       ["Rakefile", "setup.rb"]
   
   spec.require_path = "lib"
-	
+  
   spec.test_files = Dir[ "test/test_*.rb" ]
   spec.bindir = "bin"
   spec.executables = FileList["rope"]
-	spec.has_rdoc = true
-	spec.extra_rdoc_files = %w{README LICENSE TODO AUTHORS}
-	spec.rdoc_options << '--title' << 'Ruport Documentation' <<
-	                     '--main'  << 'README' << '-q'
+  spec.has_rdoc = true
+  spec.extra_rdoc_files = %w{README LICENSE TODO AUTHORS}
+  spec.rdoc_options << '--title' << 'Ruport Documentation' <<
+                       '--main'  << 'README' << '-q'
   unless LEAN
     spec.add_dependency('transaction-simple', "=1.4.0")
     spec.add_dependency('fastercsv', '>= 1.1.0')
@@ -48,10 +48,10 @@ spec = Gem::Specification.new do |spec|
     spec.add_dependency('gem_plugin', '>=0.2.2')
   end
   spec.author = "Gregory Brown"
-	spec.email = "	gregory.t.brown@gmail.com"
-	spec.rubyforge_project = "ruport"
-	spec.homepage = "http://reporting.stonecode.org"
-	spec.description = <<END_DESC
+  spec.email = "  gregory.t.brown@gmail.com"
+  spec.rubyforge_project = "ruport"
+  spec.homepage = "http://reporting.stonecode.org"
+  spec.description = <<END_DESC
   Ruby Reports is a software library that aims to make the task of reporting
   less tedious and painful. It provides tools for data acquisition,
   database interaction, formatting, and parsing/munging.
@@ -69,8 +69,8 @@ Rake::RDocTask.new do |rdoc|
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
-	pkg.need_zip = true
-	pkg.need_tar = true
+  pkg.need_zip = true
+  pkg.need_tar = true
 end
 
 begin

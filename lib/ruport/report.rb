@@ -290,13 +290,21 @@ module Ruport
       def run(options={})
         options[:reports] ||= [self.new]
 
+        formatting_options = ( options.keys - 
+                                [:reports,:tries,:timeout,:interval])
+
+        fopts = formatting_options.inject({}) { |s,k|
+          s.merge( k => options[k] )
+        }
+        
+
         process = lambda do
           options[:reports].each { |rep|
             rep.prepare if rep.respond_to? :prepare
             rep.results = rep.generate
 
             if renderer
-              rep.results = renderer.render(rep.format) { |r| 
+              rep.results = renderer.render(rep.format,fopts) { |r| 
                 r.data = rep.results
               }
             end
