@@ -502,4 +502,16 @@ class TestTableKernelHack < Test::Unit::TestCase
     assert_equal Table(:a), Table([:a])
   end
   
+  # def test_with_file_arg
+  #   assert_equal Table("test/samples/addressbook.csv"),
+  #                Table(:file => "test/samples/addressbook.csv")
+  # end
+  # 
+  # def test_with_string_arg
+  #   csv_string = "id,name\n1,Inky\n2,Blinky\n3,Clyde"
+  #   
+  #   assert_equal Ruport::Data::Table.parse(csv_string),
+  #                Table(:string => csv_string)
+  # end
+  
 end
