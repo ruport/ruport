@@ -31,23 +31,30 @@ module Ruport
       #
       # Uses fit_to_width to truncate table if necessary
       def build_table_body
-        s = hr
+        output << fit_to_width(hr)
   
         data.each { |r|
-          line = Array.new
-          r.each_with_index { |f,i|
-            if options.alignment.eql? :center
-              line << f.to_s.center(options.max_col_width[i])
-            else
-              align = f.is_a?(Numeric) ? :rjust : :ljust
-              line << f.to_s.send(align, options.max_col_width[i])
-            end
-          }
-          s += "| #{line.join(' | ')} |\n"
+          r.as(:text, :io => output,
+            :max_col_width => options.max_col_width,
+            :alignment => options.alignment,
+            :table_width => options.table_width)
         }
-        s += hr
 
-        output << fit_to_width(s)
+        output << fit_to_width(hr)
+      end
+
+      def build_row
+        calculate_max_col_widths unless options.max_col_width
+        line = Array.new
+        options.record.each_with_index { |f,i|
+          if options.alignment.eql? :center
+            line << f.to_s.center(options.max_col_width[i])
+          else
+            align = f.is_a?(Numeric) ? :rjust : :ljust
+            line << f.to_s.send(align, options.max_col_width[i])
+          end
+        }
+        output << fit_to_width("| #{line.join(' | ')} |\n")
       end
 
       # Generates the horizontal rule by calculating the total table width and
@@ -83,21 +90,28 @@ module Ruport
         return if options.max_col_width
 
         options.max_col_width=Array.new
-        unless data.column_names.empty?
-          data.column_names.each_index do |i| 
-            options.max_col_width[i] = data.column_names[i].to_s.length
-          end
-        end
-            
-        data.each { |r|
-          r.each_with_index { |f,i|
-            if !options.max_col_width[i] || f.to_s.length > options.max_col_width[i]
-              options.max_col_width[i] = f.to_s.length
+        if data
+          unless data.column_names.empty?
+            data.column_names.each_index do |i| 
+              options.max_col_width[i] = data.column_names[i].to_s.length
             end
+          end
+            
+          data.each { |r|
+            r.each_with_index { |f,i|
+              if !options.max_col_width[i] || f.to_s.length > options.max_col_width[i]
+                options.max_col_width[i] = f.to_s.length
+              end
+            }
+          } 
+        elsif options.record
+          options.record.each_with_index { |f,i|
+              if !options.max_col_width[i] || f.to_s.length > options.max_col_width[i]
+                options.max_col_width[i] = f.to_s.length
+              end
           }
-        } 
+        end
       end
-
     end
   end
 end
