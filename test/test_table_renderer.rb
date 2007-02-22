@@ -113,6 +113,11 @@ class TestTableRenderer < Test::Unit::TestCase
     assert_equal "\\end{document}", output[/\\end\{document\}/]
   end
 
+  def test_render_latex_row
+    actual = Ruport::Renderer::Row.render_latex(:record => [1,2,3])
+    assert_equal("1 & 2 & 3\\\\\n\\hline\n", actual)
+  end
+
   def test_render_pdf_basic
     begin
       require "pdf/writer" 

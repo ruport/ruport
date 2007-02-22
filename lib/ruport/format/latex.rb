@@ -30,8 +30,7 @@ module Ruport::Format
 
     def build_table_body
       data.each do |r|
-        output << r.to_a.join(" & ") + "\\\\\n"
-        output << "\\hline\n"
+        Ruport::Renderer::Row.render_latex(:record => r, :io => output)
       end
       if caption
         output << "\\caption[#{caption}]{#{caption}}\n"
@@ -41,6 +40,11 @@ module Ruport::Format
 
     def build_table_footer
       output << "\\end{document}\n"
+    end
+
+    def build_row
+      output << options.record.to_a.join(" & ") + "\\\\\n"
+      output << "\\hline\n"
     end
 
   end
