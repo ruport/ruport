@@ -227,4 +227,19 @@ class TestRecord < Test::Unit::TestCase
     assert_equal old_object_id, new_object_id
   end
 
+  def test_record_as
+    rendered_row = @record.as(:text)
+    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
+  end
+
+  def test_to_hack
+    rendered_row = @record.to_text
+    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
+  end
+
+  def test_attributes_not_broken_by_to_hack
+    record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
+    assert_equal 2, record.to_something
+  end
+
 end

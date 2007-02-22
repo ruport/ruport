@@ -204,6 +204,21 @@ module Ruport::Data
       r = Record.new(@data.dup,:attributes => @attributes.dup)
     end
         
+    # A simple formatting tool which allows you to quickly generate a formatted
+    # row from the record.
+    #
+    # If a block is given, the Renderer::Row object will be yielded
+    #
+    # Example:
+    #   my_record.as(:csv)  #=> "1,2,3\n"
+    #   
+    def as(*args)
+      Ruport::Renderer::Row.render(*args) do |rend|
+        rend.record = self
+        yield(rend) if block_given?
+      end
+    end
+
     # Provides accessor style methods for attribute access.
     #
     # Example:
@@ -216,8 +231,9 @@ module Ruport::Data
       if(key = @attributes.find { |r| r.to_s.eql?(k) })
         args[0] ? @data[key] = args[0] : @data[key]
       else
-       super
-     end
+        return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
+        super
+      end
     end 
 
     #indifferentish access that also can call methods
