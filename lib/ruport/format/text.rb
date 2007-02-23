@@ -15,12 +15,20 @@ module Ruport
       #
       # calls fit_to_width to truncate table heading if necessary.
       def build_table_header
-        return if data.column_names.empty? || !options.show_table_headers
-        c = data.column_names.dup
-        c.each_with_index { |f,i|
-          c[i] = f.to_s.center(options.max_col_width[i])
+        return unless should_render_column_names
+
+        c = data.column_names.enum_for(:each_with_index).map { |f,i|
+          f.to_s.center(options.max_col_width[i])
         }
-        output << fit_to_width("#{hr}| #{c.to_a.join(' | ')} |\n")
+
+        output << fit_to_width("#{hr}| #{c.join(' | ')} |\n")
+      end
+
+      # Returns false if column_names are empty, or options.show_table_headers
+      # is false/nil.  Returns true otherwise.
+      #
+      def should_render_column_names
+        not data.column_names.empty? || !options.show_table_headers
       end
 
       # Generates the body of the text table. 
@@ -45,13 +53,14 @@ module Ruport
 
       def build_row
         calculate_max_col_widths unless options.max_col_width
-        line = Array.new
-        options.record.each_with_index { |f,i|
+
+        options.record.enum_for(:each_with_index).inject(line=[]) { |s,e|
+          field,index = e
           if options.alignment.eql? :center
-            line << f.to_s.center(options.max_col_width[i])
+            line << field.to_s.center(options.max_col_width[index])
           else
-            align = f.is_a?(Numeric) ? :rjust : :ljust
-            line << f.to_s.send(align, options.max_col_width[i])
+            align = field.is_a?(Numeric) ? :rjust : :ljust
+            line << field.to_s.send(align, options.max_col_width[index])
           end
         }
         output << fit_to_width("| #{line.join(' | ')} |\n")
@@ -77,7 +86,7 @@ module Ruport
       # Truncates a string so that it does not exceed Text#width
       def fit_to_width(s)
         # workaround for Rails setting terminal_width to 1
-        width < 2 ? max_width = 80 : max_width = width
+        max_width = width < 2 ? 80 : width
         
         s.split("\n").each { |r|
            r.gsub!(/\A.{#{max_width+1},}/) { |m| m[0,max_width-2] + ">>" }
@@ -86,10 +95,12 @@ module Ruport
 
       # determines the text widths for each column.
       def calculate_max_col_widths
+
         # allow override
         return if options.max_col_width
 
-        options.max_col_width=Array.new
+        options.max_col_width = []
+
         if data
           unless data.column_names.empty?
             data.column_names.each_index do |i| 
@@ -97,21 +108,22 @@ module Ruport
             end
           end
             
-          data.each { |r|
-            r.each_with_index { |f,i|
-              if !options.max_col_width[i] || f.to_s.length > options.max_col_width[i]
-                options.max_col_width[i] = f.to_s.length
-              end
-            }
-          } 
+          data.each { |r| max_col_widths_for_row(r) } 
+
         elsif options.record
-          options.record.each_with_index { |f,i|
-              if !options.max_col_width[i] || f.to_s.length > options.max_col_width[i]
-                options.max_col_width[i] = f.to_s.length
-              end
-          }
+          max_col_widths_for_row(options.record)
+        end
+
+      end
+
+      def max_col_widths_for_row(row)
+        row.each_with_index do |f,i|
+          if !options.max_col_width[i] || f.to_s.length > options.max_col_width[i]
+            options.max_col_width[i] = f.to_s.length
+          end
         end
       end
+
     end
   end
 end

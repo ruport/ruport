@@ -73,6 +73,7 @@ module Ruport
   end
 end
 
+require "enumerator"
 require "ruport/attempt" 
 require "ruport/config" 
 require "ruport/data" 
