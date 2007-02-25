@@ -22,12 +22,15 @@ module Ruport::Format
     # converted into class attributes in the HTML output.
     #
     def build_table_body
-      data.each do |r| 
-        row = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
+      render_data_by_row do |rend|
+        r = rend.data
+        rend.data = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
         classstr = 
           r.tags.length > 0 ? " class='#{r.tags.to_a.join(' ')}'" : ""
-        Ruport::Renderer::Row.render_html( 
-         :class_str => classstr, :io => output) { |rend| rend.data = r  }
+
+        rend.options.class_str = classstr
+        #Ruport::Renderer::Row.render_html( 
+       #  :class_str => classstr, :io => output) { |rend| rend.data = row  }
       end
     end
 

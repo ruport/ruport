@@ -44,12 +44,13 @@ module Ruport
 
         calculate_max_col_widths unless options.max_col_width
 
-        data.each { |r|
-          r.as(:text, :io => output,
-            :max_col_width => options.max_col_width,
-            :alignment => options.alignment,
-            :table_width => options.table_width)
-        }
+        render_data_by_row do |rend|
+          rend.options do |o|
+            o.max_col_width = options.max_col_width
+            o.alignment     = options.alignment
+            o.table_width   = options.table_width
+          end
+        end
 
         output << fit_to_width(hr)
       end

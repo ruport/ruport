@@ -6,7 +6,21 @@
 
 module Ruport
   module Format
+    
+    module RenderingTools
+
+      def render_data_by_row
+        data.each do |r|
+          Renderer::Row.render(format,:data => r,:io => output) do |rend| 
+            yield(rend) if block_given?
+          end
+        end
+      end
+
+    end
+
     class Plugin
+      include RenderingTools
 
       attr_accessor :options
       attr_accessor :data

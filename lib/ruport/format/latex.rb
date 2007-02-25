@@ -29,15 +29,8 @@ module Ruport::Format
     end
 
     def build_table_body
-      data.each do |r|
-        Ruport::Renderer::Row.render_latex { |rend|
-          rend.data = r 
-          rend.io = output
-        }
-      end
-      if caption
-        output << "\\caption[#{caption}]{#{caption}}\n"
-      end
+      render_data_by_row
+      output << "\\caption[#{caption}]{#{caption}}\n" if caption
       output << "\\end{longtable}\n"
     end
 

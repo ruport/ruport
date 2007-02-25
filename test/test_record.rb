@@ -202,20 +202,6 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 3,r.size
   end
 
-  def test_ensure_records_dup_source_data
-    a = [1,2,3]
-    b = Record.new(a)
-    b[0] += 1
-    assert_equal 2, b[0]
-    assert_equal 1, a[0]
-
-    a = { "a" => 1, "b" => 2, "c" => 3 }
-    b = Record.new(a)
-    b["a"] += 1
-    assert_equal 2, b["a"]
-    assert_equal 1, a["a"]
-  end
-
   def test_reindex
     assert_equal %w[a b c d], @record.attributes
     old_object_id = @record.instance_variable_get(:@attributes).object_id
@@ -237,7 +223,30 @@ class TestRecord < Test::Unit::TestCase
     assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
   end
 
-  def test_attributes_not_broken_by_to_hack
+  def test_ensure_records_dup_source_data
+    a = [1,2,3]
+    b = Record.new(a)
+    b[0] += 1
+    assert_equal 2, b[0]
+    assert_equal 1, a[0]
+
+    a = { "a" => 1, "b" => 2, "c" => 3 }
+    b = Record.new(a)
+    b["a"] += 1
+    assert_equal 2, b["a"]
+    assert_equal 1, a["a"]
+  end
+
+  def test_ensure_tags_get_duped
+    a = Record.new([1,2,3])
+    a.tag :foo
+    assert a.tags.include?(:foo)
+    b = a.dup
+    assert b.tags.include?(:foo)
+    assert_not_same a.tags, b.tags
+  end
+
+  def test_ensure_attributes_not_broken_by_to_hack
     record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
     assert_equal 2, record.to_something
   end
