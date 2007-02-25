@@ -611,6 +611,12 @@ module Kernel
       Ruport::Data::Table.new(f={:column_names => args[0]}.merge(opts))
     when /\.csv/
       Ruport::Data::Table.load(*args)
+    when Hash
+      if file = args[0].delete(:file)
+        Ruport::Data::Table.load(file,args[0])
+      elsif string = args[0].delete(:string)
+        Ruport::Data::Table.parse(string,args[0])
+      end
     else
        [].to_table(args)
     end             
