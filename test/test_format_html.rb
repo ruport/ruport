@@ -7,24 +7,7 @@ rescue LoadError
   nil
 end
 
-class TestTableRenderer < Test::Unit::TestCase
-  def test_render_csv_basic
-    actual = Ruport::Renderer::Table.render_csv { |r| 
-      r.data = [[1,2,3],[4,5,6]].to_table 
-    }
-    assert_equal("1,2,3\n4,5,6\n",actual)
-
-    actual = Ruport::Renderer::Table.render_csv { |r|
-      r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
-    }
-    assert_equal("a,b,c\n1,2,3\n4,5,6\n",actual)
-  end
-
-  def test_render_csv_row
-    actual = Ruport::Renderer::Row.render_csv(:record => [1,2,3])
-    assert_equal("1,2,3\n", actual)
-  end
-
+class TestFormatHTML < Test::Unit::TestCase
   def test_render_html_basic
     
     actual = Ruport::Renderer::Table.render_html { |r|
@@ -104,62 +87,4 @@ class TestTableRenderer < Test::Unit::TestCase
     
     assert_equal(expected,actual)
   end
-
-  def test_render_latex_basic
-    data = [[1,2,3,2],[3,4,5,6]].to_table(%w[a b c d])
-    output = data.to_latex
-    assert_equal "\\documentclass", output[/\\documentclass/]
-    assert_equal "\\begin{document}", output[/\\begin\{document\}/]
-    assert_equal "\\end{document}", output[/\\end\{document\}/]
-  end
-
-  def test_render_latex_row
-    actual = Ruport::Renderer::Row.render_latex(:record => [1,2,3])
-    assert_equal("1 & 2 & 3\\\\\n\\hline\n", actual)
-  end
-
-  def test_render_pdf_basic
-    begin
-      require "pdf/writer" 
-    rescue LoadError 
-      warn "skipping pdf test"; return
-    end
-   data = [[1,2],[3,4]].to_table
-   assert_raise(RuntimeError) { data.to_pdf }
-
-   data.column_names = %w[a b]
-   assert_nothing_raised { data.to_pdf }
-  end
-
-  def test_prune
-    actual = Ruport::Renderer::Table.render_csv { |r|
-      r.data = [[1,2,3],[1,5,6]].to_table(%w[a b c])
-      r.prune(1)
-    }
-    assert_equal("a,b,c\n1,2,3\n,5,6\n",actual)
-  end
-
-  def test_num_cols
-    Ruport::Renderer::Table.render_csv { |r|
-      r.data = [[1,2,3],[4,5,6]].to_table
-      assert_equal 3, r.num_cols
-    }
-  end
-
-  def test_rewrite_column
-    actual = Ruport::Renderer::Table.render_csv { |r|
-      r.data = [[1,2,3],[4,5,6]].to_table
-      r.rewrite_column(0) { |r| r[0]+r[1] }
-    }
-    assert_equal("3,2,3\n9,5,6\n",actual)
-  end
-
-  def test_layout_header
-    actual = Ruport::Renderer::Table.render_csv { |r|
-      r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
-      r.options { |o| o.show_table_headers = false }
-    }
-    assert_equal("1,2,3\n4,5,6\n",actual)
-  end  
-  
 end
