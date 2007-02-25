@@ -110,6 +110,7 @@ class TestRenderer < Test::Unit::TestCase
     assert_equal "<b>Foo: 10</b>\n<pre>\nbar\n</pre>\n",html
   end
 
+
   def test_renderer_with_run_hooks
     assert_equal "|header\nbody\nfooter\n", 
        RendererWithRunHook.render_text(:foo => "bar")
@@ -141,6 +142,21 @@ class TestRenderer < Test::Unit::TestCase
       assert_equal "foo", r.options.subtitle
       assert_equal "bar", r.options.subsubtitle
     }
+  end
+
+  def test_data_accessors
+   a = RendererWithHelpers.render(:text, :data => [1,2,4]) { |r|
+     assert_equal [1,2,4], r.data
+   }
+  
+   b = RendererWithHelpers.render_text(%w[a b c]) { |r|
+     assert_equal %w[a b c], r.data
+   }
+  
+   c = RendererWithHelpers.render_text(%w[a b f],:snapper => :red) { |r|
+     assert_equal %w[a b f], r.data
+     assert_equal :red, r.options.snapper
+   }
   end
 
   def test_using_io

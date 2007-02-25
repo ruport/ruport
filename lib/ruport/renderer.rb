@@ -193,6 +193,8 @@ class Ruport::Renderer
     rend.send(:options=, options.dup)
 
     if args[1].kind_of?(Hash)
+      d = args[1].delete(:data)
+      rend.data = d if d
       args[1].each {|k,v| rend.options.send("#{k}=",v) }
     end
 
@@ -283,6 +285,9 @@ class Ruport::Renderer
   # render(:csv) to become render_csv
   def self.method_missing(id,*args,&block)
     id.to_s =~ /^render_(.*)/
+    unless args[0].kind_of? Hash
+      args = [ (args[1] || {}).merge(:data => args[0]) ]
+    end
     $1 ? render($1.to_sym,*args,&block) : super
   end
 
