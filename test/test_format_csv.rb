@@ -22,7 +22,7 @@ class TestFormatCSV < Test::Unit::TestCase
   end
 
   def test_render_csv_row
-    actual = Ruport::Renderer::Row.render_csv(:record => [1,2,3])
+    actual = Ruport::Renderer::Row.render_csv { |r| r.data = [1,2,3] }
     assert_equal("1,2,3\n", actual)
   end
 

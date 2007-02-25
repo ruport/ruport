@@ -214,7 +214,7 @@ module Ruport::Data
     #   
     def as(*args)
       Ruport::Renderer::Row.render(*args) do |rend|
-        rend.record = self
+        rend.data = self
         yield(rend) if block_given?
       end
     end

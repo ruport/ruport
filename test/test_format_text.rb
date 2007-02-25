@@ -15,7 +15,7 @@ class TestFormatText < Test::Unit::TestCase
   end
 
   def test_row_basic
-    actual = Ruport::Renderer::Row.render_text(:record => [1,2,3])
+    actual = Ruport::Renderer::Row.render_text { |r| r.data = [1,2,3] }
     assert_equal("| 1 | 2 | 3 |\n", actual)
   end
 

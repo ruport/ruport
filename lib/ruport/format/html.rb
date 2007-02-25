@@ -24,12 +24,10 @@ module Ruport::Format
     def build_table_body
       data.each do |r| 
         row = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
-        #classstr = r.tags.inject("") {|cs,c| cs + " class='#{c}'" }   
         classstr = 
           r.tags.length > 0 ? " class='#{r.tags.to_a.join(' ')}'" : ""
-        Ruport::Renderer::Row.render_html(:record => row,
-          :class_str => classstr,
-          :io => output)
+        Ruport::Renderer::Row.render_html( 
+         :class_str => classstr, :io => output) { |rend| rend.data = r  }
       end
     end
 
@@ -42,7 +40,7 @@ module Ruport::Format
     def build_row
       output <<
         "\t\t<tr#{options.class_str}>\n\t\t\t<td#{options.class_str}>" +
-        options.record.to_a.join("</td>\n\t\t\t<td#{options.class_str}>") +
+        data.to_a.join("</td>\n\t\t\t<td#{options.class_str}>") +
         "</td>\n\t\t</tr>\n"
     end
 

@@ -18,7 +18,7 @@ class TestFormatLatex < Test::Unit::TestCase
   end
 
   def test_render_latex_row
-    actual = Ruport::Renderer::Row.render_latex(:record => [1,2,3])
+    actual = Ruport::Renderer::Row.render_latex { |r| r.data = [1,2,3] }
     assert_equal("1 & 2 & 3\\\\\n\\hline\n", actual)
   end
 

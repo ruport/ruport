@@ -41,6 +41,9 @@ module Ruport
       def build_table_body
         output << fit_to_width(hr)
   
+
+        calculate_max_col_widths unless options.max_col_width
+
         data.each { |r|
           r.as(:text, :io => output,
             :max_col_width => options.max_col_width,
@@ -52,9 +55,10 @@ module Ruport
       end
 
       def build_row
-        calculate_max_col_widths unless options.max_col_width
 
-        options.record.enum_for(:each_with_index).inject(line=[]) { |s,e|
+        max_col_widths_for_row(data) unless options.max_col_width
+
+        data.enum_for(:each_with_index).inject(line=[]) { |s,e|
           field,index = e
           if options.alignment.eql? :center
             line << field.to_s.center(options.max_col_width[index])
@@ -101,22 +105,18 @@ module Ruport
 
         options.max_col_width = []
 
-        if data
-          unless data.column_names.empty?
-            data.column_names.each_index do |i| 
-              options.max_col_width[i] = data.column_names[i].to_s.length
-            end
+        unless data.column_names.empty?
+          data.column_names.each_index do |i| 
+            options.max_col_width[i] = data.column_names[i].to_s.length
           end
-            
-          data.each { |r| max_col_widths_for_row(r) } 
-
-        elsif options.record
-          max_col_widths_for_row(options.record)
         end
+            
+        data.each { |r| max_col_widths_for_row(r) } 
 
       end
 
       def max_col_widths_for_row(row)
+        options.max_col_width ||= []
         row.each_with_index do |f,i|
           if !options.max_col_width[i] || f.to_s.length > options.max_col_width[i]
             options.max_col_width[i] = f.to_s.length

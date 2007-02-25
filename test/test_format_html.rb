@@ -32,7 +32,7 @@ class TestFormatHTML < Test::Unit::TestCase
   end
 
   def test_render_html_row
-    actual = Ruport::Renderer::Row.render_html(:record => [1,2,3])
+    actual = Ruport::Renderer::Row.render_html { |r| r.data = [1,2,3] }
     assert_equal("\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
                  "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n",actual)
   end
@@ -55,8 +55,9 @@ class TestFormatHTML < Test::Unit::TestCase
   end      
 
   def test_render_html_row_with_tags
-    actual = Ruport::Renderer::Row.render_html(:record => [1,2,3],
-                                               :class_str => " class='foo'")
+    actual = Ruport::Renderer::Row.render_html(:class_str => " class='foo'") { |r|
+      r.data = [1,2,3]
+    }
     assert_equal("\t\t<tr class='foo'>\n\t\t\t<td class='foo'>1</td>\n"+
                  "\t\t\t<td class='foo'>2</td>\n\t\t\t"+
                  "<td class='foo'>3</td>\n\t\t</tr>\n",actual)

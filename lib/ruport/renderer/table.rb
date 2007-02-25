@@ -20,9 +20,6 @@ module Ruport
   #
   class Renderer::Row < Renderer
     add_formats :csv, :text, :html, :latex
-
-    required_option :record
-
     stage :row
   end
 
