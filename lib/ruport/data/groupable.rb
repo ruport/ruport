@@ -23,7 +23,7 @@ module Ruport::Data
     #   table[2].tag(:winners)
     #   table[3].tag(:losers)
     #
-    #   r = table.group_by_tag
+    #   r = table.groups
     #   puts r[:winners]
     #   => +---------------+
     #      | name  | score |
@@ -41,21 +41,24 @@ module Ruport::Data
     #      +----------------+
     #
     def groups
-      #r_tags = map { |r| r.tags }.flatten.uniq
       r_tags = group_names_intern
       tables_hash = Hash.new { |h,k| h[k] = Table(column_names) }
       r_tags.each { |t| 
         tables_hash[t.gsub(/^grp_/,"")] = sub_table { |r| r.tags.include? t }}
       r = Record.new tables_hash, :attributes => group_names
     end  
-    
+   
+    # Gets the names of the groups
     def group_names
        group_names_intern.map { |r| r.gsub(/^grp_/,"") }
     end
     
+    # Gets a subtable of the rows matching the group name
+    #
     def group(tag)
       sub_table { |r| r.tags.include?("grp_#{tag}") }
     end
+
     #
     # Tags each row of the <tt>Table</tt> for which the <tt>block</tt> is not 
     # false with <tt>label</tt>.
@@ -66,7 +69,7 @@ module Ruport::Data
     #            ['pinky', 3]].to_table(['name','score'])
     #   
     #   table.create_tag_group(:cool_kids) {|r| r.score > 1}
-    #   groups = table.group_by_tag(:cool_kids)
+    #   groups = table.groups
     #   
     #   puts group[:cool_kids]
     #   => +----------------+
