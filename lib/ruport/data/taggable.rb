@@ -49,11 +49,11 @@ module Ruport::Data
     end
   
     # 
-    # Returns an Array of the object's tags.
+    # Returns an Set of the object's tags.
     #
     # Example:
     #
-    #   taggable_obj.tags #=> [:spiffy, :kind_of_spiffy]
+    #   taggable_obj.tags #=> #<Set: {:spiffy, :kind_of_spiffy}>
     #
     def tags              
       @ruport_tags ||= Set.new
