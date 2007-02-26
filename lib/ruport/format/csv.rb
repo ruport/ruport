@@ -10,19 +10,24 @@ module Ruport::Format
     # or the Data::Table has no column names.
     def build_table_header
       unless data.column_names.empty? || !options.show_table_headers
-        Ruport::Renderer::Row.render_csv data.column_names, :io => output 
+        Ruport::Renderer::Row.render_csv data.column_names, :io => output,
+          :format_options => options.format_options 
       end
     end
 
     # Calls the row renderer for each row in the Data::Table
     def build_table_body
-      render_data_by_row
+      render_data_by_row { |r| 
+        r.options.format_options = options.format_options
+      }
     end
 
     # Produces CSV output for a data row.
     def build_row
       require "fastercsv"
-      FCSV(output) { |csv| csv << data }
+      FCSV(output,options.format_options || {}) { |csv| 
+        csv << data
+      }
     end
   end
 end
