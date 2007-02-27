@@ -619,8 +619,7 @@ module Kernel
   #   t = Table(%w[a b c]) { |t| t << [1,2,3] } 
   #
   #   # allows loading table from CSV
-  #   # accepts all Data::Table.load options, but block form yields table,
-  #   # not row!
+  #   # accepts all Data::Table.load options, including block (yields table,row)
   #
   #   t = Table("foo.csv")
   #   t = Table("bar.csv", :has_names => false)
@@ -631,12 +630,12 @@ module Kernel
       opts = args[1] || {}
       Ruport::Data::Table.new(f={:column_names => args[0]}.merge(opts))
     when /\.csv/
-      Ruport::Data::Table.load(*args)
+      return Ruport::Data::Table.load(*args,&block)
     when Hash
       if file = args[0].delete(:file)
-        Ruport::Data::Table.load(file,args[0])
+        return Ruport::Data::Table.load(file,args[0],&block)
       elsif string = args[0].delete(:string)
-        Ruport::Data::Table.parse(string,args[0])
+        return Ruport::Data::Table.parse(string,args[0],&block)
       end
     else
        [].to_table(args)
