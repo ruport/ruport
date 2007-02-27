@@ -149,7 +149,24 @@ class TestTable < Test::Unit::TestCase
     table = Ruport::Data::Table.load( "test/samples/data.tsv", 
                                       :csv_options => { :col_sep => "\t" } )
     assert_equal expected, table 
-    
+
+
+   expected = ['c','e']
+   
+   Ruport::Data::Table.load( "test/samples/data.csv", :csv_options => 
+    { :headers => true, :header_converters => :symbol } ) do |s,r|
+    assert_equal expected.shift, r[:col3]
+   end
+
+   
+   expected = ['c','e']
+   
+   Ruport::Data::Table.load( "test/samples/data.csv", 
+                             :records => true ) do |s,r|
+      assert_equal expected.shift, r.col3
+      assert_kind_of Ruport::Data::Record, r
+   end
+     
     table = Ruport::Data::Table.load("test/samples/data.csv", :has_names => false)
     assert_equal([],table.column_names)
     assert_equal([%w[col1 col2 col3],%w[a b c],["d",nil,"e"]].to_table, table)
@@ -174,6 +191,7 @@ class TestTable < Test::Unit::TestCase
                                        :has_names => false)
     assert_equal([],table.column_names)
     assert_equal([%w[a b c],%w[1 2 3], %w[4 5 6]].to_table, table) 
+
     
   end
   

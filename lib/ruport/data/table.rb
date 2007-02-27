@@ -165,9 +165,14 @@ module Ruport::Data
         end
         @data.last.tags = other.tags.dup
       else
-        raise ArgumentError
+        if other.respond_to?(:to_hash)
+          self << other.to_hash
+        else
+          raise ArgumentError
+        end
       end
-      self
+      
+      return self
     end
     
     def record_class
@@ -566,6 +571,10 @@ module Ruport::Data
     def self.get_table_from_csv(msg,param,options={},&block) #:nodoc:
       options = {:has_names => true,
                  :csv_options => {} }.merge(options)
+      
+      # if people want to use FCSV's header support, let them           
+      options[:has_names] = false if options[:csv_options][:headers]
+
       require "fastercsv"
       loaded_data = self.new
 
@@ -574,10 +583,22 @@ module Ruport::Data
         if first_line && options[:has_names]
           loaded_data.column_names = row
           first_line = false
-        elsif !block
-          loaded_data << row
         else
-         block[loaded_data,row]
+          
+          if first_line && options[:csv_options][:headers]
+            loaded_data.column_names = row.headers
+            first_line = false
+          end
+          
+          if !block
+            loaded_data << row
+          else
+            if options[:records]
+              row = Record.new row, :attributes => loaded_data.column_names
+            end
+            block[loaded_data,row]
+          end
+
         end
       end ; loaded_data
     end      
