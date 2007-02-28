@@ -304,6 +304,8 @@ class TestTable < Test::Unit::TestCase
    a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }  
    a.replace_column("b","d") { |r| r.b.to_s }
    assert_equal Table(%w[a d c]) { |t| t << [1,"2",3] << [4,"5",6] }, a
+   a.replace_column("d") { |r| r.d.to_i }
+   assert_equal Table(%w[a d c]) { |t| t << [1,2,3] << [4,5,6] }, a
   end
   
   def test_append_chain
@@ -519,17 +521,36 @@ class TestTableKernelHack < Test::Unit::TestCase
     assert_equal Table("a"), Table(%w[a])
     assert_equal Table(:a), Table([:a])
   end
+
+  def test_iterators
+
+    Table("test/samples/addressbook.csv") do |s,r|
+      assert_kind_of(Array,r)
+      assert_kind_of(Ruport::Data::Table,s)
+    end
+
+    n = 0
+
+    Table(:string => "a,b,c\n1,2,3\n4,5,6\n") do |s,r|
+      assert_kind_of(Array,r)
+      assert_kind_of(Ruport::Data::Table,s)
+      n += 1
+    end
+
+    assert_equal 2, n
+    
+  end
   
-   def test_with_file_arg
-     assert_equal Table("test/samples/addressbook.csv"),
-                  Table(:file => "test/samples/addressbook.csv")
-   end
+  def test_with_file_arg
+    assert_equal Table("test/samples/addressbook.csv"),
+                 Table(:file => "test/samples/addressbook.csv")
+  end
    
-   def test_with_string_arg
-     csv_string = "id,name\n1,Inky\n2,Blinky\n3,Clyde"
+  def test_with_string_arg
+    csv_string = "id,name\n1,Inky\n2,Blinky\n3,Clyde"
      
-     assert_equal Ruport::Data::Table.parse(csv_string),
-                  Table(:string => csv_string)
-   end
+    assert_equal Ruport::Data::Table.parse(csv_string),
+                 Table(:string => csv_string)
+  end
   
 end

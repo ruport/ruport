@@ -360,9 +360,13 @@ module Ruport::Data
     #     | 1 | 2 |  7 |
     #     | 4 | 5 | 16 |
     #     +------------+
-    def replace_column(old_col,new_col,&block)
-      add_column(new_col,:after => old_col,&block)
-      remove_column(old_col)
+    def replace_column(old_col,new_col=nil,&block)
+      if new_col
+        add_column(new_col,:after => old_col,&block)
+        remove_column(old_col)
+      else
+        each { |r| r[old_col] = yield(r) }
+      end
     end         
           
     #  Generates a sub table
