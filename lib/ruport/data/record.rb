@@ -258,7 +258,7 @@ module Ruport::Data
 
 
     def reindex(new_attributes)
-      @attributes.replace(new_attributes)
+      @attributes = new_attributes
     end
   end
 end

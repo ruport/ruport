@@ -204,13 +204,13 @@ class TestRecord < Test::Unit::TestCase
 
   def test_reindex
     assert_equal %w[a b c d], @record.attributes
-    old_object_id = @record.instance_variable_get(:@attributes).object_id
+    #old_object_id = @record.instance_variable_get(:@attributes).object_id
 
-    @record.send(:reindex, %w[apple banana courier django])
+    @record.send(:reindex, a=%w[apple banana courier django])
     assert_equal %w[apple banana courier django], @record.attributes
 
     new_object_id = @record.instance_variable_get(:@attributes).object_id
-    assert_equal old_object_id, new_object_id
+    assert_equal a.object_id, new_object_id
   end
 
   def test_record_as

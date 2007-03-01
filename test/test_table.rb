@@ -501,6 +501,31 @@ class TestTable < Test::Unit::TestCase
      assert_equal [[1,2,3],[4,5,6],[7,8,9]].to_table,a
   end
 
+  def test_ensure_setting_column_names_later_does_not_break_replace_column
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    a.replace_column("b","q") { |r| r.a + r.c }
+    a.column_names = %w[d e f]
+    assert_equal [[1,4,3],[4,10,6]].to_table(%w[d e f]), a
+
+    a = [[1,2,3],[4,5,6]].to_table
+
+    a.replace_column(1) { |r| r[0] + r[2] }
+
+    a.column_names = %w[d e f]
+    assert_equal [[1,4,3],[4,10,6]].to_table(%w[d e f]), a
+
+    a = [[1,2,3],[4,5,6]].to_table
+
+    a.replace_column(2) { |r| r[0] + 5 }
+
+    a.column_names = %w[a b c]
+
+    a.replace_column("b") { |r| r.a + 4 }
+    a.replace_column("b","foo") { |r| r.b + 1 }
+
+    assert_equal [[1,6,6],[4,9,9]].to_table(%w[a foo c]), a
+  end
+
 end
 
 class TestTableKernelHack < Test::Unit::TestCase
