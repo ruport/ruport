@@ -407,6 +407,15 @@ module Ruport::Data
          end
        end      
     end
+
+    def reduce(columns=column_names,range=nil,&block)
+      t = sub_table(columns,range,&block)
+      @data = t.data
+      @column_names = t.column_names
+      self
+    end
+
+    alias_method :sub_table!, :reduce
     
     # returns an array of values for the given column_name
     def column(name)

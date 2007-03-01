@@ -137,6 +137,23 @@ class TestTable < Test::Unit::TestCase
                   
   end
 
+  def test_reduce
+
+    table = [ [1,2,3,4],[5,6,7,9],
+              [10,11,12,13],[14,15,16,17] ].to_table(%w[a b c d])
+
+    table.reduce(%w[b c],1..-2)
+    assert_equal [[6,7],[11,12]].to_table(%w[b c]), table
+
+    table = [ [1,2,3,4],[5,6,7,9],
+              [10,11,12,13],[14,15,16,17] ].to_table(%w[a b c d])
+    table.reduce(%w[c d a]) { |r| r.a < 10 }
+
+    assert_equal [[3,4,1],[7,9,5]].to_table(%w[c d a]),  
+                 table
+
+  end
+
   def test_csv_load
     table = Ruport::Data::Table.load("test/samples/data.csv")
     assert_equal %w[col1 col2 col3], table.column_names
