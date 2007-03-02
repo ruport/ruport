@@ -170,10 +170,12 @@ class TestTable < Test::Unit::TestCase
 
    expected = ['c','e']
    
-   Ruport::Data::Table.load( "test/samples/data.csv", :csv_options => 
+   table = Ruport::Data::Table.load( "test/samples/data.csv", :csv_options => 
     { :headers => true, :header_converters => :symbol } ) do |s,r|
     assert_equal expected.shift, r[:col3]
    end
+
+   assert_equal [:col1,:col2,:col3], table.column_names
 
    
    expected = ['c','e']
