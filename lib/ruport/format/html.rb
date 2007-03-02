@@ -3,6 +3,8 @@ module Ruport::Format
   #
   # See also Renderer::Table
   class HTML < Plugin
+
+    opt_reader :show_table_headers, :class_str
     
     # Generates table headers based on the column names of your Data::Table.  
     #
@@ -10,7 +12,7 @@ module Ruport::Format
     # the Data::Table has no column names.
     def build_table_header
       output << "\t<table>\n"
-      unless data.column_names.empty? || !options.show_table_headers
+      unless data.column_names.empty? || !show_table_headers
         output << "\t\t<tr>\n\t\t\t<th>" + 
           data.column_names.join("</th>\n\t\t\t<th>") + 
           "</th>\n\t\t</tr>\n"
@@ -29,8 +31,6 @@ module Ruport::Format
           r.tags.length > 0 ? " class='#{r.tags.to_a.join(' ')}'" : ""
 
         rend.options.class_str = classstr
-        #Ruport::Renderer::Row.render_html( 
-       #  :class_str => classstr, :io => output) { |rend| rend.data = row  }
       end
     end
 
@@ -42,8 +42,8 @@ module Ruport::Format
     # Renders individual rows for the table
     def build_row
       output <<
-        "\t\t<tr#{options.class_str}>\n\t\t\t<td#{options.class_str}>" +
-        data.to_a.join("</td>\n\t\t\t<td#{options.class_str}>") +
+        "\t\t<tr#{class_str}>\n\t\t\t<td#{class_str}>" +
+        data.to_a.join("</td>\n\t\t\t<td#{class_str}>") +
         "</td>\n\t\t</tr>\n"
     end
 

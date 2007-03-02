@@ -19,8 +19,26 @@ module Ruport
 
     end
 
+    module OptionAccessors
+
+
+      module ClassMethods
+        def opt_reader(*opts)
+          require "forwardable"
+          extend Forwardable
+          opts.each { |o| def_delegator :@options, o }
+        end
+      end
+
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
+    end
+
     class Plugin
+
       include RenderingTools
+      include OptionAccessors
 
       attr_accessor :options
       attr_accessor :data
