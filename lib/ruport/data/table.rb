@@ -273,6 +273,15 @@ module Ruport::Data
       else
         each { |r| r[name] = options[:default] }
       end; self
+    end     
+    
+    def add_columns(names,options={})     
+      raise "Greg isn't smart enough to figure this out.\n"+
+            "Send ideas in at http://list.rubyreports.org" if block_given?           
+      need_reverse = !!(options[:after] || options[:position])
+      names = names.reverse if need_reverse
+      names.each { |n| add_column(n,options) } 
+      self
     end
     
     # Removes the given column from the table.  May use name or position.

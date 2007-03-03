@@ -283,6 +283,55 @@ class TestTable < Test::Unit::TestCase
       [3,nil,4,'x',7],
       [5,nil,6,'x',11] ].to_table(%w[a x b c d]), a)          
     
+  end        
+  
+  def test_add_columns 
+    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    a.add_columns(%w[c d])
+    expected = [ [1,2,nil,nil],
+                 [3,4,nil,nil],
+                 [5,6,nil,nil] ].to_table(%w[a b c d])
+    
+    assert_equal expected, a                  
+    
+    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    
+    a.add_columns(%w[c d],:after => "a")
+    
+    expected = [ [1,nil,nil,2],
+                 [3,nil,nil,4],
+                 [5,nil,nil,6], ].to_table(%w[a c d b])                        
+  
+    assert_equal expected, a                                   
+    
+    a.add_columns(%w[x f],:before => "a")
+    
+    expected = [ [nil,nil,1,nil,nil,2],
+                 [nil,nil,3,nil,nil,4],
+                 [nil,nil,5,nil,nil,6] ].to_table(%w[x f a c d b])
+                                         
+    assert_equal expected, a       
+    
+    a = [[1,2,0],[3,4,0],[5,6,0]].to_table(%w[a b c])  
+    
+    a.add_columns(%w[x y],:default => 9, :position => 1)
+    
+    expected = [[1,9,9,2,0],[3,9,9,4,0],[5,9,9,6,0]].to_table(%w[a x y b c])  
+    
+    assert_equal expected, a
+    
+    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    a.add_columns(%w[f x],:default => 0)
+    
+    expected = [[1,2,0,0],[3,4,0,0],[5,6,0,0]].to_table(%w[a b f x])
+    assert_equal expected, a
+    
+    assert_raises(RuntimeError) do 
+      a.add_columns(%w[a b]) { } 
+    end
+    
+     
+    
   end
   
   def test_remove_column
