@@ -47,19 +47,23 @@ class Ruport::Renderer
       # e.g.
       #   option :report_title
       #   option :table_width
-      def option(opt)
-        opt = "#{opt.to_s}="
-        define_method(opt) {|t| options.send(opt, t) }
+      def option(*opts)
+        opts.each do |opt|
+          opt = "#{opt.to_s}="
+          define_method(opt) {|t| options.send(opt, t) } 
+        end
       end
 
       # allow the report designer to specify a compulsory option
       # e.g.
       #   required_option :freight
       #   required_option :tax
-      def required_option(opt)
-        self.required_options ||= []
-        self.required_options << opt
-        option opt
+      def required_option(*opts) 
+        opts.each do |opt|
+          self.required_options ||= []
+          self.required_options << opt 
+          option opt
+        end
       end
  
       # allow the report designer to specify the stages that will be used to

@@ -69,8 +69,7 @@ class RendererWithHelpers < Ruport::Renderer
 
   prepare :document
 
-  option :subtitle
-  option :subsubtitle
+  option :subtitle, :subsubtitle
 
   stage :header
   stage :body
@@ -90,7 +89,7 @@ class RendererWithRunHook < Ruport::Renderer
 
   add_format DummyText, :text
 
-  required_option :foo
+  required_option :foo,:bar
   stage :header
   stage :body
   stage :footer
@@ -113,7 +112,7 @@ class TestRenderer < Test::Unit::TestCase
 
   def test_renderer_with_run_hooks
     assert_equal "|header\nbody\nfooter\n", 
-       RendererWithRunHook.render_text(:foo => "bar")
+       RendererWithRunHook.render_text(:foo => "bar",:bar => "baz")
   end
 
   def test_method_missing_hack_plugin
