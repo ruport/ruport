@@ -15,12 +15,9 @@ class SampleReport < Ruport::Report
         o.comments      = "J. Random Comment"
         o.order_info    = "Some info\nabout your order"
         o.title         = "Invoice for 12.15.2006 - 12.31.2006"
-      end
-
-      i.layout do |lay|
-        lay.body_width = 480
-        lay.comments_font_size = 12
-        lay.title_font_size = 10
+        o.body_width = 480
+        o.comments_font_size = 12
+        o.title_font_size = 10
       end
     end
   end

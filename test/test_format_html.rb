@@ -61,8 +61,9 @@ class TestFormatHTML < Test::Unit::TestCase
     assert_equal("\t\t<tr class='foo'>\n\t\t\t<td class='foo'>1</td>\n"+
                  "\t\t\t<td class='foo'>2</td>\n\t\t\t"+
                  "<td class='foo'>3</td>\n\t\t</tr>\n",actual)
-  end
+  end    
   
+
   def test_ensure_html_tags_joined
     actual = Ruport::Renderer::Table.render_html { |r|
       r.data =[[1,2],[3,4]].to_table(%w[a b])

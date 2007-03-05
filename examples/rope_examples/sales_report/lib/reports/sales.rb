@@ -61,9 +61,9 @@ module MyModule
       rounded_text_box("<b>#{title}</b>") do |o|
         o.fill_color = Color::RGB::Gray80
         o.radius    = 5  
-        o.width     = layout.header_width || 200
-        o.height    = layout.header_height || 20
-        o.font_size = layout.header_font_size || 12
+        o.width     = options.header_width || 200
+        o.height    = options.header_height || 20
+        o.font_size = options.header_font_size || 12
         o.x         = pdf_writer.absolute_right_margin - o.width 
         o.y         = pdf_writer.absolute_top_margin
       end
