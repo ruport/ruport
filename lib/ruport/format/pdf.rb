@@ -12,7 +12,8 @@ module Ruport::Format
   #       * table_width
   #       * max_table_width #=> 500
   #
-  class PDF < Plugin
+  class PDF < Plugin       
+    
     attr_writer :pdf_writer
     attr_accessor :table_header_proc
     attr_accessor :table_footer_proc
@@ -22,7 +23,7 @@ module Ruport::Format
       require "pdf/simpletable"
     end
 
-       # Returns the current PDF::Writer object or creates a new one if it has not
+    # Returns the current PDF::Writer object or creates a new one if it has not
     # been set yet.
     #
     def pdf_writer
@@ -213,13 +214,57 @@ module Ruport::Format
       end
     end
 
+    module DrawingHelpers
+
+       def horizontal_line(x1,x2)
+         pdf_writer.line(x1,cursor,x2,cursor)
+         pdf_writer.stroke
+       end
+
+       def vertical_line_at(x,y1,y2)
+         pdf_writer.line(x,y1,x,y2)
+       end
+
+       def left_boundary
+         pdf_writer.absolute_left_margin
+       end
+
+       def right_boundary
+         pdf_writer.absolute_right_margin
+       end
+
+       def top_boundary
+         pdf_writer.absolute_top_margin
+       end
+
+       def bottom_boundary
+         pdf_writer.absolute_bottom_margin
+       end
+
+       def cursor
+          pdf_writer.y
+       end
+
+       # rather than being whimsical, let's be really F'in picky.
+       def draw_text(text,options)
+         move_cursor_to(y) if options[:y]
+         add_text(text,options.merge( :absolute_left => options[:x1],
+                                      :absolute_right => options[:x2]))
+       end 
+
+     end   
+
+     include DrawingHelpers
+     
+     module PDFWriterMemoryPatch
+       unless self.class.instance_methods.include?("_post_transaction_rewind")
+         def _post_transaction_rewind
+            @objects.each { |e| e.instance_variable_set(:@parent,self) }
+          end
+       end
+     end 
+
   end
 end
 
-module PDFWriterMemoryPatch
-  unless self.class.instance_methods.include?("_post_transaction_rewind")
-    def _post_transaction_rewind
-       @objects.each { |e| e.instance_variable_set(:@parent,self) }
-     end
-  end
-end
+
