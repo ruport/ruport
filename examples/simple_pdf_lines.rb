@@ -15,8 +15,8 @@ class PDFLines < Ruport::Format::PDF
   end
 end
 
-# generate 25 random lines
-data = (0..35).inject([]) { |s,r|
+# generate 35 random lines
+data = (0..34).inject([]) { |s,r|
   s << [rand(100),100+rand(400)]
 }
 
