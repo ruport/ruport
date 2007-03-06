@@ -18,13 +18,13 @@ module Ruport::Data
     #            ['pinky', 3],
     #            ['clyde', 4]].to_table(['name','score'])
     #
-    #   table[0].tag(:winners)
-    #   table[1].tag(:losers)
-    #   table[2].tag(:winners)
-    #   table[3].tag(:losers)
+    #   table[0].tag("grp_winners")
+    #   table[1].tag("grp_losers")
+    #   table[2].tag("grp_winners")
+    #   table[3].tag("grp_losers")
     #
     #   r = table.groups
-    #   puts r[:winners]
+    #   puts r["winners"]
     #   => +---------------+
     #      | name  | score |
     #      +---------------+
@@ -32,7 +32,7 @@ module Ruport::Data
     #      | pinky |   3   |
     #      +---------------+
     #
-    #   puts r[:losers]  
+    #   puts r["losers"]  
     #   => +----------------+
     #      |  name  | score |
     #      +----------------+
@@ -68,10 +68,10 @@ module Ruport::Data
     #            ['blinky',2], 
     #            ['pinky', 3]].to_table(['name','score'])
     #   
-    #   table.create_tag_group(:cool_kids) {|r| r.score > 1}
+    #   table.create_group(:cool_kids) {|r| r.score > 1}
     #   groups = table.groups
     #   
-    #   puts group[:cool_kids]
+    #   puts groups["cool_kids"]
     #   => +----------------+
     #      |  name  | score |
     #      +----------------+
