@@ -221,7 +221,11 @@ class TestRecord < Test::Unit::TestCase
   def test_to_hack
     rendered_row = @record.to_text
     assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
-  end
+  end             
+  
+  #----------------------------------------------------------------------
+  #  BUG Traps
+  #----------------------------------------------------------------------
 
   def test_ensure_records_dup_source_data
     a = [1,2,3]
@@ -244,6 +248,16 @@ class TestRecord < Test::Unit::TestCase
     b = a.dup
     assert b.tags.include?(:foo)
     assert_not_same a.tags, b.tags
+  end  
+  
+  # Ticket #172
+  def test_ensure_get_really_indifferent   
+    a = Record.new({"a" => 1, "b" => 2})
+    assert_equal(2,a.get("b"))
+    assert_equal(2,a.get(:b))
+    a = Record.new({:a => 1, :b => 2})    
+    assert_equal(2,a.get("b"))
+    assert_equal(2,a.get(:b))
   end
 
   def test_ensure_attributes_not_broken_by_to_hack

@@ -4,6 +4,9 @@ require 'ruport'
 
 version = Ruport::VERSION =~ /(\d+.\d+.\d+)/ && $1
 
+FOCUS = { :minor_bugs => 6, :major_bugs => 7, :minor_features => 4,
+          :major_features => 5, :cleanup => 3, :documentation => 2 }
+
 agent = WWW::Mechanize.new #{|a| a.log = Logger.new(STDERR) }
 page = agent.get("http://rubyforge.org/projects/ruport")
 download = page.links.text(/Download/).first

@@ -244,7 +244,7 @@ module Ruport::Data
       when Symbol
         send(name)
       when String
-        self[name]
+        self[attributes.find { |a| a.to_s.eql?(name)}]
       else
         raise "Whatchu Talkin' Bout, Willis?"
       end
