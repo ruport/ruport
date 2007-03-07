@@ -4,9 +4,14 @@
  begin
    require 'mocha'
    require 'stubba'
-   require 'dbi'
  rescue LoadError
    $stderr.puts "Warning: Mocha not found -- skipping some Query tests"
+ end
+
+ begin
+   require 'dbi'
+ rescue LoadError
+   $stderr.puts "Warning: DBI not found -- skipping some Query tests"
  end
    
  class TestQuery < Test::Unit::TestCase
@@ -46,197 +51,182 @@
    end
  
    def test_execute
-     return unless Object.const_defined? :Mocha
      query = @query[:uncached]
      setup_mock_dbi(1)
  
      assert_equal nil, query.execute
    end
- 
-   def test_execute_sourced
-     return unless Object.const_defined? :Mocha
-     query = @query[:sourced]
-     setup_mock_dbi(1, :source => :alternative)
- 
-     assert_equal nil, query.execute
-   end
- 
-   def test_execute_paramed
-     return unless Object.const_defined? :Mocha
-     query = @query[:paramed]
-     setup_mock_dbi(1, :params => [ 42 ])
- 
-     assert_equal nil, query.execute
-   end
- 
-   def test_result_cache_disabled
-     return unless Object.const_defined? :Mocha
-     query = @query[:uncached]
-     setup_mock_dbi(3)
-     
-     assert_nothing_raised { query.result }
-     assert_equal @data[1], get_raw(query.result)
-     assert_equal @data[2], get_raw(query.result)
 
-   end
+   if Object.const_defined? :Mocha and Object.const_defined? :DBI
    
-   def test_result_cache_enabled
-     return unless Object.const_defined? :Mocha
-     query = @query[:cached]
-
-     setup_mock_dbi(1)
-     
-     assert_nothing_raised { query.result }
-     assert_equal @data[0], get_raw(query.result)
-     assert_equal @data[0], get_raw(query.result)
-   end
- 
-   def test_result_resultless
-     return unless Object.const_defined? :Mocha
-     query = @query[:resultless]
-     setup_mock_dbi(1, :resultless => true, :sql => @sql[1])
- 
-     assert_equal nil, query.result
-   end
- 
-   def test_result_multi
-     return unless Object.const_defined? :Mocha
-     query = @query[:multi]
-     setup_mock_dbi(2)
- 
-     assert_equal @data[1], get_raw(query.result)
-   end
- 
-   def test_result_raw_disabled
-     return unless Object.const_defined? :Mocha
-     query = @query[:unraw]
-     setup_mock_dbi(1)
-     
-     assert_equal @data[0].to_table(@columns), query.result
-   end  
- 
-   def test_result_raw_enabled
-     return unless Object.const_defined? :Mocha
-     query = @query[:raw]
-     setup_mock_dbi(1)
-     
-     assert_equal @data[0], query.result
-   end  
- 
-   def test_update_cache
-     return unless Object.const_defined? :Mocha
-     query = @query[:cached]
-     setup_mock_dbi(2)
-     
-     assert_equal @data[0], get_raw(query.result)
-     query.update_cache
-     assert_equal @data[1], get_raw(query.cached_data)
-     assert_equal @data[1], get_raw(query.result)
-   end
- 
-   def test_clear_cache
-     return unless Object.const_defined? :Mocha
-     query = @query[:cached]
-     setup_mock_dbi(2)
-      
-     assert_equal @data[0], get_raw(query.result)
-
-     query.clear_cache
-     assert_equal nil,      query.cached_data
-     assert_equal @data[1], get_raw(query.result)
-   end
+     def test_execute_sourced
+       query = @query[:sourced]
+       setup_mock_dbi(1, :source => :alternative)
    
-   def test_disable_caching
-     return unless Object.const_defined? :Mocha
-     query = @query[:cached]
-     setup_mock_dbi(3)
- 
-     assert_equal @data[0], get_raw(query.result)
-     assert_equal @data[0], get_raw(query.result)
-     query.disable_caching
-     assert_equal @data[1], get_raw(query.result)
-     assert_equal @data[2], get_raw(query.result)    
-   end
- 
-   def test_enable_caching
-     return unless Object.const_defined? :Mocha
-     query = @query[:uncached]
-     setup_mock_dbi(3)
- 
-     assert_equal @data[0], get_raw(query.result)
-     assert_equal @data[1], get_raw(query.result)
-     query.enable_caching
-     assert_equal @data[2], get_raw(query.result)
-     assert_equal @data[2], get_raw(query.result)    
-   end
- 
-   def test_load_file
-     return unless Object.const_defined? :Mocha
-     File.expects(:read).
-       with("query_test.sql").
-       returns("select * from foo\n")
-     
-     query = Ruport::Query.new "query_test.sql"
-     assert_equal "select * from foo", query.sql
-   end
- 
-   def test_load_file_erb
-     return unless Object.const_defined? :Mocha
-     @table = 'bar'
-     File.expects(:read).
-       with("query_test.sql").
-       returns("select * from <%= @table %>\n")
-     
-     query = Ruport::Query.new "query_test.sql", :binding => binding
-     assert_equal "select * from bar", query.sql
-   end
- 
-   def test_load_file_not_found
-     return unless Object.const_defined? :Mocha
-     File.expects(:read).
-       with("query_test.sql").
-       raises(Errno::ENOENT)
-     Ruport.expects(:log).
-       with("Could not open query_test.sql",
-            :status => :fatal, :exception => LoadError).
-       raises(LoadError)
- 
-     assert_raises LoadError do
-       query = Ruport::Query.new "query_test.sql"
+       assert_equal nil, query.execute
      end
-   end
- 
-   def test_each_cache_disabled
-     return unless Object.const_defined? :Mocha
-     query = @query[:uncached]
-     setup_mock_dbi(2)
- 
-     result = []; query.each { |r| result << r.to_a }
-     assert_equal @data[0], result
-                  
-     result = []; query.each { |r| result << r.to_a }
-     assert_equal @data[1], result
-   end  
    
-   def test_each_cache_enabled
-     return unless Object.const_defined? :Mocha
-     query = @query[:cached]
-     setup_mock_dbi(1)
+     def test_execute_paramed
+       query = @query[:paramed]
+       setup_mock_dbi(1, :params => [ 42 ])
+   
+       assert_equal nil, query.execute
+     end
+   
+     def test_result_cache_disabled
+       query = @query[:uncached]
+       setup_mock_dbi(3)
+       
+       assert_nothing_raised { query.result }
+       assert_equal @data[1], get_raw(query.result)
+       assert_equal @data[2], get_raw(query.result)
+
+     end
      
-     result = []; query.each { |r| result << r.to_a }
-     assert_equal @data[0], result
-                  
-     result = []; query.each { |r| result << r.to_a }
-     assert_equal @data[0], result
-   end  
- 
-   def test_each_multi
-     return unless Object.const_defined? :Mocha
-     query = @query[:multi]
-     setup_mock_dbi(2)
- 
-     result = []; query.each { |r| result << r.to_a }
-     assert_equal @data[1], result
+     def test_result_cache_enabled
+       query = @query[:cached]
+
+       setup_mock_dbi(1)
+       
+       assert_nothing_raised { query.result }
+       assert_equal @data[0], get_raw(query.result)
+       assert_equal @data[0], get_raw(query.result)
+     end
+   
+     def test_result_resultless
+       query = @query[:resultless]
+       setup_mock_dbi(1, :resultless => true, :sql => @sql[1])
+   
+       assert_equal nil, query.result
+     end
+   
+     def test_result_multi
+       query = @query[:multi]
+       setup_mock_dbi(2)
+   
+       assert_equal @data[1], get_raw(query.result)
+     end
+   
+     def test_result_raw_disabled
+       query = @query[:unraw]
+       setup_mock_dbi(1)
+       
+       assert_equal @data[0].to_table(@columns), query.result
+     end  
+   
+     def test_result_raw_enabled
+       query = @query[:raw]
+       setup_mock_dbi(1)
+       
+       assert_equal @data[0], query.result
+     end  
+   
+     def test_update_cache
+       query = @query[:cached]
+       setup_mock_dbi(2)
+       
+       assert_equal @data[0], get_raw(query.result)
+       query.update_cache
+       assert_equal @data[1], get_raw(query.cached_data)
+       assert_equal @data[1], get_raw(query.result)
+     end
+   
+     def test_clear_cache
+       query = @query[:cached]
+       setup_mock_dbi(2)
+        
+       assert_equal @data[0], get_raw(query.result)
+
+       query.clear_cache
+       assert_equal nil,      query.cached_data
+       assert_equal @data[1], get_raw(query.result)
+     end
+     
+     def test_disable_caching
+       query = @query[:cached]
+       setup_mock_dbi(3)
+   
+       assert_equal @data[0], get_raw(query.result)
+       assert_equal @data[0], get_raw(query.result)
+       query.disable_caching
+       assert_equal @data[1], get_raw(query.result)
+       assert_equal @data[2], get_raw(query.result)    
+     end
+   
+     def test_enable_caching
+       query = @query[:uncached]
+       setup_mock_dbi(3)
+   
+       assert_equal @data[0], get_raw(query.result)
+       assert_equal @data[1], get_raw(query.result)
+       query.enable_caching
+       assert_equal @data[2], get_raw(query.result)
+       assert_equal @data[2], get_raw(query.result)    
+     end
+   
+     def test_load_file
+       File.expects(:read).
+         with("query_test.sql").
+         returns("select * from foo\n")
+       
+       query = Ruport::Query.new "query_test.sql"
+       assert_equal "select * from foo", query.sql
+     end
+   
+     def test_load_file_erb
+       @table = 'bar'
+       File.expects(:read).
+         with("query_test.sql").
+         returns("select * from <%= @table %>\n")
+       
+       query = Ruport::Query.new "query_test.sql", :binding => binding
+       assert_equal "select * from bar", query.sql
+     end
+   
+     def test_load_file_not_found
+       File.expects(:read).
+         with("query_test.sql").
+         raises(Errno::ENOENT)
+       Ruport.expects(:log).
+         with("Could not open query_test.sql",
+              :status => :fatal, :exception => LoadError).
+         raises(LoadError)
+   
+       assert_raises LoadError do
+         query = Ruport::Query.new "query_test.sql"
+       end
+     end
+   
+     def test_each_cache_disabled
+       query = @query[:uncached]
+       setup_mock_dbi(2)
+   
+       result = []; query.each { |r| result << r.to_a }
+       assert_equal @data[0], result
+                    
+       result = []; query.each { |r| result << r.to_a }
+       assert_equal @data[1], result
+     end  
+     
+     def test_each_cache_enabled
+       query = @query[:cached]
+       setup_mock_dbi(1)
+       
+       result = []; query.each { |r| result << r.to_a }
+       assert_equal @data[0], result
+                    
+       result = []; query.each { |r| result << r.to_a }
+       assert_equal @data[0], result
+     end  
+   
+     def test_each_multi
+       query = @query[:multi]
+       setup_mock_dbi(2)
+   
+       result = []; query.each { |r| result << r.to_a }
+       assert_equal @data[1], result
+     end
+
    end
    
    def test_each_without_block
