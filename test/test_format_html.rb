@@ -37,6 +37,31 @@ class TestFormatHTML < Test::Unit::TestCase
                  "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n",actual)
   end
     
+  def test_render_html_group
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [[1,2,3],[4,5,6]],
+                                    :column_names => %w[a b c])
+    actual = Ruport::Renderer::Group.render(:html, :data => group)
+    assert_equal "\t<p>test</p>\n"+
+      "\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
+      "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
+      "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
+      "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
+      "\t</tr>\n\t</table>", actual
+  end
+
+  def test_render_html_group_without_headers
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [[1,2,3],[4,5,6]],
+                                    :column_names => %w[a b c])
+    actual = Ruport::Renderer::Group.render(:html, :data => group,
+      :show_group_headers => false)
+    assert_equal "\t<p>test</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>"+
+      "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
+      "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
+      "\t</tr>\n\t</table>", actual
+  end
+
   def test_render_html_with_tags 
     actual = Ruport::Renderer::Table.render_html { |r| 
       r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])

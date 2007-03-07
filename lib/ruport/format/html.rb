@@ -4,7 +4,7 @@ module Ruport::Format
   # See also Renderer::Table
   class HTML < Plugin
 
-    opt_reader :show_table_headers, :class_str
+    opt_reader :show_table_headers, :class_str, :show_group_headers
     
     # Generates table headers based on the column names of your Data::Table.  
     #
@@ -37,6 +37,20 @@ module Ruport::Format
     # Simply closes the table tag. 
     def build_table_footer
       output << "\t</table>"
+    end
+
+    # Renders the header for a group using the group name.
+    #
+    def build_group_header
+      output << "\t<p>#{data.name}</p>\n"
+    end
+
+    # Creates the group body. Since group data is a table, just uses the
+    # Table renderer.
+    #
+    def build_group_body
+      Ruport::Renderer::Table.render(:html, :data => data, :io => output,
+        :show_table_headers => show_group_headers)
     end
 
     # Renders individual rows for the table
