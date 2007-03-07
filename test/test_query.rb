@@ -49,15 +49,16 @@
      }
      @query[:precached].cached_data = @data[0]
    end
- 
-   def test_execute
-     query = @query[:uncached]
-     setup_mock_dbi(1)
- 
-     assert_equal nil, query.execute
-   end
 
    if Object.const_defined? :Mocha and Object.const_defined? :DBI
+ 
+     def test_execute
+       query = @query[:uncached]
+       setup_mock_dbi(1)
+ 
+       assert_equal nil, query.execute
+     end
+
    
      def test_execute_sourced
        query = @query[:sourced]
@@ -265,26 +266,28 @@
      assert_equal @data[0][2], gen.next 
      assert_raise(EOFError) { gen.next }
    end
+
+   if Object.const_defined? :Mocha and Object.const_defined? :DBI
  
-   def test_to_table
-     return unless Object.const_defined? :Mocha
-     query = @query[:raw]
-     setup_mock_dbi(3, :returns => @data[0])
- 
-     assert_equal @data[0], query.result
-     assert_equal @data[0].to_table(@columns), query.to_table
-     assert_equal @data[0], query.result
-   end
- 
-   def test_to_csv
-     return unless Object.const_defined? :Mocha
-     query = @query[:plain]
-     setup_mock_dbi(1)
-     
-     csv = @data[0].to_table(@columns).as(:csv)
-     assert_equal csv, query.to_csv
-   end
+     def test_to_table
+       query = @query[:raw]
+       setup_mock_dbi(3, :returns => @data[0])
    
+       assert_equal @data[0], query.result
+       assert_equal @data[0].to_table(@columns), query.to_table
+       assert_equal @data[0], query.result
+     end
+   
+     def test_to_csv
+       query = @query[:plain]
+       setup_mock_dbi(1)
+       
+       csv = @data[0].to_table(@columns).as(:csv)
+       assert_equal csv, query.to_csv
+     end
+
+   end
+     
    private
    def setup_mock_dbi(count, options={})
      sql = options[:sql] || @sql[0]
