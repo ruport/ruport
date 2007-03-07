@@ -207,7 +207,7 @@ module Ruport::Data
     #   one = Table.new :data => [[1,2], [3,4]], 
     #                   :column_names => %w[a b]
     #
-    #   two = one.reorder!([1,0])  
+    #   two = one.reorder([1,0])  
     #
     def reorder(*indices)
       indices = indices[0] if indices[0].kind_of? Array
@@ -386,8 +386,8 @@ module Ruport::Data
     #
     #  Using column_names and a range:
     #
-    #     sub_table = table.sub_table(%w[a b],1..-2)
-    #     sub_table == [[1,2],[3,4]].to_table(%w[a b]) #=> true
+    #     sub_table = table.sub_table(%w[a b],1..-1)
+    #     sub_table == [[5,6],[9,10]].to_table(%w[a b]) #=> true
     #
     #  Using just column_names:
     #
@@ -397,7 +397,7 @@ module Ruport::Data
     #  Using column_names and a block:
     # 
     #     sub_table = table.sub_table(%w[d b]) { |r| r.a < 6 } 
-    #     sub_table == [[4,2],[8,6]].to_table(%w[b d]) #=> true
+    #     sub_table == [[4,2],[8,6]].to_table(%w[d b]) #=> true
     #
     #  Using just a block:
     #      
@@ -426,7 +426,7 @@ module Ruport::Data
 
     alias_method :sub_table!, :reduce
     
-    # returns an array of values for the given column_name
+    # returns an array of values for the given column name
     def column(name)
       case(name)
       when Integer
