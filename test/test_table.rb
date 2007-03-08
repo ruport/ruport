@@ -51,6 +51,14 @@ class TestTable < Test::Unit::TestCase
     assert_equal [1,2,3,4], a.column(0)
     
   end
+
+  def test_to_group
+    a =[[1,2,3],[4,5,6]].to_table(%w[a b c]).to_group("Packrats")
+    b = Ruport::Data::Group.new( :data => [[1,2,3],[4,5,6]],
+                                 :column_names => %w[a b c],
+                                 :name => "Packrats" )
+    assert_equal a,b
+  end
   
   def test_set_column_names
     a = [[1,2,3],[4,5,6]].to_table

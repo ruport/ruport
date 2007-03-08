@@ -45,6 +45,12 @@ module Ruport::Data
       return obj
     end
 
+    def eql?(other)
+      name.eql?(other.name) && super
+    end
+
+    alias_method :==, :eql?
+
     protected
 
     def name=(value) #:nodoc:

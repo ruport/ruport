@@ -33,6 +33,9 @@ module Ruport::Data
    
     # Converts a <tt>Collection</tt> object to a <tt>Data::Table</tt>.
     def to_table(options={})
+      if respond_to? :column_names
+        options = { :column_names => column_names }.merge(options)
+      end
       Table.new({:data => data.map { |r| r.to_a }}.merge(options))
     end
 
@@ -548,6 +551,13 @@ module Ruport::Data
     def to_s
       as(:text)
     end     
+
+
+    def to_group(name)
+     Group.new( :data => data, 
+                :column_names => column_names,
+                :name => name )
+    end
                              
     # NOTE: does not respect tainted status
     alias_method :clone, :dup

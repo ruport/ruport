@@ -34,5 +34,30 @@ class TestGrouping < Test::Unit::TestCase
     assert_equal(13,group.to_html.to_a.length)
   end
 
+  def test_eql
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [%w[ruport is sexy]],
+                                    :column_names => %w[software isnt sexy])
+    table = [%w[ruport is sexy]].to_table(%w[software isnt sexy])
+
+    group2 = Ruport::Data::Group.new(:name => 'test',
+                                     :data => [%w[ruport is sexy]],
+                                     :column_names => %w[software isnt sexy])
+
+    assert_raises(NoMethodError) { group == table }
+    assert_equal group, group2
+    assert_equal group, group.dup
+  end
+
+  def test_to_table
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [%w[Ruport Is Sexy]],
+                                    :column_names => %w[Software Isnt Sexy])
+    table = [%w[Ruport Is Sexy]].to_table(%w[Software Isnt Sexy])
+
+    assert_equal table, group.to_table
+
+  end
+
 end
 
