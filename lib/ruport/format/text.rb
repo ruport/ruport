@@ -63,8 +63,7 @@ module Ruport
       end
       
       def build_group_body
-        data.to_table.as( :text, :io => output, 
-                          :show_table_headers => show_group_headers)
+        render_table data, :show_table_headers => show_group_headers
       end
 
       def build_row

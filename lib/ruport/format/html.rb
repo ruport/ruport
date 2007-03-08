@@ -49,9 +49,7 @@ module Ruport::Format
     # Table renderer.
     #
     def build_group_body
-      data.to_table.as(:html, :io => output, 
-                              :show_table_headers => show_group_headers )
-
+      render_table data, :show_table_headers => show_group_headers
     end
 
     # Renders individual rows for the table

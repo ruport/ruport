@@ -9,11 +9,30 @@ module Ruport
     
     module RenderingTools
 
-      def render_data_by_row
+      def render_data_by_row(options={},&block)
         data.each do |r|
-          Renderer::Row.render(format,:data => r,:io => output) do |rend| 
-            yield(rend) if block_given?
-          end
+          render_row(r,options,&block)
+        end
+      end
+
+      def render_row(row,options={},&block)
+        options = {:data => row, :io => output}.merge(options)
+        Renderer::Row.render(format,options) do |rend|
+          block[rend] if block
+        end
+      end
+
+      def render_table(table,options={},&block)
+        options = {:data => table, :io => output}.merge(options)
+        Renderer::Table.render(format,options) do |rend|
+          block[rend] if block
+        end
+      end
+
+      def render_group(group,options={},&block)
+        options = {:data => group, :io => output}.merge(options)
+        Renderer::Group.render(format,options) do |rend|
+          block[rend] if block
         end
       end
 

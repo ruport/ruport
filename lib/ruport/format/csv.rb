@@ -13,8 +13,7 @@ module Ruport::Format
     # or the Data::Table has no column names.
     def build_table_header
       unless data.column_names.empty? || !show_table_headers
-        Ruport::Renderer::Row.render_csv data.column_names, :io => output,
-          :format_options => format_options 
+        render_row data.column_names, :format_options => format_options 
       end
     end
 
