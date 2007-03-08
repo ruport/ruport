@@ -89,7 +89,11 @@ Rake::TestTask.new do |test|
 end
 
 task :build do
-  sh "ruby util/build report #{ENV['report']}"
+  if ENV['report']
+    sh "ruby util/build report #{ENV['report']}"
+  elsif ENV['renderer']
+    sh "ruby util/build renderer #{ENV['renderer']}"
+  end
 end
 
 task :run do
@@ -231,7 +235,38 @@ require "ruport"
 require "lib/helpers"
 require "lib/renderers"
 require "config/ruport_config"
+
+class String
+  def /(other)
+   self + "/" + other
+  end
+end
+
+class Ruport::Report
+  
+  def output_dir
+    dir('output')
+  end
+
+  def data_dir
+    dir('data')
+  end
+
+  def query_dir
+    dir('sql')
+  end
+
+  def template_dir
+   dir('templates')
+  end
+
+  private
+  def dir(name)
+    "#{FileUtils.pwd}/#{ARGV[0]}/\#{name}"
+  end
+end
 END_INIT
+
 
   end
 end
