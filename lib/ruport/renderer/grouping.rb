@@ -21,7 +21,7 @@ module Ruport
   # * build_group_footer
   #
   class Renderer::Group < Renderer
-    add_formats :csv, :text, :html, :latex, :pdf
+    add_formats :html, :pdf, :text#, :csv, :latex
 
     option :show_group_headers
 

@@ -26,6 +26,10 @@ module Ruport::Data
       super
     end
 
+    def as(format,options={})
+      Ruport::Renderer::Group.render(format,{:data => self }.merge(options))
+    end
+
     # Create a copy of the Group: records will be copied as well.
     #
     # Example:
@@ -46,6 +50,7 @@ module Ruport::Data
     def name=(value) #:nodoc:
       @name = value
     end
+
   end
   
 end

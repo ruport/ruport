@@ -2,7 +2,8 @@ module Ruport
   module Format
     class Text < Plugin
 
-      opt_reader :max_col_width, :alignment, :table_width, :show_table_headers
+      opt_reader :max_col_width, :alignment, :table_width, 
+                 :show_table_headers, :show_group_headers
       
       # Checks to ensure the table is not empty and then calls
       # calculate_max_col_widths
@@ -55,6 +56,15 @@ module Ruport
         end
 
         output << fit_to_width(hr)
+      end
+
+      def build_group_header
+        output << "#{data.name}: \n\n"
+      end
+      
+      def build_group_body
+        Ruport::Renderer::Table.render(:text, :data => data, :io => output,
+           :show_table_headers => show_group_headers)
       end
 
       def build_row

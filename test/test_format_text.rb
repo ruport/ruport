@@ -59,6 +59,39 @@ class TestFormatText < Test::Unit::TestCase
 
   end
 
+  def test_render_text_group
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [ %w[is this more],
+                                               %w[interesting chris carter]],
+                                    :column_names => %w[i hope so])
+
+    actual = Ruport::Renderer::Group.render(:text, :data => group)
+    expected = "test: \n\n"+
+               "+------------------------------+\n"+
+               "|      i      | hope  |   so   |\n"+
+               "+------------------------------+\n"+
+               "| is          | this  | more   |\n"+
+               "| interesting | chris | carter |\n"+
+               "+------------------------------+\n"
+    assert_equal(expected, actual)
+  end
+
+  def test_render_text_group_without_headers
+   group = Ruport::Data::Group.new(:name => 'test',
+                                   :data => [ %w[is this more],
+                                               %w[interesting chris carter]],
+                                   :column_names => %w[i hope so])
+   
+    actual = Ruport::Renderer::Group.render(:text, :data => group,
+      :show_group_headers => false )
+    expected = "test: \n\n"+
+               "+------------------------------+\n"+
+               "| is          | this  | more   |\n"+
+               "| interesting | chris | carter |\n"+
+               "+------------------------------+\n"
+    assert_equal(expected, actual)
+  end
+
   def test_raise_error_on_empty_table
     assert_raise(RuntimeError) { [].to_table.to_text }
     assert_raise(RuntimeError) { [].to_table(%w[a b c]).to_text }
