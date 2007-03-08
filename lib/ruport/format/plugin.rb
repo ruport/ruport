@@ -16,22 +16,22 @@ module Ruport
       end
 
       def render_row(row,options={},&block)
-        options = {:data => row, :io => output}.merge(options)
-        Renderer::Row.render(format,options) do |rend|
-          block[rend] if block
-        end
+        render_helper(Renderer::Row,row,options,&block)
       end
 
       def render_table(table,options={},&block)
-        options = {:data => table, :io => output}.merge(options)
-        Renderer::Table.render(format,options) do |rend|
-          block[rend] if block
-        end
+        render_helper(Renderer::Table,table,options,&block)
       end
 
       def render_group(group,options={},&block)
-        options = {:data => group, :io => output}.merge(options)
-        Renderer::Group.render(format,options) do |rend|
+        render_helper(Renderer::Group,group,options,&block)
+      end
+
+      private
+
+      def render_helper(rend_klass, source_data,options={},&block)
+        options = {:data => source_data, :io => output}.merge(options)
+        rend_klass.render(format,options) do |rend|
           block[rend] if block
         end
       end
