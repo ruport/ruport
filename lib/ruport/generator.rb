@@ -51,14 +51,14 @@ module Ruport
     mkdir project        
     puts "creating directories.."
     %w[ test config output data lib lib/reports 
-        templates sql log util].each do |d|
+        lib/renderers templates sql log util].each do |d|
       m="#{project}/#{d}" 
       puts "  #{m}"
       mkdir(m)
     end
     
     puts "creating files.."
-    %w[reports helpers].each { |f|
+    %w[reports helpers renderers].each { |f|
       m = "#{project}/lib/#{f}.rb"
       puts "  #{m}"
       touch(m)
@@ -125,8 +125,8 @@ end
 
 class_name = format_class_name(ARGV[1])
 
-exit if File.exist? "lib/reports/#{ARGV[1]}.rb"
 if ARGV[0].eql? "report"
+  exit if File.exist? "lib/reports/#{ARGV[1]}.rb"
   File.open("lib/reports.rb", "a") { |f| 
     f.puts("require \"lib/reports/#{ARGV[1]}\"")
   }
@@ -168,6 +168,45 @@ EOR
   puts "test file: test/test_#{ARGV[1]}.rb"
   puts "class name: #{class_name}" 
   File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }  
+elsif ARGV[0].eql? "renderer"
+  exit if File.exist? "lib/renderers/#{ARGV[1]}.rb"
+  File.open("lib/renderers.rb","a") { |f|
+    f.puts("require \"lib/renderers/#{ARGV[1]}\"")
+  }
+REP = <<EOR
+require "lib/init"
+
+class #{class_name} < Ruport::Renderer
+  stage :#{class_name.downcase}
+end
+
+class #{class_name}Formatter < Ruport::Format::Plugin
+
+  # change to your format name, or add additional formats
+  renders :my_format, :for => #{class_name}
+
+  def build_#{class_name.downcase}
+  
+  end
+
+end
+EOR
+
+TEST = <<EOR
+require "test/unit"
+require "lib/renderers/#{ARGV[1]}"
+
+class Test#{class_name} < Test::Unit::TestCase
+  def test_flunk
+    flunk "Write your real tests here or in any test/test_* file"
+  end
+end
+EOR
+  puts "renderer file: lib/renderer/#{ARGV[1]}.rb"
+  File.open("lib/renderers/#{ARGV[1]}.rb", "w") { |f| f << REP }
+  puts "test file: test/test_#{ARGV[1]}.rb"
+  puts "class name: #{class_name}"
+  File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }
 else
   puts "Incorrect usage."
 end
@@ -190,6 +229,7 @@ rescue LoadError
 end
 require "ruport"
 require "lib/helpers"
+require "lib/renderers"
 require "config/ruport_config"
 END_INIT
 
