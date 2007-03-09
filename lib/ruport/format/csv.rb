@@ -4,7 +4,7 @@ module Ruport::Format
   # See also:  Renderer::Table
   class CSV < Plugin
 
-    opt_reader :show_table_headers, :format_options
+    opt_reader :show_table_headers, :format_options, :show_group_headers
 
     # Generates table header by turning column_names into a CSV row.
     # Uses the row renderer to generate the actual formatted output
@@ -17,6 +17,16 @@ module Ruport::Format
       end
     end
 
+    # Renders the header for a group using the group name.
+    # 
+    def build_group_header
+      output << data.name << "\n\n"
+    end
+
+    def build_group_body
+      render_table data
+    end
+
     # Calls the row renderer for each row in the Data::Table
     def build_table_body
       render_data_by_row { |r| 
@@ -27,9 +37,7 @@ module Ruport::Format
     # Produces CSV output for a data row.
     def build_row
       require "fastercsv"
-      FCSV(output,format_options || {}) { |csv| 
-        csv << data
-      }
+      output << FCSV.generate_line(data,format_options || {})
     end
   end
 end

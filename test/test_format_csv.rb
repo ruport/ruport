@@ -9,7 +9,7 @@ end
 
 class TestFormatCSV < Test::Unit::TestCase
 
-  def test_render_csv_basic
+  def test_render_csv_table
     actual = Ruport::Renderer::Table.render_csv { |r| 
       r.data = [[1,2,3],[4,5,6]].to_table 
     }
@@ -19,6 +19,14 @@ class TestFormatCSV < Test::Unit::TestCase
       r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
     }
     assert_equal("a,b,c\n1,2,3\n4,5,6\n",actual)
+  end
+
+  def test_render_csv_group
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [[1,2,3],[4,5,6]],
+                                    :column_names => %w[a b c])
+    actual = Ruport::Renderer::Group.render(:csv, :data => group)
+    assert_equal("test\n\na,b,c\n1,2,3\n4,5,6\n",actual)
   end
 
   def test_render_csv_row
