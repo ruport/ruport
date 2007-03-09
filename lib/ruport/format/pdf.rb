@@ -3,14 +3,15 @@ module Ruport::Format
    
   # PDF generation plugin
   #
-  #  options options:
+  #  options:
   #     General:
   #       * paper_size  #=> "LETTER"
-  #       * orientation #=> :center
+  #       * paper_orientation #=> :portrait
   #     
   #     Table:
-  #       * table_width
-  #       * max_table_width #=> 500
+  #       * table_format (a hash that can take any of the options available
+  #           to PDF::SimpleTable)
+  #       * table_format[:maximum_width] #=> 500
   #
   class PDF < Plugin       
     
@@ -28,7 +29,8 @@ module Ruport::Format
     #
     def pdf_writer
       @pdf_writer ||= options.formatter ||
-        ::PDF::Writer.new( :paper => options.paper_size || "LETTER" )
+        ::PDF::Writer.new( :paper => options.paper_size || "LETTER",
+              :orientation => options.paper_orientation || :portrait)
       @pdf_writer.extend(PDFWriterMemoryPatch)
     end
 
@@ -205,11 +207,14 @@ module Ruport::Format
       m = "Sorry, cant build PDFs from array like things (yet)"
       raise m if data.column_names.empty?
       ::PDF::SimpleTable.new do |table|
-        table.maximum_width = options.max_table_width || 500
-        table.width         = options.table_width if options.table_width
-        table.orientation   = options.orientation || :center
+        table.maximum_width = 500
         table.data          = data
         table.column_order  = data.column_names
+
+        options.table_format.each {|k,v|
+          table.send("#{k}=", v)
+        } if options.table_format
+
         table.render_on(pdf_writer)
       end
     end
