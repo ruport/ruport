@@ -323,7 +323,30 @@ module Ruport::Data
       self.column_names[column_names.index(old_name)] = new_name
       each { |r| r.rename_attribute(old_name,new_name,false)} 
     end
-    
+
+    # Renames multiple columns.  Takes either a hash of "old" => "new"
+    # names or two arrays of names %w[old names],%w[new names].
+    # 
+    # Example:
+    #
+    #   table.column_names #=> ["a", "b"]
+    #   table.rename_columns ["a", "b"], ["c", "d"]
+    #   table.column_names #=> ["c", "d"]
+    #
+    #   table.column_names #=> ["a", "b"]
+    #   table.rename_columns {"a" => "c", "b" => "d"}
+    #   table.column_names #=> ["c", "d"]
+    #
+    def rename_columns(old_cols,new_cols=nil)
+      if new_cols
+        raise ArgumentError,
+          "odd number of arguments" unless old_cols.size == new_cols.size
+        h = Hash[*old_cols.zip(new_cols).flatten]
+      else
+        h = old_cols
+      end
+      h.each {|old,new| rename_column(old,new) }
+    end
     
     #  Exchanges one column with another.
     #
