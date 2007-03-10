@@ -58,6 +58,32 @@ class TestGrouping < Test::Unit::TestCase
     assert_equal table, group.to_table
 
   end
+  
+  def test_create_subgroups
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [[1,2,3],[4,5,6]],
+                                    :column_names => %w[a b c])
+    group.create_subgroups("a")
+    b = [Ruport::Data::Group.new( :data => [[2,3]],
+                                  :column_names => %w[b c],
+                                  :name => "1" ),
+         Ruport::Data::Group.new( :data => [[5,6]],
+                                  :column_names => %w[b c],
+                                  :name => "4" )]
+    assert_equal b, group.subgroups
+  end
+  
+  def test_grouping_constructor
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    b = Ruport::Data::Grouping.new(a, :by => "a")
+    c = [Ruport::Data::Group.new( :data => [[2,3]],
+                                  :column_names => %w[b c],
+                                  :name => "1" ),
+         Ruport::Data::Group.new( :data => [[5,6]],
+                                  :column_names => %w[b c],
+                                  :name => "4" )]
+    assert_equal c, b.data
+  end
 
 end
 

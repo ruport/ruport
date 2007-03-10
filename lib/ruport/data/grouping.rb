@@ -7,6 +7,7 @@ module Ruport::Data
   # 
   class Group < Table
     attr_reader :name
+    attr_reader :subgroups
 
     # Creates a new group based on the supplied options.
     #
@@ -23,6 +24,7 @@ module Ruport::Data
     #
     def initialize(options={})
       @name = options[:name]
+      @subgroups = []
       super
     end
 
@@ -51,12 +53,34 @@ module Ruport::Data
 
     alias_method :==, :eql?
 
+    def create_subgroups(group_column)
+      if @subgroups.empty?
+        @subgroups = grouped_data(group_column)
+      else
+        @subgroups.each {|group| group.create_subgroups(group_column) }
+      end
+    end
+
     protected
 
     def name=(value) #:nodoc:
       @name = value
     end
 
+  end
+
+  class Grouping
+    attr_reader :data
+    
+    def initialize(data,options={})
+      cols = Array(options[:by])
+      @data = data.grouped_data(cols.shift)
+      cols.each do |col|
+        @data.each do |group|
+          group.create_subgroups(col)
+        end
+      end
+    end
   end
   
 end
