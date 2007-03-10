@@ -54,6 +54,14 @@ module Ruport::Format
       draw_table
     end
 
+    def build_group_header
+      pad(10) { add_text data.name, :justification => :center }
+    end
+
+    def build_group_body
+      render_table data,:formatter => pdf_writer
+    end
+
     # If table_footer_proc is defined, it will be executed and the PDF::Writer
     # object will be yielded.
     #

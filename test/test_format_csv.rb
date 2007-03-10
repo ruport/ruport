@@ -29,6 +29,15 @@ class TestFormatCSV < Test::Unit::TestCase
     assert_equal("test\n\na,b,c\n1,2,3\n4,5,6\n",actual)
   end
 
+  def test_render_csv_group
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [[1,2,3],[4,5,6]],
+                                    :column_names => %w[a b c])
+    actual = Ruport::Renderer::Group.render(:csv, :data => group,
+               :show_group_headers => false )
+    assert_equal("test\n\na,b,c\n1,2,3\n4,5,6\n",actual)
+  end
+
   def test_render_csv_row
     actual = Ruport::Renderer::Row.render_csv { |r| r.data = [1,2,3] }
     assert_equal("1,2,3\n", actual)
