@@ -482,6 +482,22 @@ class TestTable < Test::Unit::TestCase
     assert_equal ['joe frasier', 'brian black'],
                  b.map { |r| r.name }
 
+  end 
+  
+  def test_to_hack_takes_args
+    a = Table(%w[hello mr crowley]) << %w[would you like] << %w[one red cat]
+    
+    assert_equal "would,you,like\none,red,cat\n",
+                 a.to_csv(:show_table_headers => false)
+    
+    assert_equal "would,you,like\none,red,cat\n",
+                 a.to_csv { |r| r.show_table_headers = false }    
+                 
+    assert_equal "would\tyou\tlike\none\tred\tcat\n",
+                 a.to_csv(:show_table_headers => false) { |r|
+                   r.format_options = { :col_sep => "\t" }
+                 }
+      
   end
 
 

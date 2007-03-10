@@ -588,8 +588,8 @@ module Ruport::Data
 
     # Provides a shortcut for the <tt>as()</tt> method by converting a call to
     # <tt>as(:format_name)</tt> into a call to <tt>to_format_name</tt>
-    def method_missing(id,*args)
-     return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
+    def method_missing(id,*args,&block)
+     return as($1.to_sym,*args,&block) if id.to_s =~ /^to_(.*)/ 
      return rows_with($1.to_sym => args[0]) if id.to_s =~ /^rows_with_(.*)/
      super
     end

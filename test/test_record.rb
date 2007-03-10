@@ -220,7 +220,10 @@ class TestRecord < Test::Unit::TestCase
 
   def test_to_hack
     rendered_row = @record.to_text
-    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
+    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)  
+    
+    rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
+    assert_equal("1\t2\t3\t4\n",rendered_row)
   end             
   
   #----------------------------------------------------------------------

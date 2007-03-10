@@ -228,12 +228,12 @@ module Ruport::Data
     #   my_record.foo = 2
     #   my_record.foo #=> 2
     #
-    def method_missing(id,*args)
+    def method_missing(id,*args,&block)
       k = id.to_s.gsub(/=$/,"")
       if(key = @attributes.find { |r| r.to_s.eql?(k) })
         args[0] ? @data[key] = args[0] : @data[key]
       else
-        return as($1.to_sym) if id.to_s =~ /^to_(.*)/ 
+        return as($1.to_sym,*args,&block) if id.to_s =~ /^to_(.*)/ 
         super
       end
     end 

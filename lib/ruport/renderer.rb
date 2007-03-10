@@ -72,9 +72,11 @@ class Ruport::Renderer
       #   stage :document_header
       #   stage :document_body
       #   stage :document_footer
-      def stage(stage)
+      def stage(*stage_list)
         self.stages ||= []
-        self.stages << stage.to_s
+        stage_list.each { |stage|
+          self.stages << stage.to_s 
+        }
       end
     end
  
