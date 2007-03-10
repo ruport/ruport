@@ -581,33 +581,7 @@ module Ruport::Data
                 :column_names => column_names,
                 :name => name )
     end
-
-    # Groups the data in the table based on the specified column name
-    # Creates an array of Groups.
-    #
-    # Example:
-    #
-    #   data = Table.new :data => [[1,2], [3,4]], 
-    #                    :column_names => %w[a b]
-    #
-    #   # returns an array of Groups - one for each unique value in column "a"
-    #   data.grouped_data("a")
-    #
-    def grouped_data(group_column)
-      data = []
-      group_names = column(group_column).uniq
-      columns = column_names.dup
-      columns.delete(group_column)
-      group_names.each do |name|
-        group_data = sub_table(columns) {|r|
-          r.send(group_column) == name
-        }
-        data << Group.new(:name => name.to_s,
-          :data => group_data, :column_names => columns)
-      end
-      data
-    end
-                             
+                            
     # NOTE: does not respect tainted status
     alias_method :clone, :dup
 
@@ -683,6 +657,21 @@ module Ruport::Data
         end
       end ; loaded_data
     end      
+
+    def grouped_data(group_column) #:nodoc:
+      data = []
+      group_names = column(group_column).uniq
+      columns = column_names.dup
+      columns.delete(group_column)
+      group_names.each do |name|
+        group_data = sub_table(columns) {|r|
+          r.send(group_column) == name
+        }
+        data << Group.new(:name => name, :data => group_data,
+                          :column_names => columns)
+      end
+      data
+    end
   end
 end
 

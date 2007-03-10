@@ -61,13 +61,13 @@ class TestTable < Test::Unit::TestCase
   end
   
   def test_grouped_data
-    a = [[1,2,3],[4,5,6]].to_table(%w[a b c]).grouped_data("a")
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c]).send(:grouped_data, "a")
     b = [Ruport::Data::Group.new( :data => [[2,3]],
                                   :column_names => %w[b c],
-                                  :name => "1" ),
+                                  :name => 1 ),
          Ruport::Data::Group.new( :data => [[5,6]],
                                   :column_names => %w[b c],
-                                  :name => "4" )]
+                                  :name => 4 )]
     assert_equal b, a
   end
   
