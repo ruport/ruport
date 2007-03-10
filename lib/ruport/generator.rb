@@ -245,19 +245,19 @@ end
 class Ruport::Report
   
   def output_dir
-    dir('output')
+    config.output_dir or dir('output')
   end
 
   def data_dir
-    dir('data')
+    config.data_dir or dir('data')
   end
 
   def query_dir
-    dir('sql')
+    config.query_dir or dir('sql')
   end
 
   def template_dir
-   dir('templates')
+    config.template_dir or dir('templates')
   end
 
   private

@@ -224,6 +224,10 @@ module Ruport
       require "redcloth"
       RedCloth.new(s).to_html
     end
+
+    def config
+      Ruport::Config
+    end
     
     # Allows logging and other fun stuff. 
     # See also Ruport.log
@@ -269,6 +273,7 @@ module Ruport
       def renders_with(renderer)
         @renderer = renderer.name
       end
+
 
       def renderer
         return unless @renderer
