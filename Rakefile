@@ -8,10 +8,6 @@ rescue LoadError
   nil
 end
 
-#Set to true to disable dependency resolution
-LEAN=false
-dir = File.dirname(__FILE__)
-lib = File.join(dir, "lib", "ruport.rb")
 task :default => [:test]
 
 Rake::TestTask.new do |test|
@@ -21,6 +17,7 @@ Rake::TestTask.new do |test|
 end
 
 spec = Gem::Specification.new do |spec|
+  spec.name = "ruport"
   spec.version = "0.9.0"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A generalized Ruby report generation and templating engine."
@@ -36,14 +33,12 @@ spec = Gem::Specification.new do |spec|
   spec.extra_rdoc_files = %w{README LICENSE TODO AUTHORS}
   spec.rdoc_options << '--title' << 'Ruport Documentation' <<
                        '--main'  << 'README' << '-q'
-  unless LEAN
-    spec.add_dependency('transaction-simple', "=1.4.0")
-    spec.add_dependency('fastercsv', '>= 1.1.0')
-    spec.add_dependency('RedCloth',  '>= 3.0.3')
-    spec.add_dependency('pdf-writer', '>= 1.1.3')
-    spec.add_dependency("mailfactory", ">= 1.2.3")
-    spec.add_dependency('gem_plugin', '>=0.2.2')
-  end
+  spec.add_dependency('transaction-simple', "=1.4.0")
+  spec.add_dependency('fastercsv', '>= 1.1.0')
+  spec.add_dependency('RedCloth',  '>= 3.0.3')
+  spec.add_dependency('pdf-writer', '>= 1.1.3')
+  spec.add_dependency("mailfactory", ">= 1.2.3")
+  spec.add_dependency('gem_plugin', '>=0.2.2')
   spec.author = "Gregory Brown"
   spec.email = "  gregory.t.brown@gmail.com"
   spec.rubyforge_project = "ruport"
