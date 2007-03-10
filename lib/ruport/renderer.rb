@@ -298,5 +298,4 @@ class Ruport::Renderer
 end
 
 require "ruport/renderer/table"
-require "ruport/renderer/graph"
 require "ruport/renderer/grouping"
