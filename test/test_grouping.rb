@@ -83,7 +83,47 @@ class TestGrouping < Test::Unit::TestCase
                                   :column_names => %w[b c],
                                   :name => 4 )]
     assert_equal c, b.data
-  end
-
+  end      
+  
+  def test_grouping_indexing   
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    b = Ruport::Data::Grouping.new(a, :by => "a")
+    c = [Ruport::Data::Group.new( :data => [[2,3]],
+                                  :column_names => %w[b c],
+                                  :name => 1 ),
+         Ruport::Data::Group.new( :data => [[5,6]],
+                                  :column_names => %w[b c],
+                                  :name => 4 ),    
+         Ruport::Data::Group.new( :data => [],
+                                  :column_names => %w[b c],
+                                  :name => 2)]
+    assert_equal c[0], b[1] 
+    assert_equal c[1], b[4]   
+    assert_raises(IndexError) { b[2] }                 
+  end    
+  
+  def test_append
+   a =[[1,2,3],[4,5,6]].to_table(%w[a b c])
+   b = Ruport::Data::Grouping.new(a, :by => "a")
+   c = [Ruport::Data::Group.new( :data => [[2,3]],
+                                 :column_names => %w[b c],
+                                 :name => 1 ),
+        Ruport::Data::Group.new( :data => [[5,6]],
+                                 :column_names => %w[b c],
+                                 :name => 4 )]   
+   b << a.to_group("hand banana")
+   assert_equal b["hand banana"], a.to_group("hand banana") 
+  end          
+  
+  def test_kernel_hack
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    b = Grouping(a, :by => "a")
+    c = [Ruport::Data::Group.new( :data => [[2,3]],
+                                  :column_names => %w[b c],
+                                  :name => 1 ),
+         Ruport::Data::Group.new( :data => [[5,6]],
+                                  :column_names => %w[b c],
+                                  :name => 4 )]
+    assert_equal c, b.data
+  end 
 end
-

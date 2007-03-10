@@ -69,8 +69,15 @@ module Ruport::Data
 
   end
 
-  class Grouping
-    attr_reader :data
+  class Grouping  
+    
+    require "forwardable"
+    extend Forwardable
+    include Enumerable
+    
+    attr_reader :data 
+    
+    def_delegator :@data, :each
     
     def initialize(data,options={})
       cols = Array(options[:by])
@@ -80,8 +87,27 @@ module Ruport::Data
           group.create_subgroups(col)
         end
       end
+    end  
+    
+    def [](name)
+      @data.find { |g| g.name.eql?(name) } or 
+        raise(IndexError,"Group Not Found")
+    end 
+    
+    def <<(group)
+      @data << group
     end
+    
+    alias_method :append, :<<
+    
   end
   
+end     
+
+module Kernel 
+  def Grouping(*args)
+    Ruport::Data::Grouping.new(*args)
+  end
 end
+  
 
