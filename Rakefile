@@ -12,7 +12,6 @@ end
 LEAN=false
 dir = File.dirname(__FILE__)
 lib = File.join(dir, "lib", "ruport.rb")
-version = File.read(lib)[/^\s*VERSION\s*=\s*(['"])(\d+\.\d+\.d+)['"]/,1]
 task :default => [:test]
 
 Rake::TestTask.new do |test|
@@ -22,8 +21,7 @@ Rake::TestTask.new do |test|
 end
 
 spec = Gem::Specification.new do |spec|
-  spec.name = LEAN ? "lean-ruport" : "ruport"
-  spec.version = "0.8.99"
+  spec.version = "0.9.0"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A generalized Ruby report generation and templating engine."
   spec.files =  Dir.glob("{examples,lib,test,bin}/**/**/*") +
@@ -79,12 +77,4 @@ begin
   end
 rescue LoadError
   nil
-end
-
-desc "Generate Ruport Recipes. Assumes you have erb, redcloth, and htmldoc."
-task :cookbook do
-  sh "erb doc/ruport_recipes.textile | redcloth >doc/temp.html" 
-  sh "htmldoc --batch doc/ruport.book" rescue nil
-  rm "doc/temp.html"
-  mv "out.pdf", "doc/out.pdf"
 end
