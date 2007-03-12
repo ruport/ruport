@@ -659,7 +659,7 @@ module Ruport::Data
     end      
 
     def grouped_data(group_column) #:nodoc:
-      data = []
+      data = {}
       group_names = column(group_column).uniq
       columns = column_names.dup
       columns.delete(group_column)
@@ -667,9 +667,9 @@ module Ruport::Data
         group_data = sub_table(columns) {|r|
           r.send(group_column) == name
         }
-        data << Group.new(:name => name, :data => group_data,
-                          :column_names => columns)
-      end
+        data[name] = Group.new(:name => name, :data => group_data,
+                               :column_names => columns)
+      end      
       data
     end
   end

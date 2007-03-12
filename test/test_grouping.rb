@@ -64,12 +64,12 @@ class TestGroup < Test::Unit::TestCase
                                     :data => [[1,2,3],[4,5,6]],
                                     :column_names => %w[a b c])
     group.create_subgroups("a")
-    b = [Ruport::Data::Group.new( :data => [[2,3]],
+    b = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
                                   :column_names => %w[b c],
                                   :name => 1 ),
-         Ruport::Data::Group.new( :data => [[5,6]],
+          4 => Ruport::Data::Group.new( :data => [[5,6]],
                                   :column_names => %w[b c],
-                                  :name => 4 )]
+                                  :name => 4 ) }
     assert_equal b, group.subgroups
   end    
   

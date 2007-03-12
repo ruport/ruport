@@ -81,9 +81,7 @@ module Ruport::Data
     
     def initialize(data,options={})
       cols = Array(options[:by])
-      @data = data.send(:grouped_data, cols.shift).inject({}) do |s,r|
-        s.merge(r.name => r)
-      end
+      @data = data.send(:grouped_data, cols.shift)
       cols.each do |col|
         @data.each do |name,group|
           group.create_subgroups(col)
