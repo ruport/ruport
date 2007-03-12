@@ -42,7 +42,7 @@ spec = Gem::Specification.new do |spec|
   spec.author = "Gregory Brown"
   spec.email = "  gregory.t.brown@gmail.com"
   spec.rubyforge_project = "ruport"
-  spec.homepage = "http://reporting.stonecode.org"
+  spec.homepage = "http://code.rubyreports.org"
   spec.description = <<END_DESC
   Ruby Reports is a software library that aims to make the task of reporting
   less tedious and painful. It provides tools for data acquisition,
