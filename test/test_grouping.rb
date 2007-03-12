@@ -2,7 +2,7 @@ require "test/unit"
 require "ruport"
 begin; require "rubygems"; rescue LoadError; nil; end
 
-class TestGrouping < Test::Unit::TestCase
+class TestGroup < Test::Unit::TestCase
 
   def test_group_constructor
     group = Ruport::Data::Group.new(:name => 'test',
@@ -71,7 +71,19 @@ class TestGrouping < Test::Unit::TestCase
                                   :column_names => %w[b c],
                                   :name => 4 )]
     assert_equal b, group.subgroups
-  end
+  end    
+  
+  def test_kernel_hack
+    expected = Ruport::Data::Group.new( :data => [[2,3]],
+                                  :column_names => %w[b c],
+                                  :name => 1 )
+    assert_equal expected, Group(1, :data => [[2,3]],
+                                    :column_names => %w[b c]) 
+  end      
+  
+end
+
+class TestGrouping < Test::Unit::TestCase
   
   def test_grouping_constructor
     a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
@@ -125,5 +137,5 @@ class TestGrouping < Test::Unit::TestCase
                                   :column_names => %w[b c],
                                   :name => 4 )]
     assert_equal c, b.data
-  end 
+  end   
 end

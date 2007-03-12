@@ -107,6 +107,10 @@ end
 module Kernel 
   def Grouping(*args)
     Ruport::Data::Grouping.new(*args)
+  end       
+  
+  def Group(name,opts={})
+    Ruport::Data::Group.new(opts.merge(:name => name))  
   end
 end
   
