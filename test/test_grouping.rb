@@ -140,4 +140,25 @@ class TestGrouping < Test::Unit::TestCase
                                   :name => 4 ) }
     assert_equal c, b.data
   end   
+
+  def test_grouping_on_multiple_columns
+    a = [[1,2,3,4],[4,5,6,7]].to_table(%w[a b c d])
+    b = Ruport::Data::Grouping.new(a, :by => %w[a b c])
+    c = { 1 => Ruport::Data::Group.new( :data => [[2,3,4]],
+                                  :column_names => %w[b c d],
+                                  :name => 1 ),
+          4 => Ruport::Data::Group.new( :data => [[5,6,7]],
+                                  :column_names => %w[b c d],
+                                  :name => 4 ) }
+    assert_equal c, b.data
+
+    d = { 2 => Ruport::Data::Group.new( :data => [[3,4]],
+                                  :column_names => %w[c d],
+                                  :name => 2 ) }
+    e = { 5 => Ruport::Data::Group.new( :data => [[6,7]],
+                                  :column_names => %w[c d],
+                                  :name => 5 ) }
+    assert_equal d, b[1].subgroups
+    assert_equal e, b[4].subgroups
+  end      
 end

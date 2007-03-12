@@ -24,7 +24,7 @@ module Ruport::Data
     #
     def initialize(options={})
       @name = options[:name]
-      @subgroups = []
+      @subgroups = {}
       super
     end
 
@@ -57,7 +57,7 @@ module Ruport::Data
       if @subgroups.empty?
         @subgroups = grouped_data(group_column)
       else
-        @subgroups.each {|group| group.create_subgroups(group_column) }
+        @subgroups.each {|name,group| group.create_subgroups(group_column) }
       end
     end
 
