@@ -81,21 +81,26 @@ module Ruport::Data
     
     def initialize(data,options={})
       cols = Array(options[:by])
-      @data = data.send(:grouped_data, cols.shift)
+      @data = data.send(:grouped_data, cols.shift).inject({}) do |s,r|
+        s.merge(r.name => r)
+      end
       cols.each do |col|
-        @data.each do |group|
+        @data.each do |name,group|
           group.create_subgroups(col)
         end
       end
     end  
     
     def [](name)
-      @data.find { |g| g.name.eql?(name) } or 
+      @data[name] or 
         raise(IndexError,"Group Not Found")
     end 
     
-    def <<(group)
-      @data << group
+    def <<(group)        
+      if data.has_key? group.name
+        raise(ArgumentError, "Group '#{group.name}' exists!") 
+      end
+      @data.merge!({ group.name => group })
     end
     
     alias_method :append, :<<
