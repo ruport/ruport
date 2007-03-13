@@ -175,6 +175,16 @@ module Ruport
       self.class.run(options,&block)
     end
 
+    def as(format,*args)
+      self.format = format
+      run(*args)
+    end
+
+    def method_missing(id,*args)
+      id.to_s =~ /^to_(.*)/
+      $1 ? as($1.to_sym,*args) : super
+    end
+
     # Loads a CSV in from  a file.
     #
     # Example:
@@ -248,6 +258,16 @@ module Ruport
     def_delegators Ruport::Config, :source, :mailer, :log_file, :log_file=
     
     class << self
+
+      def as(format,*args)
+        report = new(format)
+        report.run(*args)
+      end
+
+      def method_missing(id,*args)
+        id.to_s =~ /^to_(.*)/
+        $1 ? as($1.to_sym,*args) : super
+      end
 
       # Defines an instance method which will be run before the
       # <tt>generate</tt> method when Ruport.run is executed.

@@ -15,6 +15,14 @@ rescue LoadError
   $stderr.puts "Warning: Mocha not found -- skipping some Report tests"
 end
 
+class SampleReport < Ruport::Report
+  renders_with Ruport::Renderer::Table
+
+  def generate
+    Table(%w[not abc]) << %w[o r] << %w[one two] << %w[thr ee]
+  end
+end
+
 class TestReport < Test::Unit::TestCase
   include Ruport
 
@@ -24,6 +32,22 @@ class TestReport < Test::Unit::TestCase
                                     :user => "foo", :password => "bar" 
     @query1 = Ruport::Query.new "select * from foo", :cache_enabled => true 
     @query1.cached_data = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
+  end
+
+  def test_renders_with_shortcuts
+    a = SampleReport.new(:csv)
+    assert_equal("not,abc\no,r\none,two\nthr,ee\n",a.run)
+    assert_equal("not,abc\no,r\none,two\nthr,ee\n",SampleReport.as(:csv))
+    assert_equal("not,abc\no,r\none,two\nthr,ee\n",SampleReport.to_csv)
+    assert_equal("not,abc\no,r\none,two\nthr,ee\n",a.to_csv)
+    a = SampleReport.new
+    assert_equal("not,abc\no,r\none,two\nthr,ee\n",a.to_csv)
+
+    #not sure if this is 'good behaviour'
+    assert_equal :csv, a.format
+    a.to_text
+
+    assert_equal :text, a.format
   end
 
   def test_erb
