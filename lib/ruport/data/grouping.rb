@@ -44,6 +44,7 @@ module Ruport::Data
     def dup
       obj = super
       obj.name = name
+      obj.subgroups = subgroups.dup
       return obj
     end
 
@@ -65,6 +66,10 @@ module Ruport::Data
 
     def name=(value) #:nodoc:
       @name = value
+    end
+    
+    def subgroups=(value)
+      @subgroups = value
     end
 
   end
