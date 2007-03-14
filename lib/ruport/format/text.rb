@@ -3,7 +3,7 @@ module Ruport
     class Text < Plugin
 
       opt_reader :max_col_width, :alignment, :table_width, 
-                 :show_table_headers, :show_group_headers
+                 :show_table_headers, :show_group_headers, :show_subgroups
       
       # Checks to ensure the table is not empty and then calls
       # calculate_max_col_widths
@@ -59,11 +59,29 @@ module Ruport
       end
 
       def build_group_header
-        output << "#{data.name}: \n\n"
+        output << "#{data.name}: \n\n" unless should_render_subgroups
       end
       
       def build_group_body
-        render_table data, :show_table_headers => show_group_headers
+        if should_render_subgroups 
+          data.subgroups.each do |name,group|
+            output << "#{data.name}, "
+            render_group group
+          end
+        else
+          render_table data, :show_table_headers => show_group_headers
+          output << "\n"
+        end
+      end
+
+      def build_grouping_body
+        data.each do |name,group|
+          render_group group, :show_group_headers => show_group_headers
+        end
+      end
+      
+      def should_render_subgroups
+        show_subgroups && !data.subgroups.empty?
       end
 
       def build_row

@@ -107,7 +107,16 @@ module Ruport::Data
     end
     
     alias_method :append, :<<
-    
+
+    def as(format,options={})
+      Ruport::Renderer::Grouping.render(format,{:data => self }.merge(options))
+    end
+
+    def method_missing(id,*args)
+     return as($1.to_sym,*args) if id.to_s =~ /^to_(.*)/ 
+     super
+    end
+
   end
   
 end     

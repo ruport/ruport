@@ -72,7 +72,7 @@ class TestFormatText < Test::Unit::TestCase
                "+------------------------------+\n"+
                "| is          | this  | more   |\n"+
                "| interesting | chris | carter |\n"+
-               "+------------------------------+\n"
+               "+------------------------------+\n\n"
     assert_equal(expected, actual)
   end
 
@@ -88,7 +88,7 @@ class TestFormatText < Test::Unit::TestCase
                "+------------------------------+\n"+
                "| is          | this  | more   |\n"+
                "| interesting | chris | carter |\n"+
-               "+------------------------------+\n"
+               "+------------------------------+\n\n"
     assert_equal(expected, actual)
   end
 
@@ -97,5 +97,45 @@ class TestFormatText < Test::Unit::TestCase
     assert_raise(RuntimeError) { [].to_table(%w[a b c]).to_text }
   end
 
+  def test_render_text_grouping
+    table = Ruport::Data::Table.new(:data => [ %w[is this more],
+                                               %w[interesting chris carter]],
+                                    :column_names => %w[i hope so])
+    grouping = Grouping(table, :by => "i")
+
+    actual = Ruport::Renderer::Grouping.render(:text, :data => grouping)
+    expected = "interesting: \n\n"+
+               "+----------------+\n"+
+               "| hope  |   so   |\n"+
+               "+----------------+\n"+
+               "| chris | carter |\n"+
+               "+----------------+\n\n"+
+               "is: \n\n"+
+               "+-------------+\n"+
+               "| hope |  so  |\n"+
+               "+-------------+\n"+
+               "| this | more |\n"+
+               "+-------------+\n\n"
+    assert_equal(expected, actual)
+  end
+
+  def test_render_text_grouping_without_headers
+    table = Ruport::Data::Table.new(:data => [ %w[is this more],
+                                               %w[interesting chris carter]],
+                                    :column_names => %w[i hope so])
+    grouping = Grouping(table, :by => "i")
+
+    actual = Ruport::Renderer::Grouping.render(:text, :data => grouping,
+      :show_group_headers => false)
+    expected = "interesting: \n\n"+
+               "+----------------+\n"+
+               "| chris | carter |\n"+
+               "+----------------+\n\n"+
+               "is: \n\n"+
+               "+-------------+\n"+
+               "| this | more |\n"+
+               "+-------------+\n\n"
+    assert_equal(expected, actual)
+  end
   
 end

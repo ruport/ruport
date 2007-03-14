@@ -29,8 +29,8 @@ class TestGroup < Test::Unit::TestCase
     group = Ruport::Data::Group.new(:name => 'test',
                                     :data => [%w[Ruport Is Sexy]],
                                     :column_names => %w[Software Isnt Sexy])
-    assert_equal(7,group.to_text.to_a.length)
-    assert_equal(5,group.as(:text, :show_group_headers => false).to_a.length)
+    assert_equal(8,group.to_text.to_a.length)
+    assert_equal(6,group.as(:text, :show_group_headers => false).to_a.length)
     assert_equal(13,group.to_html.to_a.length)
   end
 
@@ -129,6 +129,14 @@ class TestGrouping < Test::Unit::TestCase
    assert_raises(ArgumentError) { b << a.to_group("hand banana") }   
   end          
   
+  def test_grouping_as
+    table = Ruport::Data::Table.new(:data => [%w[Ruport Is Sexy]],
+                                    :column_names => %w[Software Isnt Sexy])
+    grouping = Ruport::Data::Grouping.new(table, :by => 'Software')
+    assert_equal(8,grouping.to_text.to_a.length)
+    assert_equal(6,grouping.as(:text, :show_group_headers => false).to_a.length)
+  end
+
   def test_kernel_hack
     a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
     b = Grouping(a, :by => "a")

@@ -7,12 +7,12 @@ module Ruport
   # * Format::CSV
   # * Format::Text
   # * Format::HTML
-  # * Format::Latex
   # * Format::PDF
   #
   # == Default layout options 
   #
   # * <tt>show_group_headers</tt> #=> true
+  # * <tt>show_subgroups</tt> #=> true
   #
   # == Plugin hooks called (in order)
   #
@@ -21,11 +21,14 @@ module Ruport
   # * build_group_footer
   #
   class Renderer::Group < Renderer
-    add_formats :html, :text, :csv,:pdf#, :latex
+    add_formats :html, :text, :csv, :pdf
 
-    option :show_group_headers
+    option :show_group_headers, :show_subgroups
 
-    options { |o| o.show_group_headers = true }
+    options { |o|
+      o.show_group_headers = true
+      o.show_subgroups = true
+    }
 
     stage :group_header
     stage :group_body
@@ -40,7 +43,6 @@ module Ruport
   # * Format::CSV
   # * Format::Text
   # * Format::HTML
-  # * Format::Latex
   # * Format::PDF
   #
   # == Default layout options 
