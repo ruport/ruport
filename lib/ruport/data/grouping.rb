@@ -105,8 +105,19 @@ module Ruport::Data
       end
       @data.merge!({ group.name => group })
     end
+
+    def /(name)
+      grouping = dup
+      grouping.send(:data=, @data[name].subgroups)
+      return grouping
+    end
     
     alias_method :append, :<<
+
+
+    def to_s
+      as(:text)
+    end
 
     def as(format,options={})
       Ruport::Renderer::Grouping.render(format,{:data => self }.merge(options))
@@ -117,6 +128,9 @@ module Ruport::Data
      super
     end
 
+    private
+
+    attr_writer :data
   end
   
 end     

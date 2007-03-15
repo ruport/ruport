@@ -175,4 +175,16 @@ class TestGrouping < Test::Unit::TestCase
     assert_equal d, b[1].subgroups
     assert_equal e, b[4].subgroups
   end      
+
+  def test_slash
+    a = Table(%w[first_name last_name id])
+    a << %w[ greg brown awesome ]
+    a << %w[ mike milner schweet ]
+    a << %w[ greg brown sick ]
+    g = Grouping(a,:by => %w[first_name last_name])
+
+    sub = (g / "greg")["brown"].to_table
+    assert_equal %w[awesome sick], sub.column("id")
+    puts sub
+  end
 end
