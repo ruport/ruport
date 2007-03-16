@@ -38,6 +38,16 @@ class TestFormatCSV < Test::Unit::TestCase
     assert_equal("test\n\na,b,c\n1,2,3\n4,5,6\n",actual)
   end
 
+  def test_render_csv_grouping
+    table = Table(%w[hi chris carter]) << %w[is this annoying] <<
+                                          %w[is it funny]
+    grouping = Grouping(table,:by => "hi")
+
+    actual = grouping.to_csv #(:show_group_headers => false)
+
+    assert_equal "is\n\nchris,carter\nthis,annoying\nit,funny\n", actual
+  end
+ 
   def test_render_csv_row
     actual = Ruport::Renderer::Row.render_csv { |r| r.data = [1,2,3] }
     assert_equal("1,2,3\n", actual)

@@ -23,6 +23,12 @@ module Ruport::Format
       output << data.name << "\n\n"
     end
 
+    def build_grouping_body
+      data.each do |_,group|
+        render_group group, :show_group_headers => show_group_headers
+      end
+    end
+
     def build_group_body
       render_table data
     end

@@ -185,6 +185,5 @@ class TestGrouping < Test::Unit::TestCase
 
     sub = (g / "greg")["brown"].to_table
     assert_equal %w[awesome sick], sub.column("id")
-    puts sub
   end
 end
