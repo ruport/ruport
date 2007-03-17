@@ -52,6 +52,13 @@ module Ruport::Format
       render_table data, :show_table_headers => show_group_headers
     end
 
+    def build_grouping_body
+      data.each do |_,group|
+        render_group group, :show_group_headers => show_group_headers
+        output << "\n"
+      end
+    end
+
     # Renders individual rows for the table
     def build_row
       output <<

@@ -62,6 +62,33 @@ class TestFormatHTML < Test::Unit::TestCase
       "\t</tr>\n\t</table>", actual
   end
 
+  def test_render_html_grouping
+    table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
+    g = Grouping(table,:by => "a")
+    actual = Ruport::Renderer::Grouping.render(:html, :data => g,
+                                               :show_group_headers => false)
+
+    assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>2</td>\n"+
+    "\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t"+
+    "<td>3</td>\n\t\t</tr>\n\t</table>\n\t<p>2</p>\n\t<table>\n\t\t<tr>"+
+    "\n\t\t\t<td>7</td>\n\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
+  end
+
+  def test_render_html_grouping_with_table_headers
+    table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
+    g = Grouping(table,:by => "a")
+    actual = Ruport::Renderer::Grouping.render(:html, :data => g)
+
+    assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<th>b</th>\n"+
+                 "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>"+
+                 "2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t"+
+                 "\t<td>1</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t</table>\n"+
+                 "\t<p>2</p>\n\t<table>\n\t\t<tr>\n\t\t\t<th>b</th>\n\t\t"+
+                 "\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>7</td>\n"+
+                 "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
+  end
+
+
   def test_render_html_with_tags 
     actual = Ruport::Renderer::Table.render_html { |r| 
       r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
@@ -87,6 +114,8 @@ class TestFormatHTML < Test::Unit::TestCase
                  "\t\t\t<td class='foo'>2</td>\n\t\t\t"+
                  "<td class='foo'>3</td>\n\t\t</tr>\n",actual)
   end    
+
+  def 
   
 
   def test_ensure_html_tags_joined
@@ -114,4 +143,6 @@ class TestFormatHTML < Test::Unit::TestCase
     
     assert_equal(expected,actual)
   end
+
+
 end
