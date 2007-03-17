@@ -30,7 +30,7 @@ module Ruport::Format
     end
 
     def build_group_body
-      render_table data
+      render_table data, :show_table_headers => show_group_headers
     end
 
     # Calls the row renderer for each row in the Data::Table
