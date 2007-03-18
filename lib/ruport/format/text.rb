@@ -69,14 +69,14 @@ module Ruport
             render_group group
           end
         else
-          render_table data, :show_table_headers => show_group_headers
+          render_table data, options
           output << "\n"
         end
       end
 
       def build_grouping_body
         data.each do |name,group|
-          render_group group, :show_group_headers => show_group_headers
+          render_group group, options
         end
       end
       

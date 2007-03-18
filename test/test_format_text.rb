@@ -83,7 +83,7 @@ class TestFormatText < Test::Unit::TestCase
                                    :column_names => %w[i hope so])
    
     actual = Ruport::Renderer::Group.render(:text, :data => group,
-      :show_group_headers => false )
+      :show_table_headers => false )
     expected = "test: \n\n"+
                "+------------------------------+\n"+
                "| is          | this  | more   |\n"+
@@ -126,7 +126,7 @@ class TestFormatText < Test::Unit::TestCase
     grouping = Grouping(table, :by => "i")
 
     actual = Ruport::Renderer::Grouping.render(:text, :data => grouping,
-      :show_group_headers => false)
+      :show_table_headers => false)
     expected = "interesting: \n\n"+
                "+----------------+\n"+
                "| chris | carter |\n"+

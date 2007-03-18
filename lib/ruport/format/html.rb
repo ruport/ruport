@@ -34,7 +34,7 @@ module Ruport::Format
     def build_table_footer
       output << "\t</table>"
     end
-
+  
     # Renders the header for a group using the group name.
     #
     def build_group_header
@@ -45,12 +45,12 @@ module Ruport::Format
     # Table renderer.
     #
     def build_group_body
-      render_table data, :show_table_headers => show_group_headers
+      render_table data, options.to_hash
     end
 
     def build_grouping_body
       data.each do |_,group|
-        render_group group, :show_group_headers => show_group_headers
+        render_group group, options.to_hash
         output << "\n"
       end
     end

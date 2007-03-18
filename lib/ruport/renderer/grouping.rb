@@ -23,10 +23,10 @@ module Ruport
   class Renderer::Group < Renderer
     add_formats :html, :text, :csv, :pdf
 
-    option :show_group_headers, :show_subgroups
+    option :show_table_headers, :show_subgroups
 
     options { |o|
-      o.show_group_headers = true
+      o.show_table_headers = true
       o.show_subgroups = true
     }
 

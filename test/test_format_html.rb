@@ -55,7 +55,7 @@ class TestFormatHTML < Test::Unit::TestCase
                                     :data => [[1,2,3],[4,5,6]],
                                     :column_names => %w[a b c])
     actual = Ruport::Renderer::Group.render(:html, :data => group,
-      :show_group_headers => false)
+      :show_table_headers => false)
     assert_equal "\t<p>test</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
@@ -66,7 +66,7 @@ class TestFormatHTML < Test::Unit::TestCase
     table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
     g = Grouping(table,:by => "a")
     actual = Ruport::Renderer::Grouping.render(:html, :data => g,
-                                               :show_group_headers => false)
+                                               :show_table_headers => false)
 
     assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>2</td>\n"+
     "\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t"+

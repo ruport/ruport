@@ -36,7 +36,7 @@ class TestGroup < Test::Unit::TestCase
                                     :data => [%w[Ruport Is Sexy]],
                                     :column_names => %w[Software Isnt Sexy])
     assert_equal(8,group.to_text.to_a.length)
-    assert_equal(6,group.as(:text, :show_group_headers => false).to_a.length)
+    assert_equal(6,group.as(:text, :show_table_headers => false).to_a.length)
     assert_equal(13,group.to_html.to_a.length)
   end
 
@@ -140,7 +140,7 @@ class TestGrouping < Test::Unit::TestCase
                                     :column_names => %w[Software Isnt Sexy])
     grouping = Ruport::Data::Grouping.new(table, :by => 'Software')
     assert_equal(8,grouping.to_text.to_a.length)
-    assert_equal(6,grouping.as(:text, :show_group_headers => false).to_a.length)
+    assert_equal(6,grouping.as(:text, :show_table_headers => false).to_a.length)
   end
 
   def test_kernel_hack
