@@ -27,10 +27,6 @@ module Ruport::Format
       render_data_by_row do |rend|
         r = rend.data
         rend.data = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
-        classstr = 
-          r.tags.length > 0 ? " class='#{r.tags.to_a.join(' ')}'" : ""
-
-        rend.options.class_str = classstr
       end
     end
 

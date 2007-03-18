@@ -26,11 +26,7 @@ class TestTable < Test::Unit::TestCase
       assert_equal n, t.column_names
 
     t = [[1,2,3],[4,5,6]].to_table(%w[a b c])
-    t[0].tag :foo
-    t[1].tag :bar
     table_from_records = t.data.to_table(t.column_names)
-    assert_equal Set.new([:foo]), table_from_records[0].tags
-    assert_equal Set.new([:bar]), table_from_records[1].tags
     end
     
     a = Ruport::Data::Record.new [1,2,3]
@@ -572,20 +568,6 @@ class TestTable < Test::Unit::TestCase
     assert_equal(2.73,t.sum(0))
   end
   
-  #Ticket #142          
-  def test_ensure_constructor_dups_record_tags
-    a = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
-    b = a.dup    
-    
-    a[0].tag :foo
-    assert_equal Set.new([]), b[0].tags
-    assert_equal Set.new([:foo]),a[0].tags
-    
-    b[1].tag :bar
-    assert_equal Set.new([]), a[1].tags
-    assert_equal Set.new([:bar]), b[1].tags
-  end
-
   def test_ensure_serializable
     a = [].to_table
     assert_nothing_raised { a.to_yaml }

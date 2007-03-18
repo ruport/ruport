@@ -14,7 +14,6 @@ module Ruport::Data
   #
   class Record
 
-    include Taggable
     include Enumerable  
     
     # 
@@ -202,8 +201,6 @@ module Ruport::Data
     # Makes a fresh copy of the Record. 
     def dup
       r = Record.new(@data.dup,:attributes => @attributes.dup)
-      r.tags = tags.dup
-      return r
     end
         
     # A simple formatting tool which allows you to quickly generate a formatted

@@ -172,13 +172,9 @@ class TestRecord < Test::Unit::TestCase
     rec2["b"] = 7
     rec2[2] = 9
 
-    rec2.tag(:apple)
 
     assert_equal [1,2,3,4], rec1.to_a
     assert_equal [5,7,9,4], rec2.to_a
-
-    assert_equal Set.new([]), rec1.tags
-    assert_equal Set.new([:apple]), rec2.tags
   end
 
   def test_records_with_same_attrs_and_data_hash_the_same
@@ -244,15 +240,6 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 1, a["a"]
   end
 
-  def test_ensure_tags_get_duped
-    a = Record.new([1,2,3])
-    a.tag :foo
-    assert a.tags.include?(:foo)
-    b = a.dup
-    assert b.tags.include?(:foo)
-    assert_not_same a.tags, b.tags
-  end  
-  
   # Ticket #172
   def test_ensure_get_really_indifferent   
     a = Record.new({"a" => 1, "b" => 2})

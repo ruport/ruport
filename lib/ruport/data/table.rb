@@ -14,7 +14,6 @@ module Ruport::Data
   #
   module Collection
     include Enumerable
-    include Taggable
 
     # A simple formatting tool which allows you to quickly generate a formatted
     # table from a <tt>Collection</tt> object.
@@ -77,11 +76,9 @@ module Ruport::Data
       @data         = []
       if options[:data]
         if options[:data].all? { |r| r.kind_of? Record }
-          record_tags = options[:data].map { |r| r.tags.dup }
           options[:data] = options[:data].map { |r| r.to_a } 
         end 
         options[:data].each { |e| self << e }  
-        each { |r| r.tags = record_tags.shift } if record_tags
       end
     end
 
@@ -165,7 +162,6 @@ module Ruport::Data
         else
           self << other.to_h
         end
-        @data.last.tags = other.tags.dup
       else
         if other.respond_to?(:to_hash)
           self << other.to_hash
@@ -429,7 +425,6 @@ module Ruport::Data
     #     sub_table = table.sub_table { |r| r.c > 10 }
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
-    # FIXME: loses tags
     def sub_table(columns=column_names,range=nil)      
        Table(columns) do |t|
          if range
@@ -533,7 +528,6 @@ module Ruport::Data
       table = 
         data_array.to_table(@column_names)
 
-      table.tags = self.tags
       return table
     end
 
@@ -557,8 +551,6 @@ module Ruport::Data
     #
     def dup
       a = self.class.new(:data => @data, :column_names => @column_names)
-      a.tags = tags.dup
-      return a
     end     
     
     #
