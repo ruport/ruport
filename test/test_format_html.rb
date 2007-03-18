@@ -92,7 +92,7 @@ class TestFormatHTML < Test::Unit::TestCase
   def test_render_html_with_tags 
     actual = Ruport::Renderer::Table.render_html { |r| 
       r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
-      r.data.create_group("foo") { |r| r.a < 3 }
+      r.data[0].tag "grp_foo"
     } 
     
     expected =

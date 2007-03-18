@@ -564,15 +564,6 @@ class TestTable < Test::Unit::TestCase
     assert_equal 4, x.length
   end
   
-  # bug found with paul novak 2007.01.17
-  def test_ensure_tags_preserved_in_subtable
-    a = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
-    a[1].tag(:foo)
-    a.create_group("bar") { |r| r.b < 6 }
-    assert_equal Set.new(["grp_bar"]), a.group("bar")[0].tags
-    assert_equal Set.new([:foo,"grp_bar"]), a.group("bar")[1].tags
-  end
-  
   def test_ensure_coerce_sum
     s = [["1"],["3"],["5"] ].to_table
     t = [["1.23"],["1.5"]].to_table

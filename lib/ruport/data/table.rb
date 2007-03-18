@@ -55,7 +55,6 @@ module Ruport::Data
   #
   class Table 
     include Collection
-    include Groupable      
     
     require "forwardable"
     extend Forwardable
