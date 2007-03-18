@@ -69,6 +69,20 @@ class TestFormatCSV < Test::Unit::TestCase
     assert_equal("1,2,3\n4,5,6\n",actual)
   end  
 
+  def test_alternative_styles
+
+    g = Grouping((Table(%w[a b c]) << [1,2,3] << [1,1,4] <<
+                                      [2,1,2] << [1,9,1] ), :by => "a")
+    
+    assert_raise(NotImplementedError) { g.to_csv :style => :not_real }
+
+    assert_equal "a,b,c\n1,2,3\n,1,4\n,9,1\n\n2,1,2\n\n", 
+                 g.to_csv(:style => :justified)
+
+
+
+  end
+
   # -----------------------------------------------------------------------
   # BUG TRAPS
   # ------------------------------------------------------------------------

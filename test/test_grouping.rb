@@ -143,6 +143,12 @@ class TestGrouping < Test::Unit::TestCase
     assert_equal(6,grouping.as(:text, :show_table_headers => false).to_a.length)
   end
 
+  def test_grouped_by
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    b = Grouping(a, :by => "a")
+    assert_equal "a", b.grouped_by
+  end
+
   def test_kernel_hack
     a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
     b = Grouping(a, :by => "a")

@@ -85,7 +85,8 @@ module Ruport::Data
     def_delegator :@data, :each
     
     def initialize(data,options={})
-      cols = Array(options[:by])
+      @grouped_by = options[:by] 
+      cols = Array(options[:by]).dup
       @data = data.send(:grouped_data, cols.shift)
       cols.each do |col|
         @data.each do |name,group|
@@ -93,6 +94,8 @@ module Ruport::Data
         end
       end
     end  
+
+    attr_reader :grouped_by
     
     def [](name)
       @data[name] or 

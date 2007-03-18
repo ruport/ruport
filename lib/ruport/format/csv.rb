@@ -33,7 +33,16 @@ module Ruport::Format
           output << "\n"
         end
       when :justified
-         output << "renderme"
+        require "fastercsv"
+        #FIXME: This line blows.
+        output << "#{data.grouped_by}," << data.data.to_a[0][1].column_names.to_csv
+        data.each do |_,group|
+          output << "#{group.name}"
+          group.each do |row| 
+            output << "," << row.to_csv 
+          end
+          output << "\n"
+        end
       else
         raise NotImplementedError, "Unknown style"
       end
