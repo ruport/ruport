@@ -122,6 +122,16 @@ def format_class_name(string)
   string.downcase.split("_").map { |s| s.capitalize }.join
 end
 
+def check_for_files
+  if File.exist? "lib/reports/#{ARGV[1]}.rb"
+    raise "Report #{ARGV[1]} exists!"
+  end
+
+  if File.exist? "lib/renderers/#{ARGV[1]}.rb"
+    raise "Renderer #{ARGV[1]} exists!"
+  end
+end
+
 unless ARGV.length > 1
   puts "usage: build [command] [options]"
   exit
@@ -130,7 +140,7 @@ end
 class_name = format_class_name(ARGV[1])
 
 if ARGV[0].eql? "report"
-  exit if File.exist? "lib/reports/#{ARGV[1]}.rb"
+  check_for_files
   File.open("lib/reports.rb", "a") { |f| 
     f.puts("require \"lib/reports/#{ARGV[1]}\"")
   }
@@ -167,14 +177,15 @@ class Test#{class_name} < Test::Unit::TestCase
   end
 end
 EOR
-  raise "Renderer exists with same name!" if File.exist? "lib/renderers/#{ARGV[1]}"
-  puts "report file: lib/reports/#{ARGV[1]}.rb"
+
   File.open("lib/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
   puts "test file: test/test_#{ARGV[1]}.rb"
   puts "class name: #{class_name}" 
   File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }  
+
 elsif ARGV[0].eql? "renderer"
-  exit if File.exist? "lib/renderers/#{ARGV[1]}.rb"
+
+  check_for_files
   File.open("lib/renderers.rb","a") { |f|
     f.puts("require \"lib/renderers/#{ARGV[1]}\"")
   }
@@ -207,7 +218,6 @@ class Test#{class_name} < Test::Unit::TestCase
   end
 end
 EOR
-  raise "Report exists with same name!" if File.exist? "lib/reports/#{ARGV[1]}"
   puts "renderer file: lib/renderers/#{ARGV[1]}.rb"
   File.open("lib/renderers/#{ARGV[1]}.rb", "w") { |f| f << REP }
   puts "test file: test/test_#{ARGV[1]}.rb"
