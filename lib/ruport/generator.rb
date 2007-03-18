@@ -167,6 +167,7 @@ class Test#{class_name} < Test::Unit::TestCase
   end
 end
 EOR
+  raise "Renderer exists with same name!" if File.exist? "lib/renderers/#{ARGV[1]}"
   puts "report file: lib/reports/#{ARGV[1]}.rb"
   File.open("lib/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
   puts "test file: test/test_#{ARGV[1]}.rb"
@@ -206,9 +207,11 @@ class Test#{class_name} < Test::Unit::TestCase
   end
 end
 EOR
-  puts "renderer file: lib/renderer/#{ARGV[1]}.rb"
+  raise "Report exists with same name!" if File.exist? "lib/reports/#{ARGV[1]}"
+  puts "renderer file: lib/renderers/#{ARGV[1]}.rb"
   File.open("lib/renderers/#{ARGV[1]}.rb", "w") { |f| f << REP }
   puts "test file: test/test_#{ARGV[1]}.rb"
+
   puts "class name: #{class_name}"
   File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }
 else

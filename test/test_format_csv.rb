@@ -26,7 +26,7 @@ class TestFormatCSV < Test::Unit::TestCase
                                     :data => [[1,2,3],[4,5,6]],
                                     :column_names => %w[a b c])
     actual = Ruport::Renderer::Group.render(:csv, :data => group,
-               :show_group_headers => false )
+               :show_table_headers => false )
     assert_equal("test\n\n1,2,3\n4,5,6\n",actual)
   end
 
@@ -38,6 +38,16 @@ class TestFormatCSV < Test::Unit::TestCase
     actual = grouping.to_csv #(:show_group_headers => false)
 
     assert_equal "is\n\nchris,carter\nthis,annoying\nit,funny\n", actual
+  end
+
+  def test_render_csv_grouping_without_header
+    table = Table(%w[hi chris carter]) << %w[is this annoying] <<
+                                          %w[is it funny]
+    grouping = Grouping(table,:by => "hi")
+
+    actual = grouping.to_csv :show_table_headers => false
+
+    assert_equal "is\n\nthis,annoying\nit,funny\n", actual
   end
  
   def test_render_csv_row

@@ -25,12 +25,12 @@ module Ruport::Format
 
     def build_grouping_body
       data.each do |_,group|
-        render_group group, :show_group_headers => show_group_headers
+        render_group group, options.to_hash
       end
     end
 
     def build_group_body
-      render_table data, :show_table_headers => show_group_headers
+      render_table data, options.to_hash
     end
 
     # Calls the row renderer for each row in the Data::Table
