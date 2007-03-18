@@ -4,7 +4,9 @@ module Ruport::Format
   # See also:  Renderer::Table
   class CSV < Plugin
 
-    opt_reader :show_table_headers, :format_options, :show_group_headers
+    opt_reader :show_table_headers, 
+               :format_options, 
+               :show_group_headers, :style
 
     # Generates table header by turning column_names into a CSV row.
     # Uses the row renderer to generate the actual formatted output
@@ -20,12 +22,20 @@ module Ruport::Format
     # Renders the header for a group using the group name.
     # 
     def build_group_header
-      output << data.name << "\n\n"
+      output << data.name.to_s << "\n\n"
     end
 
     def build_grouping_body
-      data.each do |_,group|
-        render_group group, options.to_hash
+      case(style)
+      when :inline
+        data.each do |_,group|
+          render_group group, options.to_hash
+          output << "\n"
+        end
+      when :justified
+         output << "renderme"
+      else
+        raise NotImplementedError, "Unknown style"
       end
     end
 

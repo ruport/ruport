@@ -37,7 +37,7 @@ class TestFormatCSV < Test::Unit::TestCase
 
     actual = grouping.to_csv #(:show_group_headers => false)
 
-    assert_equal "is\n\nchris,carter\nthis,annoying\nit,funny\n", actual
+    assert_equal "is\n\nchris,carter\nthis,annoying\nit,funny\n\n", actual
   end
 
   def test_render_csv_grouping_without_header
@@ -47,7 +47,7 @@ class TestFormatCSV < Test::Unit::TestCase
 
     actual = grouping.to_csv :show_table_headers => false
 
-    assert_equal "is\n\nthis,annoying\nit,funny\n", actual
+    assert_equal "is\n\nthis,annoying\nit,funny\n\n", actual
   end
  
   def test_render_csv_row
@@ -68,5 +68,15 @@ class TestFormatCSV < Test::Unit::TestCase
     }
     assert_equal("1,2,3\n4,5,6\n",actual)
   end  
+
+  # -----------------------------------------------------------------------
+  # BUG TRAPS
+  # ------------------------------------------------------------------------
+  
+  def test_ensure_group_names_are_converted_to_string
+    g = Grouping((Table(%w[a b c])<<[1,2,3]<<[1,1,4]), :by => "a")
+    assert_equal "1\n\nb,c\n2,3\n1,4\n\n", g.to_csv
+  end
+
 
 end

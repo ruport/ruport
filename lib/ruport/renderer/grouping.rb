@@ -58,9 +58,12 @@ module Ruport
   class Renderer::Grouping < Renderer
     add_formats :csv, :text, :html, :pdf
 
-    option :show_group_headers
+    option :show_group_headers, :style
 
-    options { |o| o.show_group_headers = true }
+    options do |o| 
+      o.show_group_headers = true 
+      o.style = :inline
+    end
 
     stage :grouping_header
     stage :grouping_body
