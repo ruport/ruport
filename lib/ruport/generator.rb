@@ -2,6 +2,22 @@ module Ruport
   class Generator
   extend FileUtils
 
+  module Helpers
+    def format_class_name(string)
+      string.downcase.split("_").map { |s| s.capitalize }.join
+    end
+
+    def check_for_files
+      if File.exist? "lib/reports/#{ARGV[1]}.rb"
+        raise "Report #{ARGV[1]} exists!"
+      end
+
+      if File.exist? "lib/renderers/#{ARGV[1]}.rb"
+        raise "Renderer #{ARGV[1]} exists!"
+      end
+    end
+  end
+
   begin
     require "rubygems"
   rescue LoadError
@@ -18,6 +34,7 @@ module Ruport
     build_rakefile  
     puts "\nSuccessfully generated project: #{proj}"
   end
+
 
   def self.build_init
     m = "#{project}/lib/init.rb" 
@@ -105,32 +122,21 @@ CONFIG = <<END_CONFIG
 require "ruport"
 
 # For details, see Ruport::Config documentation
-Ruport.configure { |c|
-  c.source :default, :user     => "root", 
-                     :dsn      =>  "dbi:mysql:mydb"
-  c.log_file "log/ruport.log"
-}
+Ruport.configure do |conf|
+  conf.source :default, :user     => "root", 
+                        :dsn      =>  "dbi:mysql:mydb"
+  conf.log_file "log/ruport.log"
+end
 END_CONFIG
 
 BUILD = <<'END_BUILD'
 #!/usr/bin/env ruby
 
 require 'fileutils'
+require 'lib/init.rb'
+require "ruport/generator"
 include FileUtils
-
-def format_class_name(string)
-  string.downcase.split("_").map { |s| s.capitalize }.join
-end
-
-def check_for_files
-  if File.exist? "lib/reports/#{ARGV[1]}.rb"
-    raise "Report #{ARGV[1]} exists!"
-  end
-
-  if File.exist? "lib/renderers/#{ARGV[1]}.rb"
-    raise "Renderer #{ARGV[1]} exists!"
-  end
-end
+include Ruport::Generator::Helpers
 
 unless ARGV.length > 1
   puts "usage: build [command] [options]"
@@ -179,6 +185,7 @@ end
 EOR
 
   File.open("lib/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
+  puts "reports file: lib/reports/#{ARGV[1]}.rb"
   puts "test file: test/test_#{ARGV[1]}.rb"
   puts "class name: #{class_name}" 
   File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }  
