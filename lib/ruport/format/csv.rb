@@ -43,6 +43,15 @@ module Ruport::Format
           end
           output << "\n"
         end
+      when :raw
+        #FIXME: This line blows.
+        output << "#{data.grouped_by}," << data.data.to_a[0][1].column_names.to_csv
+        data.each do |_,group|
+          group.each do |row| 
+            output << "#{group.name}," << row.to_csv 
+          end
+          output << "\n"
+        end
       else
         raise NotImplementedError, "Unknown style"
       end

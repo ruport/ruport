@@ -79,7 +79,8 @@ class TestFormatCSV < Test::Unit::TestCase
     assert_equal "a,b,c\n1,2,3\n,1,4\n,9,1\n\n2,1,2\n\n", 
                  g.to_csv(:style => :justified)
 
-
+    assert_equal "a,b,c\n1,2,3\n1,1,4\n1,9,1\n\n2,1,2\n\n",
+                  g.to_csv(:style => :raw) 
 
   end
 
