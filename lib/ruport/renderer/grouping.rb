@@ -68,6 +68,8 @@ module Ruport
     stage :grouping_header
     stage :grouping_body
     stage :grouping_footer
+    
+    finalize :grouping
   end
   
 end

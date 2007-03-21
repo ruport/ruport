@@ -18,6 +18,10 @@ module Ruport::Format
     attr_writer :pdf_writer
     attr_accessor :table_header_proc
     attr_accessor :table_footer_proc
+    
+    opt_reader  :show_table_headers,
+                :show_subgroups,
+                :style
 
     def initialize
       require "pdf/writer"
@@ -55,11 +59,74 @@ module Ruport::Format
     end
 
     def build_group_header
-      pad(10) { add_text data.name, :justification => :center }
+      if should_render_subgroups
+        pad_top(20) { add_text data.name.to_s, :justification => :left }
+      else
+        pad(10) { add_text data.name.to_s, :justification => :center }
+      end
     end
 
     def build_group_body
-      render_table data,:formatter => pdf_writer
+      if should_render_subgroups
+        data.subgroups.each do |name,group|
+          render_group group, options.to_hash.merge(:formatter => pdf_writer,
+            :skip_finalize_table => true)
+        end
+      else
+        render_table data, options.to_hash.merge(:formatter => pdf_writer)
+      end
+    end
+
+    def build_grouping_body
+      case(style)
+      when :inline
+        data.each do |_,group|
+          render_group group, options.to_hash.merge(:formatter => pdf_writer,
+            :skip_finalize_table => true)
+        end
+      when :justified
+        columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
+        table = Table(columns) do |t|
+          data.each do |name,group|
+            group_column = { data.grouped_by => "<b>#{name}</b>\n" }
+            group.each_with_index do |rec,i|
+              i == 0 ? t << group_column.merge(rec.to_h) : t << rec
+            end
+          end
+        end
+        render_table table, options.to_hash.merge(:formatter => pdf_writer)
+      when :offset
+        columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
+        table = Table(columns) do |t|
+          data.each do |name,group|
+            t << ["<b>#{name}</b>\n",nil,nil]
+            group.each {|r| t << r }
+          end
+        end
+        render_table table, options.to_hash.merge(:formatter => pdf_writer)
+      when :separated
+        columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
+        table = Table(columns) do |t|
+          data.each do |name,group|
+            group_column = { data.grouped_by => "<b>#{name}</b>\n" }
+            group.each_with_index do |rec,i|
+              i == 0 ? t << group_column.merge(rec.to_h) : t << rec
+            end
+            t << Array.new(columns.length,' ')
+          end
+        end
+        render_table table, options.to_hash.merge(:formatter => pdf_writer)
+      else
+        raise NotImplementedError, "Unknown style"
+      end
+    end
+    
+    def finalize_grouping
+      output << pdf_writer.render
+    end
+
+    def should_render_subgroups
+      show_subgroups && !data.subgroups.empty?
     end
 
     # If table_footer_proc is defined, it will be executed and the PDF::Writer
@@ -78,7 +145,7 @@ module Ruport::Format
     # <tt>pdf_writer</tt> object.
     #
     def finalize_table
-      output << pdf_writer.render
+      output << pdf_writer.render unless options.skip_finalize_table
     end
 
     # Call PDF::Writer#text with the given arguments
@@ -211,6 +278,16 @@ module Ruport::Format
       move_cursor -y
     end
 
+    def pad_top(y,&block)
+      move_cursor -y
+      block.call
+    end
+
+    def pad_bottom(y,&block)
+      block.call
+      move_cursor -y
+    end
+
     def draw_table
       m = "Sorry, cant build PDFs from array like things (yet)"
       raise m if data.column_names.empty?
@@ -218,6 +295,7 @@ module Ruport::Format
         table.maximum_width = 500
         table.data          = data
         table.column_order  = data.column_names
+        table.show_headings = false if !show_table_headers
 
         options.table_format.each {|k,v|
           table.send("#{k}=", v)
