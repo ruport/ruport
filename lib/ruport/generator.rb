@@ -148,7 +148,9 @@ task :install_aar do
   File.open("../../lib/init.rb","a") do |f|
      f.puts AAR_TEMPLATE
   end
-  touch "../../data/models.rb"
+  File.open("../../data/models.rb","w") do |f|
+    f.puts "Dir['data/models/*.rb'].each { |r| require r }"
+  end
 end
 END_RAKEFILE
 
