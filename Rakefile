@@ -18,7 +18,7 @@ end
 
 spec = Gem::Specification.new do |spec|
   spec.name = "ruport"
-  spec.version = "0.9.2"
+  spec.version = "0.9.3"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A generalized Ruby report generation and templating engine."
   spec.files =  Dir.glob("{examples,lib,test,bin}/**/**/*") +
