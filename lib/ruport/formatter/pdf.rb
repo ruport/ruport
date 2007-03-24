@@ -85,34 +85,31 @@ module Ruport
         end
       when :justified
         columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
-        table = Table(columns) do |t|
-          data.each do |name,group|
-            group_column = { data.grouped_by => "<b>#{name}</b>\n" }
-            group.each_with_index do |rec,i|
-              i == 0 ? t << group_column.merge(rec.to_h) : t << rec
-            end
+        table = Ruport::Data::Table.new(:column_names => columns)
+        data.each do |name,group|
+          group_column = { data.grouped_by => "<b>#{name}</b>\n" }
+          group.each_with_index do |rec,i|
+            i == 0 ? table << group_column.merge(rec.to_h) : table << rec
           end
         end
         render_table table, options.to_hash.merge(:formatter => pdf_writer)
       when :offset
         columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
-        table = Table(columns) do |t|
-          data.each do |name,group|
-            t << ["<b>#{name}</b>\n",nil,nil]
-            group.each {|r| t << r }
-          end
+        table = Ruport::Data::Table.new(:column_names => columns)
+        data.each do |name,group|
+          table << ["<b>#{name}</b>\n",nil,nil]
+          group.each {|r| table << r }
         end
         render_table table, options.to_hash.merge(:formatter => pdf_writer)
       when :separated
         columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
-        table = Table(columns) do |t|
-          data.each do |name,group|
-            group_column = { data.grouped_by => "<b>#{name}</b>\n" }
-            group.each_with_index do |rec,i|
-              i == 0 ? t << group_column.merge(rec.to_h) : t << rec
-            end
-            t << Array.new(columns.length,' ')
+        table = Ruport::Data::Table.new(:column_names => columns)
+        data.each do |name,group|
+          group_column = { data.grouped_by => "<b>#{name}</b>\n" }
+          group.each_with_index do |rec,i|
+            i == 0 ? table << group_column.merge(rec.to_h) : table << rec
           end
+          table << Array.new(columns.length,' ')
         end
         render_table table, options.to_hash.merge(:formatter => pdf_writer)
       else

@@ -525,8 +525,7 @@ module Ruport::Data
           sort_by(&block)
         end
 
-      table = 
-        data_array.to_table(@column_names)
+      table = Table.new(:data => data_array, :column_names => @column_names)
 
       return table
     end
@@ -699,7 +698,7 @@ module Kernel
         return Ruport::Data::Table.parse(string,args[0],&block)
       end
     else
-       [].to_table(args)
+       Ruport::Data::Table.new(:data => [], :column_names => args)
     end             
     
     block[table] if block
