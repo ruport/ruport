@@ -1,6 +1,6 @@
 module Ruport
 
-  # This plugin implements the CSV format for tabular data output. 
+  # This formatter implements the CSV format for tabular data output. 
   # See also:  Renderer::Table
   class Formatter::CSV < Formatter
 

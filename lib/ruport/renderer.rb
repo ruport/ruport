@@ -7,11 +7,11 @@
 
 # This class implements the core engine for Ruport's formatting system.  It is
 # designed to implement the low level tools necessary to build report renderers
-# for different kinds of tasks.  See Renderer::Table for a tabular data renderer
-# and Renderer::Graph for graphing support.  
+# for different kinds of tasks.  See Renderer::Table for a tabular data
+# renderer.  
 #
 # This class can easily be extended to build custom formatting engines, but if
-# you do not need that, may not be relevant to study for your use of Ruport.
+# you do not need that, it may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
 
   require "ruport/renderer/options"

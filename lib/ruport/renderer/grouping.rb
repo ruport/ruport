@@ -2,19 +2,19 @@ module Ruport
   
   # This class implements the basic renderer for a single group of data.
   #
-  # == Supported Format Plugins 
+  # == Supported Formatters 
   #
-  # * Format::CSV
-  # * Format::Text
-  # * Format::HTML
-  # * Format::PDF
+  # * Formatter::CSV
+  # * Formatter::Text
+  # * Formatter::HTML
+  # * Formatter::PDF
   #
   # == Default layout options 
   #
-  # * <tt>show_group_headers</tt> #=> true
+  # * <tt>show_table_headers</tt> #=> true
   # * <tt>show_subgroups</tt> #=> true
   #
-  # == Plugin hooks called (in order)
+  # == Formatter hooks called (in order)
   #
   # * build_group_header
   # * build_group_body
@@ -38,22 +38,24 @@ module Ruport
   # This class implements the basic renderer for data groupings in Ruport
   # (a collection of Groups).
   #
-  # == Supported Format Plugins 
+  # == Supported Formatters 
   #
-  # * Format::CSV
-  # * Format::Text
-  # * Format::HTML
-  # * Format::PDF
+  # * Formatter::CSV
+  # * Formatter::Text
+  # * Formatter::HTML
+  # * Formatter::PDF
   #
   # == Default layout options 
   #
   # * <tt>show_group_headers</tt> #=> true
+  # * <tt>style</tt> #=> :inline
   #
-  # == Plugin hooks called (in order)
+  # == Formatter hooks called (in order)
   #
   # * build_grouping_header
   # * build_grouping_body
   # * build_grouping_footer
+  # * finalize_grouping
   #
   class Renderer::Grouping < Renderer
     add_formats :csv, :text, :html, :pdf

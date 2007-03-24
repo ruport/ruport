@@ -7,14 +7,13 @@ module Ruport
 
   # This class implements the basic renderer for table rows.
   #
-  # == Supported Format Plugins 
+  # == Supported Formatters 
   #  
-  # * Format::CSV
-  # * Format::Text
-  # * Format::HTML
-  # * Format::Latex
+  # * Formatter::CSV
+  # * Formatter::Text
+  # * Formatter::HTML
   #
-  # == Plugin hooks called (in order)
+  # == Formatter hooks called (in order)
   #  
   # * build_row
   #
@@ -26,22 +25,18 @@ module Ruport
 
   # This class implements the basic tabular data renderer for Ruport.
   #
-  # For a set of methods that might be helpful while working with this class,
-  # see the included TableHelpers module
-  #
-  # == Supported Format Plugins 
+  # == Supported Formatters 
   #  
-  # * Format::CSV
-  # * Format::Text
-  # * Format::HTML
-  # * Format::Latex
-  # * Format::PDF
+  # * Formatter::CSV
+  # * Formatter::Text
+  # * Formatter::HTML
+  # * Formatter::PDF
   #
   # == Default layout options 
   #  
   # * <tt>show_table_headers</tt> #=> true
   #
-  # == Plugin hooks called (in order)
+  # == Formatter hooks called (in order)
   #  
   # * prepare_table
   # * build_table_header

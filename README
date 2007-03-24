@@ -76,8 +76,8 @@
 # == Data Collection and Manipulation
 # 
 # To begin, your data must be read from its source and stored in Ruport's 
-# standard data structures. Ruport::Data::Table and  Ruport::Data::Record 
-# have further information on how to work with with
+# standard data structures. Ruport::Data::Table, Ruport::Data::Record, and
+# Ruport::Data::Grouping have further information on how to work with
 # and store data in ruport.
 #
 # If you wish to retrieve your data using Ruby on Rails and ActiveRecord,
@@ -86,10 +86,10 @@
 # == Report Generation
 #
 # Once the data is ready, it can be rendered using a combination of
-# Ruport::Renderer and Ruport::Format::Plugin. 
-# The renderer defines the report type (tablular, graph, etc), and 
-# the plugin renders the engine into a final format (PDF, CSV, HTML, SVG). 
-# Renderers will often interact with more than one plugin, to allow the same
+# Ruport::Renderer and Ruport::Formatter. 
+# The renderer defines the report type (tabular, graph, etc), and 
+# the formatter renders the engine into a final format (PDF, CSV, HTML, SVG). 
+# Renderers will often interact with more than one formatter, to allow the same
 # report to be rendered in multiple ways ie. as HTML and a PDF.
 # 
 # To tie these together, a basic DSL is provided by Ruport::Report

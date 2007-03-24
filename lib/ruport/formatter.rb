@@ -1,4 +1,4 @@
-# format/plugin.rb : Generalized formatting plugin base class for Ruby Reports
+# formatter.rb : Generalized formatting base class for Ruby Reports
 #
 # Created by Gregory Brown.  Copyright December 2006, All Rights Reserved.
 #
@@ -76,13 +76,13 @@ module Ruport
       @output ||= ""
     end
 
-    # Provides a generic OpenStruct for storing plugin options
+    # Provides a generic OpenStruct for storing formatter options
     def options
       @options ||= Renderer::Options.new
     end 
 
     # clears output.  Useful if you are building your own interface to
-    # plugins.
+    # formatters.
     def clear_output
       @output.replace("")
     end

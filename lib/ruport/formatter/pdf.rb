@@ -1,6 +1,6 @@
 module Ruport
    
-  # PDF generation plugin
+  # PDF generation formatter
   #
   #  options:
   #     General:
