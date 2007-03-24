@@ -100,7 +100,7 @@ class Ruport::Renderer
     private 
 
     def maybe(something)
-      plugin.send something if plugin.respond_to? something
+      formatter.send something if formatter.respond_to? something
     end
   end
 
@@ -138,11 +138,11 @@ class Ruport::Renderer
   #
   # example:
   #
-  #   class MyPlugin < Ruport::Format::Plugin
+  #   class MyFormatter < Ruport::Formatter
   #
-  #     # plugin code ...
+  #     # formatter code ...
   #
-  #     SomeRenderer.add_format self, :my_plugin
+  #     SomeRenderer.add_format self, :my_formatter
   #
   #   end
   def self.add_format(format,name=nil)
@@ -158,12 +158,12 @@ class Ruport::Renderer
   end
 
   # creates a new instance of the renderer
-  # then looks up the formatting plugin and creates a new instance of that as
+  # then looks up the formatter and creates a new instance of that as
   # well.  If a block is given, the renderer instance is yielded.
   #
   # The run() method is then called on the renderer method.
   #
-  # Finally, the value of the plugin's output accessor is returned
+  # Finally, the value of the formatter's output accessor is returned
   def self.render(*args)
     rend = build(*args) { |r|
       r.setup if r.respond_to? :setup
@@ -175,7 +175,7 @@ class Ruport::Renderer
       include AutoRunner
     end
     rend._run_ if rend.respond_to? :_run_
-    return rend.plugin.output
+    return rend.formatter.output
   end
 
   
@@ -188,14 +188,14 @@ class Ruport::Renderer
   end
 
   # creates a new instance of the renderer and sets it to use the specified
-  # formatting plugin (by name).  If a block is given, the renderer instance is
+  # formatter (by name).  If a block is given, the renderer instance is
   # yielded.  
   #
   # Returns the renderer instance.
   def self.build(*args)
     rend = self.new
 
-    rend.send(:use_plugin,args[0])
+    rend.send(:use_formatter,args[0])
     rend.send(:options=, options.dup)
 
     if args[1].kind_of?(Hash)
@@ -211,17 +211,16 @@ class Ruport::Renderer
   attr_accessor :format
   attr_reader   :data
 
-  # sets +data+ attribute on both the renderer and any active plugin
+  # sets +data+ attribute on both the renderer and any active formatter
   def data=(val)
     @data = val.dup
-    plugin.data = @data if plugin
+    formatter.data = @data if formatter
   end
 
-  # General purpose openstruct which is shared with the current formatting
-  # plugin.
+  # General purpose openstruct which is shared with the current formatter.
   def options
-    yield(plugin.options) if block_given?
-    plugin.options
+    yield(formatter.options) if block_given?
+    formatter.options
   end
   
   def io=(obj)
@@ -229,30 +228,30 @@ class Ruport::Renderer
   end
 
   def options=(o)
-    plugin.options = o
+    formatter.options = o
   end
 
-  # when no block is given, returns active plugin
+  # when no block is given, returns active formatter
   #
   # when a block is given with a block variable, sets the block variable to the
-  # plugin.  
+  # formatter.  
   #
   # when a block is given without block variables, instance_evals the block
-  # within the context of the plugin
-  def plugin(&block)
+  # within the context of the formatter
+  def formatter(&block)
     if block.nil?
-      return @plugin 
+      return @formatter
     elsif block.arity > 0
-      yield(@plugin)
+      yield(@formatter)
     else
-      @plugin.instance_eval(&block)
+      @formatter.instance_eval(&block)
     end
-    return @plugin
+    return @formatter
   end
 
   private
   
-  attr_writer :plugin
+  attr_writer :formatter
 
 
   # tries to autoload and register a format which is part of the Ruport::Format
@@ -281,10 +280,10 @@ class Ruport::Renderer
     end
   end
 
-  # selects a plugin for use by format name
-  def use_plugin(format)
-    self.plugin = self.class.formats[format].new
-    self.plugin.format = format
+  # selects a formatter for use by format name
+  def use_formatter(format)
+    self.formatter = self.class.formats[format].new
+    self.formatter.format = format
   end
 
   # provides a shortcut to render() to allow

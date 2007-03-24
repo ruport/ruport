@@ -28,7 +28,7 @@ class TrivialRenderer < Ruport::Renderer
   add_format DummyText, :text 
 
   def run
-    plugin do
+    formatter do
       build_header
       build_body
       build_footer
@@ -39,7 +39,7 @@ end
 
 class TrivialRenderer2 < TrivialRenderer; end
 
-class MultiPurposePlugin < Ruport::Formatter 
+class MultiPurposeFormatter < Ruport::Formatter 
 
    renders :html, :for => TrivialRenderer2
    renders :text, :for => TrivialRenderer2
@@ -95,7 +95,7 @@ class RendererWithRunHook < Ruport::Renderer
   stage :footer
 
   def run
-    plugin.output << "|"
+    formatter.output << "|"
   end
 
 end
@@ -115,10 +115,10 @@ class TestRenderer < Test::Unit::TestCase
        RendererWithRunHook.render_text(:foo => "bar",:bar => "baz")
   end
 
-  def test_method_missing_hack_plugin
-    assert_equal [:html,:text], MultiPurposePlugin.formats
+  def test_method_missing_hack_formatter
+    assert_equal [:html,:text], MultiPurposeFormatter.formats
 
-    a = MultiPurposePlugin.new
+    a = MultiPurposeFormatter.new
     a.format = :html
     
     visited = false
@@ -250,7 +250,7 @@ class TestRenderer < Test::Unit::TestCase
     assert_equal "header\nbody\nfooter\n", actual
   end
 
-  def test_plugin
+  def test_formatter
      #RendererWithHelpers.required_option :title
  
      assert_raise(RuntimeError) { RendererWithHelpers.render(:text) }
@@ -262,25 +262,25 @@ class TestRenderer < Test::Unit::TestCase
     assert_equal "header\nbody\nfooter\n", actual
   end
 
-  def test_plugin
+  def test_formatter
     # normal instance mode
     
     rend = TrivialRenderer.new
-    rend.send(:use_plugin,:text)
+    rend.send(:use_formatter,:text)
 
-    assert_kind_of Ruport::Formatter, rend.plugin
-    assert_kind_of DummyText, rend.plugin
+    assert_kind_of Ruport::Formatter, rend.formatter
+    assert_kind_of DummyText, rend.formatter
 
     # render mode
     TrivialRenderer.render_text do |r|
-      assert_kind_of Ruport::Formatter, r.plugin
-      assert_kind_of DummyText, r.plugin
+      assert_kind_of Ruport::Formatter, r.formatter
+      assert_kind_of DummyText, r.formatter
     end
 
-    assert_equal "body\n", rend.plugin { build_body }.output
+    assert_equal "body\n", rend.formatter { build_body }.output
 
-    rend.plugin.clear_output
-    assert_equal "", rend.plugin.output
+    rend.formatter.clear_output
+    assert_equal "", rend.formatter.output
   end
 
 end
