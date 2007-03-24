@@ -1,5 +1,4 @@
-  
-module Ruport::Format
+module Ruport
    
   # PDF generation plugin
   #
@@ -13,7 +12,7 @@ module Ruport::Format
   #           to PDF::SimpleTable)
   #       * table_format[:maximum_width] #=> 500
   #
-  class PDF < Plugin       
+  class Formatter::PDF < Formatter    
     
     attr_writer :pdf_writer
     attr_accessor :table_header_proc

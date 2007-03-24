@@ -260,8 +260,8 @@ class Ruport::Renderer
   def self.add_core_format(format)
     try_require(format)
     
-    klass = Ruport::Format.const_get(
-      Ruport::Format.constants.find { |c| c =~ /#{format}/i })
+    klass = Ruport::Formatter.const_get(
+      Ruport::Formatter.constants.find { |c| c =~ /#{format}/i })
     
     formats[format] = klass
   end
@@ -275,7 +275,7 @@ class Ruport::Renderer
   # silently fails
   def self.try_require(format)
     begin
-      require "ruport/format/#{format}"  
+      require "ruport/formatter/#{format}"  
     rescue LoadError
       nil
     end

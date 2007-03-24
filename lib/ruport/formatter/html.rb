@@ -1,8 +1,8 @@
-module Ruport::Format
+module Ruport
   # Produces HTML output for tabular data.
   #
   # See also Renderer::Table
-  class HTML < Plugin
+  class Formatter::HTML < Formatter
 
     opt_reader :show_table_headers, :class_str, :show_group_headers
     

@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'ruport'
 
-class DummyText < Ruport::Format::Plugin
+class DummyText < Ruport::Formatter
   def prepare_document
     output << "p"
   end
@@ -39,7 +39,7 @@ end
 
 class TrivialRenderer2 < TrivialRenderer; end
 
-class MultiPurposePlugin < Ruport::Format::Plugin
+class MultiPurposePlugin < Ruport::Formatter 
 
    renders :html, :for => TrivialRenderer2
    renders :text, :for => TrivialRenderer2
@@ -268,12 +268,12 @@ class TestRenderer < Test::Unit::TestCase
     rend = TrivialRenderer.new
     rend.send(:use_plugin,:text)
 
-    assert_kind_of Ruport::Format::Plugin, rend.plugin
+    assert_kind_of Ruport::Formatter, rend.plugin
     assert_kind_of DummyText, rend.plugin
 
     # render mode
     TrivialRenderer.render_text do |r|
-      assert_kind_of Ruport::Format::Plugin, r.plugin
+      assert_kind_of Ruport::Formatter, r.plugin
       assert_kind_of DummyText, r.plugin
     end
 

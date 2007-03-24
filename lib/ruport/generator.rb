@@ -239,7 +239,7 @@ class #{class_name} < Ruport::Renderer
   stage :#{class_name.downcase}
 end
 
-class #{class_name}Formatter < Ruport::Format::Plugin
+class #{class_name}Formatter < Ruport::Formatter
 
   # change to your format name, or add additional formats
   renders :my_format, :for => #{class_name}
