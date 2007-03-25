@@ -2,8 +2,6 @@ require "ruport"
 
 class Document < Ruport::Renderer
   
-  include Ruport::Renderer::Helpers
-  
   required_option :text
   required_option :author
   option :heading
@@ -13,9 +11,9 @@ class Document < Ruport::Renderer
 end
 
 
-class CenteredPDFTextBox < Ruport::Format::PDF
+class CenteredPDFTextBox < Ruport::Formatter::PDF
 
-  Document.add_format self, :pdf
+  renders :pdf, :for => Document
 
   def build_document_body
 

@@ -3,9 +3,7 @@ require "lib/init"
 module MyModule
   class SalesRenderer < Ruport::Renderer
 
-     include Ruport::Renderer::Helpers
-
-     required_option :report_title
+     option :report_title
      required_option :titles
 
      stage :document_header
@@ -14,9 +12,9 @@ module MyModule
      finalize :document
   end
 
-  class Text < Ruport::Format::Plugin
+  class Text < Ruport::Formatter
 
-    SalesRenderer.add_format self, :txt
+    renders :txt, :for => SalesRenderer
 
     def pad(str, len)
       return "".ljust(len) if str.nil?
@@ -50,12 +48,10 @@ module MyModule
       output << "".ljust(75,"#") << "\n"
     end
 
-    def finalize_document; output end
-
   end
 
-  class PDF < Ruport::Format::PDF
-    SalesRenderer.add_format self, :pdf
+  class PDF < Ruport::Formatter::PDF
+    renders :pdf, :for => SalesRenderer
 
     def add_title( title )  
       rounded_text_box("<b>#{title}</b>") do |o|

@@ -10,9 +10,9 @@ class LinePlotter < Ruport::Renderer
   end
 
   def run
-    plugin do |p|
-      p.data = get_lines
-      p.render_plot
+    formatter do |f|
+      f.data = get_lines
+      f.render_plot
     end
   end
 
@@ -24,7 +24,9 @@ class LinePlotter < Ruport::Renderer
 
 end
 
-class SVG < Ruport::Format::Plugin
+class SVG < Ruport::Formatter
+  
+  renders :svg, :for => LinePlotter
 
   def initialize
     require "builder"
@@ -49,9 +51,7 @@ class SVG < Ruport::Format::Plugin
     opts = { :x1 => line.x1, :x2 => line.x2,
              :y1 => line.y1, :y2 => line.y2 }
     xml_obj.line(opts)
-   end
-
-  LinePlotter.add_format self, :svg
+  end
 
 end
 

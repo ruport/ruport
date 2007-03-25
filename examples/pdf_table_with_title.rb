@@ -1,8 +1,8 @@
 require "ruport"
 
-class TitledPDFTable < Ruport::Format::PDF
+class TitledPDFTable < Ruport::Formatter::PDF
 
-  Ruport::Renderer::Table.add_format self, :titled_pdf
+  renders :titled_pdf, :for => Ruport::Renderer::Table
   
   def add_title( title )  
     rounded_text_box("<b>#{title}</b>") do |o|
