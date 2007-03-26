@@ -243,7 +243,7 @@ module Ruport::Data
       when String
         self[attributes.find { |a| a.to_s.eql?(name)}]
       else
-        raise "Whatchu Talkin' Bout, Willis?"
+        raise ArgumentError, "Whatchu Talkin' Bout, Willis?"
       end
     end
     

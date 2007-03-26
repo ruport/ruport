@@ -255,4 +255,9 @@ class TestRecord < Test::Unit::TestCase
     assert_equal 2, record.to_something
   end
 
+  def test_ensure_get_throws_argument_error
+    a = Record.new({"a" => 1, "b" => 2})
+    assert_raises(ArgumentError) { a.get([]) }
+  end
+
 end
