@@ -14,13 +14,18 @@ module Ruport
   #
   class Formatter::PDF < Formatter    
     
+    renders :pdf, :for => [ Renderer::Row, Renderer::Table,
+                             Renderer::Group, Renderer::Grouping ]
+    
     attr_writer :pdf_writer
     attr_accessor :table_header_proc
     attr_accessor :table_footer_proc
     
     opt_reader  :show_table_headers,
                 :show_subgroups,
-                :style
+                :style,
+                :table_format,
+                :text_format
 
     def initialize
       require "pdf/writer"
@@ -54,7 +59,7 @@ module Ruport
     # This method is automatically called by the table renderer
     #
     def build_table_body
-      draw_table
+      draw_table(data)
     end
 
     def build_group_header
@@ -78,7 +83,7 @@ module Ruport
 
     def build_grouping_body
       case(style)
-      when :inline
+      when :inline   
         data.each do |_,group|
           render_group group, options.to_hash.merge(:formatter => pdf_writer,
             :skip_finalize_table => true)
@@ -145,12 +150,13 @@ module Ruport
     end
 
     # Call PDF::Writer#text with the given arguments
-    def add_text(*args)
-      pdf_writer.text(*args)
+    def add_text(text, format_opts={})
+      format_opts = text_format.merge(format_opts) if text_format
+      pdf_writer.text(text, format_opts)
     end
        
     # - if the image is bigger than the box, it will be scaled down until it fits
-    # - if the image is smaller than the box it's won't be resized
+    # - if the image is smaller than the box, it won't be resized
     #
     # arguments:
     # - x: left bound of box
@@ -284,18 +290,18 @@ module Ruport
       move_cursor -y
     end
 
-    def draw_table
+    def draw_table(table_data, format_opts={})
       m = "Sorry, cant build PDFs from array like things (yet)"
-      raise m if data.column_names.empty?
+      raise m if table_data.column_names.empty?
+      
+      format_opts = table_format.merge(format_opts) if table_format
+      
       ::PDF::SimpleTable.new do |table|
         table.maximum_width = 500
-        table.data          = data
-        table.column_order  = data.column_names
-        table.show_headings = false if !show_table_headers
+        table.data          = table_data
+        table.column_order  = table_data.column_names
 
-        options.table_format.each {|k,v|
-          table.send("#{k}=", v)
-        } if options.table_format
+        format_opts.each {|k,v| table.send("#{k}=", v) }
 
         table.render_on(pdf_writer)
       end

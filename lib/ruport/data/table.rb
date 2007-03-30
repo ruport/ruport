@@ -24,6 +24,9 @@ module Ruport::Data
     #   my_collection.as(:csv)  #=> "1,2,3\n4,5,6"
     #   
     def as(*args)
+      unless Ruport::Renderer::Table.formats.include?(args[0])
+        raise ArgumentError
+      end
       Ruport::Renderer::Table.render(*args) do |rend|
         rend.data = self
         yield(rend) if block_given?
@@ -426,15 +429,15 @@ module Ruport::Data
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
     def sub_table(columns=column_names,range=nil)      
-       Table(columns) do |t|
-         if range
-           data[range].each { |r| t << r }
-         elsif block_given?
-           data.each { |r| t << r if yield(r) }
-         else
-           data.each { |r| t << r } 
-         end
-       end      
+       t =Ruport::Data::Table.new(:column_names => columns) 
+       if range
+         data[range].each { |r| t << r }
+       elsif block_given?
+         data.each { |r| t << r if yield(r) }
+       else
+         data.each { |r| t << r } 
+       end
+       return t     
     end
 
     def reduce(columns=column_names,range=nil,&block)

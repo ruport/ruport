@@ -61,9 +61,13 @@ module Ruport
     attr_accessor :data
     attr_accessor :format
 
-    def self.renders(format,options={})
-      options[:for].add_format(self,format)
-      formats << format unless formats.include?(format)
+    def self.renders(fmts,options={})
+      Array(fmts).each do |format|
+        Array(options[:for]).each do |o| 
+          o.send(:add_format,self,format) 
+          formats << format unless formats.include?(format)
+        end    
+      end
     end
     
     def self.formats
@@ -95,4 +99,9 @@ module Ruport
       end
     end
   end
-end
+end   
+
+require "ruport/formatter/csv"
+require "ruport/formatter/html"
+require "ruport/formatter/text"
+require "ruport/formatter/pdf"

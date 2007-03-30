@@ -18,7 +18,6 @@ module Ruport
   # * build_row
   #
   class Renderer::Row < Renderer
-    add_formats :csv, :text, :html 
     option :format_options
     stage :row
   end
@@ -45,8 +44,6 @@ module Ruport
   # * finalize_table
   #
   class Renderer::Table < Renderer
-     
-    add_formats :csv, :text, :html, :pdf
 
     option :show_table_headers, :format_options
 

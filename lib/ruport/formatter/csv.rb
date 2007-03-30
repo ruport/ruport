@@ -3,6 +3,9 @@ module Ruport
   # This formatter implements the CSV format for tabular data output. 
   # See also:  Renderer::Table
   class Formatter::CSV < Formatter
+    
+    renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
+                            Renderer::Group, Renderer::Grouping ]
 
     opt_reader :show_table_headers, 
                :format_options, 
@@ -35,7 +38,8 @@ module Ruport
       when :justified
         require "fastercsv"
         #FIXME: This line blows.
-        output << "#{data.grouped_by}," << data.data.to_a[0][1].column_names.to_csv
+        output << "#{data.grouped_by}," << 
+          data.data.to_a[0][1].column_names.to_csv
         data.each do |_,group|
           output << "#{group.name}"
           group.each do |row| 
@@ -45,7 +49,8 @@ module Ruport
         end
       when :raw
         #FIXME: This line blows.
-        output << "#{data.grouped_by}," << data.data.to_a[0][1].column_names.to_csv
+        output << "#{data.grouped_by}," << 
+          data.data.to_a[0][1].column_names.to_csv
         data.each do |_,group|
           group.each do |row| 
             output << "#{group.name}," << row.to_csv 

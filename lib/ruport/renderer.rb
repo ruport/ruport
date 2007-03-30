@@ -134,24 +134,6 @@ class Ruport::Renderer
   
   include Helpers
 
-  # allows you to register a format with the renderer.
-  #
-  # example:
-  #
-  #   class MyFormatter < Ruport::Formatter
-  #
-  #     # formatter code ...
-  #
-  #     SomeRenderer.add_format self, :my_formatter
-  #
-  #   end
-  def self.add_format(format,name=nil)
-    return formats[name] = format if name
-
-    add_core_format(format)   
-  end
-
-
   # reader for formats.  Defaults to a hash
   def self.formats
     @formats ||= {}
@@ -249,43 +231,6 @@ class Ruport::Renderer
     return @formatter
   end
 
-  private
-  
-  attr_writer :formatter
-
-
-  # tries to autoload and register a format which is part of the Ruport::Format
-  # module.  For internal use only.
-  def self.add_core_format(format)
-    try_require(format)
-    
-    klass = Ruport::Formatter.const_get(
-      Ruport::Formatter.constants.find { |c| c =~ /#{format}/i })
-    
-    formats[format] = klass
-  end
-
-  # internal shortcut for format registering
-  def self.add_formats(*formats)
-    formats.each { |f| add_format f }
-  end
-
-  # Trys to autoload a given format,
-  # silently fails
-  def self.try_require(format)
-    begin
-      require "ruport/formatter/#{format}"  
-    rescue LoadError
-      nil
-    end
-  end
-
-  # selects a formatter for use by format name
-  def use_formatter(format)
-    self.formatter = self.class.formats[format].new
-    self.formatter.format = format
-  end
-
   # provides a shortcut to render() to allow
   # render(:csv) to become render_csv
   def self.method_missing(id,*args,&block)
@@ -295,6 +240,43 @@ class Ruport::Renderer
     end
     $1 ? render($1.to_sym,*args,&block) : super
   end
+  
+  class << self
+    private
+    
+    def add_core_format(format)
+      try_require(format)
+  
+      klass = Ruport::Formatter.const_get(
+        Ruport::Formatter.constants.find { |c| c =~ /#{format}/i })
+  
+      formats[format] = klass
+    end      
+  
+    # allows you to register a format with the renderer.
+    #
+    # example:
+    #
+    #   class MyFormatter < Ruport::Formatter
+    #
+    #     # formatter code ...
+    #
+    #     SomeRenderer.add_format self, :my_formatter
+    #
+    #   end
+    def add_format(format,name=nil)
+      formats[name] = format
+    end  
+
+  end  
+  
+  # selects a formatter for use by format name
+  def use_formatter(format)
+    self.formatter = self.class.formats[format].new
+    self.formatter.format = format
+  end
+  
+  attr_writer :formatter
 
 end
 

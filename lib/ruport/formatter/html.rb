@@ -2,7 +2,10 @@ module Ruport
   # Produces HTML output for tabular data.
   #
   # See also Renderer::Table
-  class Formatter::HTML < Formatter
+  class Formatter::HTML < Formatter    
+    
+    renders :html, :for => [ Renderer::Row, Renderer::Table,
+                             Renderer::Group, Renderer::Grouping ]
 
     opt_reader :show_table_headers, :class_str, :show_group_headers
     

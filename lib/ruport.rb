@@ -77,11 +77,11 @@ require "enumerator"
 require "ruport/attempt" 
 require "ruport/config" 
 require "ruport/data" 
-require "ruport/report" 
+require "ruport/report"
+require "ruport/renderer"  
 require "ruport/formatter" 
 require "ruport/query" 
 require "ruport/mailer"
-require "ruport/renderer"
 
 module Kernel
 

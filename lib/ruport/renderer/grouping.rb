@@ -21,7 +21,6 @@ module Ruport
   # * build_group_footer
   #
   class Renderer::Group < Renderer
-    add_formats :html, :text, :csv, :pdf
 
     option :show_table_headers, :show_subgroups
 
@@ -58,7 +57,6 @@ module Ruport
   # * finalize_grouping
   #
   class Renderer::Grouping < Renderer
-    add_formats :csv, :text, :html, :pdf
 
     option :show_group_headers, :style
 

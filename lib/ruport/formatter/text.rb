@@ -1,5 +1,8 @@
 module Ruport
   class Formatter::Text < Formatter
+   
+    renders :text, :for => [ Renderer::Row, Renderer::Table,
+                             Renderer::Group, Renderer::Grouping ]
 
     opt_reader :max_col_width, :alignment, :table_width, 
                :show_table_headers, :show_group_headers, :show_subgroups

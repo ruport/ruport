@@ -1,7 +1,23 @@
 require 'test/unit'
 require 'ruport'
 
+
+class TrivialRenderer < Ruport::Renderer
+
+  def run
+    formatter do
+      build_header
+      build_body
+      build_footer
+    end
+  end
+
+end  
+
 class DummyText < Ruport::Formatter
+  
+  renders :text, :for => TrivialRenderer
+  
   def prepare_document
     output << "p"
   end
@@ -23,26 +39,11 @@ class DummyText < Ruport::Formatter
   end
 end
 
-
-class TrivialRenderer < Ruport::Renderer
-  add_format DummyText, :text 
-
-  def run
-    formatter do
-      build_header
-      build_body
-      build_footer
-    end
-  end
-
-end
-
 class TrivialRenderer2 < TrivialRenderer; end
 
 class MultiPurposeFormatter < Ruport::Formatter 
 
-   renders :html, :for => TrivialRenderer2
-   renders :text, :for => TrivialRenderer2
+   renders [:html,:text], :for => TrivialRenderer2
 
    def build_header
      a = 10
@@ -177,74 +178,68 @@ class TestRenderer < Test::Unit::TestCase
     assert_equal( { :text => DummyText } , TrivialRenderer.formats )
   end
 
-  def test_try_require
-    assert_not_nil Ruport::Renderer.try_require(:csv)
-    assert_nil Ruport::Renderer.try_require(:not_a_plugin)
+  def test_stage_helper
+    assert RendererWithHelpers.stages.include?('body')
+  end
+ 
+  def test_finalize_helper
+    assert_equal :document, RendererWithHelpers.final_stage
   end
 
-   def test_stage_helper
-     assert RendererWithHelpers.stages.include?('body')
+  def test_prepare_helper
+   assert_equal :document, RendererWithHelpers.first_stage
+  end
+
+  def test_finalize_again
+   assert_raise(RuntimeError) { RendererWithHelpers.finalize :report }
+  end
+
+  def test_prepare_again
+   assert_raise(RuntimeError) { RendererWithHelpers.prepare :foo }
+  end
+
+  def test_renderer_using_helpers
+   actual = RendererWithHelpers.render(:text)
+   assert_equal "pheader\nbody\nfooter\nf", actual
+
+   actual = RendererWithHelpers.render_text
+   assert_equal "pheader\nbody\nfooter\nf", actual
+  end
+
+  def test_setup
+   actual = false
+   RendererWithHelpers.render_text { |r|
+     actual = r.options.apple
+   }
+   assert actual
+  end
+
+  def test_option_helper
+   RendererWithHelpers.render_text do |r|
+     r.subtitle = "Test Report"
+     assert_equal "Test Report", r.options.subtitle
    end
- 
-   def test_finalize_helper
-     assert_equal :document, RendererWithHelpers.final_stage
+  end
+
+  def test_required_option_helper
+   a = RendererWithHelpers.dup
+   a.required_option :title
+
+   a.render_text do |r|
+     r.title = "Test Report"
+     assert_equal "Test Report", r.options.title
    end
 
-   def test_prepare_helper
-     assert_equal :document, RendererWithHelpers.first_stage
-   end
- 
-   def test_finalize_again
-     assert_raise(RuntimeError) { RendererWithHelpers.finalize :report }
-   end
+  end
 
-   def test_prepare_again
-     assert_raise(RuntimeError) { RendererWithHelpers.prepare :foo }
-   end
- 
-   def test_renderer_using_helpers
-     actual = RendererWithHelpers.render(:text)
-     assert_equal "pheader\nbody\nfooter\nf", actual
- 
-     actual = RendererWithHelpers.render_text
-     assert_equal "pheader\nbody\nfooter\nf", actual
-   end
+  def test_without_required_option
 
-   def test_setup
-     actual = false
-     RendererWithHelpers.render_text { |r|
-       actual = r.options.apple
-     }
-     assert actual
-   end
- 
-   def test_option_helper
-     RendererWithHelpers.render_text do |r|
-       r.subtitle = "Test Report"
-       assert_equal "Test Report", r.options.subtitle
-     end
-   end
- 
-   def test_required_option_helper
-     a = RendererWithHelpers.dup
-     a.required_option :title
- 
-     a.render_text do |r|
-       r.title = "Test Report"
-       assert_equal "Test Report", r.options.title
-     end
+   a = RendererWithHelpers.dup
+   a.required_option :title
 
-   end
- 
-   def test_without_required_option
-
-     a = RendererWithHelpers.dup
-     a.required_option :title
- 
-     assert_raise(RuntimeError) { a.render(:text) }
-   end
-
-
+   assert_raise(RuntimeError) { a.render(:text) }
+  end
+                                           
   def test_method_missing
     actual = TrivialRenderer.render_text
     assert_equal "header\nbody\nfooter\n", actual
@@ -281,6 +276,27 @@ class TestRenderer < Test::Unit::TestCase
 
     rend.formatter.clear_output
     assert_equal "", rend.formatter.output
+  end  
+  
+  def test_options_act_like_indifferent_hash
+     opts = Ruport::Renderer::Options.new
+     opts.foo = "bar"
+     assert_equal "bar", opts[:foo]
+     assert_equal "bar", opts["foo"]    
+     
+     opts["f"] = "bar"
+     assert_equal "bar", opts[:f]
+     assert_equal "bar", opts.f
+     assert_equal "bar", opts["f"]
+     
+     opts[:apple] = "banana"
+     assert_equal "banana", opts.apple
+     assert_equal "banana", opts["apple"]
+     assert_equal "banana", opts[:apple]
+  end     
+  
+  def test_add_format_private
+     assert_raise(NoMethodError) { Ruport::Renderer.add_format }
   end
 
 end
