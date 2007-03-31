@@ -159,11 +159,15 @@ module Ruport
     # - if the image is smaller than the box, it won't be resized
     #
     # arguments:
-    # - x: left bound of box
-    # - y: bottom bound of box
-    # - width: width of box
-    # - height: height of box
-    def center_image_in_box(path, x, y, width, height)
+    # - :x: left bound of box
+    # - :y: bottom bound of box
+    # - :width: width of box
+    # - :height: height of box
+    def center_image_in_box(path, image_opts={}) 
+      x = image_opts[:x]
+      y = image_opts[:y]
+      width = image_opts[:width]
+      height = image_opts[:height]
       info = ::PDF::Writer::Graphics::ImageInfo.new(File.read(path))
 
       # if the image is larger than the requested box, prepare to
@@ -341,8 +345,10 @@ module Ruport
        # rather than being whimsical, let's be really F'in picky.
        def draw_text(text,options)
          move_cursor_to(y) if options[:y]
-         add_text(text,options.merge( :absolute_left => options[:x1],
-                                      :absolute_right => options[:x2]))
+         add_text(text,options.merge( :absolute_left => 
+                                      options[:x1] || options[:left],
+                                      :absolute_right => 
+                                      options[:x2]) || options[:right])
        end 
 
      end   
