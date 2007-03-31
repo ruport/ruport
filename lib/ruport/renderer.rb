@@ -119,18 +119,26 @@ class Ruport::Renderer
       end
 
       prepare self.class.first_stage if self.class.first_stage
+                
+      if formatter.respond_to?(:layout)
+        formatter.layout do execute_stages end
+      else
+        execute_stages
+      end
 
+      finalize self.class.final_stage if self.class.final_stage
+
+    end  
+    
+    def execute_stages
       # call each stage to build the report
       unless self.class.stages.nil?
         self.class.stages.each do |stage|
           self.build(stage)
         end
       end
-
-      finalize self.class.final_stage if self.class.final_stage
-
     end
-  end
+  end    
   
   include Helpers
 

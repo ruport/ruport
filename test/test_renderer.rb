@@ -12,7 +12,11 @@ class TrivialRenderer < Ruport::Renderer
     end
   end
 
-end  
+end               
+
+class YetAnotherRenderer < Ruport::Renderer
+  stage :header,:body,:footer
+end
 
 class DummyText < Ruport::Formatter
   
@@ -37,6 +41,17 @@ class DummyText < Ruport::Formatter
   def finalize_document
     output << "f"
   end
+end   
+
+class WithLayout < DummyText
+   renders :text_with_layout, :for => YetAnotherRenderer 
+   
+   def layout     
+     output << "---\n"
+     yield
+     output << "---\n"
+   end
+   
 end
 
 class TrivialRenderer2 < TrivialRenderer; end
@@ -175,7 +190,7 @@ class TestRenderer < Test::Unit::TestCase
 
   def test_formats
     assert_equal( {}, Ruport::Renderer.formats )
-    assert_equal( { :text => DummyText } , TrivialRenderer.formats )
+    assert_equal( { :text => DummyText },TrivialRenderer.formats )
   end
 
   def test_stage_helper
@@ -297,6 +312,11 @@ class TestRenderer < Test::Unit::TestCase
   
   def test_add_format_private
      assert_raise(NoMethodError) { Ruport::Renderer.add_format }
+  end 
+  
+  def test_layout
+     assert_equal "---\nheader\nbody\nfooter\n---\n", 
+                  YetAnotherRenderer.render_text_with_layout
   end
 
 end
