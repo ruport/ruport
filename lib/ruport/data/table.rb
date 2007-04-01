@@ -661,7 +661,8 @@ module Ruport::Data
           r.send(group_column) == name
         }
         data[name] = Group.new(:name => name, :data => group_data,
-                               :column_names => columns)
+                               :column_names => columns,
+                               :record_class => record_class)
       end      
       data
     end

@@ -192,4 +192,16 @@ class TestGrouping < Test::Unit::TestCase
     sub = (g / "greg")["brown"].to_table
     assert_equal %w[awesome sick], sub.column("id")
   end
+  
+  def test_grouping_should_set_record_class
+    a = Table(%w[a b c], :record_class => MyRecord) { |t| 
+          t << [1,2,3]
+          t << [4,5,6]
+        }
+    b = Ruport::Data::Grouping.new(a, :by => "a")
+    assert_equal MyRecord, b[1].record_class
+  end
+end
+
+class MyRecord < Ruport::Data::Record
 end
