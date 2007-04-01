@@ -2,6 +2,9 @@ require "rake/rdoctask"
 require "rake/testtask"
 require "rake/gempackagetask"
 
+
+RUPORT_VERSION = "0.9.3"
+
 begin
   require "rubygems"
 rescue LoadError
@@ -18,7 +21,7 @@ end
 
 spec = Gem::Specification.new do |spec|
   spec.name = "ruport"
-  spec.version = "0.9.3"
+  spec.version = RUPORT_VERSION
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A generalized Ruby report generation and templating engine."
   spec.files =  Dir.glob("{examples,lib,test,bin}/**/**/*") +
@@ -63,6 +66,14 @@ end
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
+end
+
+task :build_archives => [:package,:rcov,:rdoc] do
+  mv "pkg/ruport-#{RUPORT_VERSION}.tgz", "pkg/ruport-#{RUPORT_VERSION}.tar.gz"
+  sh "tar cjvf pkg/ruport_coverage-#{RUPORT_VERSION}.tar.bz2 coverage"
+  sh "tar cjvf pkg/ruport_doc-#{RUPORT_VERSION}.tar.bz2 doc/html"
+  cd "pkg"
+  sh "tar cjvf ruport-#{RUPORT_VERSION}.tar.bz2 ruport-#{RUPORT_VERSION}"
 end
 
 begin
