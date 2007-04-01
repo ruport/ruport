@@ -481,10 +481,10 @@ module Ruport::Data
     def sigma(column=nil)
       inject(0) { |s,r| 
         if column
-          s + if r[column].kind_of? Numeric
-            r[column]
+          s + if r.get(column).kind_of? Numeric
+            r.get(column)
           else
-            r[column] =~ /\./ ? r[column].to_f : r[column].to_i
+            r.get(column) =~ /\./ ? r.get(column).to_f : r.get(column).to_i
           end
         else
           s + yield(r)    

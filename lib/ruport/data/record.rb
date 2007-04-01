@@ -242,6 +242,8 @@ module Ruport::Data
         send(name)
       when String
         self[attributes.find { |a| a.to_s.eql?(name)}]
+      when Fixnum
+        self[name]
       else
         raise ArgumentError, "Whatchu Talkin' Bout, Willis?"
       end
