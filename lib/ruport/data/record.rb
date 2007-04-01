@@ -182,7 +182,9 @@ module Ruport::Data
       self
     end  
      
-    # Takes an old name and a new name and renames an attribute.      
+    # Takes an old name and a new name and renames an attribute.  
+    #
+    # The third option, update_index is for internal use.    
     def rename_attribute(old_name,new_name,update_index=true)
       @attributes[@attributes.index(old_name)] = new_name if update_index
       @data[new_name] = @data.delete(old_name)
@@ -235,7 +237,16 @@ module Ruport::Data
       end
     end 
 
-    #indifferentish access that also can call methods
+    # Indifferent access to attributes.
+    #  
+    # Examples:
+    #          
+    #   record.get(:foo) # looks for an attribute "foo" or :foo,
+    #                      or calls the method <tt>foo</tt>
+    #
+    #   record.get("foo") # looks for an attribute "foo" or :foo
+    #
+    #   record.get(0) # Gets the first element
     def get(name)
       case name
       when Symbol

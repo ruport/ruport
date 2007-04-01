@@ -532,7 +532,7 @@ module Ruport::Data
 
       return table
     end
-
+    
     def rows_with(columns,&block) 
       select { |r|
         if block
