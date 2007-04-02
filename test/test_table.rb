@@ -616,7 +616,17 @@ class TestTable < Test::Unit::TestCase
     assert_equal [[1,6,6],[4,9,9]].to_table(%w[a foo c]), a
   end
 
+  def test_ensure_propagate_record_class
+    a = Table(:record_class => DuckRecord)
+    assert_equal DuckRecord, a.record_class
+
+    b = a.dup
+    assert_equal DuckRecord, b.record_class
+  end
+
 end
+
+class DuckRecord < Ruport::Data::Record; end
 
 class TestTableKernelHack < Test::Unit::TestCase
   
@@ -666,6 +676,11 @@ class TestTableKernelHack < Test::Unit::TestCase
      
     assert_equal Ruport::Data::Table.parse(csv_string),
                  Table(:string => csv_string)
+  end
+
+  def test_ensure_table_hack_accepts_normal_constructor_args
+    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),
+                 Table(:column_names => %w[a b c])
   end
   
 end

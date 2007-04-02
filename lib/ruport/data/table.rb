@@ -38,7 +38,7 @@ module Ruport::Data
       if respond_to? :column_names
         options = { :column_names => column_names }.merge(options)
       end
-      Table.new({:data => data.map { |r| r.to_a }}.merge(options))
+      self.class.new({:data => data.map { |r| r.to_a }}.merge(options))
     end
 
   end
@@ -197,7 +197,9 @@ module Ruport::Data
     #
     def +(other)
       raise ArgumentError unless other.column_names == @column_names
-      Table.new(:column_names => @column_names, :data => @data + other.data)
+      self.class.new( :column_names => @column_names, 
+                      :data => @data + other.data,
+                      :record_class => record_class )
     end
   
     
@@ -528,7 +530,9 @@ module Ruport::Data
           sort_by(&block)
         end
 
-      table = Table.new(:data => data_array, :column_names => @column_names)
+      table = self.class.new( :data => data_array, 
+                              :column_names => @column_names,
+                              :record_class => record_class )
 
       return table
     end
@@ -552,7 +556,9 @@ module Ruport::Data
     #   two = one.dup
     #
     def dup
-      a = self.class.new(:data => @data, :column_names => @column_names)
+      a = self.class.new( :data => @data, 
+                          :column_names => @column_names,
+                          :record_class => record_class )
     end     
     
     #
@@ -700,6 +706,8 @@ module Kernel
         return Ruport::Data::Table.load(file,args[0],&block)
       elsif string = args[0].delete(:string)
         return Ruport::Data::Table.parse(string,args[0],&block)
+      else
+        return Ruport::Data::Table.new(args[0])
       end
     else
        Ruport::Data::Table.new(:data => [], :column_names => args)
