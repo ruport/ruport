@@ -431,7 +431,7 @@ module Ruport::Data
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
     def sub_table(columns=column_names,range=nil)      
-       t =Ruport::Data::Table.new(:column_names => columns) 
+       t = self.class.new(:column_names => columns) 
        if range
          data[range].each { |r| t << r }
        elsif block_given?
