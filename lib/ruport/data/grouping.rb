@@ -139,10 +139,25 @@ module Ruport::Data
 end     
 
 module Kernel 
+
+  # Shortcut interface for creating Data::Grouping
+  #
+  # Example:
+  #
+  #   a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+  #   b = Grouping(a, :by => "a")   #=> creates a new grouping on column "a"
+  #
   def Grouping(*args)
     Ruport::Data::Grouping.new(*args)
   end       
   
+  # Shortcut interface for creating Data::Group
+  #
+  # Example:
+  #
+  #   g = Group('mygroup', :data => [[1,2,3],[4,5,6]],
+  #         :column_names => %w[a b c])   #=> creates a new group named mygroup
+  #
   def Group(name,opts={})
     Ruport::Data::Group.new(opts.merge(:name => name))  
   end
