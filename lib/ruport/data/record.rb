@@ -200,9 +200,9 @@ module Ruport::Data
       @attributes.hash + to_a.hash
     end
     
-    # Makes a fresh copy of the Record. 
-    def dup
-      r = Record.new(@data.dup,:attributes => @attributes.dup)
+    def initialize_copy(from)
+       @data = from.data.dup
+       @attributes = from.attributes.dup
     end
         
     # A simple formatting tool which allows you to quickly generate a formatted

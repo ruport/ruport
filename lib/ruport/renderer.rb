@@ -167,8 +167,6 @@ class Ruport::Renderer
     rend._run_ if rend.respond_to? :_run_
     return rend.formatter.output
   end
-
-  
   
   def self.options
     @options ||= Ruport::Renderer::Options.new
@@ -207,7 +205,7 @@ class Ruport::Renderer
     formatter.data = @data if formatter
   end
 
-  # General purpose openstruct which is shared with the current formatter.
+  # Renderer::Options object which is shared with the current formatter.
   def options
     yield(formatter.options) if block_given?
     formatter.options

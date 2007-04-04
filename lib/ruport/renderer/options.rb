@@ -1,5 +1,5 @@
 module Ruport
-  class Renderer::Options < OpenStruct
+  class Renderer::Options < OpenStruct #:nodoc:
     def to_hash
       @table
     end   
