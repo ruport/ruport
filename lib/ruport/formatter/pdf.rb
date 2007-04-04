@@ -342,14 +342,14 @@ module Ruport
           pdf_writer.y
        end
 
-       # rather than being whimsical, let's be really F'in picky.
-       def draw_text(text,options)
-         move_cursor_to(y) if options[:y]
-         add_text(text,options.merge( :absolute_left => 
-                                      options[:x1] || options[:left],
-                                      :absolute_right => 
-                                      options[:x2]) || options[:right])
-       end 
+      # rather than being whimsical, let's be really F'in picky.
+      def draw_text(text,draw_opts)
+        move_cursor_to(y) if draw_opts[:y]
+        add_text(text, draw_opts.merge( :absolute_left => 
+                                         draw_opts[:x1] || draw_opts[:left],
+                                         :absolute_right => 
+                                         draw_opts[:x2]) || draw_opts[:right])
+      end 
 
      end   
 
