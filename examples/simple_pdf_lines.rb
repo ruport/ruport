@@ -11,7 +11,7 @@ class PDFLines < Ruport::Formatter::PDF
     data.each do |points|
       pad(10) { horizontal_line(*points) }
     end
-    output << pdf_writer.render
+    render_pdf
   end
 end
 
