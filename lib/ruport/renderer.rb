@@ -15,97 +15,7 @@
 class Ruport::Renderer
 
   require "ruport/renderer/options"
-
-  module Helpers #:nodoc:
-    module ClassMethods
-
-      # establish some class instance variables for storing require data
-      attr_accessor :first_stage,:final_stage,:required_options,:stages
-
-      # allow the report designer to specify what method will 
-      # render the report  e.g.
-      #   finalize :document
-      #
-      def finalize(stage)
-        raise 'final stage already defined' if final_stage
-        self.final_stage = stage
-      end
-
-      # allow the report designer to specify a preparation stage for their
-      # report, e.g.
-      #
-      #   prepare :document
-      #
-      def prepare(stage)
-        raise "prepare stage already defined" if first_stage
-        self.first_stage = stage
-      end
-
-      # allow the report designer to specify options that can be used to build
-      # the report. These are generally used for defining rendering options or
-      # data
-      # e.g.
-      #   option :report_title
-      #   option :table_width
-      def option(*opts)
-        opts.each do |opt|
-          opt = "#{opt.to_s}="
-          define_method(opt) {|t| options.send(opt, t) } 
-        end
-      end
-
-      # allow the report designer to specify a compulsory option
-      # e.g.
-      #   required_option :freight
-      #   required_option :tax
-      def required_option(*opts) 
-        opts.each do |opt|
-          self.required_options ||= []
-          self.required_options << opt 
-          option opt
-        end
-      end
- 
-      # allow the report designer to specify the stages that will be used to
-      # build the report
-      # e.g.
-      #   stage :document_header
-      #   stage :document_body
-      #   stage :document_footer
-      def stage(*stage_list)
-        self.stages ||= []
-        stage_list.each { |stage|
-          self.stages << stage.to_s 
-        }
-      end
-    end
- 
-    def self.included(base)
-      base.extend ClassMethods
-    end
-       
-    protected  
-
-    def prepare(name)
-      maybe "prepare_#{name}"
-    end
-
-    def build(names,prefix=nil)
-      return maybe("build_#{names}") if prefix.nil?
-      names.each { |n| maybe "build_#{prefix}_#{n}" }
-    end
-
-    def finalize(name)
-      maybe "finalize_#{name}"
-    end      
-    
-    private
-
-    def maybe(something)
-      formatter.send something if formatter.respond_to? something
-    end
-  end
-
+                          
   module AutoRunner  #:nodoc:
     # called automagically when the report is rendered. Uses the
     # data collected from the earlier methods.
@@ -140,9 +50,68 @@ class Ruport::Renderer
         end
       end
     end
-  end    
+  end
   
-  include Helpers
+  class << self #:nodoc:#
+    attr_accessor :first_stage,:final_stage,:required_options,:stages #:nodoc: 
+  end 
+
+  # allow the report designer to specify what method will 
+  # render the report  e.g.
+  #   finalize :document
+  #
+  def self.finalize(stage)
+    raise 'final stage already defined' if final_stage
+    self.final_stage = stage
+  end
+
+  # allow the report designer to specify a preparation stage for their
+  # report, e.g.
+  #
+  #   prepare :document
+  #
+  def self.prepare(stage)
+    raise "prepare stage already defined" if first_stage
+    self.first_stage = stage
+  end
+
+  # allow the report designer to specify options that can be used to build
+  # the report. These are generally used for defining rendering options or
+  # data
+  # e.g.
+  #   option :report_title
+  #   option :table_width
+  def self.option(*opts)
+    opts.each do |opt|
+      opt = "#{opt.to_s}="
+      define_method(opt) {|t| options.send(opt, t) } 
+    end
+  end
+
+  # allow the report designer to specify a compulsory option
+  # e.g.
+  #   required_option :freight
+  #   required_option :tax
+  def self.required_option(*opts) 
+    opts.each do |opt|
+      self.required_options ||= []
+      self.required_options << opt 
+      option opt
+    end
+  end
+
+  # allow the report designer to specify the stages that will be used to
+  # build the report
+  # e.g.
+  #   stage :document_header
+  #   stage :document_body
+  #   stage :document_footer
+  def self.stage(*stage_list)
+    self.stages ||= []
+    stage_list.each { |stage|
+      self.stages << stage.to_s 
+    }
+  end
 
   # Reader for formats.  Defaults to a hash
   def self.formats
@@ -169,7 +138,7 @@ class Ruport::Renderer
     rend._run_ if rend.respond_to? :_run_
     return rend.formatter.output
   end
-    
+
   # Allows you to set class_wide default options
   # 
   # Example:
@@ -201,7 +170,7 @@ class Ruport::Renderer
 
     yield(rend) if block_given?
     return rend
-  end
+  end                                                                
 
   attr_accessor :format
   attr_reader   :data
@@ -272,8 +241,27 @@ class Ruport::Renderer
     end  
 
   end  
+       
+  protected  
 
-  private
+  def prepare(name)
+    maybe "prepare_#{name}"
+  end
+
+  def build(names,prefix=nil)
+    return maybe("build_#{names}") if prefix.nil?
+    names.each { |n| maybe "build_#{prefix}_#{n}" }
+  end
+
+  def finalize(name)
+    maybe "finalize_#{name}"
+  end      
+
+  private  
+  
+  def maybe(something)
+    formatter.send something if formatter.respond_to? something
+  end    
 
   def options=(o)
     formatter.options = o
