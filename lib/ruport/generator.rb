@@ -144,7 +144,7 @@ task :install_aar do
   mkdir_p "data/models"
   cd "vendor/plugins"
   sh "svn co http://stonecode.svnrepository.com/"+
-     "svn/acts_as_reportable/trunk acts_as_reportable"
+     "svn/ruport/acts_as_reportable/trunk acts_as_reportable"
   File.open("../../lib/init.rb","a") do |f|
      f.puts AAR_TEMPLATE
   end
