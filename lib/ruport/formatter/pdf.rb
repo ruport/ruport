@@ -15,7 +15,7 @@ module Ruport
   class Formatter::PDF < Formatter    
     
     renders :pdf, :for => [ Renderer::Row, Renderer::Table,
-                             Renderer::Group, Renderer::Grouping ]
+                            Renderer::Group, Renderer::Grouping ]
     
     attr_writer :pdf_writer
     attr_accessor :table_header_proc
@@ -355,7 +355,7 @@ module Ruport
 
      include DrawingHelpers
      
-     module PDFWriterMemoryPatch
+     module PDFWriterMemoryPatch #:nodoc:
        unless self.class.instance_methods.include?("_post_transaction_rewind")
          def _post_transaction_rewind
             @objects.each { |e| e.instance_variable_set(:@parent,self) }

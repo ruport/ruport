@@ -51,7 +51,7 @@ module Ruport
       # output object.
       def render_grouping(group,options={},&block)
         render_helper(Renderer::Grouping,group,options,&block)
-      end
+      end 
 
       private
 
@@ -64,28 +64,7 @@ module Ruport
 
     end
 
-    module OptionAccessors
-
-      module ClassMethods
-
-        # allows the options specified to be accessed directly
-        # 
-        #   opt_reader :something
-        #   something == options.something #=> true
-        def opt_reader(*opts) 
-          require "forwardable"
-          extend Forwardable
-          opts.each { |o| def_delegator :@options, o }
-        end
-      end
-
-      def self.included(base) #:nodoc:
-        base.extend(ClassMethods)
-      end
-    end
-
     include RenderingTools
-    include OptionAccessors
 
     attr_accessor :options
     attr_accessor :data
@@ -104,6 +83,16 @@ module Ruport
           formats << format unless formats.include?(format)
         end    
       end
+    end   
+    
+    # allows the options specified to be accessed directly
+    # 
+    #   opt_reader :something
+    #   something == options.something #=> true
+    def self.opt_reader(*opts) 
+      require "forwardable"
+      extend Forwardable
+      opts.each { |o| def_delegator :@options, o }
     end
     
     # Gives a list of formats registered for this plugin.

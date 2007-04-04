@@ -106,7 +106,7 @@ class Ruport::Renderer
     end
   end
 
-  module AutoRunner
+  module AutoRunner  #:nodoc:
     # called automagically when the report is rendered. Uses the
     # data collected from the earlier methods.
     def _run_
