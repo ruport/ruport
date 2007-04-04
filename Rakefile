@@ -54,6 +54,7 @@ END_DESC
 end
 
 Rake::RDocTask.new do |rdoc|
+  rm_r "doc/html"
   rdoc.rdoc_files.include( "README",
                            "TODO", #"CHANGELOG",
                            "AUTHORS", "COPYING",

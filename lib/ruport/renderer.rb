@@ -83,6 +83,8 @@ class Ruport::Renderer
     def self.included(base)
       base.extend ClassMethods
     end
+       
+    protected  
 
     def prepare(name)
       maybe "prepare_#{name}"
@@ -95,9 +97,9 @@ class Ruport::Renderer
 
     def finalize(name)
       maybe "finalize_#{name}"
-    end
-
-    private 
+    end      
+    
+    private
 
     def maybe(something)
       formatter.send something if formatter.respond_to? something
@@ -142,7 +144,7 @@ class Ruport::Renderer
   
   include Helpers
 
-  # reader for formats.  Defaults to a hash
+  # Reader for formats.  Defaults to a hash
   def self.formats
     @formats ||= {}
   end
@@ -167,7 +169,12 @@ class Ruport::Renderer
     rend._run_ if rend.respond_to? :_run_
     return rend.formatter.output
   end
-  
+    
+  # Allows you to set class_wide default options
+  # 
+  # Example:
+  #  
+  #  options { |o| o.style = :justified }
   def self.options
     @options ||= Ruport::Renderer::Options.new
     yield(@options) if block_given?
@@ -211,12 +218,12 @@ class Ruport::Renderer
     formatter.options
   end
   
+  # If an IO object is given, Formatter#output will use it instead of 
+  # the default String.  For Ruport's core renderers, we technically
+  # can use any object that supports the << method, but it's meant
+  # for IO objects such as File or STDOUT
   def io=(obj)
     options.io=obj    
-  end
-
-  def options=(o)
-    formatter.options = o
   end
 
   # when no block is given, returns active formatter
@@ -249,16 +256,6 @@ class Ruport::Renderer
   
   class << self
     private
-    
-    def add_core_format(format)
-      try_require(format)
-  
-      klass = Ruport::Formatter.const_get(
-        Ruport::Formatter.constants.find { |c| c =~ /#{format}/i })
-  
-      formats[format] = klass
-    end      
-  
     # allows you to register a format with the renderer.
     #
     # example:
@@ -275,6 +272,12 @@ class Ruport::Renderer
     end  
 
   end  
+
+  private
+
+  def options=(o)
+    formatter.options = o
+  end
   
   # selects a formatter for use by format name
   def use_formatter(format)
