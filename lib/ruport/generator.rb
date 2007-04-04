@@ -289,7 +289,6 @@ rescue LoadError
 end
 require "ruport"
 require "lib/helpers"
-require "lib/renderers"
 require "config/ruport_config"
 
 class String
