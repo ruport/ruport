@@ -154,6 +154,11 @@ module Ruport
       format_opts = text_format.merge(format_opts) if text_format
       pdf_writer.text(text, format_opts)
     end
+
+    # Calls PDF::Writer#render and appends to <tt>output</tt>
+    def render_pdf
+      output << pdf_writer.render
+    end
        
     # - if the image is bigger than the box, it will be scaled down until it fits
     # - if the image is smaller than the box, it won't be resized
