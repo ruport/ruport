@@ -60,7 +60,7 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
     
       setup_find_stubs
     end
-  
+
     def test_options_set
       assert_equal({:except => 'id', :include => :players}, Team.aar_options)
     end

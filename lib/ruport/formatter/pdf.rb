@@ -28,8 +28,10 @@ module Ruport
                 :text_format
 
     def initialize
-      require "pdf/writer"
-      require "pdf/simpletable"
+      quiet do
+        require "pdf/writer"
+        require "pdf/simpletable"
+      end
     end
 
     # Returns the current PDF::Writer object or creates a new one if it has not

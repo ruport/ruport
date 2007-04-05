@@ -11,7 +11,7 @@ class TestFormatPDF < Test::Unit::TestCase
 
   def test_render_pdf_basic
     begin
-      require "pdf/writer" 
+      quiet { require "pdf/writer" } 
     rescue LoadError 
       warn "skipping pdf test"; return
     end
