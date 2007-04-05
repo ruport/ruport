@@ -230,9 +230,11 @@ module Ruport
     #
     #   textile "*bar*" #=> "<p><strong>foo</strong></p>"
     #
-    def textile(s)
+    def textile(s)   
       require "redcloth"
-      RedCloth.new(s).to_html
+      RedCloth.new(s).to_html   
+    rescue LoadError
+      raise RuntimeError, "You need RedCloth!\n gem install RedCloth -v 3.0.3"
     end
 
     def config

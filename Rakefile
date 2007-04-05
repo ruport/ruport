@@ -38,10 +38,7 @@ spec = Gem::Specification.new do |spec|
                        '--main'  << 'README' << '-q'
   spec.add_dependency('transaction-simple', "=1.4.0")
   spec.add_dependency('fastercsv', '>= 1.1.0')
-  spec.add_dependency('RedCloth',  '>= 3.0.3')
   spec.add_dependency('pdf-writer', '>= 1.1.3')
-  spec.add_dependency("mailfactory", ">= 1.2.3")
-  spec.add_dependency('gem_plugin', '>=0.2.2')
   spec.author = "Gregory Brown"
   spec.email = "  gregory.t.brown@gmail.com"
   spec.rubyforge_project = "ruport"
