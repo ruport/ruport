@@ -22,7 +22,6 @@ module Ruport
     attr_accessor :table_footer_proc
     
     opt_reader  :show_table_headers,
-                :show_subgroups,
                 :style,
                 :table_format,
                 :text_format
@@ -65,22 +64,11 @@ module Ruport
     end
 
     def build_group_header
-      if should_render_subgroups
-        pad_top(20) { add_text data.name.to_s, :justification => :left }
-      else
-        pad(10) { add_text data.name.to_s, :justification => :center }
-      end
+      pad(10) { add_text data.name.to_s, :justification => :center }
     end
 
     def build_group_body
-      if should_render_subgroups
-        data.subgroups.each do |name,group|
-          render_group group, options.to_hash.merge(:formatter => pdf_writer,
-            :skip_finalize_table => true)
-        end
-      else
-        render_table data, options.to_hash.merge(:formatter => pdf_writer)
-      end
+      render_table data, options.to_hash.merge(:formatter => pdf_writer)
     end
 
     def build_grouping_body
@@ -126,10 +114,6 @@ module Ruport
     
     def finalize_grouping
       output << pdf_writer.render
-    end
-
-    def should_render_subgroups
-      show_subgroups && !data.subgroups.empty?
     end
 
     # If table_footer_proc is defined, it will be executed and the PDF::Writer

@@ -5,7 +5,7 @@ module Ruport
                              Renderer::Group, Renderer::Grouping ]
 
     opt_reader :max_col_width, :alignment, :table_width, 
-               :show_table_headers, :show_group_headers, :show_subgroups
+               :show_table_headers, :show_group_headers
     
     # Checks to ensure the table is not empty and then calls
     # calculate_max_col_widths
@@ -46,7 +46,6 @@ module Ruport
     def build_table_body
       output << fit_to_width(hr)
 
-
       calculate_max_col_widths unless max_col_width
 
       render_data_by_row do |rend|
@@ -61,33 +60,21 @@ module Ruport
     end
 
     def build_group_header
-      output << "#{data.name}: \n\n" unless should_render_subgroups
+      output << "#{data.name}:\n\n"
     end
     
     def build_group_body
-      if should_render_subgroups 
-        data.subgroups.each do |name,group|
-          output << "#{data.name}, "
-          render_group group
-        end
-      else
-        render_table data, options
-        output << "\n"
-      end
+      render_table data, options
     end
 
     def build_grouping_body
       data.each do |name,group|
         render_group group, options
+        output << "\n"
       end
     end
     
-    def should_render_subgroups
-      show_subgroups && !data.subgroups.empty?
-    end
-
     def build_row
-
       max_col_widths_for_row(data) unless max_col_width
 
       data.enum_for(:each_with_index).inject(line=[]) { |s,e|

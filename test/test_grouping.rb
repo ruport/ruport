@@ -35,8 +35,8 @@ class TestGroup < Test::Unit::TestCase
     group = Ruport::Data::Group.new(:name => 'test',
                                     :data => [%w[Ruport Is Sexy]],
                                     :column_names => %w[Software Isnt Sexy])
-    assert_equal(8,group.to_text.to_a.length)
-    assert_equal(6,group.as(:text, :show_table_headers => false).to_a.length)
+    assert_equal(7,group.to_text.to_a.length)
+    assert_equal(5,group.as(:text, :show_table_headers => false).to_a.length)
     assert_equal(13,group.to_html.to_a.length)
   end
 

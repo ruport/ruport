@@ -12,7 +12,6 @@ module Ruport
   # == Default layout options 
   #
   # * <tt>show_table_headers</tt> #=> true
-  # * <tt>show_subgroups</tt> #=> true
   #
   # == Formatter hooks called (in order)
   #
@@ -22,12 +21,9 @@ module Ruport
   #
   class Renderer::Group < Renderer
 
-    option :show_table_headers, :show_subgroups
+    option :show_table_headers
 
-    options { |o|
-      o.show_table_headers = true
-      o.show_subgroups = true
-    }
+    options { |o| o.show_table_headers = true }
 
     stage :group_header
     stage :group_body

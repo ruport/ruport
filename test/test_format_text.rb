@@ -66,13 +66,13 @@ class TestFormatText < Test::Unit::TestCase
                                     :column_names => %w[i hope so])
 
     actual = Ruport::Renderer::Group.render(:text, :data => group)
-    expected = "test: \n\n"+
+    expected = "test:\n\n"+
                "+------------------------------+\n"+
                "|      i      | hope  |   so   |\n"+
                "+------------------------------+\n"+
                "| is          | this  | more   |\n"+
                "| interesting | chris | carter |\n"+
-               "+------------------------------+\n\n"
+               "+------------------------------+\n"
     assert_equal(expected, actual)
   end
 
@@ -84,11 +84,11 @@ class TestFormatText < Test::Unit::TestCase
    
     actual = Ruport::Renderer::Group.render(:text, :data => group,
       :show_table_headers => false )
-    expected = "test: \n\n"+
+    expected = "test:\n\n"+
                "+------------------------------+\n"+
                "| is          | this  | more   |\n"+
                "| interesting | chris | carter |\n"+
-               "+------------------------------+\n\n"
+               "+------------------------------+\n"
     assert_equal(expected, actual)
   end
 
@@ -104,13 +104,13 @@ class TestFormatText < Test::Unit::TestCase
     grouping = Grouping(table, :by => "i")
 
     actual = Ruport::Renderer::Grouping.render(:text, :data => grouping)
-    expected = "interesting: \n\n"+
+    expected = "interesting:\n\n"+
                "+----------------+\n"+
                "| hope  |   so   |\n"+
                "+----------------+\n"+
                "| chris | carter |\n"+
                "+----------------+\n\n"+
-               "is: \n\n"+
+               "is:\n\n"+
                "+-------------+\n"+
                "| hope |  so  |\n"+
                "+-------------+\n"+
@@ -127,11 +127,11 @@ class TestFormatText < Test::Unit::TestCase
 
     actual = Ruport::Renderer::Grouping.render(:text, :data => grouping,
       :show_table_headers => false)
-    expected = "interesting: \n\n"+
+    expected = "interesting:\n\n"+
                "+----------------+\n"+
                "| chris | carter |\n"+
                "+----------------+\n\n"+
-               "is: \n\n"+
+               "is:\n\n"+
                "+-------------+\n"+
                "| this | more |\n"+
                "+-------------+\n\n"
