@@ -140,7 +140,8 @@ class TestReport < Test::Unit::TestCase
     assert_equal ["hello dolly", "hello dolly"],
       rep_klass.run(:reports => [rep_klass.new,rep_klass.new])
   end
-  
+
+=begin  
   def test_send_to
      return unless Object.const_defined? :Mocha
      setup_mock_mailer
@@ -150,7 +151,8 @@ class TestReport < Test::Unit::TestCase
        mail.text = "Test"
      }
    end
- 
+=end
+
    def test_write_to_file
      return unless Object.const_defined? :Mocha
      file = mock("file")
@@ -206,7 +208,7 @@ class TestReport < Test::Unit::TestCase
    end
  
    private
- 
+=begin 
    def setup_mock_mailer
      @smtp     = mock('smtp')
  
@@ -216,5 +218,5 @@ class TestReport < Test::Unit::TestCase
      @smtp.stubs(:send_message).
        returns("250 ok")
    end
-
+=end
 end

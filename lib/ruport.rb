@@ -94,16 +94,5 @@ require "ruport/report"
 require "ruport/renderer"  
 require "ruport/formatter" 
 require "ruport/query" 
-require "ruport/mailer"
-begin
-  require "rubygems"
-  quiet { require "active_record" }
-  if Object.const_defined? :ActiveRecord
-    require "ruport/acts_as_reportable"
-    ActiveRecord::Base.send :include, Ruport::Reportable
-  end
-rescue LoadError
-  nil
-end
 
 

@@ -1,14 +1,24 @@
 require "ruport"
 require "test/unit"
 
+begin 
+  require "rubygems"
+rescue LoadError
+  nil
+end
+
+
 begin
   require 'mocha'
   require 'stubba'
+  require 'active_record'
 rescue LoadError
   nil
 end
 
 if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
+
+  require "ruport/acts_as_reportable"
 
   class Team < ActiveRecord::Base
     acts_as_reportable :except => 'id', :include => :players

@@ -1,3 +1,6 @@
+require "ruport"
+quiet { require "active_record" }
+
 module Ruport
   
   # This module is designed to be mixed in with an ActiveRecord model
@@ -239,3 +242,5 @@ module Ruport
     end
   end
 end
+
+ActiveRecord::Base.send :include, Ruport::Reportable

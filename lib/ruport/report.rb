@@ -245,7 +245,8 @@ module Ruport
     # See also Ruport.log
     #
     def log(*args); Ruport.log(*args) end
-   
+
+=begin
     # Creates a new Mailer and sets the <tt>to</tt> attribute to the addresses
     # specified. Yields a Mailer object, which can be modified before delivery.
     #
@@ -256,7 +257,8 @@ module Ruport
       m.send(:select_mailer,@mailer)
       m.deliver :from => m.from, :to => m.to
     end
-    
+=end    
+
     def_delegators Ruport::Config, :source, :mailer, :log_file, :log_file=
     
     class << self
