@@ -19,56 +19,10 @@ module Ruport
   # individual classes of the library, but if they are fairly simple, you may be
   # able to get away using this class alone.
   #
-  # === Example
-  #
-  # Here is a simple example of using the Report class to run a simple query and
-  # then email the results as a CSV file, deleting the file from the local
-  # machine after it has been emailed:
-  #
-  #  require "ruport"
-  #  require "fileutils"
-  #  class MyReport < Ruport::Report
-  #    def prepare
-  #      log_file "f.log"
-  #      log "preparing report", :status => :info
-  #      source :default, 
-  #        :dsn => "dbi:mysql:foo", 
-  #        :user => "root"
-  #      mailer :default,
-  #        :host => "mail.adelphia.net", 
-  #        :address => "gregory.t.brown@gmail.com"
-  #    end
-  #      
-  #    def generate
-  #      log "generated csv from query", :status => :info
-  #      query "select * from bar", :as => :csv 
-  #    end
-  #
-  #    def cleanup
-  #      log "removing foo.csv", :status => :info
-  #      FileUtils.rm("foo.csv") 
-  #    end
-  #  end
-  #
-  #  MyReport.run { |res| 
-  #    res.write "foo.csv";
-  #    res.send_to("greg7224@gmail.com") do |mail|
-  #      mail.subject = "Sample report" 
-  #      mail.attach "foo.csv"
-  #      mail.text = <<-EOS
-  #        this is a sample of sending an emailed report from within Ruport.
-  #      EOS
-  #    end
-  #  } 
-  #
-  # 
+  # FIXME: New example
   class Report   
     extend Forwardable
     
-    # When initializing a report, you can provide a default mailer and source by
-    # giving a name of a valid source or mailer you've defined via
-    # Ruport::Config.
-    #
     # If your report does not need any sort of specialized information, you can
     # simply use Report.run (Or MyReportName.run if you've inherited).
     #
@@ -76,7 +30,6 @@ module Ruport
     #
     def initialize( format=nil, options={} )
       use_source :default
-      use_mailer :default
       @format      = format
       @report_name = "" 
       @results     = ""
@@ -146,11 +99,7 @@ module Ruport
       @source = label
     end
 
-    # Sets the active mailer to the Ruport::Config source requested by <tt>label</tt>.
-    def use_mailer(label)
-      @mailer = label
-    end
-    
+   
     # Writes the contents of <tt>results</tt> to a file.  If a filename is
     # specified, it will use it.  Otherwise, it will try to write to the file
     # specified by the <tt>file</tt> attribute.
@@ -246,20 +195,7 @@ module Ruport
     #
     def log(*args); Ruport.log(*args) end
 
-=begin
-    # Creates a new Mailer and sets the <tt>to</tt> attribute to the addresses
-    # specified. Yields a Mailer object, which can be modified before delivery.
-    #
-    def send_to(adds)
-      m = Mailer.new
-      m.to = adds
-      yield(m)
-      m.send(:select_mailer,@mailer)
-      m.deliver :from => m.from, :to => m.to
-    end
-=end    
-
-    def_delegators Ruport::Config, :source, :mailer, :log_file, :log_file=
+    def_delegators Ruport::Config, :source, :log_file, :log_file=
     
     class << self
 

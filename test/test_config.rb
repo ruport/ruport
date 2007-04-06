@@ -11,22 +11,11 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(nil, Ruport::Config.default_source)
   end
 
-  def test_mail_defaults
-    assert_equal(nil, Ruport::Config.default_mailer)
-  end
-
   def test_missing_dsn
    assert_raise(ArgumentError) {
      Ruport::Config.source :foo, :user => "root", :password => "fff"
    }
    assert_nothing_raised { Ruport::Config.source :bar, :dsn => "..." }
-  end
-
-  def test_mailer_errors
-    assert_raise(ArgumentError) {
-      Ruport::Config.mailer :bar, :user => :foo, :address => "foo@bar.com"
-    }
-    assert_nothing_raised { Ruport::Config.mailer :bar, :host => "localhost" }
   end
 
   def test_new_defaults

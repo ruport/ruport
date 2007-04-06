@@ -96,40 +96,6 @@ module Ruport
       check_source(sources[args.first],args.first)
     end
 
-    # :call-seq:
-    #   mailer(mailer_name, options)
-    #
-    # Creates or retrieves a mailer configuration. Available options:
-    # <b><tt>:host</tt></b>::         The SMTP host to use.
-    # <b><tt>:address</tt></b>::      Address the email is being sent from.
-    # <b><tt>:user</tt></b>::         The username to use on the SMTP server
-    # <b><tt>:password</tt></b>::     The password to use on the SMTP server. 
-    #                                 Optional.
-    # <b><tt>:port</tt></b>::         The SMTP port to use. Optional, defaults
-    #                                 to 25.
-    # <b><tt>:auth_type</tt></b>::    SMTP authorization method. Optional, 
-    #                                 defaults to <tt>:plain</tt>.
-    # <b><tt>:mail_klass</tt></b>::   If you don't want to use the default 
-    #                                 <tt>MailFactory</tt> object, you can 
-    #                                 pass another mailer to use here.
-    #                               
-    # Example (creating a mailer config):
-    #   mailer :alternate, :host => "mail.test.com", 
-    #                      :address => "test@test.com",
-    #                      :user => "test", 
-    #                      :password => "blinky"
-    #                      :auth_type => :cram_md5
-    #
-    # Example (retreiving a mailer config):
-    #   mail_conf = mailer(:alternate)  #=> <OpenStruct ..>
-    #   mail_conf.address               #=> test@test.com
-    #
-    def mailer(*args)
-      return mailers[args.first] if args.length == 1
-      mailers[args.first] = OpenStruct.new(*args[1..-1])
-      check_mailer(mailers[args.first],args.first)
-    end
-
     # The file that <tt>Ruport.log()</tt> will write to.
     def log_file(file)
       @logger = Logger.new(file)
@@ -145,16 +111,8 @@ module Ruport
       sources[:default]
     end
 
-    # Alias for <tt>mailers[:default]</tt>.
-    def default_mailer
-      mailers[:default]
-    end
-
     # Returns all <tt>source</tt>s defined in this <tt>Config</tt>.
     def sources; @sources ||= {}; end
-
-    # Returns all the <tt>mailer</tt>s defined in this <tt>Config</tt>.
-    def mailers; @mailers ||= {}; end
 
     # Returns the currently active logger.
     def logger; @logger; end
@@ -169,17 +127,6 @@ module Ruport
           "Missing DSN for source #{label}!",
           :status => :fatal, :level => :log_only,
           :raises => ArgumentError 
-        )
-      end
-    end
-
-    # Verifies that you have provided a host for your mailer.
-    def check_mailer(settings, label) # :nodoc:
-      unless settings.host
-        Ruport.log(
-          "Missing host for mailer #{label}",
-          :status => :fatal, :level => :log_only,
-          :raises => ArgumentError
         )
       end
     end
