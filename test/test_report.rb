@@ -141,18 +141,6 @@ class TestReport < Test::Unit::TestCase
       rep_klass.run(:reports => [rep_klass.new,rep_klass.new])
   end
 
-=begin  
-  def test_send_to
-     return unless Object.const_defined? :Mocha
-     setup_mock_mailer
-     @report = Report.new
-     assert_equal "250 ok", @report.send_to("clyde@example.com") { |mail|
-       mail.subject = "Test Report"
-       mail.text = "Test"
-     }
-   end
-=end
-
    def test_write_to_file
      return unless Object.const_defined? :Mocha
      file = mock("file")
