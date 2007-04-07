@@ -33,7 +33,7 @@ spec = Gem::Specification.new do |spec|
   spec.bindir = "bin"
   spec.executables = FileList["rope"]
   spec.has_rdoc = true
-  spec.extra_rdoc_files = %w{README LICENSE TODO AUTHORS}
+  spec.extra_rdoc_files = %w{README LICENSE AUTHORS}
   spec.rdoc_options << '--title' << 'Ruport Documentation' <<
                        '--main'  << 'README' << '-q'
   spec.add_dependency('transaction-simple', "=1.4.0")
@@ -52,7 +52,7 @@ end
 
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include( "README",
-                           "TODO", #"CHANGELOG",
+                           #"CHANGELOG",
                            "AUTHORS", "COPYING",
                            "LICENSE", "lib/" )
   rdoc.main     = "README"
