@@ -259,5 +259,15 @@ class TestRecord < Test::Unit::TestCase
     a = Record.new({"a" => 1, "b" => 2})
     assert_raises(ArgumentError) { a.get([]) }
   end
+  
+  def test_ensure_delete_removes_attribute
+    a = Record.new({"a" => 1, "b" => 2})
+    assert_equal({"a" => 1, "b" => 2}, a.data)
+    assert_equal(["a","b"], a.attributes)
+    
+    a.send(:delete, "a")
+    assert_equal({"b" => 2}, a.data)
+    assert_equal(["b"], a.attributes)
+  end
 
 end
