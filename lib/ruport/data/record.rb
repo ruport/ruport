@@ -86,6 +86,7 @@ module Ruport::Data
         @data[@attributes[index]] = value
       else
         @data[index] = value
+        @attributes << index unless @attributes.include? index
       end
     end
 
