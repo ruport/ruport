@@ -229,8 +229,10 @@ module Ruport::Data
     #
     def method_missing(id,*args,&block)
       k = id.to_s.gsub(/=$/,"")
-      if(key = @attributes.find { |r| r.to_s.eql?(k) })
-        args[0] ? @data[key] = args[0] : @data[key]
+      key_index = @attributes.index(k) || @attributes.index(k.to_sym)
+
+      if key_index
+        args[0] ? self[key_index] = args[0] : self[key_index]
       else
         return as($1.to_sym,*args,&block) if id.to_s =~ /^to_(.*)/ 
         super
@@ -249,10 +251,8 @@ module Ruport::Data
     #   record.get(0) # Gets the first element
     def get(name)
       case name
-      when Symbol
-        send(name)
-      when String
-        self[attributes.find { |a| a.to_s.eql?(name)}]
+      when String,Symbol
+        self[name] || send(name)
       when Fixnum
         self[name]
       else
