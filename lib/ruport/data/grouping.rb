@@ -41,11 +41,10 @@ module Ruport::Data
     #                   :column_names => %w[a b]
     #   two = one.dup
     #
-    def dup
-      obj = super
-      obj.name = name
-      obj.subgroups = subgroups.dup
-      return obj
+    def initialize_copy(from)
+      super
+      @name = from.name
+      @subgroups = from.subgroups.dup
     end
 
     def eql?(other)

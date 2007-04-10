@@ -555,11 +555,12 @@ module Ruport::Data
     #                   :column_names => %w[a b]
     #   two = one.dup
     #
-    def dup
-      a = self.class.new( :data => @data, 
-                          :column_names => @column_names,
-                          :record_class => record_class )
-    end     
+    def initialize_copy(from)
+      @record_class = from.record_class.name
+      @column_names = from.column_names.dup
+      @data = []
+      from.data.each { |r| self << r.dup }
+    end
     
     #
     # Uses Ruport's built-in text plugin to render this Table into a String
