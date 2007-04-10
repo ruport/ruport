@@ -6,15 +6,17 @@ module Ruport::Data
   # simply a subclass of Table that adds a :name attribute.
   # 
   class Group < Table
-    attr_reader :name
-    attr_reader :subgroups
+    
+    attr_reader :name, :subgroups
 
-    # Creates a new group based on the supplied options.
+    # Creates a new Group based on the supplied options.
     #
     # Valid options:
     # <b><tt>:name</tt></b>::         The name of the Group
-    #
-    # All of the options available to Table are also available.
+    # <b><tt>:data</tt></b>::         An Array of Arrays representing the 
+    #                                 records in this Group
+    # <b><tt>:column_names</tt></b>:: An Array containing the column names 
+    #                                 for this Group.
     #
     # Example:
     #
@@ -28,6 +30,11 @@ module Ruport::Data
       super
     end
 
+    # Generate a formatted table from a <tt>Group</tt> object.
+    #
+    # Example:
+    #   my_group.as(:csv)  #=> "group\n\n1,2,3\n4,5,6\n"
+    #   
     def as(format,options={})
       Ruport::Renderer::Group.render(format,{:data => self }.merge(options))
     end
@@ -47,12 +54,37 @@ module Ruport::Data
       @subgroups = from.subgroups.dup
     end
 
+    # Compares this Group to another Group and returns <tt>true</tt> if
+    # the <tt>name</tt>, <tt>data</tt>, and <tt>column_names</tt> are equal.
+    #
+    # Example:
+    #
+    #   one = Group.new :name => 'test',
+    #                   :data => [[1,2], [3,4]], 
+    #                   :column_names => %w[a b]
+    #
+    #   two = Group.new :name => 'test',
+    #                   :data => [[1,2], [3,4]], 
+    #                   :column_names => %w[a b]
+    #
+    #   one.eql?(two) #=> true
+    #
     def eql?(other)
       name.eql?(other.name) && super
     end
 
     alias_method :==, :eql?
 
+    # Creates subgroups for the group based on the supplied column name.  Each
+    # subgroup is a hash whose keys are the unique values in the column.
+    #
+    # Example:
+    #
+    #   main_group = Group.new :name => 'test',
+    #                          :data => [[1,2,3,4,5], [3,4,5,6,7]], 
+    #                          :column_names => %w[a b c d e]
+    #   main_group.create_subgroups("a")
+    #
     def create_subgroups(group_column)
       if @subgroups.empty?
         @subgroups = grouped_data(group_column)
@@ -63,13 +95,7 @@ module Ruport::Data
 
     protected
 
-    def name=(value) #:nodoc:
-      @name = value
-    end
-    
-    def subgroups=(value)
-      @subgroups = value
-    end
+    attr_writer :name, :subgroups
 
   end
 

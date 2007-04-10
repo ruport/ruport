@@ -91,7 +91,6 @@ module Ruport::Data
     attr_reader :data
     def_delegators :@data, :each, :length, :size, :empty?, :[]
     
-
     # Sets the column names for this table. <tt>new_column_names</tt> should 
     # be an array listing the names of the columns.
     #
@@ -115,11 +114,10 @@ module Ruport::Data
             end
           }
           r.send(:reindex, @column_names)
-       }
-     end
+        }
+      end
     end
 
-    
     # Compares this Table to another Table and returns <tt>true</tt> if
     # both the <tt>data</tt> and <tt>column_names</tt> are equal.
     #
@@ -293,6 +291,7 @@ module Ruport::Data
     #
     #    table.remove_column(0) #=> removes the first column
     #    table.remove_column("apple") #=> removes column named apple
+    #
     def remove_column(col)        
       col = column_names[col] if col.kind_of? Fixnum           
       column_names.delete(col)
@@ -305,6 +304,7 @@ module Ruport::Data
     # Example:
     # table.remove_columns('a','b','c')
     # table.remove_columns([0,1])
+    #
     def remove_columns(*cols)
       cols = cols[0] if cols[0].kind_of? Array
       cols.each { |col| remove_column(col) }
@@ -319,6 +319,7 @@ module Ruport::Data
     #   new_values = table.map { |r| r.zanzibar }
     #   old_values == new_values #=> true
     #   table.column_names.include?("a") #=> false
+    #
     def rename_column(old_name,new_name)
       self.column_names[column_names.index(old_name)] = new_name
       each { |r| r.rename_attribute(old_name,new_name,false)} 
@@ -368,6 +369,7 @@ module Ruport::Data
     #       | 3 | 2 | 1 |
     #       | 6 | 5 | 4 |
     #       +-----------+
+    #
     def swap_column(a,b)    
       if [a,b].all? { |r| r.kind_of? Fixnum }
        col_a,col_b = column_names[a],column_names[b]
@@ -395,6 +397,7 @@ module Ruport::Data
     #     | 1 | 2 |  7 |
     #     | 4 | 5 | 16 |
     #     +------------+
+    #
     def replace_column(old_col,new_col=nil,&block)
       if new_col
         add_column(new_col,:after => old_col,&block)
@@ -442,6 +445,9 @@ module Ruport::Data
        return t     
     end
 
+    # Generates a sub table in place, modifying the receiver. See documentation
+    # for <tt>sub_table</tt>.
+    #
     def reduce(columns=column_names,range=nil,&block)
       t = sub_table(columns,range,&block)
       @data = t.data
@@ -451,18 +457,19 @@ module Ruport::Data
 
     alias_method :sub_table!, :reduce
     
-    # returns an array of values for the given column name
+    # Returns an array of values for the given column name.
+    #
     def column(name)
       case(name)
       when Integer
-         unless column_names.empty?
+        unless column_names.empty?
           raise ArgumentError if name > column_names.length         
         end
       else
         raise ArgumentError unless column_names.include?(name)
       end
          
-       map { |r| r[name] }
+      map { |r| r[name] }
     end
     
     # Calculates sums. If a column name or index is given, it will try to
@@ -496,7 +503,6 @@ module Ruport::Data
 
     alias_method :sum, :sigma
 
-    #
     # Returns a sorted table. If col_names is specified, 
     # the block is ignored and the table is sorted by the named columns. All
     # options are used in constructing the new Table (see Array#to_table
@@ -562,8 +568,7 @@ module Ruport::Data
       from.data.each { |r| self << r.dup }
     end
     
-    #
-    # Uses Ruport's built-in text plugin to render this Table into a String
+    # Uses Ruport's built-in text formatter to render this Table into a String
     # 
     # Example:
     # 
@@ -575,7 +580,12 @@ module Ruport::Data
       as(:text)
     end     
 
-
+    # Convert the Table into a Group using the supplied group name.
+    #
+    #   data = Table.new :data => [[1,2], [3,4]], 
+    #                    :column_names => %w[a b]
+    #   group = data.to_group("my_group")
+    #
     def to_group(name)
      Group.new( :data => data, 
                 :column_names => column_names,
@@ -584,7 +594,6 @@ module Ruport::Data
                             
     # NOTE: does not respect tainted status
     alias_method :clone, :dup
-
 
     # Provides a shortcut for the <tt>as()</tt> method by converting a call to
     # <tt>as(:format_name)</tt> into a call to <tt>to_format_name</tt>
@@ -608,10 +617,9 @@ module Ruport::Data
     #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
     #
     def self.load(csv_file, options={},&block)
-        get_table_from_csv(:foreach, csv_file, options,&block)
+      get_table_from_csv(:foreach, csv_file, options,&block)
     end
     
-    #
     # Creates a Table from a CSV string using FasterCSV.  See Table.load for
     # additional examples.
     #
@@ -720,7 +728,7 @@ module Kernel
 end  
 
 class Array
-  #
+
   # Converts an array to a Ruport::Data::Table object, ready to
   # use in your reports.
   #
