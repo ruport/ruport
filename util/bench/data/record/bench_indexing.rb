@@ -19,15 +19,15 @@ Benchmark.bm do |x|
   SMALL_N = 10000
   LARGE_N = 10
 
-  x.report("Integer Index - Small") {
+  x.report("Integer Index - Small (x#{SMALL_N})") {
     SMALL_N.times { (0..2).each { |i| small_record[i] } }
   }
 
-  x.report("Integer Index - Large") {  
+  x.report("Integer Index - Large (x#{LARGE_N})") {  
     LARGE_N.times { large.each_index { |r| large_record[r] } }
   }
 
-  x.report("String Index - Small") {
+  x.report("String Index - Small (x#{SMALL_N})") {
     SMALL_N.times { 
       small_attributes.each { |a|
          small_record[a]
@@ -35,7 +35,7 @@ Benchmark.bm do |x|
     }
   }
 
-  x.report("String Index - Large") {
+  x.report("String Index - Large (x#{LARGE_N})") {
     LARGE_N.times { 
       large_attributes.each { |a|
          large_record[a]
@@ -43,15 +43,15 @@ Benchmark.bm do |x|
     }
   }
 
-  x.report("Integer get() - Small") {
+  x.report("Integer get() - Small (x#{SMALL_N})") {
     SMALL_N.times { (0..2).each { |i| small_record.get(i) } }
   }
 
-  x.report("Integer get() - Large") {  
+  x.report("Integer get() - Large (x#{LARGE_N})") {  
     LARGE_N.times { large.each_index { |r| large_record.get(r) } }
   }
 
-  x.report("String get() - Small") {
+  x.report("String get() - Small (x#{SMALL_N})") {
     SMALL_N.times { 
       small_attributes.each { |a|
          small_record.get(a)
@@ -59,7 +59,7 @@ Benchmark.bm do |x|
     }
   }
 
-  x.report("String get() - Large") {
+  x.report("String get() - Large (x#{LARGE_N})") {
     LARGE_N.times { 
       large_attributes.each { |a|
          large_record.get(a)
@@ -67,7 +67,7 @@ Benchmark.bm do |x|
     }
   }
 
-  x.report("Symbol get() - Small") {
+  x.report("Symbol get() - Small (x#{SMALL_N})") {
     SMALL_N.times { 
       sym_s_attributes.each { |a|
          small_record.get(a)
@@ -75,7 +75,7 @@ Benchmark.bm do |x|
     }
   }
 
-  x.report("Symbol get() - Large") {
+  x.report("Symbol get() - Large (x#{LARGE_N})") {
     LARGE_N.times { 
       sym_l_attributes.each { |a|
          large_record.get(a)

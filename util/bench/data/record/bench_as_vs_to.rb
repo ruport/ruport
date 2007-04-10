@@ -11,11 +11,11 @@ Benchmark.bm do |x|
 
   N = 10000
   
-  x.report("as(:nothing)") do
+  x.report("as(:nothing) (x#{N})") do
     N.times { record.as(:nothing) }
   end
 
-  x.report("to_nothing") do
+  x.report("to_nothing (x#{N})") do
     N.times { record.to_nothing }
   end
 

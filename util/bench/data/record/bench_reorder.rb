@@ -20,13 +20,13 @@ Benchmark.bm do |x|
   SMALL_N = 10000
   LARGE_N = 100
 
-  x.report("reorder - small") {
+  x.report("reorder - small (x#{SMALL_N})") {
     SMALL_N.times do
       record = small_record.dup
       record.reorder(rand_small_attributes)
     end
   }
-  x.report("reorder - large") {
+  x.report("reorder - large (x#{LARGE_N})") {
     LARGE_N.times do
       record = large_record.dup
       record.reorder(rand_large_attributes)

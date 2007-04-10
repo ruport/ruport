@@ -24,9 +24,8 @@ spec = Gem::Specification.new do |spec|
   spec.version = RUPORT_VERSION
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A generalized Ruby report generation and templating engine."
-  spec.files =  Dir.glob("{examples,lib,test,bin}/**/**/*") +
+  spec.files =  Dir.glob("{examples,lib,test,bin,util/bench}/**/**/*") +
                       ["Rakefile", "setup.rb"]
-  
   spec.require_path = "lib"
   
   spec.test_files = Dir[ "test/test_*.rb" ]
@@ -71,6 +70,19 @@ task :build_archives => [:package,:rcov,:rdoc] do
   sh "tar cjvf pkg/ruport_doc-#{RUPORT_VERSION}.tar.bz2 doc/html"
   cd "pkg"
   sh "tar cjvf ruport-#{RUPORT_VERSION}.tar.bz2 ruport-#{RUPORT_VERSION}"
+end
+
+task :run_benchmarks do
+  files = FileList["util/bench/**/**/*.rb"]
+  files.sort!
+  files.uniq!
+  names = files.map { |r| r.sub("util/bench","").split("/").map { |e| e.capitalize } }
+  names.map! { |e| e[1..-2].join("::") + " <BENCH: #{e[-1].sub('Bench_','').sub('.rb','')}>" }
+  files.zip(names).each { |f,n|
+    puts "\n#{n}\n\n"
+    sh "ruby -Ilib #{f}"
+    puts "\n"
+  }
 end
 
 begin

@@ -79,7 +79,7 @@ module Ruport::Data
       @data         = []
       if options[:data]
         if options[:data].all? { |r| r.kind_of? Record }
-          options[:data] = options[:data].map { |r| r.to_a } 
+           options[:data] = options[:data].map { |r| r.to_a } 
         end 
         options[:data].each { |e| self << e }  
       end
