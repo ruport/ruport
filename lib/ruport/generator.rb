@@ -116,42 +116,6 @@ end
 task :run do
   sh "ruby lib/reports/#{ENV['report']}.rb"
 end
-
-AAR_TEMPLATE = <<EOS
-require "active_record"
-require "vendor/plugins/acts_as_reportable/lib/acts_as_reportable"
-
-ActiveRecord::Base.send :include, Ruport::Reportable
-
-require "data/models"
-
-ActiveRecord::Base.establish_connection(
-  :adapter  => 'mysql',
-  :host     => 'localhost',
-  :username => 'name',
-  :password => 'password',
-  :database => 'mydb' 
-)
-EOS
-
-task :install_aar do
-  if File.exist? "vendor/plugins/acts_as_reportable"
-    $stderr.puts "\nActs As Reportable Already Installed!\n"
-    exit
-  end
-
-  mkdir_p "vendor/plugins"
-  mkdir_p "data/models"
-  cd "vendor/plugins"
-  sh "svn co http://stonecode.svnrepository.com/"+
-     "svn/ruport/acts_as_reportable/trunk acts_as_reportable"
-  File.open("../../lib/init.rb","a") do |f|
-     f.puts AAR_TEMPLATE
-  end
-  File.open("../../data/models.rb","w") do |f|
-    f.puts "Dir['data/models/*.rb'].each { |r| require r }"
-  end
-end
 END_RAKEFILE
 
 CONFIG = <<END_CONFIG
