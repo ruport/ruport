@@ -116,6 +116,23 @@ end
 task :run do
   sh "ruby lib/reports/#{ENV['report']}.rb"
 end
+
+task :use_utils do
+  raise "File lib/init_utils.rb exists!" if File.exist?('lib/init_utils.rb')
+  File.open('lib/init_utils.rb','w') { |f|
+    if ENV['only']
+      ENV['only'].split(',').each { |e|
+        f.puts "require 'ruport/util/#{e}'"
+      }
+    else
+      f.puts "require 'ruport/util'"
+    end
+  }
+  File.open('lib/init.rb','a') { |f|
+    f.puts '#comment out the line below to disable auto-loading of utils'
+    f.puts 'require "lib/init_utils.rb"'
+  }        
+end
 END_RAKEFILE
 
 CONFIG = <<END_CONFIG
