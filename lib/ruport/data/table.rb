@@ -338,7 +338,18 @@ module Ruport::Data
     #   table.rename_columns {"a" => "c", "b" => "d"}
     #   table.column_names #=> ["c", "d"]
     #
-    def rename_columns(old_cols,new_cols=nil)
+    def rename_columns(old_cols=nil,new_cols=nil)
+      if block_given?
+        if old_cols
+          old_cols.each { |c| rename_column(c,yield(c)) }
+        else
+          column_names.each { |c| rename_column(c,yield(c)) }
+        end
+        return
+      end
+      
+      raise ArgumentError unless old_cols
+
       if new_cols
         raise ArgumentError,
           "odd number of arguments" unless old_cols.size == new_cols.size

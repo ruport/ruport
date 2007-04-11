@@ -374,6 +374,7 @@ class TestTable < Test::Unit::TestCase
     a.rename_column("b","x")
     assert_equal Table(%w[a x]) { |t| t << [1,2] << [3,4] }, a
   end     
+
   
   def test_rename_columns
     a = Table(%w[a b]) { |t| t << [1,2] << [3,4] }
@@ -386,6 +387,14 @@ class TestTable < Test::Unit::TestCase
 
     a = Table(%w[a b]) { |t| t << [1,2] << [3,4] }
     assert_raise(ArgumentError) { a.rename_columns(%w[a b], %w[x]) }
+
+    a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
+    a.rename_columns { |r| r.to_sym }
+    assert_equal(a, Table(:a,:b,:c) { |t| t << [1,2,3] << [4,5,6] })
+
+    a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
+    a.rename_columns(%w[a c]) { |r| r.to_sym }
+    assert_equal(a, Table(:a,"b",:c) { |t| t << [1,2,3] << [4,5,6] })
   end     
   
   def test_swap_column
