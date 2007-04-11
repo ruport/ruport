@@ -12,7 +12,7 @@
 
 module Ruport
   
-  VERSION = "0.9.4"
+  VERSION = "0.9.5"
   
   # This method is Ruport's logging and error interface. It can generate 
   # warnings or raise fatal errors, logging +message+ to the file defined by 
