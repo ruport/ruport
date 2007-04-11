@@ -7,7 +7,7 @@ module Ruport
     renders :html, :for => [ Renderer::Row, Renderer::Table,
                              Renderer::Group, Renderer::Grouping ]
 
-    opt_reader :show_table_headers, :class_str, :show_group_headers
+    opt_reader :show_table_headers, :show_group_headers
     
     # Generates table headers based on the column names of your Data::Table.  
     #
@@ -61,8 +61,8 @@ module Ruport
     # Renders individual rows for the table
     def build_row
       output <<
-        "\t\t<tr#{class_str}>\n\t\t\t<td#{class_str}>" +
-        data.to_a.join("</td>\n\t\t\t<td#{class_str}>") +
+        "\t\t<tr>\n\t\t\t<td>" +
+        data.to_a.join("</td>\n\t\t\t<td>") +
         "</td>\n\t\t</tr>\n"
     end
 
