@@ -120,6 +120,20 @@ class TestGrouping < Test::Unit::TestCase
     assert_raises(IndexError) { b[2] }                 
   end    
   
+  def test_should_copy_grouping
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    b = Ruport::Data::Grouping.new(a, :by => "a")
+    c = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
+                                        :column_names => %w[b c],
+                                        :name => 1 ),
+          4 => Ruport::Data::Group.new( :data => [[5,6]],
+                                        :column_names => %w[b c],
+                                        :name => 4 ) }
+    copy = b.dup
+    assert_equal c, copy.data
+    assert_equal "a", copy.grouped_by
+  end
+
   def test_append
    a =[[1,2,3],[4,5,6]].to_table(%w[a b c])
    b = Ruport::Data::Grouping.new(a, :by => "a")

@@ -51,7 +51,8 @@ module Ruport::Data
     def initialize_copy(from)
       super
       @name = from.name
-      @subgroups = from.subgroups.dup
+      @subgroups = from.subgroups.inject({}) { |h,d|
+        h.merge!({ d[0] => d[1].dup }) }
     end
 
     # Compares this Group to another Group and returns <tt>true</tt> if
@@ -142,13 +143,26 @@ module Ruport::Data
     
     alias_method :append, :<<
 
-
     def to_s
       as(:text)
     end
 
     def as(format,options={})
       Ruport::Renderer::Grouping.render(format,{:data => self }.merge(options))
+    end
+    
+    # Create a copy of the Grouping: groups will be copied as well.
+    #
+    # Example:
+    #
+    #   table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    #   one = Ruport::Data::Grouping.new(a, :by => "a")
+    #
+    #   two = one.dup
+    #
+    def initialize_copy(from)
+      @grouped_by = from.grouped_by
+      @data = from.data.inject({}) { |h,d| h.merge!({ d[0] => d[1].dup }) }
     end
 
     def method_missing(id,*args)
