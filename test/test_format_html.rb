@@ -8,6 +8,14 @@ rescue LoadError
 end
 
 class TestFormatHTML < Test::Unit::TestCase
+  
+  def test_html_table
+    a = Ruport::Formatter::HTML.new
+
+    actual = a.html_table { "<tr><td>1</td></tr>\n" }
+    assert_equal "<table>\n<tr><td>1</td></tr>\n</table>\n", actual
+  end
+
   def test_render_html_basic
     
     actual = Ruport::Renderer::Table.render_html { |r|

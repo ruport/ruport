@@ -66,5 +66,16 @@ module Ruport
         "</td>\n\t\t</tr>\n"
     end
 
+    # generates <table> tag enclosing the yielded content.
+    #
+    # example:  
+    #
+    #  output << html_table { "<tr><td>1</td><td>2</td></tr>\n" }
+    #  #=> "<table>\n<tr><td>1</td><td>2</td></tr>\n</table>"
+    #
+    def html_table
+      "<table>\n" << yield << "</table>\n"
+    end
+
   end
 end
