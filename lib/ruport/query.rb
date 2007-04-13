@@ -124,11 +124,8 @@ module Ruport
     # Standard <tt>each</tt> iterator, iterates through the result set row by 
     # row.
     #
-    def each(&action) 
-      Ruport.log(
-        "no block given!", :status => :fatal,
-        :level => :log_only, :raises => LocalJumpError 
-      ) unless action
+    def each(&action)
+      raise LocalJumpError unless action
       fetch(&action)
       self
     end
@@ -224,10 +221,11 @@ module Ruport
       type.eql?(:file) ? load_file( query ) : query
     end
     
-    def load_file( query_file )
-      begin; File.read( query_file ).strip ; rescue
-        Ruport.log "Could not open #{query_file}",
-          :status => :fatal, :exception => LoadError
+    def load_file(query_file)
+      begin
+        File.read( query_file ).strip
+      rescue
+        raise LoadError
       end
     end
     

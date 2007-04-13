@@ -188,10 +188,6 @@
        File.expects(:read).
          with("query_test.sql").
          raises(Errno::ENOENT)
-       Ruport.expects(:log).
-         with("Could not open query_test.sql",
-              :status => :fatal, :exception => LoadError).
-         raises(LoadError)
    
        assert_raises LoadError do
          query = Ruport::Query.new "query_test.sql"
