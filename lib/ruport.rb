@@ -37,8 +37,8 @@ module Ruport
   #                              <tt>log()</tt> (which can be useful for 
   #                              debugging), you can set 
   #                              <tt>Config.debug_mode</tt>.
-  # <b><tt>:exception</tt></b>:: The +Exception+ to throw on failure.  This 
-  #                              defaults to +RunTimeError+.
+  # <b><tt>:raises</tt></b>::    The +Exception+ to throw on failure.  This 
+  #                              defaults to +RuntimeError+.
   # 
   def self.log(message, options={})
     options = {:status => :warn, :output => $stderr}.merge(options)
