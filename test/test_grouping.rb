@@ -86,6 +86,18 @@ class TestGroup < Test::Unit::TestCase
     assert_equal expected, Group(1, :data => [[2,3]],
                                     :column_names => %w[b c]) 
   end      
+
+  def test_as_throws_proper_errors
+    group = Ruport::Data::Group.new(:name => 'test',
+                                    :data => [[1,2,3]],
+                                    :column_names => %w[a b c])
+ 
+    assert_nothing_raised { group.as(:csv) }
+    assert_nothing_raised { group.to_csv }
+    assert_raises(ArgumentError) { group.as(:nothing) }
+    assert_raises(ArgumentError) { group.to_nothing }
+  end
+ 
   
 end
 
@@ -207,6 +219,18 @@ class TestGrouping < Test::Unit::TestCase
     assert_equal %w[awesome sick], sub.column("id")
   end
   
+  def test_as_throws_proper_errors
+
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    b = Grouping(a, :by => "a")
+ 
+ 
+    assert_nothing_raised { b.as(:csv) }
+    assert_nothing_raised { b.to_csv }
+    assert_raises(ArgumentError) { b.as(:nothing) }
+    assert_raises(ArgumentError) { b.to_nothing }
+  end
+ 
   def test_grouping_should_set_record_class
     a = Table(%w[a b c], :record_class => MyRecord) { |t| 
           t << [1,2,3]

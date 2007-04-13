@@ -221,6 +221,14 @@ class TestRecord < Test::Unit::TestCase
     rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
     assert_equal("1\t2\t3\t4\n",rendered_row)
   end             
+
+  def test_as_throws_proper_errors
+    a = Record.new({ "a" => 1, "b" => 2 })
+    assert_nothing_raised { a.as(:csv) }
+    assert_nothing_raised { a.to_csv }
+    assert_raises(ArgumentError) { a.as(:nothing) }
+    assert_raises(ArgumentError) { a.to_nothing }
+  end
   
   #----------------------------------------------------------------------
   #  BUG Traps

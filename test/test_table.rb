@@ -506,6 +506,14 @@ class TestTable < Test::Unit::TestCase
       
   end
 
+  def test_as_throws_proper_errors
+    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    assert_nothing_raised { a.as(:csv) }
+    assert_nothing_raised { a.to_csv }
+    assert_raises(ArgumentError) { a.as(:nothing) }
+    assert_raises(ArgumentError) { a.to_nothing }
+  end
+
 
   ## BUG Traps -------------------------------------------------
   

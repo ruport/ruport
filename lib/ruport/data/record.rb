@@ -215,6 +215,9 @@ module Ruport::Data
     #   my_record.as(:csv)  #=> "1,2,3\n"
     #   
     def as(*args)
+      unless Ruport::Renderer::Row.formats.include?(args[0])
+        raise ArgumentError
+      end 
       Ruport::Renderer::Row.render(*args) do |rend|
         rend.data = self
         yield(rend) if block_given?

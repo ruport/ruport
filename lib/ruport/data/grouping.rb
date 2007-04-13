@@ -36,6 +36,9 @@ module Ruport::Data
     #   my_group.as(:csv)  #=> "group\n\n1,2,3\n4,5,6\n"
     #   
     def as(format,options={})
+      unless Ruport::Renderer::Group.formats.include?(format)
+        raise ArgumentError
+      end
       Ruport::Renderer::Group.render(format,{:data => self }.merge(options))
     end
 
@@ -148,6 +151,9 @@ module Ruport::Data
     end
 
     def as(format,options={})
+      unless Ruport::Renderer::Grouping.formats.include?(format)
+        raise ArgumentError
+      end
       Ruport::Renderer::Grouping.render(format,{:data => self }.merge(options))
     end
     
