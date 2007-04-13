@@ -125,7 +125,7 @@ module Ruport
     # row.
     #
     def each(&action)
-      raise LocalJumpError unless action
+      raise(LocalJumpError, "No block given!") unless action
       fetch(&action)
       self
     end
@@ -225,7 +225,7 @@ module Ruport
       begin
         File.read( query_file ).strip
       rescue
-        raise LoadError
+        raise LoadError, "Could not open #{query_file}"
       end
     end
     
