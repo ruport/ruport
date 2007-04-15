@@ -52,20 +52,39 @@ module Ruport
     # object will be yielded.
     #
     # This should be overridden by subclasses, or used as a shortcut for your
-    # own plugin implementations
+    # own formatter implementations.
     #
-    # This method is automatically called by the table renderer
+    # This method is automatically called by the table renderer.
     #
     def build_table_header
        table_header_proc[pdf_writer] if table_header_proc
     end
 
-    # Calls the draw_table method
+    # Calls the draw_table method.
     #
-    # This method is automatically called by the table renderer
+    # This method is automatically called by the table renderer.
     #
     def build_table_body
       draw_table(data)
+    end
+
+    # If table_footer_proc is defined, it will be executed and the PDF::Writer
+    # object will be yielded.
+    #
+    # This should be overridden by subclasses, or used as a shortcut for your
+    # own formatter implementations.
+    #
+    # This method is automatically called by the table renderer.
+    #
+    def build_table_footer
+      table_footer_proc[pdf_writer] if table_footer_proc
+    end
+
+    # Appends the results of PDF::Writer#render to output for your 
+    # <tt>pdf_writer</tt> object.
+    #
+    def finalize_table
+      render_pdf unless options.skip_finalize_table
     end
 
     def build_group_header
@@ -77,67 +96,21 @@ module Ruport
     end
 
     def build_grouping_body
-      case(style)
-      when :inline   
-        data.each do |_,group|
-          render_group group, options.to_hash.merge(:formatter => pdf_writer,
-            :skip_finalize_table => true)
-        end
-      when :justified
-        columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
-        table = Ruport::Data::Table.new(:column_names => columns)
-        data.each do |name,group|
-          group_column = { data.grouped_by => "<b>#{name}</b>\n" }
-          group.each_with_index do |rec,i|
-            i == 0 ? table << group_column.merge(rec.to_h) : table << rec
-          end
-        end
-        render_table table, options.to_hash.merge(:formatter => pdf_writer)
+      case style
+      when :inline
+        render_inline_grouping(options.to_hash.merge(:formatter => pdf_writer,
+            :skip_finalize_table => true))
+      when :justified, :separated
+        render_justified_or_separated_grouping
       when :offset
-        columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
-        table = Ruport::Data::Table.new(:column_names => columns)
-        data.each do |name,group|
-          table << ["<b>#{name}</b>\n",nil,nil]
-          group.each {|r| table << r }
-        end
-        render_table table, options.to_hash.merge(:formatter => pdf_writer)
-      when :separated
-        columns = data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
-        table = Ruport::Data::Table.new(:column_names => columns)
-        data.each do |name,group|
-          group_column = { data.grouped_by => "<b>#{name}</b>\n" }
-          group.each_with_index do |rec,i|
-            i == 0 ? table << group_column.merge(rec.to_h) : table << rec
-          end
-          table << Array.new(columns.length,' ')
-        end
-        render_table table, options.to_hash.merge(:formatter => pdf_writer)
+        render_offset_grouping
       else
         raise NotImplementedError, "Unknown style"
       end
     end
     
     def finalize_grouping
-      output << pdf_writer.render
-    end
-
-    # If table_footer_proc is defined, it will be executed and the PDF::Writer
-    # object will be yielded.
-    #
-    # This should be overridden by subclasses, or used as a shortcut for your
-    # own plugin implementations
-    #
-    # This method is automatically called by the table renderer
-    #
-    def build_table_footer
-      table_footer_proc[pdf_writer] if table_footer_proc
-    end
-
-    # Appends the results of PDF::Writer#render to output for your 
-    # <tt>pdf_writer</tt> object.
-    #
-    def finalize_table
-      output << pdf_writer.render unless options.skip_finalize_table
+      render_pdf
     end
 
     # Call PDF::Writer#text with the given arguments
@@ -228,7 +201,7 @@ module Ruport
        pdf_writer.y = opts.y - opts.height
     end
 
-    # adds an image to every page. The color and size won't be modified,
+    # Adds an image to every page. The color and size won't be modified,
     # but it will be centered.
     #
     def watermark(imgpath)
@@ -290,84 +263,110 @@ module Ruport
 
     module DrawingHelpers
 
-       def horizontal_line(x1,x2)
-         pdf_writer.line(x1,cursor,x2,cursor)
-         pdf_writer.stroke
-       end
+      def horizontal_line(x1,x2)
+        pdf_writer.line(x1,cursor,x2,cursor)
+        pdf_writer.stroke
+      end
 
-       def vertical_line_at(x,y1,y2)
-         pdf_writer.line(x,y1,x,y2)
-       end
+      def vertical_line_at(x,y1,y2)
+        pdf_writer.line(x,y1,x,y2)
+      end
 
-       def left_boundary
-         pdf_writer.absolute_left_margin
-       end
+      def left_boundary
+        pdf_writer.absolute_left_margin
+      end
 
-       def right_boundary
-         pdf_writer.absolute_right_margin
-       end
+      def right_boundary
+        pdf_writer.absolute_right_margin
+      end
 
-       def top_boundary
-         pdf_writer.absolute_top_margin
-       end
+      def top_boundary
+        pdf_writer.absolute_top_margin
+      end
 
-       def bottom_boundary
-         pdf_writer.absolute_bottom_margin
-       end
+      def bottom_boundary
+        pdf_writer.absolute_bottom_margin
+      end
 
-       def cursor
-          pdf_writer.y
-       end
+      def cursor
+        pdf_writer.y
+      end
 
-      # rather than being whimsical, let's be really F'in picky.
+      # rather than being whimsical, let's be really picky.
       def draw_text(text,draw_opts)
         move_cursor_to(y) if draw_opts[:y]
-        add_text(text, draw_opts.merge( :absolute_left => 
-                                         draw_opts[:x1] || draw_opts[:left],
-                                         :absolute_right => 
-                                         draw_opts[:x2]) || draw_opts[:right])
-      end 
+        add_text(text,
+          draw_opts.merge(:absolute_left => draw_opts[:x1] || draw_opts[:left],
+          :absolute_right => draw_opts[:x2]) || draw_opts[:right])
+      end
+      
+    end   
 
-     end   
+    include DrawingHelpers
+     
+    module PDFWriterMemoryPatch #:nodoc:
+      unless self.class.instance_methods.include?("_post_transaction_rewind")
+        def _post_transaction_rewind
+          @objects.each { |e| e.instance_variable_set(:@parent,self) }
+        end
+      end
+    end
+    
+    private
+    
+    def grouping_columns
+      data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
+    end
+    
+    def table_with_grouped_by_column
+      Ruport::Data::Table.new(:column_names => grouping_columns)
+    end
+    
+    def render_justified_or_separated_grouping
+      table = table_with_grouped_by_column
+      data.each do |name,group|
+        group_column = { data.grouped_by => "<b>#{name}</b>\n" }
+        group.each_with_index do |rec,i|
+          i == 0 ? table << group_column.merge(rec.to_h) : table << rec
+        end
+        table << Array.new(grouping_columns.length,' ') if style == :separated
+      end
+      render_table table, options.to_hash.merge(:formatter => pdf_writer)
+    end
+    
+    def render_offset_grouping
+      table = table_with_grouped_by_column
+      data.each do |name,group|
+        table << ["<b>#{name}</b>\n",nil,nil]
+        group.each {|r| table << r }
+      end
+      render_table table, options.to_hash.merge(:formatter => pdf_writer)
+    end
+    
+    def image_fits_in_box?(img_width,box_width,img_height,box_height)
+      !(img_width > box_width || img_height > box_height)
+    end
+    
+    def fit_image_in_box(img_width,box_width,img_height,box_height)
+      img_ratio = img_height.to_f / img_width.to_f
+      until image_fits_in_box?(img_width,box_width,img_height,box_height)
+        img_width -= 1
+        img_height = img_width * img_ratio
+      end
+      return img_width, img_height
+    end
 
-     include DrawingHelpers
-     
-     module PDFWriterMemoryPatch #:nodoc:
-       unless self.class.instance_methods.include?("_post_transaction_rewind")
-         def _post_transaction_rewind
-            @objects.each { |e| e.instance_variable_set(:@parent,self) }
-          end
-       end
-     end 
-     
-     private
-     
-     def image_fits_in_box?(img_width,box_width,img_height,box_height)
-       !(img_width > box_width || img_height > box_height)
-     end
-     
-     def fit_image_in_box(img_width,box_width,img_height,box_height)
-       img_ratio = img_height.to_f / img_width.to_f
-       until image_fits_in_box?(img_width,box_width,img_height,box_height)
-         img_width -= 1
-         img_height = img_width * img_ratio
-       end
-       return img_width, img_height
-     end
-
-     def add_white_space(x,y,img_width,box_width,img_height,box_height)
-       if img_width < box_width
-         white_space = box_width - img_width
-         x = x + (white_space / 2)
-       end
-       if img_height < box_height
-         white_space = box_height - img_height
-         y = y + (white_space / 2)
-       end
-       return x, y
-     end
-     
+    def add_white_space(x,y,img_width,box_width,img_height,box_height)
+      if img_width < box_width
+        white_space = box_width - img_width
+        x = x + (white_space / 2)
+      end
+      if img_height < box_height
+        white_space = box_height - img_height
+        y = y + (white_space / 2)
+      end
+      return x, y
+    end
+    
   end
 end
-
-

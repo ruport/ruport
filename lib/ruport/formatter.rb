@@ -49,9 +49,19 @@ module Ruport
       #
       # Sets the :io attribute by default to the existing formatter's
       # output object.
-      def render_grouping(group,options={},&block)
-        render_helper(Renderer::Grouping,group,options,&block)
-      end 
+      def render_grouping(grouping,options={},&block)
+        render_helper(Renderer::Grouping,grouping,options,&block)
+      end
+      
+      # Iterates through the data in the grouping and renders each group
+      # followed by a newline.
+      #
+      def render_inline_grouping(options={},&block)
+        data.each do |_,group|
+          render_group(group, options, &block)
+          output << "\n"
+        end
+      end
 
       private
 

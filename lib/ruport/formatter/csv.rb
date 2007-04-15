@@ -9,7 +9,8 @@ module Ruport
 
     opt_reader :show_table_headers, 
                :format_options, 
-               :show_group_headers, :style
+               :show_group_headers,
+               :style
 
     # Generates table header by turning column_names into a CSV row.
     # Uses the row renderer to generate the actual formatted output
@@ -20,50 +21,6 @@ module Ruport
       unless data.column_names.empty? || !show_table_headers
         render_row data.column_names, :format_options => format_options 
       end
-    end
-
-    # Renders the header for a group using the group name.
-    # 
-    def build_group_header
-      output << data.name.to_s << "\n\n"
-    end
-
-    def build_grouping_body
-      case(style)
-      when :inline
-        data.each do |_,group|
-          render_group group, options.to_hash
-          output << "\n"
-        end
-      when :justified
-        require "fastercsv"
-        #FIXME: This line blows.
-        output << "#{data.grouped_by}," << 
-          data.data.to_a[0][1].column_names.to_csv
-        data.each do |_,group|
-          output << "#{group.name}"
-          group.each do |row| 
-            output << "," << row.to_csv 
-          end
-          output << "\n"
-        end
-      when :raw
-        #FIXME: This line blows.
-        output << "#{data.grouped_by}," << 
-          data.data.to_a[0][1].column_names.to_csv
-        data.each do |_,group|
-          group.each do |row| 
-            output << "#{group.name}," << row.to_csv 
-          end
-          output << "\n"
-        end
-      else
-        raise NotImplementedError, "Unknown style"
-      end
-    end
-
-    def build_group_body
-      render_table data, options.to_hash
     end
 
     # Calls the row renderer for each row in the Data::Table
@@ -77,6 +34,55 @@ module Ruport
     def build_row
       require "fastercsv"
       output << FCSV.generate_line(data,format_options || {})
+    end
+    
+    # Renders the header for a group using the group name.
+    # 
+    def build_group_header
+      output << data.name.to_s << "\n\n"
+    end
+    
+    # Renders the group body - uses the table renderer to generate the output.
+    #
+    def build_group_body
+      render_table data, options.to_hash
+    end
+    
+    # Generates a header for the grouping using the grouped_by column and the
+    # column names.
+    #
+    def build_grouping_header
+      unless style == :inline
+        output << "#{data.grouped_by}," << grouping_columns
+      end
+    end
+
+    def build_grouping_body
+      case style
+      when :inline
+        render_inline_grouping(options)
+      when :justified, :raw
+        render_justified_or_raw_grouping
+      else
+        raise NotImplementedError, "Unknown style"
+      end
+    end
+    
+    private
+    
+    def grouping_columns
+      require "fastercsv"
+      data.data.to_a[0][1].column_names.to_csv
+    end
+    
+    def render_justified_or_raw_grouping
+      data.each do |_,group|
+        output << "#{group.name}" if style == :justified
+        group.each do |row|
+          output << "#{group.name if style == :raw}," << row.to_csv
+        end
+        output << "\n"
+      end
     end
   end
 end

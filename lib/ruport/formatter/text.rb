@@ -18,9 +18,10 @@ module Ruport
     # Uses the column names from the given Data::Table to generate a table
     # header.
     #
-    # calls fit_to_width to truncate table heading if necessary.
+    # Calls fit_to_width to truncate table heading if necessary.
+    #
     def build_table_header
-      return unless should_render_column_names
+      return unless should_render_column_names?
 
       c = data.column_names.enum_for(:each_with_index).map { |f,i|
         f.to_s.center(max_col_width[i])
@@ -29,20 +30,14 @@ module Ruport
       output << fit_to_width("#{hr}| #{c.join(' | ')} |\n")
     end
 
-    # Returns false if column_names are empty, or options.show_table_headers
-    # is false/nil.  Returns true otherwise.
-    #
-    def should_render_column_names
-      not data.column_names.empty? || !show_table_headers
-    end
-
     # Generates the body of the text table. 
     #
     # Defaults to numeric values being right justified, and other values being
     # left justified.  Can be changed to support centering of output by
     # setting options.alignment to :center
     #
-    # Uses fit_to_width to truncate table if necessary
+    # Uses fit_to_width to truncate table if necessary.
+    #
     def build_table_body
       output << fit_to_width(hr)
 
@@ -59,21 +54,6 @@ module Ruport
       output << fit_to_width(hr)
     end
 
-    def build_group_header
-      output << "#{data.name}:\n\n"
-    end
-    
-    def build_group_body
-      render_table data, options
-    end
-
-    def build_grouping_body
-      data.each do |name,group|
-        render_group group, options
-        output << "\n"
-      end
-    end
-    
     def build_row
       max_col_widths_for_row(data) unless max_col_width
 
@@ -87,6 +67,33 @@ module Ruport
         end
       }
       output << fit_to_width("| #{line.join(' | ')} |\n")
+    end
+
+    # Renders the header for a group using the group name.
+    #
+    def build_group_header
+      output << "#{data.name}:\n\n"
+    end
+    
+    # Creates the group body. Since group data is a table, just uses the
+    # Table renderer.
+    #
+    def build_group_body
+      render_table data, options
+    end
+
+    # Generates the body for a grouping. Iterates through the groups and
+    # renders them using the group renderer.
+    #
+    def build_grouping_body
+      render_inline_grouping(options)
+    end
+    
+    # Returns false if column_names are empty or options.show_table_headers
+    # is false/nil.  Returns true otherwise.
+    #
+    def should_render_column_names?
+      not data.column_names.empty? || !show_table_headers
     end
 
     # Generates the horizontal rule by calculating the total table width and
@@ -118,7 +125,6 @@ module Ruport
 
     # determines the text widths for each column.
     def calculate_max_col_widths
-
       # allow override
       return if max_col_width
 
@@ -131,7 +137,6 @@ module Ruport
       end
           
       data.each { |r| max_col_widths_for_row(r) } 
-
     end
 
     def max_col_widths_for_row(row)

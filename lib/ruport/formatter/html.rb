@@ -38,6 +38,14 @@ module Ruport
       output << "\t</table>"
     end
   
+    # Renders individual rows for the table
+    def build_row
+      output <<
+        "\t\t<tr>\n\t\t\t<td>" +
+        data.to_a.join("</td>\n\t\t\t<td>") +
+        "</td>\n\t\t</tr>\n"
+    end
+
     # Renders the header for a group using the group name.
     #
     def build_group_header
@@ -51,19 +59,11 @@ module Ruport
       render_table data, options.to_hash
     end
 
+    # Generates the body for a grouping. Iterates through the groups and
+    # renders them using the group renderer.
+    #
     def build_grouping_body
-      data.each do |_,group|
-        render_group group, options.to_hash
-        output << "\n"
-      end
-    end
-
-    # Renders individual rows for the table
-    def build_row
-      output <<
-        "\t\t<tr>\n\t\t\t<td>" +
-        data.to_a.join("</td>\n\t\t\t<td>") +
-        "</td>\n\t\t</tr>\n"
+      render_inline_grouping(options)
     end
 
     # generates <table> tag enclosing the yielded content.
