@@ -145,8 +145,7 @@ module Ruport
       img_width, img_height =
         fit_image_in_box(info.width,width,info.height,height)
       
-      # if the width/height of the image is less than the requested box,
-      # calculate the white space buffer
+      # if the image is smaller than the box, calculate the white space buffer
       x, y = add_white_space(x,y,img_width,width,img_height,height)
 
       pdf_writer.add_image_from_file(path, x, y, img_width, img_height) 
@@ -155,50 +154,25 @@ module Ruport
     # Draws some text on the canvas, surrounded by a box with rounded corners
     #
     def rounded_text_box(text)
-       opts = OpenStruct.new
-       yield(opts)
-       
-       # resize the text automatically to ensure it isn't wider than the box
-       loop do
-         sz = pdf_writer.text_width( text, opts.font_size )
-         opts.x + sz > opts.x + opts.width or break
-         opts.font_size -= 1
-       end
+      opts = OpenStruct.new
+      yield(opts)
+      
+      resize_text_to_box(text, opts)
+      
+      pdf_writer.save_state
+      draw_box(opts.x, opts.y, opts.width, opts.height, opts.radius, 
+        opts.fill_color, opts.stroke_color)
+      add_text_with_bottom_border(opts.heading, opts.x, opts.y,
+        opts.width, opts.font_size) if opts.heading
+      pdf_writer.restore_state
 
-       # save the drawing state (colors, etc) so we can restore it later
-       pdf_writer.save_state
-
-       # draw our box
-       pdf_writer.fill_color(opts.fill_color || Color::RGB::White)
-       pdf_writer.stroke_color(opts.stroke_color || Color::RGB::Black)
-       pdf_writer.rounded_rectangle( opts.x, opts.y, 
-                                     opts.width, opts.height, 
-                                     opts.radius).fill_stroke
-
-       # if a heading for this box has been specified
-       if opts.heading
-         pdf_writer.line( opts.x, opts.y - 20, 
-                          opts.x + opts.width, opts.y - 20).stroke
-         pdf_writer.fill_color(Color::RGB::Black)
-         move_cursor_to(opts.y - 3)
-         add_text("<b>#{opts.heading}</b>", 
-           :absolute_left => opts.x, :absolute_right => opts.x + opts.width,
-           :justification => :center, :font_size => opts.font_size)
-       end
-
-       # restore the original colors
-       pdf_writer.restore_state
-
-       # move our y cursor into position, write the text, then move the cursor
-       # to be just below the box
-       pdf_writer.y = opts.heading ? opts.y - 20 : opts.y
-
-       add_text( text,  :absolute_left  => opts.x,
-                        :absolute_right => opts.x + opts.width,
-                        :justification => opts.justification || :center,
-                        :font_size => opts.font_size )     
-
-       pdf_writer.y = opts.y - opts.height
+      start_position = opts.heading ? opts.y - 20 : opts.y
+      draw_text(text, :y              => start_position,
+                      :left           => opts.x,
+                      :right          => opts.x + opts.width,
+                      :justification  => opts.justification || :center,
+                      :font_size      => opts.font_size)
+      move_cursor_to(opts.y - opts.height)
     end
 
     # Adds an image to every page. The color and size won't be modified,
@@ -293,11 +267,11 @@ module Ruport
       end
 
       # rather than being whimsical, let's be really picky.
-      def draw_text(text,draw_opts)
-        move_cursor_to(y) if draw_opts[:y]
+      def draw_text(text,text_opts)
+        move_cursor_to(text_opts[:y]) if text_opts[:y]
         add_text(text,
-          draw_opts.merge(:absolute_left => draw_opts[:x1] || draw_opts[:left],
-          :absolute_right => draw_opts[:x2]) || draw_opts[:right])
+          text_opts.merge(:absolute_left => text_opts[:x1] || text_opts[:left],
+          :absolute_right => text_opts[:x2] || text_opts[:right]))
       end
       
     end   
@@ -366,6 +340,30 @@ module Ruport
         y = y + (white_space / 2)
       end
       return x, y
+    end
+    
+    def resize_text_to_box(text,opts)
+      loop do
+        sz = pdf_writer.text_width(text, opts.font_size)
+        opts.x + sz > opts.x + opts.width or break
+        opts.font_size -= 1
+      end
+    end
+    
+    def draw_box(x,y,width,height,radius,fill_color=nil,stroke_color=nil)
+      pdf_writer.fill_color(fill_color || Color::RGB::White)
+      pdf_writer.stroke_color(stroke_color || Color::RGB::Black)
+      pdf_writer.rounded_rectangle(x, y, width, height, radius).fill_stroke
+    end
+    
+    def add_text_with_bottom_border(text,x,y,width,font_size)
+      pdf_writer.line( x, y - 20, 
+                       x + width, y - 20).stroke
+      pdf_writer.fill_color(Color::RGB::Black)
+      move_cursor_to(y - 3)
+      add_text("<b>#{text}</b>",
+        :absolute_left => x, :absolute_right => x + width,
+        :justification => :center, :font_size => font_size)
     end
     
   end
