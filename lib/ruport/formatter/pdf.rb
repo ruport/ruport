@@ -151,14 +151,16 @@ module Ruport
       output << pdf_writer.render
     end
        
-    # - if the image is bigger than the box, it will be scaled down until it fits
-    # - if the image is smaller than the box, it won't be resized
+    # - If the image is bigger than the box, it will be scaled down until
+    #   it fits.
+    # - If the image is smaller than the box, it won't be resized.
     #
-    # arguments:
+    # options:
     # - :x: left bound of box
     # - :y: bottom bound of box
     # - :width: width of box
     # - :height: height of box
+    #
     def center_image_in_box(path, image_opts={}) 
       x = image_opts[:x]
       y = image_opts[:y]
@@ -166,35 +168,13 @@ module Ruport
       height = image_opts[:height]
       info = ::PDF::Writer::Graphics::ImageInfo.new(File.read(path))
 
-      # if the image is larger than the requested box, prepare to
-      # scale it down
-      fits = !(info.width > width || info.height > height)
-
-      # setup initial sizes for the image. These will be reduced as necesary
-      img_width = info.width
-      img_height = info.height
-      img_ratio = info.height.to_f / info.width.to_f
-
       # reduce the size of the image until it fits into the requested box
-      until fits
-        img_width -= 1
-        img_height = img_width * img_ratio
-        fits = true if img_width < width && img_height < height
-      end
-
-      # if the width of the image is less than the requested box, calculate
-      # the white space buffer
-      if img_width < width
-        white_space = width - img_width
-        x = x + (white_space / 2)
-      end
-
-      # if the height of the image is less than the requested box, calculate
-      # the white space buffer
-      if img_height < height
-        white_space = height - img_height
-        y = y + (white_space / 2)
-      end
+      img_width, img_height =
+        fit_image_in_box(info.width,width,info.height,height)
+      
+      # if the width/height of the image is less than the requested box,
+      # calculate the white space buffer
+      x, y = add_white_space(x,y,img_width,width,img_height,height)
 
       pdf_writer.add_image_from_file(path, x, y, img_width, img_height) 
     end
@@ -359,7 +339,34 @@ module Ruport
           end
        end
      end 
+     
+     private
+     
+     def image_fits_in_box?(img_width,box_width,img_height,box_height)
+       !(img_width > box_width || img_height > box_height)
+     end
+     
+     def fit_image_in_box(img_width,box_width,img_height,box_height)
+       img_ratio = img_height.to_f / img_width.to_f
+       until image_fits_in_box?(img_width,box_width,img_height,box_height)
+         img_width -= 1
+         img_height = img_width * img_ratio
+       end
+       return img_width, img_height
+     end
 
+     def add_white_space(x,y,img_width,box_width,img_height,box_height)
+       if img_width < box_width
+         white_space = box_width - img_width
+         x = x + (white_space / 2)
+       end
+       if img_height < box_height
+         white_space = box_height - img_height
+         y = y + (white_space / 2)
+       end
+       return x, y
+     end
+     
   end
 end
 
