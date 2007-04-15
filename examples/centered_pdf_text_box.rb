@@ -16,15 +16,13 @@ class CenteredPDFTextBox < Ruport::Formatter::PDF
   renders :pdf, :for => Document
 
   def build_document_body
-
     add_text "-- " << options.author << " --",
-             :justification => :center, :font_size => 20 
-    
+             :justification => :center, :font_size => 20
     
     c = pdf_writer.absolute_x_middle - 239/2
     
-    #img,x,y,width,height
-    center_image_in_box("RWEmerson.jpg",c,325,239,359)
+    center_image_in_box("RWEmerson.jpg", :x => c, :y => 325,
+      :width => 239, :height => 359)
  
     rounded_text_box(options.text) do |o|
        o.radius = 5
@@ -35,12 +33,11 @@ class CenteredPDFTextBox < Ruport::Formatter::PDF
        
        o.x = pdf_writer.absolute_x_middle - o.width/2
        o.y = 300
-    end         
-
+    end
   end
   
   def finalize_document
-    output << pdf_writer.render
+    render_pdf
   end
 end
 

@@ -27,7 +27,7 @@ module MyStuff
     end
 
     def finalize_document
-      output << pdf_writer.render
+      render_pdf
     end
   end
 

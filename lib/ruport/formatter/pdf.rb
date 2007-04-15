@@ -6,6 +6,9 @@ module Ruport
   #     General:
   #       * paper_size  #=> "LETTER"
   #       * paper_orientation #=> :portrait
+  #
+  #     Text:
+  #       * text_format
   #     
   #     Table:
   #       * table_format (a hash that can take any of the options available
@@ -24,7 +27,9 @@ module Ruport
     opt_reader  :show_table_headers,
                 :style,
                 :table_format,
-                :text_format
+                :text_format,
+                :paper_size,
+                :paper_orientation
 
     def initialize
       quiet do
@@ -38,8 +43,8 @@ module Ruport
     #
     def pdf_writer
       @pdf_writer ||= options.formatter ||
-        ::PDF::Writer.new( :paper => options.paper_size || "LETTER",
-              :orientation => options.paper_orientation || :portrait)
+        ::PDF::Writer.new( :paper => paper_size || "LETTER",
+              :orientation => paper_orientation || :portrait)
       @pdf_writer.extend(PDFWriterMemoryPatch)
     end
 
@@ -254,7 +259,8 @@ module Ruport
 
       pdf_writer.open_object do |wm|
         pdf_writer.save_state
-        center_image_in_box(imgpath, x, y, width, height)
+        center_image_in_box(imgpath, :x => x, :y => y,
+          :width => width, :height => height)
         pdf_writer.restore_state
         pdf_writer.close_object
         pdf_writer.add_object(wm, :all_pages)
