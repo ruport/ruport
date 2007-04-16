@@ -222,12 +222,14 @@ module Ruport
       m = "Sorry, cant build PDFs from array like things (yet)"
       raise m if table_data.column_names.empty?
       
-      format_opts = table_format.merge(format_opts) if table_format
+      format_opts = table_format.merge(format_opts) if table_format  
       
-      ::PDF::SimpleTable.new do |table|
+      ::PDF::SimpleTable.new do |table|              
+        table.data = table_data  
         table.maximum_width = 500
-        table.data          = table_data
-        table.column_order  = table_data.column_names
+        table.column_order  = table_data.column_names                                            
+          
+        apply_pdf_table_column_opts(table,table_data,format_opts)
 
         format_opts.each {|k,v| table.send("#{k}=", v) }
 
@@ -286,7 +288,19 @@ module Ruport
       end
     end
     
-    private
+    private   
+    
+    def apply_pdf_table_column_opts(table,table_data,format_opts)
+      column_opts = format_opts.delete(:column_options)           
+      if column_opts                                              
+        columns = table_data.column_names.inject({}) { |s,c| 
+          s.merge( c => ::PDF::SimpleTable::Column.new(c) { |col| 
+            column_opts.each { |k,v| col.send("#{k}=",v) } 
+          })
+        }                     
+        table.columns = columns
+      end    
+    end      
     
     def grouping_columns
       data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
