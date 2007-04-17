@@ -232,8 +232,23 @@ module Ruport
 
       def renders_with(renderer)
         @renderer = renderer.name
+      end  
+      
+      def renders_as_table
+        renders_with Ruport::Renderer::Table
       end
-
+       
+      def renders_as_row
+        renders_with Ruport::Renderer::Row
+      end
+        
+      def renders_as_group
+        renders_with Ruport::Renderer::Group
+      end 
+      
+      def renders_as_grouping
+        renders_with Ruport::Renderer::Grouping
+      end
 
       def renderer
         return unless @renderer

@@ -195,16 +195,38 @@ class TestReport < Test::Unit::TestCase
     assert_equal "a,b,c\n1,2,3\n4,5,6\n", a.run
    end
  
-   private
-=begin 
-   def setup_mock_mailer
-     @smtp     = mock('smtp')
- 
-     Net::SMTP.expects(:start).
-       yields(@smtp).
-       returns("250 ok").at_least_once
-     @smtp.stubs(:send_message).
-       returns("250 ok")
+   def test_renders_as_table
+     klass = MyReport.dup
+     klass.renders_as_table
+     klass.send(:generate) { [[1,2,3],[4,5,6]].to_table(%w[a b c]) }
+     a = klass.new(:csv)
+     assert_equal "a,b,c\n1,2,3\n4,5,6\n", a.run
+   end      
+   
+   def test_renders_as_row
+     klass = MyReport.dup
+     klass.renders_as_row
+     klass.send(:generate) { [[1,2,3]].to_table(%w[a b c])[0] }
+     a = klass.new(:csv)
+     assert_equal "1,2,3\n", a.run
+   end      
+   
+   def test_renders_as_group
+     klass = MyReport.dup
+     klass.renders_as_group
+     klass.send(:generate) { [[1,2,3]].to_table(%w[a b c]).to_group("foo") }
+     a = klass.new(:csv)
+     assert_equal "foo\n\na,b,c\n1,2,3\n", a.run
+   end    
+   
+   def test_renders_as_grouping
+     klass = MyReport.dup
+     klass.renders_as_grouping
+     klass.send(:generate) { 
+       Grouping([[1,2,3],[4,5,6]].to_table(%w[a b c]),:by => "a")
+     }
+     a = klass.new(:csv)
+     assert_equal "1\n\nb,c\n2,3\n\n4\n\nb,c\n5,6\n\n", a.run
    end
-=end
+
 end
