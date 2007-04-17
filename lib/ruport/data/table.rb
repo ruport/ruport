@@ -155,7 +155,6 @@ module Ruport::Data
         @data << record_class.new(other, :attributes => attributes)
       when Hash
         raise ArgumentError unless @column_names
-        #arr = @column_names.map { |k| other[k] }
         @data << record_class.new(other, :attributes => @column_names)
       when record_class     
         if column_names.empty?

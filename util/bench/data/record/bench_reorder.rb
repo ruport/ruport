@@ -1,5 +1,7 @@
 require "ruport"
-require "benchmark"
+require "rubygems"
+require "ruport/util/bench"
+include Ruport::Bench
 
 large = (1..1000).to_a
 large_attributes = large.map { |e| e.to_s.reverse }
@@ -16,21 +18,18 @@ small_record = Ruport::Data::Record.new({ "foo"  => 'bar',
 
 rand_small_attributes = small_record.attributes.sort_by { rand }
 
-Benchmark.bm do |x|
-  SMALL_N = 10000
-  LARGE_N = 100
+SMALL_N = 10000
+LARGE_N = 100
 
-  x.report("reorder - small (x#{SMALL_N})") {
-    SMALL_N.times do
-      record = small_record.dup
-      record.reorder(rand_small_attributes)
-    end
+bench_suite do
+
+  bench_case("reorder - small", SMALL_N) {
+    record = small_record.dup
+    record.reorder(rand_small_attributes)
   }
-  x.report("reorder - large (x#{LARGE_N})") {
-    LARGE_N.times do
-      record = large_record.dup
-      record.reorder(rand_large_attributes)
-    end
+  bench_case("reorder - large", LARGE_N) {
+    record = large_record.dup
+    record.reorder(rand_large_attributes)
   }
 
 end

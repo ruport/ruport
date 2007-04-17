@@ -85,7 +85,7 @@ task :run_benchmarks do
     puts "\n"
   }
   end_time = Time.now
-  puts "\n** Suite ran in #{end_time-start_time}s **"
+  puts "\n** Total Run Time:  #{end_time-start_time}s **"
 end
 
 begin

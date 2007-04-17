@@ -1,5 +1,7 @@
 require "ruport"
-require "benchmark"
+require "rubygems"
+require "ruport/util/bench"
+include Ruport::Bench
 
 large = (1..1000).to_a
 large_attributes = large.map { |e| e.to_s.reverse }
@@ -15,72 +17,49 @@ small_record = Ruport::Data::Record.new({ "foo"  => 'bar',
 small_attributes = small_record.attributes
 sym_s_attributes = small_attributes.map { |r| r.intern }
 
-Benchmark.bm do |x|
-  SMALL_N = 10000
-  LARGE_N = 10
+SMALL_N = 10000
+LARGE_N = 10
 
-  x.report("Integer Index - Small (x#{SMALL_N})") {
-    SMALL_N.times { (0..2).each { |i| small_record[i] } }
+bench_suite do
+
+  bench_case("Integer Index - Small",SMALL_N) {
+    (0..2).each { |i| small_record[i] } 
   }
 
-  x.report("Integer Index - Large (x#{LARGE_N})") {  
-    LARGE_N.times { large.each_index { |r| large_record[r] } }
+  bench_case("Integer Index - Large",LARGE_N) {  
+     large.each_index { |r| large_record[r]  }
   }
 
-  x.report("String Index - Small (x#{SMALL_N})") {
-    SMALL_N.times { 
-      small_attributes.each { |a|
-         small_record[a]
-      }
-    }
+  bench_case("String Index - Small", SMALL_N) {
+    small_attributes.each { |a| small_record[a] }
   }
 
-  x.report("String Index - Large (x#{LARGE_N})") {
-    LARGE_N.times { 
-      large_attributes.each { |a|
-         large_record[a]
-      }
-    }
+  bench_case("String Index - Large", LARGE_N) {    
+    large_attributes.each { |a| large_record[a] }
   }
 
-  x.report("Integer get() - Small (x#{SMALL_N})") {
-    SMALL_N.times { (0..2).each { |i| small_record.get(i) } }
+  bench_case("Integer get() - Small", SMALL_N) {
+    (0..2).each { |i| small_record.get(i) } 
   }
 
-  x.report("Integer get() - Large (x#{LARGE_N})") {  
-    LARGE_N.times { large.each_index { |r| large_record.get(r) } }
+  bench_case("Integer get() - Large", LARGE_N) {  
+    large.each_index { |r| large_record.get(r) } 
   }
 
-  x.report("String get() - Small (x#{SMALL_N})") {
-    SMALL_N.times { 
-      small_attributes.each { |a|
-         small_record.get(a)
-      }
-    }
+  bench_case("String get() - Small", SMALL_N) {
+    small_attributes.each { |a| small_record.get(a) }
   }
 
-  x.report("String get() - Large (x#{LARGE_N})") {
-    LARGE_N.times { 
-      large_attributes.each { |a|
-         large_record.get(a)
-      }
-    }
+  bench_case("String get() - Large", LARGE_N) {     
+    large_attributes.each { |a| large_record.get(a) }
   }
 
-  x.report("Symbol get() - Small (x#{SMALL_N})") {
-    SMALL_N.times { 
-      sym_s_attributes.each { |a|
-         small_record.get(a)
-      }
-    }
+  bench_case("Symbol get() - Small", SMALL_N) {    
+    sym_s_attributes.each { |a| small_record.get(a) }
   }
 
-  x.report("Symbol get() - Large (x#{LARGE_N})") {
-    LARGE_N.times { 
-      sym_l_attributes.each { |a|
-         large_record.get(a)
-      }
-    }
+  bench_case("Symbol get() - Large", LARGE_N) {  
+    sym_l_attributes.each { |a| large_record.get(a) }
   }
 
 end
