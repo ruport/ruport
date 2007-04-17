@@ -430,7 +430,10 @@ class TestTable < Test::Unit::TestCase
   
   def test_sort_rows_by
     table = Ruport::Data::Table.new :column_names => %w[a b c]
-    table << [1,2,3] << [6,1,8] << [9,1,4]
+    table << [1,2,3] << [6,1,8] << [9,1,4]    
+    
+    table2 = Ruport::Data::Table.new :column_names => [:a, :b, :c]
+    table2 << [1,2,3] << [6,1,8] << [9,1,4]
 
     sorted_table_a = Ruport::Data::Table.new :column_names => %w[a b c]
     sorted_table_a << [1,2,3] << [6,1,8] << [9,1,4]
@@ -439,12 +442,16 @@ class TestTable < Test::Unit::TestCase
     sorted_table_b << [6,1,8] << [9,1,4] << [1,2,3]
     
     sorted_table_bc = Ruport::Data::Table.new :column_names => %w[a b c]
-    sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3]
+    sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3] 
+    
+    sorted_table_bs = Ruport::Data::Table.new :column_names => [:a, :b, :c]
+    sorted_table_bs << [6,1,8] << [9,1,4] << [1,2,3]
   
     assert_equal sorted_table_a,  table.sort_rows_by {|r| r['a']}
     assert_equal sorted_table_b,  table.sort_rows_by(['b'])
     assert_equal sorted_table_bc, table.sort_rows_by(['b', 'c'])
-  end            
+    assert_equal sorted_table_bs, table2.sort_rows_by(:b)
+  end              
   
   def test_sort_rows_by!
     table = Ruport::Data::Table.new :column_names => %w[a b c]

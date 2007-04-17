@@ -547,7 +547,7 @@ module Ruport::Data
         if col_names
           sort_by do |r| 
             stabilizer += 1
-            [col_names.map {|col| r[col]}, stabilizer] 
+            [Array(col_names).map {|col| r[col]}, stabilizer] 
           end
         else
           sort_by(&block)
