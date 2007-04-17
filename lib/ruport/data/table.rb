@@ -78,8 +78,15 @@ module Ruport::Data
                       options[:record_class].name || "Ruport::Data::Record"
       @data         = []
       if options[:data]
-        if options[:data].all? { |r| r.kind_of? Record }
-           options[:data] = options[:data].map { |r| r.to_a } 
+        if options[:data].all? { |r| r.kind_of? Record }    
+          options[:data] = options[:data].map { |r| 
+            if @column_names.empty? or 
+               r.attributes.all? { |a| a.kind_of?(Numeric) }
+              r.to_a
+            else
+              r.to_h  
+            end
+          }
         end 
         options[:data].each { |e| self << e }  
       end
@@ -443,16 +450,14 @@ module Ruport::Data
     #     sub_table = table.sub_table { |r| r.c > 10 }
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
-    def sub_table(columns=column_names,range=nil)      
-       t = self.class.new(:column_names => columns) 
-       if range
-         data[range].each { |r| t << r }
-       elsif block_given?
-         data.each { |r| t << r if yield(r) }
-       else
-         data.each { |r| t << r } 
-       end
-       return t     
+    def sub_table(columns=column_names,range=nil,&block)      
+      if range                                        
+        self.class.new(:column_names => columns,:data => data[range])
+      elsif block        
+        self.class.new( :column_names => columns, :data => data.select(&block))
+      else
+        self.class.new( :column_names => columns, :data => data)  
+      end 
     end
 
     # Generates a sub table in place, modifying the receiver. See documentation

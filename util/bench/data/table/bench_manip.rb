@@ -14,12 +14,12 @@ small_table = Table(%w[a b c]) << [1,2,3] << [4,5,6]
 deep_table = deep_data.to_table(%w[a b c]) 
 wide_table = wide_data.to_table(col_names)
 
-SMALL_N = 1000
-DEEP_N  = 100
-WIDE_N  = 100    
+SMALL_N = 5000
+DEEP_N  = 1000
+WIDE_N  = 1000    
 
 bench_suite do  
-            
+           
   bench_case("Table#+ - small table + small table",SMALL_N) {
     small_table + small_table 
   }
@@ -64,7 +64,11 @@ bench_suite do
   large_record = wide_table[0]
   bench_case("Table#<< - large record",WIDE_N) {
     wide_table << large_record 
-  }    
+  }  
+  
+  small_table = Table(%w[a b c]) << [1,2,3] << [4,5,6]
+  deep_table = deep_data.to_table(%w[a b c]) 
+  wide_table = wide_data.to_table(col_names)  
 
   bench_case("Table#rows_with - one arg",SMALL_N) {
     deep_table.rows_with("a") { |a| a < 100 } 
@@ -80,6 +84,42 @@ bench_suite do
 
   bench_case("Table#sigma - simple block",SMALL_N) {
     deep_table.sigma { |r| r.a } 
-  }                   
+  }  
+  
+  bench_case("Table#sub_table - small table",WIDE_N) {
+    small_table.sub_table(%w[a c],1..-1)
+  }   
+                         
+  cols = wide_table.column_names.sort_by { rand }[0..49]
+  bench_case("Table#sub_table - wide table",WIDE_N) {
+    wide_table.sub_table(cols,1..-1)
+  }          
+  
+  bench_case("Table#sub_table - deep table",DEEP_N) {
+    deep_table.sub_table(%w[c a]) { |r| r.a < 100 or r.b > 200 }
+  }           
+  
+  bench_case("Table#sort_rows_by(one arg) - small table",SMALL_N) {
+    small_table.sort_rows_by("a")
+  }
+        
+  bench_case("Table#sort_rows_by(one arg) - deep table",DEEP_N) {
+    deep_table.sort_rows_by("a")
+  }
+    
+  bench_case("Table#sort_rows_by(array arg) - small table",SMALL_N) {
+    small_table.sort_rows_by(%w[a c])
+  }
+        
+  bench_case("Table#sort_rows_by(array arg) - deep table",DEEP_N) {
+    deep_table.sort_rows_by(%w[a c])
+  }                               
+  bench_case("Table#sort_rows_by block - small table",SMALL_N) {
+    small_table.sort_rows_by { |r| r.a + r.c }
+  }
+        
+  bench_case("Table#sort_rows_by block - deep table",DEEP_N) {
+    deep_table.sort_rows_by { |r| r.a + r.c } 
+  }
     
 end
