@@ -76,9 +76,9 @@ module Ruport
 
     include RenderingTools
 
-    attr_accessor :options
     attr_accessor :data
     attr_accessor :format
+    attr_writer :options
 
     # Registers the formatter with one or more Renderers
     #

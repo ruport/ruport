@@ -175,9 +175,7 @@ module Ruport::Data
      return as($1.to_sym,*args) if id.to_s =~ /^to_(.*)/ 
      super
     end
-
-    private
-
+    
     attr_writer :data
   end
   

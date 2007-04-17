@@ -173,7 +173,8 @@ class Ruport::Renderer
   end                                                                
 
   attr_accessor :format
-  attr_reader   :data
+  attr_reader   :data 
+  attr_writer :formatter  
 
   # sets +data+ attribute on both the renderer and any active formatter
   def data=(val)
@@ -272,8 +273,6 @@ class Ruport::Renderer
     self.formatter = self.class.formats[format].new
     self.formatter.format = format
   end
-  
-  attr_writer :formatter
 
 end
 

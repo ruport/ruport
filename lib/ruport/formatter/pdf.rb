@@ -203,19 +203,19 @@ module Ruport
     end
 
     def pad(y,&block)
-      move_cursor -y
+      move_cursor(-y)
       block.call
-      move_cursor -y
+      move_cursor(-y)
     end
 
     def pad_top(y,&block)
-      move_cursor -y
+      move_cursor(-y)
       block.call
     end
 
     def pad_bottom(y,&block)
       block.call
-      move_cursor -y
+      move_cursor(-y)
     end
 
     def draw_table(table_data, format_opts={})
