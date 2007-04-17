@@ -445,20 +445,26 @@ module Ruport::Data
     #  Using column_names and a block:
     # 
     #     sub_table = table.sub_table(%w[d b]) { |r| r.a < 6 } 
-    #     sub_table == [[4,2],[8,6]].to_table(%w[d b]) #=> true
+    #     sub_table == [[4,2],[8,6]].to_table(%w[d b]) #=> true 
+    #
+    #  Using a range for row reduction:
+    #     sub_table = table.sub_table(1..-1)
+    #     sub_table == [[5,6,7,8],[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
     #  Using just a block:
     #      
     #     sub_table = table.sub_table { |r| r.c > 10 }
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
-    def sub_table(columns=column_names,range=nil,&block)      
+    def sub_table(cor=column_names,range=nil,&block)      
       if range                                        
-        self.class.new(:column_names => columns,:data => data[range])
+        self.class.new(:column_names => cor,:data => data[range])
+      elsif cor.kind_of?(Range)   
+        self.class.new(:column_names => column_names,:data => data[cor])    
       elsif block        
-        self.class.new( :column_names => columns, :data => data.select(&block))
+        self.class.new( :column_names => cor, :data => data.select(&block))
       else
-        self.class.new( :column_names => columns, :data => data)  
+        self.class.new( :column_names => cor, :data => data)  
       end 
     end
 

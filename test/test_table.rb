@@ -148,7 +148,10 @@ class TestTable < Test::Unit::TestCase
                  table.sub_table(%w[a c])
      
     assert_equal [[10,11,12,13],[14,15,16,17]].to_table(%w[a b c d]),      
-                 table.sub_table { |r| r.c > 10 }
+                 table.sub_table { |r| r.c > 10 }      
+                 
+    assert_equal [[10,11,12,13],[14,15,16,17]].to_table(%w[a b c d]),      
+                table.sub_table(2..-1)   
                   
   end
 
