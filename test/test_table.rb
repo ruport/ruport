@@ -444,6 +444,33 @@ class TestTable < Test::Unit::TestCase
     assert_equal sorted_table_a,  table.sort_rows_by {|r| r['a']}
     assert_equal sorted_table_b,  table.sort_rows_by(['b'])
     assert_equal sorted_table_bc, table.sort_rows_by(['b', 'c'])
+  end            
+  
+  def test_sort_rows_by!
+    table = Ruport::Data::Table.new :column_names => %w[a b c]
+    table << [1,2,3] << [6,1,8] << [9,1,4]
+
+    sorted_table_a = Ruport::Data::Table.new :column_names => %w[a b c]
+    sorted_table_a << [1,2,3] << [6,1,8] << [9,1,4]
+
+    sorted_table_b = Ruport::Data::Table.new :column_names => %w[a b c]
+    sorted_table_b << [6,1,8] << [9,1,4] << [1,2,3]
+    
+    sorted_table_bc = Ruport::Data::Table.new :column_names => %w[a b c]
+    sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3]
+    
+    table_a = table.dup
+    table_a.sort_rows_by! { |r| r['a'] }       
+    
+    table_b = table.dup
+    table_b.sort_rows_by!("b")
+    
+    table_bc = table.dup
+    table_bc.sort_rows_by!(['b', 'c'])             
+  
+    assert_equal sorted_table_a,  table_a
+    assert_equal sorted_table_b,  table_b
+    assert_equal sorted_table_bc, table_bc
   end
 
   def test_array_hack

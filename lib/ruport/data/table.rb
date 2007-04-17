@@ -558,6 +558,11 @@ module Ruport::Data
                               :record_class => record_class )
 
       return table
+    end   
+    
+    def sort_rows_by!(col_names=nil,&block)
+      table = sort_rows_by(col_names,&block) 
+      @data = table.data
     end
     
     def rows_with(columns,&block) 
