@@ -142,6 +142,22 @@ module Ruport::Data
       grouping = dup
       grouping.send(:data=, @data[name].subgroups)
       return grouping
+    end 
+    
+    def summary(field,procs)     
+      if procs[:order].kind_of?(Array)
+        cols = procs.delete(:order)
+      else 
+        cols = procs.keys    
+      end
+      expected = Table([field]+procs.keys) { |t|
+        each do |name,group|
+          t << procs.inject({field => name}) do |s,r|
+            s.merge(r[0] => r[1].call(group))
+          end 
+        end
+       t.reorder(cols)     
+      }   
     end
     
     alias_method :append, :<<

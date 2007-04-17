@@ -229,7 +229,40 @@ class TestGrouping < Test::Unit::TestCase
     assert_nothing_raised { b.to_csv }
     assert_raises(ArgumentError) { b.as(:nothing) }
     assert_raises(ArgumentError) { b.to_nothing }
+  end   
+  
+  class TicketStatus < Ruport::Data::Record
+
+    def closed
+      title =~ /Ticket.+(\w+ closed)/ ? 1 : 0
+    end
+
+    def opened
+      title =~ /Ticket.+(\w+ created)|(\w+ reopened)/ ? 1 : 0
+    end
+
   end
+  
+  def test_grouping_summary  
+
+    source = Table("test/samples/ticket_count.csv", 
+                     :record_class => TicketStatus)
+    grouping = Grouping(source,:by => "date")
+    
+    expected = Table(:date, :opened,:closed)
+    grouping.each do |date,group|
+      opened = group.sigma { |r| r.opened  }
+      closed = group.sigma { |r| r.closed  }
+      expected << { :date => date, :opened => opened, :closed => closed }
+    end       
+    
+    actual = grouping.summary :date,
+      :opened => lambda { |g| g.sigma(:opened) },
+      :closed => lambda { |g| g.sigma(:closed) },
+      :order => [:date,:opened,:closed]
+      
+    assert_equal expected, actual  
+  end   
  
   def test_grouping_should_set_record_class
     a = Table(%w[a b c], :record_class => MyRecord) { |t| 
@@ -238,7 +271,8 @@ class TestGrouping < Test::Unit::TestCase
         }
     b = Ruport::Data::Grouping.new(a, :by => "a")
     assert_equal MyRecord, b[1].record_class
-  end
+  end   
+  
 end
 
 class MyRecord < Ruport::Data::Record

@@ -560,6 +560,7 @@ module Ruport::Data
       return table
     end   
     
+    # same as Table#sort_rows_by, but self modifiying
     def sort_rows_by!(col_names=nil,&block)
       table = sort_rows_by(col_names,&block) 
       @data = table.data
@@ -661,7 +662,7 @@ module Ruport::Data
       options[:has_names] = false if options[:csv_options][:headers]
 
       require "fastercsv"
-      loaded_data = self.new
+      loaded_data = self.new(options)
 
       first_line = true
       FasterCSV.send(msg,param,options[:csv_options]) do |row|
