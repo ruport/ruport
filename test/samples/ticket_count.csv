@@ -1,0 +1,124 @@
+title,date
+Ticket #238 (enhancement closed): Table#sort_rows_by!,2007-04-17
+Ticket #225 (task closed): corner bottlenecks with focused benchmarks,2007-04-17
+Ticket #223 (task closed): Identify a small set of key benchmarks,2007-04-17
+Ticket #209 (task closed): Refactor Formatters,2007-04-15
+Ticket #236 (task closed): api.rubyreports.org/edge,2007-04-13
+Ticket #212 (task closed): Users Field Guide,2007-04-13
+Ticket #186 (enhancement closed): simple_html_table,2007-04-13
+Ticket #235 (task closed): Get a big list of all the methods in Ruport.  Stare at them.  Identify their interface.  Cry.,2007-04-13
+Ticket #196 (defect closed): as() returns unintelligible error for non-registered formats,2007-04-13
+Ticket #244 (defect closed): Allow proper copying of Grouping,2007-04-12
+Ticket #249 (enhancement closed): Table#rename_columns should accept a block,2007-04-11
+Ticket #249 (enhancement created): Table#rename_columns should accept a block,2007-04-11
+Ticket #188 (defect closed): class_str broken in 0.9.2,2007-04-11
+Ticket #224 (task closed): Build ruport_bench which will run benchmarks and generate reports,2007-04-11
+Ticket #241 (task closed): rewrite Table/Group dup methods to use initialize_copy instead,2007-04-11
+Ticket #220 (enhancement closed): rope rake tasks for ruport-util,2007-04-10
+Ticket #219 (task closed): XML/FO Formatter,2007-04-07
+Ticket #211 (task closed): Remove Multilevel Grouping Formatters,2007-04-06
+Ticket #248 (task created): AAR Name,2007-04-05
+Ticket #204 (task closed): Merge AAR to Trunk,2007-04-05
+Ticket #203 (task closed): AAR Tests,2007-04-05
+Ticket #226 (task closed): investigate Ara's xx for html helpers.,2007-04-04
+"Ticket #247 (task created): Ruport Utils wiki page, and update of deprecated plugin pages",2007-04-04
+Ticket #245 (task closed): Make initial RubyForge release,2007-04-04
+Ticket #246 (enhancement created): Grouping#summary,2007-04-04
+Ticket #245 (task created): Make initial RubyForge release,2007-04-04
+Ticket #229 (enhancement closed): Add tests for invoice,2007-04-04
+Ticket #231 (enhancement closed): ReportManager tests,2007-04-04
+Ticket #221 (task closed): improve invoice interface,2007-04-04
+Ticket #233 (task closed): ReportManager example,2007-04-04
+Ticket #230 (enhancement closed): Add support for line labels in graph,2007-04-04
+Ticket #242 (task closed): set mike up with stats access,2007-04-04
+Ticket #202 (task closed): AAR Branch,2007-04-04
+Ticket #234 (defect closed): options should not be used as an argument name anywhere in Renderers or Formatters,2007-04-04
+Ticket #244 (defect created): Allow proper copying of Grouping,2007-04-04
+Ticket #240 (task closed): use self.class.new where appropriate,2007-04-04
+Ticket #243 (task closed): fix circular dependency issue in rope,2007-04-04
+Ticket #243 (task created): fix circular dependency issue in rope,2007-04-04
+Ticket #242 (task created): set mike up with stats access,2007-04-03
+Ticket #241 (task created): rewrite Table/Group dup methods to use initialize_copy instead,2007-04-03
+Ticket #237 (task closed): set mike up with all the necessary resource permissions for releases,2007-04-02
+Ticket #227 (task closed): packaging rake task for Release,2007-04-02
+Ticket #240 (task created): use self.class.new where appropriate,2007-04-02
+Ticket #191 (enhancement closed): render_grouping,2007-04-01
+Ticket #239 (enhancement created): Table#sort_rows_by should accept non-array single arg.,2007-04-01
+Ticket #238 (enhancement created): Table#sort_rows_by!,2007-04-01
+Ticket #237 (task created): set mike up with all the necessary resource permissions for releases,2007-04-01
+Ticket #78 (enhancement closed): Do we need  to bring back a SQL generator?,2007-03-31
+Ticket #236 (task created): api.rubyreports.org/edge,2007-03-31
+Ticket #235 (task created): Get a big list of all the methods in Ruport.  Stare at them.  Identify their interface.  Cry.,2007-03-31
+Ticket #228 (enhancement closed): Layout method,2007-03-31
+Ticket #234 (defect created): options should not be used as an argument name anywhere in Renderers or Formatters,2007-03-31
+Ticket #217 (task closed): Depluginize initial set of utils,2007-03-31
+Ticket #232 (task closed): ReportManager example,2007-03-31
+Ticket #233 (task created): ReportManager example,2007-03-31
+Ticket #232 (task created): ReportManager example,2007-03-31
+Ticket #231 (enhancement created): ReportManager tests,2007-03-31
+Ticket #230 (enhancement created): Add support for line labels in graph,2007-03-31
+Ticket #216 (task closed): Fix Graphing,2007-03-31
+Ticket #229 (enhancement created): Add tests for invoice,2007-03-31
+Ticket #228 (enhancement created): Layout method,2007-03-31
+Ticket #222 (task closed): add ruport-util component in Trac,2007-03-31
+Ticket #218 (task closed): move svn repository up one level,2007-03-31
+Ticket #227 (task created): packaging rake task for Release,2007-03-31
+Ticket #226 (task created): investigate Ara's xx for html helpers.,2007-03-30
+Ticket #199 (task closed): Update License Information,2007-03-30
+Ticket #178 (task closed): Grouping Renderer,2007-03-30
+Ticket #225 (task created): corner bottlenecks with focused benchmarks,2007-03-30
+Ticket #224 (task created): Build ruport_bench which will run benchmarks and generate reports,2007-03-30
+Ticket #223 (task created): Identify a small set of key benchmarks,2007-03-30
+Ticket #106 (task closed): standardize API documentation format and cleanup where needed,2007-03-30
+Ticket #199 (task closed): Update License Information,2007-03-30
+Ticket #184 (task closed): Consistent Errors,2007-03-30
+Ticket #222 (task created): add ruport-util component in Trac,2007-03-30
+Ticket #221 (task created): improve invoice interface,2007-03-30
+Ticket #220 (enhancement created): rope rake tasks for ruport-util,2007-03-30
+Ticket #219 (task created): XML/FO Formatter,2007-03-30
+Ticket #218 (task created): move svn repository up one level,2007-03-30
+Ticket #217 (task created): Depluginize initial set of utils,2007-03-30
+Ticket #216 (task created): Fix Graphing,2007-03-30
+Ticket #215 (task closed): apply for RubyForge project,2007-03-30
+Ticket #215 (task created): apply for RubyForge project,2007-03-30
+Ticket #214 (task created): Determine if cheatsheets can be released,2007-03-30
+Ticket #213 (task created): Contributors Field Guide,2007-03-30
+Ticket #212 (task created): Users Field Guide,2007-03-30
+Ticket #211 (task created): Remove Multilevel Grouping Formatters,2007-03-30
+Ticket #210 (task created): Formatting Helpers,2007-03-30
+Ticket #209 (task created): Refactor Formatters,2007-03-30
+Ticket #208 (task created): API Stability,2007-03-30
+Ticket #207 (task created): Refactor Unit Tests,2007-03-30
+Ticket #206 (task created): Testing Audit,2007-03-30
+Ticket #205 (task created): Custom Exceptions,2007-03-30
+Ticket #204 (task created): Merge AAR to Trunk,2007-03-30
+Ticket #203 (task created): AAR Tests,2007-03-30
+Ticket #202 (task created): AAR Branch,2007-03-30
+Ticket #201 (task created): Standardize API Docs,2007-03-30
+Ticket #200 (task created): Remove Deprecated Docs,2007-03-30
+Ticket #199 (task created): Update License Information,2007-03-30
+Ticket #198 (task created): rubyreports.org webpage,2007-03-30
+Ticket #197 (task created): Proper Licensing Statements,2007-03-28
+Ticket #196 (defect created): as() returns unintelligible error for non-registered formats,2007-03-28
+Ticket #195 (enhancement closed): Formatter::PDF#draw_table,2007-03-27
+"Ticket #194 (enhancement closed): renders_for should take multiple formats, renderers.",2007-03-26
+Ticket #193 (task closed): Make Renderer.add_format private and remove add_core_format,2007-03-26
+Ticket #195 (enhancement created): Formatter::PDF#draw_table,2007-03-26
+"Ticket #194 (enhancement created): renders_for should take multiple formats, renderers.",2007-03-26
+Ticket #193 (task created): Make Renderer.add_format private and remove add_core_format,2007-03-26
+Ticket #183 (task closed): Remove Shortcuts from Core,2007-03-26
+Ticket #192 (enhancement created): renders_with should take default options,2007-03-26
+Ticket #191 (enhancement created): render_grouping,2007-03-25
+Ticket #190 (enhancement created): Report shortcuts for rendering,2007-03-25
+Ticket #189 (enhancement created): sub_table / reduce should take single arg range,2007-03-25
+Ticket #187 (enhancement closed): Ruport::Format::Plugin becomes Ruport::Formatter,2007-03-24
+Ticket #163 (task closed): Data::Group,2007-03-23
+Ticket #144 (enhancement closed): SQL Formatter?,2007-03-23
+Ticket #188 (defect created): class_str broken in 0.9.2,2007-03-23
+Ticket #187 (enhancement created): Ruport::Format::Plugin becomes Ruport::Formatter,2007-03-23
+Ticket #174 (enhancement closed): Grouping &amp; Group data structures,2007-03-23
+Ticket #186 (enhancement created): simple_html_table,2007-03-23
+Ticket #185 (task created): Sanitize,2007-03-22
+Ticket #184 (task created): Consistent Errors,2007-03-22
+Ticket #183 (task created): Remove Shortcuts from Core,2007-03-22
+Ticket #182 (defect closed): rope does not regenerate deleted test_files when using 'rake build',2007-03-19
