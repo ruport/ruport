@@ -143,7 +143,21 @@ module Ruport::Data
       grouping.send(:data=, @data[name].subgroups)
       return grouping
     end 
-    
+   
+    # Useful for creating basic summaries from Grouping objects.
+    # Takes a field to summarize on, and then for each group,
+    # runs the specified procs and returns the results as a Table
+    #     
+    # The following example would show for each date group,
+    # the sum for the attributes or methods :opened and :closed
+    # and order them by the :order array.
+    #
+    # If :order is not specified, you cannot depend on predictable column order
+    #
+    #   grouping.summary :date,
+    #     :opened => lambda { |g| g.sigma(:opened) },
+    #     :closed => lambda { |g| g.sigma(:closed) },
+    #     :order => [:date,:opened,:closed] 
     def summary(field,procs)     
       if procs[:order].kind_of?(Array)
         cols = procs.delete(:order)
