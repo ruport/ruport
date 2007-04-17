@@ -221,6 +221,8 @@ module Ruport::Data
       
       if indices.all? { |i| i.kind_of? Integer }  
         indices.map! { |i| @column_names[i] }  
+      else
+        raise(ArgumentError,"No column names set!") if @column_names.empty?
       end    
       
       @column_names = indices

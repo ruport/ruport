@@ -641,6 +641,13 @@ class TestTable < Test::Unit::TestCase
     assert_equal DuckRecord, b.record_class
   end
 
+  def test_ensure_reorder_raises_on_bad_reorder_use
+    a = Table() << [1,2,3] << [4,5,6]
+    assert_raise(ArgumentError) { a.reorder("a","b","c") }
+    assert_raise(ArgumentError) { a.reorder(%w[a b c]) }
+    assert_nothing_raised { a.reorder(2,1,0) }
+  end
+
 end
 
 class DuckRecord < Ruport::Data::Record; end
