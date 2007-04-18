@@ -50,9 +50,6 @@ module Ruport::Data
   class Table 
     include Collection
     
-    require "forwardable"
-    extend Forwardable
-
     # Creates a new table based on the supplied options.
     # Valid options: 
     # <b><tt>:data</tt></b>::         An Array of Arrays representing the 
@@ -86,8 +83,10 @@ module Ruport::Data
 
     # This Table's column names.
     attr_reader :column_names
-  
-    attr_reader :data
+    attr_reader :data        
+    
+    require "forwardable"
+    extend Forwardable
     def_delegators :@data, :each, :length, :size, :empty?, :[]
     
     # Sets the column names for this table. <tt>new_column_names</tt> should 
