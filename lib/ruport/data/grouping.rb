@@ -29,18 +29,9 @@ module Ruport::Data
       @subgroups = {}
       super
     end
-
-    # Generate a formatted table from a <tt>Group</tt> object.
-    #
-    # Example:
-    #   my_group.as(:csv)  #=> "group\n\n1,2,3\n4,5,6\n"
-    #   
-    def as(format,options={})
-      unless Ruport::Renderer::Group.formats.include?(format)
-        raise ArgumentError
-      end
-      Ruport::Renderer::Group.render(format,{:data => self }.merge(options))
-    end
+          
+    include Ruport::Renderer::Hooks
+    renders_with Ruport::Renderer::Group
 
     # Create a copy of the Group: records will be copied as well.
     #
@@ -178,14 +169,10 @@ module Ruport::Data
 
     def to_s
       as(:text)
-    end
-
-    def as(format,options={})
-      unless Ruport::Renderer::Grouping.formats.include?(format)
-        raise ArgumentError
-      end
-      Ruport::Renderer::Grouping.render(format,{:data => self }.merge(options))
-    end
+    end  
+    
+    include Ruport::Renderer::Hooks
+    renders_with Ruport::Renderer::Grouping
     
     # Create a copy of the Grouping: groups will be copied as well.
     #

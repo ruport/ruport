@@ -5,35 +5,6 @@
 # Copyright 2006 by respective content owners, all rights reserved.
 
 module Ruport::Data            
-  
-  # === Overview
-  #
-  # This class implements some base features for Ruport::Data::Table,
-  # and may be used to make interaction with Data::Table like classes
-  # easier
-  #
-  module Collection
-    include Enumerable
-
-    # A simple formatting tool which allows you to quickly generate a formatted
-    # table from a <tt>Collection</tt> object.
-    #
-    # If a block is given, the Renderer::Table object will be yielded
-    #
-    # Example:
-    #   my_collection.as(:csv)  #=> "1,2,3\n4,5,6"
-    #   
-    def as(*args)
-      unless Ruport::Renderer::Table.formats.include?(args[0])
-        raise ArgumentError
-      end
-      Ruport::Renderer::Table.render(*args) do |rend|
-        rend.data = self
-        yield(rend) if block_given?
-      end
-    end
-
-  end
  
   # === Overview
   #
@@ -48,7 +19,10 @@ module Ruport::Data
   # to suit your needs, then used to build a report.
   #
   class Table 
-    include Collection
+    include Enumerable             
+    
+    include Ruport::Renderer::Hooks
+    renders_with Ruport::Renderer::Table
     
     # Creates a new table based on the supplied options.
     # Valid options: 

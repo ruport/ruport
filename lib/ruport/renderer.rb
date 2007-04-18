@@ -277,4 +277,5 @@ class Ruport::Renderer
 end
 
 require "ruport/renderer/table"
-require "ruport/renderer/grouping"
+require "ruport/renderer/grouping"         
+require "ruport/renderer/hooks"    

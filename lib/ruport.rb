@@ -88,10 +88,10 @@ end
 
 require "enumerator"
 require "ruport/attempt" 
-require "ruport/config" 
+require "ruport/config"
+require "ruport/renderer" 
 require "ruport/data" 
-require "ruport/report"
-require "ruport/renderer"  
+require "ruport/report"  
 require "ruport/formatter" 
 require "ruport/query" 
 

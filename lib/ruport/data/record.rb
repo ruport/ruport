@@ -236,25 +236,10 @@ module Ruport::Data
     ####################### 
     # Internals / Helpers #
     #######################       
-    
-    # A simple formatting tool which allows you to quickly generate a formatted
-    # row from the record.
-    #
-    # If a block is given, the Renderer::Row object will be yielded
-    #
-    # Example:
-    #   my_record.as(:csv)  #=> "1,2,3\n"
-    #   
-    def as(*args)
-      unless Ruport::Renderer::Row.formats.include?(args[0])
-        raise ArgumentError
-      end 
-      Ruport::Renderer::Row.render(*args) do |rend|
-        rend.data = self
-        yield(rend) if block_given?
-      end
-    end
-    
+
+    include Ruport::Renderer::Hooks
+    renders_with Ruport::Renderer::Row
+
     #
     # Provides a unique hash value. If a Record contains the same data and
     # attributes as another Record, they will hash to the same value, even if
