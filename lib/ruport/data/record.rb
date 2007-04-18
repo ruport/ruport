@@ -53,7 +53,41 @@ module Ruport::Data
         @data = data.dup
         @attributes = options[:attributes] || data.keys
       end
-    end 
+    end        
+    
+    
+    ##############
+    # Delegators #
+    ##############
+    
+    # Returns a copy of the <tt>attributes</tt> from this Record.
+    #
+    # Example:
+    #
+    #   a = Data::Record.new([1,2],:attributes => %w[a b])
+    #   a.attributes #=> ["a","b"]
+    #
+    def attributes
+      @attributes.dup
+    end
+    
+    #
+    # Sets the <tt>attribute</tt> list for this Record. 
+    # (Dangerous when used within Table objects!)
+    #
+    # Example:
+    #
+    #   my_record.attributes = %w[foo bar baz]
+    #
+    attr_writer :attributes        
+ 
+    attr_reader :data   
+    def size; @data.size; end
+    alias_method :length, :size
+    
+    ##################
+    # Access Methods #
+    ##################
     
     #
     # Allows either Array or Hash-like indexing.
@@ -89,11 +123,31 @@ module Ruport::Data
         @attributes << index unless @attributes.include? index
       end
     end
-
-    def size
-      @data.size
-    end
-    alias_method :length, :size
+    
+    # Indifferent access to attributes.
+    #  
+    # Examples:
+    #          
+    #   record.get(:foo) # looks for an attribute "foo" or :foo,
+    #                      or calls the method <tt>foo</tt>
+    #
+    #   record.get("foo") # looks for an attribute "foo" or :foo
+    #
+    #   record.get(0) # Gets the first element
+    def get(name)
+      case name
+      when String,Symbol
+        self[name] || send(name)
+      when Fixnum
+        self[name]
+      else
+        raise ArgumentError, "Whatchu Talkin' Bout, Willis?"
+      end
+    end          
+    
+    ################
+    #  Conversions #
+    ################
     
     #
     # Converts a Record into an Array.
@@ -108,40 +162,21 @@ module Ruport::Data
     def to_a
       @attributes.map { |a| @data[a] }
     end
-       
-     attr_reader :data
-    
-     #
-     # Converts a Record into a Hash. 
-     #
-     # Example:
-     #
-     #   a = Data::Record.new([1,2],:attributes => %w[a b])
-     #   a.to_h #=> {"a" => 1, "b" => 2}
-    def to_h
-      @data.dup
-    end          
-    
-    # Returns a copy of the <tt>attributes</tt> from this Record.
+         
+    # TODO: Rename to to_hash
+    # Converts a Record into a Hash. 
     #
     # Example:
     #
     #   a = Data::Record.new([1,2],:attributes => %w[a b])
-    #   a.attributes #=> ["a","b"]
-    #
-    def attributes
-      @attributes.dup
+    #   a.to_h #=> {"a" => 1, "b" => 2}
+    def to_h
+      @data.dup
     end
-    
-    #
-    # Sets the <tt>attribute</tt> list for this Record. 
-    # (Dangerous when used within Table objects!)
-    #
-    # Example:
-    #
-    #   my_record.attributes = %w[foo bar baz]
-    #
-    attr_writer :attributes
+        
+    ################
+    #  Comparisons #
+    ################
     
     #
     # If <tt>attributes</tt> and <tt>to_a</tt> are equivalent, then 
@@ -152,11 +187,28 @@ module Ruport::Data
        to_a == other.to_a
     end
     
-    alias_method :eql?, :==
+    alias_method :eql?, :==  
+    
+    
+    #############
+    # Iterators #
+    #############
     
     # Yields each element of the Record.  Does not provide attribute names
     def each 
       to_a.each { |e| yield(e) }
+    end   
+    
+    #################
+    # Manipulations #
+    ################# 
+    
+    # Takes an old name and a new name and renames an attribute.  
+    #
+    # The third option, update_index is for internal use.    
+    def rename_attribute(old_name,new_name,update_index=true)
+      @attributes[@attributes.index(old_name)] = new_name if update_index
+      @data[new_name] = @data.delete(old_name)
     end
     
     #
@@ -179,31 +231,12 @@ module Ruport::Data
         self.attributes = indices
       end
       self
-    end  
-     
-    # Takes an old name and a new name and renames an attribute.  
-    #
-    # The third option, update_index is for internal use.    
-    def rename_attribute(old_name,new_name,update_index=true)
-      @attributes[@attributes.index(old_name)] = new_name if update_index
-      @data[new_name] = @data.delete(old_name)
     end
+       
+    ####################### 
+    # Internals / Helpers #
+    #######################       
     
-    #
-    # Provides a unique hash value. If a Record contains the same data and
-    # attributes as another Record, they will hash to the same value, even if
-    # they are not the same object. This is similar to the way Array works, 
-    # but different from Hash and other objects.
-    #
-    def hash
-      @attributes.hash + to_a.hash
-    end
-    
-    def initialize_copy(from)
-       @data = from.data.dup
-       @attributes = from.attributes.dup
-    end
-        
     # A simple formatting tool which allows you to quickly generate a formatted
     # row from the record.
     #
@@ -220,6 +253,21 @@ module Ruport::Data
         rend.data = self
         yield(rend) if block_given?
       end
+    end
+    
+    #
+    # Provides a unique hash value. If a Record contains the same data and
+    # attributes as another Record, they will hash to the same value, even if
+    # they are not the same object. This is similar to the way Array works, 
+    # but different from Hash and other objects.
+    #
+    def hash
+      @attributes.hash + to_a.hash
+    end
+    
+    def initialize_copy(from)
+       @data = from.data.dup
+       @attributes = from.attributes.dup
     end
 
     # Provides accessor style methods for attribute access.
@@ -240,27 +288,6 @@ module Ruport::Data
         super
       end
     end 
-
-    # Indifferent access to attributes.
-    #  
-    # Examples:
-    #          
-    #   record.get(:foo) # looks for an attribute "foo" or :foo,
-    #                      or calls the method <tt>foo</tt>
-    #
-    #   record.get("foo") # looks for an attribute "foo" or :foo
-    #
-    #   record.get(0) # Gets the first element
-    def get(name)
-      case name
-      when String,Symbol
-        self[name] || send(name)
-      when Fixnum
-        self[name]
-      else
-        raise ArgumentError, "Whatchu Talkin' Bout, Willis?"
-      end
-    end
     
     private
     
