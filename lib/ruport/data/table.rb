@@ -146,30 +146,19 @@ module Ruport::Data
     #   data << { :a => 4, :b => 5}
     #   data << Record.new [5,6], :attributes => %w[a b]
     #
-    def <<(other)
-      case other
+    def <<(row)
+      case row
       when Array
-        attributes = @column_names.empty? ? nil : @column_names
-        @data << record_class.new(other, :attributes => attributes)
+        append_array(row)
       when Hash
-        raise ArgumentError unless @column_names
-        @data << record_class.new(other, :attributes => @column_names)
+        append_hash(row)            
       when record_class     
-        if column_names.empty?
-          self << other.to_a
-        else
-          self << other.to_h
-        end
+        append_record(row)
       else
-        if other.respond_to?(:to_hash)
-          self << other.to_hash
-        else
-          raise ArgumentError
-        end
-      end
-      
+        append_hash(row) rescue append_array(row)
+      end    
       return self
-    end
+    end    
     
     def record_class
       @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
@@ -700,7 +689,27 @@ module Ruport::Data
                                :record_class => record_class)
       end      
       data
+    end  
+    
+    def append_array(array)
+      attributes = @column_names.empty? ? nil : @column_names
+      @data << record_class.new(array.to_ary, :attributes => attributes)  
+    end      
+    
+    def append_hash(hash_obj) 
+      hash_obj = hash_obj.to_hash 
+      raise ArgumentError unless @column_names
+      @data << record_class.new(hash_obj, :attributes => @column_names)
     end
+    
+    def append_record(record)        
+      if column_names.empty?
+        self << record.to_a
+      else
+        self << record.to_h
+      end
+    end
+  
   end
 end
 

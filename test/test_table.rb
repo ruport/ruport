@@ -101,8 +101,7 @@ class TestTable < Test::Unit::TestCase
     assert_equal(%w[a b c],table[0].attributes)
     rec = table[0].dup
     rec.attributes = %w[a b c d]
-    assert_raise(ArgumentError) { table << Object.new }
-    assert_raise(ArgumentError) { table << [].to_table }
+    assert_raise(NoMethodError) { table << Object.new }
   end
   
   def test_append_hash
