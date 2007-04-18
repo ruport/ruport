@@ -47,7 +47,7 @@ module Ruport::Data
                r.attributes.all? { |a| a.kind_of?(Numeric) }
               r.to_a
             else
-              r.to_h  
+              r.to_hash  
             end
           }
         end 
@@ -674,7 +674,7 @@ module Ruport::Data
     end
     
     def append_record(record)        
-      self << record.send(column_names.empty? ? :to_a : :to_h)
+      self << record.send(column_names.empty? ? :to_a : :to_hash)
     end
   
   end

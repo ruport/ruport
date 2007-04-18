@@ -94,9 +94,9 @@ class TestRecord < Test::Unit::TestCase
     assert_equal [1,2,3,4], @record.to_a
   end
 
-  def test_to_h
-    assert_nothing_raised { @record.to_h }
-    assert_equal({ "a" => 1, "b" => 2, "c" => 3, "d" => 4 }, @record.to_h)
+  def test_to_hash
+    assert_nothing_raised { @record.to_hash }
+    assert_equal({ "a" => 1, "b" => 2, "c" => 3, "d" => 4 }, @record.to_hash)
   end  
   
   def test_rename_attribute

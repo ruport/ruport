@@ -170,7 +170,7 @@ module Ruport::Data
     #
     #   a = Data::Record.new([1,2],:attributes => %w[a b])
     #   a.to_h #=> {"a" => 1, "b" => 2}
-    def to_h
+    def to_hash
       @data.dup
     end
         
