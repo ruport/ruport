@@ -673,7 +673,7 @@ class TestTable < Test::Unit::TestCase
     a = Table() << [1,2,3] << [4,5,6]
     assert_raise(ArgumentError) { a.reorder("a","b","c") }
     assert_raise(ArgumentError) { a.reorder(%w[a b c]) }
-    assert_nothing_raised { a.reorder(2,1,0) }
+    assert_raise(ArgumentError) { a.reorder(2,1,0) }
   end    
   
   def test_ensure_csv_loading_accepts_table_options

@@ -197,19 +197,16 @@ module Ruport::Data
     #   two = one.reorder([1,0])  
     #
     def reorder(*indices)
+      raise(ArgumentError,"Can't reorder without column names set!") if
+        @column_names.empty?
+      
       indices = indices[0] if indices[0].kind_of? Array
       
       if indices.all? { |i| i.kind_of? Integer }  
         indices.map! { |i| @column_names[i] }  
-      else
-        raise(ArgumentError,"No column names set!") if @column_names.empty?
-      end    
+      end
       
-      @column_names = indices
-                 
-      @data.each { |r| 
-        r.attributes = @column_names
-      }; self
+      reduce(indices)
     end     
 
     
