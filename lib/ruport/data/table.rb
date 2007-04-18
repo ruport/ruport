@@ -227,8 +227,8 @@ module Ruport::Data
     
     # Adds an extra column to the Table. Available Options:
     #
-    # <b><tt>:fill</tt></b>:: The default value to use for the column in 
-    #                         existing rows. Set to nil if not specified.
+    # <b><tt>:default</tt></b>:: The default value to use for the column in 
+    #                            existing rows. Set to nil if not specified.
     # 
     # <b><tt>:position</tt></b>:: Inserts the column at the indicated position
     #                             number.
