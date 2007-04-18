@@ -25,7 +25,7 @@ module Ruport::Data
     #                     :column_names => %w[a b c]
     #
     def initialize(options={})
-      @name = options[:name]
+      @name = options.delete(:name)
       @subgroups = {}
       super
     end
