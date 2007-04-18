@@ -116,7 +116,10 @@ class TestFormatText < Test::Unit::TestCase
                "+-------------+\n"+
                "| this | more |\n"+
                "+-------------+\n\n"
-    assert_equal(expected, actual)
+    assert_equal(expected, actual)  
+    
+    actual = grouping.to_s
+    assert_equal(expected,actual)
   end
 
   def test_render_text_grouping_without_headers

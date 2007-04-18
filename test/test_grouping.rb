@@ -251,7 +251,13 @@ class TestGrouping < Test::Unit::TestCase
       :closed => lambda { |g| g.sigma(:closed) },
       :order => [:date,:opened,:closed]
       
-    assert_equal expected, actual  
+    assert_equal expected, actual     
+    
+    actual = grouping.summary :date,
+      :opened => lambda { |g| g.sigma(:opened) },
+      :closed => lambda { |g| g.sigma(:closed) }
+      
+    assert_equal [], expected.column_names - actual.column_names
   end   
  
   def test_grouping_should_set_record_class
