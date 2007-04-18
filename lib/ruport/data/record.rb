@@ -122,8 +122,6 @@ module Ruport::Data
       @data.dup
     end          
     
-    #alias_method :data,:to_a
-     
     # Returns a copy of the <tt>attributes</tt> from this Record.
     #
     # Example:
