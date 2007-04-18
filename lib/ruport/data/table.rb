@@ -32,14 +32,6 @@ module Ruport::Data
         yield(rend) if block_given?
       end
     end
-   
-    # Converts a <tt>Collection</tt> object to a <tt>Data::Table</tt>.
-    def to_table(options={})
-      if respond_to? :column_names
-        options = { :column_names => column_names }.merge(options)
-      end
-      self.class.new({:data => data.map { |r| r.to_a }}.merge(options))
-    end
 
   end
  

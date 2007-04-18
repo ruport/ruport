@@ -54,16 +54,6 @@ class TestGroup < Test::Unit::TestCase
     assert_equal group, group2
     assert_equal group, group.dup
   end
-
-  def test_to_table
-    group = Ruport::Data::Group.new(:name => 'test',
-                                    :data => [%w[Ruport Is Sexy]],
-                                    :column_names => %w[Software Isnt Sexy])
-    table = [%w[Ruport Is Sexy]].to_table(%w[Software Isnt Sexy])
-
-    assert_equal table, group.to_table
-
-  end
   
   def test_create_subgroups
     group = Ruport::Data::Group.new(:name => 'test',
@@ -215,7 +205,7 @@ class TestGrouping < Test::Unit::TestCase
     a << %w[ greg brown sick ]
     g = Grouping(a,:by => %w[first_name last_name])
 
-    sub = (g / "greg")["brown"].to_table
+    sub = (g / "greg")["brown"]
     assert_equal %w[awesome sick], sub.column("id")
   end
   

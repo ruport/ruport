@@ -495,14 +495,6 @@ class TestTable < Test::Unit::TestCase
     assert_equal table, table2
 
   end    
-                   
-  # for those in a meta-mood (mostly just a collection coverage )
-  def test_table_to_table
-   a = [[1,2,3]].to_table 
-   assert_kind_of Ruport::Data::Table, a
-   assert_equal [[1,2,3]].to_table(%w[a b c]), 
-                a.to_table(:column_names => %w[a b c])
-  end
 
   def test_record_class
     a = Ruport::Data::Table.new( :column_names => %w[first_name last_name c], 
