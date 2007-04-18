@@ -703,11 +703,7 @@ module Ruport::Data
     end
     
     def append_record(record)        
-      if column_names.empty?
-        self << record.to_a
-      else
-        self << record.to_h
-      end
+      self << record.send(column_names.empty? ? :to_a : :to_h)
     end
   
   end
