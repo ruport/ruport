@@ -16,6 +16,7 @@ class Ruport::Renderer
 
   class RequiredOptionNotSet < RuntimeError; end
   class UnknownFormatError < RuntimeError; end
+  class StageAlreadyDefinedError < RuntimeError; end
 
   class Options < OpenStruct #:nodoc:
     def to_hash
@@ -100,7 +101,9 @@ class Ruport::Renderer
     #   finalize :document
     #
     def finalize(stage)
-      raise 'final stage already defined' if final_stage
+      if final_stage
+        raise StageAlreadyDefinedError, 'final stage already defined'      
+      end
       self.final_stage = stage
     end
 
@@ -110,7 +113,9 @@ class Ruport::Renderer
     #   prepare :document
     #
     def prepare(stage)
-      raise "prepare stage already defined" if first_stage
+      if first_stage
+        raise StageAlreadyDefinedError, "prepare stage already defined"      
+      end 
       self.first_stage = stage
     end
 

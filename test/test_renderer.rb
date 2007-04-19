@@ -206,11 +206,15 @@ class TestRenderer < Test::Unit::TestCase
   end
 
   def test_finalize_again
-   assert_raise(RuntimeError) { RendererWithHelpers.finalize :report }
+   assert_raise(Ruport::Renderer::StageAlreadyDefinedError) { 
+     RendererWithHelpers.finalize :report 
+   }
   end
 
   def test_prepare_again
-   assert_raise(RuntimeError) { RendererWithHelpers.prepare :foo }
+   assert_raise(Ruport::Renderer::StageAlreadyDefinedError) { 
+     RendererWithHelpers.prepare :foo 
+   }
   end
 
   def test_renderer_using_helpers
