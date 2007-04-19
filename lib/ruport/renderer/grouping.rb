@@ -25,9 +25,7 @@ module Ruport
 
     options { |o| o.show_table_headers = true }
 
-    stage :group_header
-    stage :group_body
-    stage :group_footer
+    stage :group_header, :group_body, :group_footer
   end
 
   # This class implements the basic renderer for data groupings in Ruport
@@ -61,12 +59,9 @@ module Ruport
       o.style = :inline
     end
 
-    stage :grouping_header
-    stage :grouping_body
-    stage :grouping_footer
+    stage :grouping_header, :grouping_body, :grouping_footer
     
     finalize :grouping
   end
   
 end
-
