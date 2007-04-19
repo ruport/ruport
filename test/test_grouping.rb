@@ -96,8 +96,8 @@ class TestGroup < Test::Unit::TestCase
  
     assert_nothing_raised { group.as(:csv) }
     assert_nothing_raised { group.to_csv }
-    assert_raises(ArgumentError) { group.as(:nothing) }
-    assert_raises(ArgumentError) { group.to_nothing }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { group.as(:nothing) }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { group.to_nothing }
   end
  
   
@@ -229,8 +229,8 @@ class TestGrouping < Test::Unit::TestCase
  
     assert_nothing_raised { b.as(:csv) }
     assert_nothing_raised { b.to_csv }
-    assert_raises(ArgumentError) { b.as(:nothing) }
-    assert_raises(ArgumentError) { b.to_nothing }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { b.as(:nothing) }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { b.to_nothing }
   end   
   
   class TicketStatus < Ruport::Data::Record

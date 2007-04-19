@@ -14,6 +14,9 @@
 # you do not need that, it may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
 
+  class RequiredOptionNotSet < RuntimeError; end
+  class UnknownFormatError < RuntimeError; end
+
   class Options < OpenStruct #:nodoc:
     def to_hash
       @table
@@ -25,6 +28,31 @@ class Ruport::Renderer
       send("#{key}=",value)
     end
   end
+
+  module Hooks #:nodoc:
+    module ClassMethods
+      def renders_with(klass)
+        @renderer = klass
+      end                       
+
+      attr_reader :renderer
+    end
+
+    def self.included(base)
+      base.extend(ClassMethods)
+    end      
+
+    def as(*args)
+      unless self.class.renderer.formats.include?(args[0])
+        raise UnknownFormatError
+      end
+      self.class.renderer.render(*args) do |rend|
+        rend.data = self
+        yield(rend) if block_given?  
+      end
+    end  
+  end
+
                           
   module AutoRunner  #:nodoc:
     # called automagically when the report is rendered. Uses the
@@ -35,7 +63,7 @@ class Ruport::Renderer
       unless self.class.required_options.nil?
         self.class.required_options.each do |opt|
           if options.__send__(opt).nil?
-            raise "Required option #{opt} not set"
+            raise RequiredOptionNotSet, "Required option #{opt} not set"
           end
         end
       end
@@ -296,4 +324,3 @@ end
 
 require "ruport/renderer/table"
 require "ruport/renderer/grouping"         
-require "ruport/renderer/hooks"    

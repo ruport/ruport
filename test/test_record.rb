@@ -226,8 +226,8 @@ class TestRecord < Test::Unit::TestCase
     a = Record.new({ "a" => 1, "b" => 2 })
     assert_nothing_raised { a.as(:csv) }
     assert_nothing_raised { a.to_csv }
-    assert_raises(ArgumentError) { a.as(:nothing) }
-    assert_raises(ArgumentError) { a.to_nothing }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { a.as(:nothing) }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { a.to_nothing }
   end
   
   #----------------------------------------------------------------------

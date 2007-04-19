@@ -415,7 +415,7 @@ class TestTable < Test::Unit::TestCase
     table = Ruport::Data::Table.new :column_names => %w[a b], 
                                     :data => [[1,2],[3,4],[5,6]]
     assert_equal("a,b\n1,2\n3,4\n5,6\n",table.to_csv)
-    assert_raises(ArgumentError) { table.to_nothing }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { table.to_nothing }
   end
   
   
@@ -527,8 +527,8 @@ class TestTable < Test::Unit::TestCase
     a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
     assert_nothing_raised { a.as(:csv) }
     assert_nothing_raised { a.to_csv }
-    assert_raises(ArgumentError) { a.as(:nothing) }
-    assert_raises(ArgumentError) { a.to_nothing }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { a.as(:nothing) }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { a.to_nothing }
   end
 
 

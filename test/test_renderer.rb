@@ -252,7 +252,7 @@ class TestRenderer < Test::Unit::TestCase
    a = RendererWithHelpers.dup
    a.required_option :title
 
-   assert_raise(RuntimeError) { a.render(:text) }
+   assert_raise(Ruport::Renderer::RequiredOptionNotSet) { a.render(:text) }
   end
                                            
   def test_method_missing
