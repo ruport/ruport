@@ -109,7 +109,6 @@ module Ruport
     #
     # Otherwise, uses SystemExtensions to determine terminal width.
     def width
-      require "ruport/system_extensions"
       table_width || SystemExtensions.terminal_width
     end
 
