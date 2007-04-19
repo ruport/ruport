@@ -95,7 +95,7 @@ class Ruport::Renderer
     #
     def option(*opts)
       opts.each do |opt|
-        opt = "#{opt.to_s}="
+        opt = "#{opt}="
         define_method(opt) {|t| options.send(opt, t) } 
       end
     end
