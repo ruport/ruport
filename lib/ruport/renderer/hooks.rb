@@ -3,10 +3,8 @@ module Ruport::Renderer::Hooks
     def renders_with(klass)
       @renderer = klass
     end                       
-    
-    def renderer
-      @renderer
-    end
+
+    attr_reader :renderer
   end
   
   def self.included(base)
