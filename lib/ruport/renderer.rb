@@ -14,7 +14,17 @@
 # you do not need that, it may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
 
-  require "ruport/renderer/options"
+  class Options < OpenStruct #:nodoc:
+    def to_hash
+      @table
+    end   
+    def [](key)
+      send(key)
+    end
+    def []=(key,value)
+      send("#{key}=",value)
+    end
+  end
                           
   module AutoRunner  #:nodoc:
     # called automagically when the report is rendered. Uses the
