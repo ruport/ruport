@@ -62,131 +62,155 @@ class Ruport::Renderer
     end
   end
   
-  class << self #:nodoc:#
+  class << self
+    
     attr_accessor :first_stage,:final_stage,:required_options,:stages #:nodoc: 
-  end 
 
-  # allow the report designer to specify what method will 
-  # render the report  e.g.
-  #   finalize :document
-  #
-  def self.finalize(stage)
-    raise 'final stage already defined' if final_stage
-    self.final_stage = stage
-  end
-
-  # allow the report designer to specify a preparation stage for their
-  # report, e.g.
-  #
-  #   prepare :document
-  #
-  def self.prepare(stage)
-    raise "prepare stage already defined" if first_stage
-    self.first_stage = stage
-  end
-
-  # allow the report designer to specify options that can be used to build
-  # the report. These are generally used for defining rendering options or
-  # data
-  # e.g.
-  #   option :report_title
-  #   option :table_width
-  def self.option(*opts)
-    opts.each do |opt|
-      opt = "#{opt.to_s}="
-      define_method(opt) {|t| options.send(opt, t) } 
-    end
-  end
-
-  # allow the report designer to specify a compulsory option
-  # e.g.
-  #   required_option :freight
-  #   required_option :tax
-  def self.required_option(*opts) 
-    opts.each do |opt|
-      self.required_options ||= []
-      self.required_options << opt 
-      option opt
-    end
-  end
-
-  # allow the report designer to specify the stages that will be used to
-  # build the report
-  # e.g.
-  #   stage :document_header
-  #   stage :document_body
-  #   stage :document_footer
-  def self.stage(*stage_list)
-    self.stages ||= []
-    stage_list.each { |stage|
-      self.stages << stage.to_s 
-    }
-  end
-
-  # Reader for formats.  Defaults to a hash
-  def self.formats
-    @formats ||= {}
-  end
-
-  # creates a new instance of the renderer
-  # then looks up the formatter and creates a new instance of that as
-  # well.  If a block is given, the renderer instance is yielded.
-  #
-  # The run() method is then called on the renderer method.
-  #
-  # Finally, the value of the formatter's output accessor is returned
-  def self.render(*args)
-    rend = build(*args) { |r|
-      r.setup if r.respond_to? :setup
-      yield(r) if block_given?
-    }
-    if rend.respond_to? :run
-      rend.run
-    else
-      include AutoRunner
-    end
-    rend._run_ if rend.respond_to? :_run_
-    return rend.formatter.output
-  end
-
-  # Allows you to set class_wide default options
-  # 
-  # Example:
-  #  
-  #  options { |o| o.style = :justified }
-  def self.options
-    @options ||= Ruport::Renderer::Options.new
-    yield(@options) if block_given?
-
-    return @options
-  end
-
-  # creates a new instance of the renderer and sets it to use the specified
-  # formatter (by name).  If a block is given, the renderer instance is
-  # yielded.  
-  #
-  # Returns the renderer instance.
-  def self.build(*args)
-    rend = self.new
-
-    rend.send(:use_formatter,args[0])
-    rend.send(:options=, options.dup)
-
-    if args[1].kind_of?(Hash)
-      d = args[1].delete(:data)
-      rend.data = d if d
-      args[1].each {|k,v| rend.options.send("#{k}=",v) }
+    # Allow the report designer to specify what method will 
+    # render the report, e.g.
+    #
+    #   finalize :document
+    #
+    def finalize(stage)
+      raise 'final stage already defined' if final_stage
+      self.final_stage = stage
     end
 
-    yield(rend) if block_given?
-    return rend
-  end                                                                
+    # Allow the report designer to specify a preparation stage for their
+    # report, e.g.
+    #
+    #   prepare :document
+    #
+    def prepare(stage)
+      raise "prepare stage already defined" if first_stage
+      self.first_stage = stage
+    end
+
+    # Allow the report designer to specify options that can be used to build
+    # the report. These are generally used for defining rendering options or
+    # data, e.g.
+    #
+    #   option :report_title
+    #   option :table_width
+    #
+    def option(*opts)
+      opts.each do |opt|
+        opt = "#{opt.to_s}="
+        define_method(opt) {|t| options.send(opt, t) } 
+      end
+    end
+
+    # Allow the report designer to specify a compulsory option, e.g.
+    # 
+    #   required_option :freight
+    #   required_option :tax
+    #
+    def required_option(*opts) 
+      opts.each do |opt|
+        self.required_options ||= []
+        self.required_options << opt 
+        option opt
+      end
+    end
+
+    # Allow the report designer to specify the stages that will be used to
+    # build the report, e.g.
+    #
+    #   stage :document_header
+    #   stage :document_body
+    #   stage :document_footer
+    #
+    def stage(*stage_list)
+      self.stages ||= []
+      stage_list.each { |stage|
+        self.stages << stage.to_s 
+      }
+    end
+
+    # Reader for formats.  Defaults to a hash.
+    def formats
+      @formats ||= {}
+    end
+
+    # Creates a new instance of the renderer, then looks up the formatter and
+    # creates a new instance of that as well. If a block is given, the
+    # renderer instance is yielded.
+    #
+    # The run() method is then called on the renderer method.
+    #
+    # Finally, the value of the formatter's output accessor is returned.
+    #
+    def render(*args)
+      rend = build(*args) { |r|
+        r.setup if r.respond_to? :setup
+        yield(r) if block_given?
+      }
+      if rend.respond_to? :run
+        rend.run
+      else
+        include AutoRunner
+      end
+      rend._run_ if rend.respond_to? :_run_
+      return rend.formatter.output
+    end
+
+    # Allows you to set class_wide default options
+    # 
+    # Example:
+    #  
+    #  options { |o| o.style = :justified }
+    #
+    def options
+      @options ||= Ruport::Renderer::Options.new
+      yield(@options) if block_given?
+
+      return @options
+    end
+
+    # Creates a new instance of the renderer and sets it to use the specified
+    # formatter (by name).  If a block is given, the renderer instance is
+    # yielded.  
+    #
+    # Returns the renderer instance.
+    #
+    def build(*args)
+      rend = self.new
+
+      rend.send(:use_formatter,args[0])
+      rend.send(:options=, options.dup)
+
+      if args[1].kind_of?(Hash)
+        d = args[1].delete(:data)
+        rend.data = d if d
+        args[1].each {|k,v| rend.options.send("#{k}=",v) }
+      end
+
+      yield(rend) if block_given?
+      return rend
+    end
+    
+    private
+    
+    # Allows you to register a format with the renderer.
+    #
+    # example:
+    #
+    #   class MyFormatter < Ruport::Formatter
+    #     # formatter code ...
+    #     SomeRenderer.add_format self, :my_formatter
+    #   end
+    #
+    def add_format(format,name=nil)
+      formats[name] = format
+    end
+    
+  end
 
   attr_accessor :format
   attr_reader   :data 
   attr_writer :formatter  
 
-  # sets +data+ attribute on both the renderer and any active formatter
+  # Sets +data+ attribute on both the renderer and any active formatter.
   def data=(val)
     @data = val.dup
     formatter.data = @data if formatter
@@ -202,17 +226,19 @@ class Ruport::Renderer
   # the default String.  For Ruport's core renderers, we technically
   # can use any object that supports the << method, but it's meant
   # for IO objects such as File or STDOUT
+  #
   def io=(obj)
     options.io=obj    
   end
 
-  # when no block is given, returns active formatter
+  # When no block is given, returns active formatter.
   #
-  # when a block is given with a block variable, sets the block variable to the
+  # When a block is given with a block variable, sets the block variable to the
   # formatter.  
   #
-  # when a block is given without block variables, instance_evals the block
-  # within the context of the formatter
+  # When a block is given without block variables, instance_evals the block
+  # within the context of the formatter.
+  #
   def formatter(&block)
     if block.nil?
       return @formatter
@@ -224,8 +250,9 @@ class Ruport::Renderer
     return @formatter
   end
 
-  # provides a shortcut to render() to allow
+  # Provides a shortcut to render() to allow
   # render(:csv) to become render_csv
+  #
   def self.method_missing(id,*args,&block)
     id.to_s =~ /^render_(.*)/
     unless args[0].kind_of? Hash
@@ -234,25 +261,6 @@ class Ruport::Renderer
     $1 ? render($1.to_sym,*args,&block) : super
   end
   
-  class << self
-    private
-    # allows you to register a format with the renderer.
-    #
-    # example:
-    #
-    #   class MyFormatter < Ruport::Formatter
-    #
-    #     # formatter code ...
-    #
-    #     SomeRenderer.add_format self, :my_formatter
-    #
-    #   end
-    def add_format(format,name=nil)
-      formats[name] = format
-    end  
-
-  end  
-       
   protected  
 
   def prepare(name)
