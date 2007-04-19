@@ -106,8 +106,8 @@ class Ruport::Renderer
     #   required_option :tax
     #
     def required_option(*opts) 
+      self.required_options ||= []
       opts.each do |opt|
-        self.required_options ||= []
         self.required_options << opt 
         option opt
       end
