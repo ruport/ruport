@@ -5,12 +5,12 @@
 # This is free software. Please see the LICENSE and COPYING files for details.
 
 
-# This class implements the core engine for Ruport's formatting system.  It is
+# This class implements the core renderer for Ruport's formatting system.  It is
 # designed to implement the low level tools necessary to build report renderers
 # for different kinds of tasks.  See Renderer::Table for a tabular data
 # renderer.  
 #
-# This class can easily be extended to build custom formatting engines, but if
+# This class can easily be extended to build custom formatting systems, but if
 # you do not need that, it may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
 
