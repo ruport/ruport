@@ -56,7 +56,7 @@ class Ruport::Renderer
       # call each stage to build the report
       unless self.class.stages.nil?
         self.class.stages.each do |stage|
-          self.build(stage)
+          self.send(:build,stage)
         end
       end
     end
@@ -207,13 +207,15 @@ class Ruport::Renderer
   end
 
   attr_accessor :format
-  attr_reader   :data 
   attr_writer :formatter  
+
+  def data
+    formatter.data
+  end
 
   # Sets +data+ attribute on both the renderer and any active formatter.
   def data=(val)
-    @data = val.dup
-    formatter.data = @data if formatter
+    formatter.data = val.dup 
   end
 
   # Renderer::Options object which is shared with the current formatter.
@@ -261,7 +263,7 @@ class Ruport::Renderer
     $1 ? render($1.to_sym,*args,&block) : super
   end
   
-  protected  
+  private  
 
   def prepare(name)
     maybe "prepare_#{name}"
@@ -275,8 +277,6 @@ class Ruport::Renderer
   def finalize(name)
     maybe "finalize_#{name}"
   end      
-
-  private  
   
   def maybe(something)
     formatter.send something if formatter.respond_to? something
