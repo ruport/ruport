@@ -566,10 +566,11 @@ module Ruport::Data
     #                    :column_names => %w[a b]
     #   group = data.to_group("my_group")
     #
-    def to_group(name)
-     Group.new( :data => data, 
-                :column_names => column_names,
-                :name => name )
+    def to_group(name=nil)
+      Group.new( :data => data, 
+                 :column_names => column_names,
+                 :name => name,
+                 :record_class => record_class )
     end
                             
     # NOTE: does not respect tainted status
@@ -646,22 +647,6 @@ module Ruport::Data
       end ; loaded_data
     end      
 
-    def grouped_data(group_column) #:nodoc:
-      data = {}
-      group_names = column(group_column).uniq
-      columns = column_names.dup
-      columns.delete(group_column)
-      group_names.each do |name|
-        group_data = sub_table(columns) {|r|
-          r.send(group_column) == name
-        }
-        data[name] = Group.new(:name => name, :data => group_data,
-                               :column_names => columns,
-                               :record_class => record_class)
-      end      
-      data
-    end  
-    
     def append_array(array)
       attributes = @column_names.empty? ? nil : @column_names
       @data << record_class.new(array.to_ary, :attributes => attributes)  

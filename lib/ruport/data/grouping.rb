@@ -91,6 +91,24 @@ module Ruport::Data
     protected
 
     attr_writer :name, :subgroups
+    
+    private
+    
+    def grouped_data(group_column) #:nodoc:
+      data = {}
+      group_names = column(group_column).uniq
+      columns = column_names.dup
+      columns.delete(group_column)
+      group_names.each do |name|
+        group_data = sub_table(columns) {|r|
+          r.send(group_column) == name
+        }
+        data[name] = Group.new(:name => name, :data => group_data,
+                               :column_names => columns,
+                               :record_class => record_class)
+      end      
+      data
+    end
 
   end
 
@@ -107,7 +125,7 @@ module Ruport::Data
     def initialize(data,options={})
       @grouped_by = options[:by] 
       cols = Array(options[:by]).dup
-      @data = data.send(:grouped_data, cols.shift)
+      @data = data.to_group.send(:grouped_data, cols.shift)
       cols.each do |col|
         @data.each do |name,group|
           group.create_subgroups(col)
