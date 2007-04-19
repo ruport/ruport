@@ -111,17 +111,33 @@ module Ruport::Data
     end
 
   end
-
-  class Grouping  
+  
+  
+  # === Overview
+  #
+  # This class implements a grouping data structure for Ruport.  A grouping is
+  # a collection of groups. It allows you to group the data in a table by one
+  # or more columns that you specify.
+  #   
+  # The data for a grouping is a hash of groups, keyed on each unique data
+  # point from the grouping column.
+  #
+  class Grouping
     
-    require "forwardable"
-    extend Forwardable
     include Enumerable
     
-    attr_reader :data 
-    
-    def_delegator :@data, :each
-    
+    # Creates a new Grouping based on the supplied options.
+    #
+    # Valid options:
+    # <b><tt>:by</tt></b>::  A column name or array of column names that the
+    #                        data will be grouped on.
+    #
+    # Example:
+    #
+    #   table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    #
+    #   grouping = Grouping.new(table, :by => "a")
+    #
     def initialize(data,options={})
       @grouped_by = options[:by] 
       cols = Array(options[:by]).dup
@@ -131,15 +147,40 @@ module Ruport::Data
           group.create_subgroups(col)
         end
       end
-    end  
-
+    end
+    
+    attr_accessor :data 
     attr_reader :grouped_by
     
+    require "forwardable"
+    extend Forwardable
+    def_delegator :@data, :each
+    
+    # Allows Hash-like indexing of the grouping data.
+    #
+    # Examples:
+    #
+    #   my_grouping["foo"]
+    #
     def [](name)
       @data[name] or 
         raise(IndexError,"Group Not Found")
     end 
     
+    # Used to add extra data to the Grouping. <tt>other</tt> should be a Group.
+    #
+    # Example:
+    #
+    #   table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    #
+    #   grouping = Grouping.new(table, :by => "a")
+    #
+    #   group = Group.new :name => 7,
+    #                     :data => [[8,9]], 
+    #                     :column_names => %w[b c]
+    #
+    #   grouping << group
+    #
     def <<(group)        
       if data.has_key? group.name
         raise(ArgumentError, "Group '#{group.name}' exists!") 
@@ -166,7 +207,8 @@ module Ruport::Data
     #   grouping.summary :date,
     #     :opened => lambda { |g| g.sigma(:opened) },
     #     :closed => lambda { |g| g.sigma(:closed) },
-    #     :order => [:date,:opened,:closed] 
+    #     :order => [:date,:opened,:closed]
+    #
     def summary(field,procs)     
       if procs[:order].kind_of?(Array)
         cols = procs.delete(:order) 
@@ -211,7 +253,6 @@ module Ruport::Data
      super
     end
     
-    attr_writer :data
   end
   
 end     
