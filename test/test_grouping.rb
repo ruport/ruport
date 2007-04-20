@@ -102,7 +102,7 @@ class TestGroup < Test::Unit::TestCase
 
   class MyGroupSub < Ruport::Data::Group; end
 
-  def test_ensure_grouping_subclasses_render_properly
+  def test_ensure_group_subclasses_render_properly
     t = MyGroupSub.new(:column_names => %w[b c],:name => "1") << [2,3]
     assert_equal "1\n\nb,c\n2,3\n", t.to_csv
   end
