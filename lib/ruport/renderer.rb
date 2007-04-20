@@ -123,11 +123,6 @@ class Ruport::Renderer
     
     attr_accessor :first_stage,:final_stage,:required_options,:stages #:nodoc: 
 
-    # Allow the report designer to specify what method will 
-    # render the report, e.g.
-    #
-    #   finalize :document
-    #
     def finalize(stage)
       if final_stage
         raise StageAlreadyDefinedError, 'final stage already defined'      
@@ -135,11 +130,6 @@ class Ruport::Renderer
       self.final_stage = stage
     end
 
-    # Allow the report designer to specify a preparation stage for their
-    # report, e.g.
-    #
-    #   prepare :document
-    #
     def prepare(stage)
       if first_stage
         raise StageAlreadyDefinedError, "prepare stage already defined"      
@@ -147,13 +137,6 @@ class Ruport::Renderer
       self.first_stage = stage
     end
 
-    # Allow the report designer to specify options that can be used to build
-    # the report. These are generally used for defining rendering options or
-    # data, e.g.
-    #
-    #   option :report_title
-    #   option :table_width
-    #
     def option(*opts)
       opts.each do |opt|
         opt = "#{opt}="
@@ -161,11 +144,6 @@ class Ruport::Renderer
       end
     end
 
-    # Allow the report designer to specify a compulsory option, e.g.
-    # 
-    #   required_option :freight
-    #   required_option :tax
-    #
     def required_option(*opts) 
       self.required_options ||= []
       opts.each do |opt|
@@ -174,13 +152,6 @@ class Ruport::Renderer
       end
     end
 
-    # Allow the report designer to specify the stages that will be used to
-    # build the report, e.g.
-    #
-    #   stage :document_header
-    #   stage :document_body
-    #   stage :document_footer
-    #
     def stage(*stage_list)
       self.stages ||= []
       stage_list.each { |stage|
@@ -188,19 +159,10 @@ class Ruport::Renderer
       }
     end
 
-    # Reader for formats.  Defaults to a hash.
     def formats
       @formats ||= {}
     end
 
-    # Creates a new instance of the renderer, then looks up the formatter and
-    # creates a new instance of that as well. If a block is given, the
-    # renderer instance is yielded.
-    #
-    # The run() method is then called on the renderer method.
-    #
-    # Finally, the value of the formatter's output accessor is returned.
-    #
     def render(*args)
       rend = build(*args) { |r|
         r.setup if r.respond_to? :setup
