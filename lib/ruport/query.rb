@@ -36,7 +36,7 @@ module Ruport
     # Available options:
     #
     # <b><tt>:source</tt></b>::         A source specified in 
-    #                                   Ruport::Config.sources, defaults to 
+    #                                   Ruport::Query.sources, defaults to 
     #                                   <tt>:default</tt>.
     # <b><tt>:origin</tt></b>::         Query origin, defaults to 
     #                                   <tt>:string</tt>, but it can be set to 
@@ -44,7 +44,7 @@ module Ruport
     #                                   specified by the <tt>sql</tt> 
     #                                   parameter.
     # <b><tt>:dsn</tt></b>::            If specifed, the Query object will 
-    #                                   manually override Ruport::Config.
+    #                                   manually override Ruport::Query.
     # <b><tt>:user</tt></b>::           If a DSN is specified, the user can 
     #                                   be set with this option.
     # <b><tt>:password</tt></b>::       If a DSN is specified, the password 
@@ -58,10 +58,10 @@ module Ruport
     #
     # Examples:
     #   
-    #   # uses Ruport::Config's default source
+    #   # uses Ruport::Query's default source
     #   Ruport::Query.new("select * from fo")
     #   
-    #   # uses the Ruport::Config's source labeled :my_source
+    #   # uses the Ruport::Query's source labeled :my_source
     #   Ruport::Query.new("select * from fo", :source => :my_source)
     #
     #   # uses a manually entered source
@@ -84,8 +84,8 @@ module Ruport
       @sql = @statements.join
       
       if options[:dsn]
-        Ruport::Config.source :temp, :dsn      => options[:dsn],
-                                     :user     => options[:user],
+        Ruport::Query.add_source :temp, :dsn      => options[:dsn],
+                                        :user     => options[:user],
                                      :password => options[:password]
         options[:source] = :temp
       end
@@ -97,7 +97,28 @@ module Ruport
       @params = options[:params]
       @cached_data = nil
     end
-    
+
+    def self.default_source
+      sources[:default]
+    end
+
+    def self.sources
+      @sources ||= {}
+    end
+
+    def self.add_source(name,options={})
+      sources[name] = OpenStruct.new(options)
+      check_source(sources[name],name)
+    end
+
+    private
+
+    def self.check_source(settings,label) # :nodoc:
+      raise ArgumentError unless settings.dsn
+    end
+
+    public
+
     #
     # Set this to <tt>true</tt> to get DBI:Rows, <tt>false</tt> to get Ruport 
     # constructs.
@@ -112,12 +133,12 @@ module Ruport
     
     #
     # This will set the <tt>dsn</tt>, <tt>username</tt>, and <tt>password</tt> 
-    # to one specified by a source in Ruport::Config.
+    # to one specified by a source in Ruport::Query.
     #
     def select_source(label)
-      @dsn      = Ruport::Config.sources[label].dsn
-      @user     = Ruport::Config.sources[label].user
-      @password = Ruport::Config.sources[label].password
+      @dsn      = Ruport::Query.sources[label].dsn
+      @user     = Ruport::Query.sources[label].user
+      @password = Ruport::Query.sources[label].password
     end 
     
     #

@@ -195,7 +195,7 @@ module Ruport
     #
     def log(*args); Ruport.log(*args) end
 
-    def_delegators Ruport::Config, :source, :log_file, :log_file=
+    def_delegators Ruport::Config, :log_file, :log_file=
     
     class << self
 

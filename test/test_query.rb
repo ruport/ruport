@@ -22,8 +22,8 @@
        :alternative => {
          :dsn => "ruport:test2", :user => "sandal", :password => "harmonix" },
      }
-     Ruport::Config.source :default,     @sources[:default]
-     Ruport::Config.source :alternative, @sources[:alternative]
+     Ruport::Query.add_source :default,     @sources[:default]
+     Ruport::Query.add_source :alternative, @sources[:alternative]
  
      @columns = %w(a b c)
      @data = [ [[1,2,3],[4,5,6],[7,8,9]],
@@ -280,6 +280,29 @@
        
        csv = @data[0].to_table(@columns).as(:csv)
        assert_equal csv, query.to_csv
+     end
+     
+     def test_missing_dsn
+       assert_raise(ArgumentError) {
+         Ruport::Query.add_source :foo, :user => "root", :password => "fff"
+       }
+       assert_nothing_raised { Ruport::Query.add_source :bar, :dsn => "..." }
+     end
+
+     def test_new_defaults
+       Ruport::Query.add_source :default, :dsn      => "dbi:mysql:test",
+                                          :user     => "root",
+                                          :password => ""
+       assert_equal("dbi:mysql:test", Ruport::Query.default_source.dsn)
+       assert_equal("root", Ruport::Query.default_source.user)
+       assert_equal("", Ruport::Query.default_source.password)
+     end
+
+     def test_multiple_sources
+       Ruport::Query.add_source :foo, :dsn => "dbi:mysql:test"
+       Ruport::Query.add_source :bar, :dsn => "dbi:mysql:test2"
+       assert_equal("dbi:mysql:test",  Ruport::Query.sources[:foo].dsn)
+       assert_equal("dbi:mysql:test2", Ruport::Query.sources[:bar].dsn)
      end
 
    end

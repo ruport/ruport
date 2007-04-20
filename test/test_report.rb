@@ -28,8 +28,8 @@ class TestReport < Test::Unit::TestCase
 
   def setup
     @report = Report.new
-    Ruport::Config.source :default, :dsn => "ruport:test", 
-                                    :user => "foo", :password => "bar" 
+    Ruport::Query.add_source :default, :dsn => "ruport:test", 
+                                       :user => "foo", :password => "bar" 
     @query1 = Ruport::Query.new "select * from foo", :cache_enabled => true 
     @query1.cached_data = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
   end
