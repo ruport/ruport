@@ -71,10 +71,7 @@ module Ruport::Data
           end
 
           if block
-            if options[:records]
-              row = Record.new(row, :attributes => loaded_data.column_names)
-            end
-            block[loaded_data,row]
+            handle_csv_row_proc(loaded_data,row,options,block)
           else
             loaded_data << row
           end
@@ -84,6 +81,14 @@ module Ruport::Data
         return loaded_data
       end
 
+      def handle_csv_row_proc(data,row,options,block)
+        if options[:records]
+          row = Record.new(row, :attributes => data.column_names)
+        end
+        
+        block[data,row]
+      end
+       
       def adjust_options_for_fcsv_headers(options)
         options[:has_names] = false if options[:csv_options][:headers]
       end
