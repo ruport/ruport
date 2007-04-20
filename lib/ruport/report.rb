@@ -22,6 +22,7 @@ module Ruport
   # FIXME: New example
   class Report   
     extend Forwardable
+    include Renderer::Hooks
     
     # If your report does not need any sort of specialized information, you can
     # simply use Report.run (Or MyReportName.run if you've inherited).
@@ -188,9 +189,9 @@ module Ruport
 
     class << self
 
-      def as(format,*args)
+      def as(format,options={})
         report = new(format)
-        report.run(*args)
+        report.run(rendering_options.merge(options))
       end
 
       def method_missing(id,*args)
@@ -218,31 +219,6 @@ module Ruport
       def cleanup(&block); define_method(:cleanup,&block) end
 
       private :prepare, :generate, :cleanup
-
-      def renders_with(renderer)
-        @renderer = renderer.name
-      end  
-      
-      def renders_as_table
-        renders_with Ruport::Renderer::Table
-      end
-       
-      def renders_as_row
-        renders_with Ruport::Renderer::Row
-      end
-        
-      def renders_as_group
-        renders_with Ruport::Renderer::Group
-      end 
-      
-      def renders_as_grouping
-        renders_with Ruport::Renderer::Grouping
-      end
-
-      def renderer
-        return unless @renderer
-        @renderer.split("::").inject(Class) { |c,el| c.const_get(el) }
-      end
 
       # Runs the reports specified.  If no reports are specified, then it
       # creates a new instance via <tt>self.new</tt>.
@@ -273,7 +249,8 @@ module Ruport
             rep.results = rep.generate
 
             if renderer
-              rep.results = renderer.render(rep.format,fopts) { |r| 
+              rep.results = 
+                renderer.render(rep.format,rendering_options.merge(fopts)) { |r| 
                 r.data = rep.results
               }
             end

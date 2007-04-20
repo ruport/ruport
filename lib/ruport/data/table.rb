@@ -105,9 +105,10 @@ module Ruport::Data
 
 
     include Enumerable             
-    include Ruport::Renderer::Hooks
     extend FromCSV
-    renders_with Ruport::Renderer::Table
+
+    include Ruport::Renderer::Hooks
+    renders_as_table
     
     # Creates a new table based on the supplied options.
     # Valid options: 

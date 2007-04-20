@@ -193,6 +193,13 @@ class TestReport < Test::Unit::TestCase
     klass.send(:generate) { [[1,2,3],[4,5,6]].to_table(%w[a b c]) }
     a = klass.new(:csv)
     assert_equal "a,b,c\n1,2,3\n4,5,6\n", a.run
+
+    klass.renders_with Ruport::Renderer::Table, :show_table_headers => false
+    a = klass.new(:csv)
+    assert_equal "1,2,3\n4,5,6\n", a.run
+    assert_equal "a,b,c\n1,2,3\n4,5,6\n", a.run(:show_table_headers => true)
+
+
    end
  
    def test_renders_as_table

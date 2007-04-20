@@ -33,23 +33,48 @@ class Ruport::Renderer
 
   module Hooks #:nodoc:
     module ClassMethods
-      def renders_with(klass)
-        @renderer = klass
-      end                       
+      def renders_with(renderer,opts={})
+        @renderer = renderer.name
+        @rendering_options=opts
+      end  
 
-      attr_reader :renderer
+      def rendering_options
+        @rendering_options
+      end
+      
+      def renders_as_table(options={})
+        renders_with Ruport::Renderer::Table,options
+      end
+       
+      def renders_as_row(options={})
+        renders_with Ruport::Renderer::Row, options
+      end
+        
+      def renders_as_group(options={})
+        renders_with Ruport::Renderer::Group,options
+      end 
+      
+      def renders_as_grouping(options={})
+        renders_with Ruport::Renderer::Grouping,options
+      end
+
+      def renderer
+        return unless @renderer
+        @renderer.split("::").inject(Class) { |c,el| c.const_get(el) }
+      end
     end
 
     def self.included(base)
       base.extend(ClassMethods)
     end      
 
-    def as(*args)
-      unless self.class.renderer.formats.include?(args[0])
+    def as(format,options={})
+      unless self.class.renderer.formats.include?(format)
         raise UnknownFormatError
       end
-      self.class.renderer.render(*args) do |rend|
-        rend.data = self
+      self.class.renderer.render(format,
+       self.class.rendering_options.merge(options)) do |rend|
+        rend.data = send(:renderable_data) rescue self
         yield(rend) if block_given?  
       end
     end  

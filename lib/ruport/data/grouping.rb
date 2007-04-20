@@ -31,7 +31,7 @@ module Ruport::Data
     end
           
     include Ruport::Renderer::Hooks
-    renders_with Ruport::Renderer::Group
+    renders_as_group
 
     # Create a copy of the Group: records will be copied as well.
     #
@@ -246,7 +246,7 @@ module Ruport::Data
     end
     
     include Ruport::Renderer::Hooks
-    renders_with Ruport::Renderer::Grouping
+    renders_as_grouping
     
     # Create a copy of the Grouping: groups will be copied as well.
     #

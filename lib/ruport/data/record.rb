@@ -238,7 +238,7 @@ module Ruport::Data
     #######################       
 
     include Ruport::Renderer::Hooks
-    renders_with Ruport::Renderer::Row
+    renders_as_row
 
     #
     # Provides a unique hash value. If a Record contains the same data and
