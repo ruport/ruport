@@ -18,6 +18,7 @@ class Ruport::Renderer
   class UnknownFormatError < RuntimeError; end
   class StageAlreadyDefinedError < RuntimeError; end
 
+  require "ostruct"
   class Options < OpenStruct #:nodoc:
     def to_hash
       @table

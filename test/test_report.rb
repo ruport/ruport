@@ -115,7 +115,7 @@ class TestReport < Test::Unit::TestCase
     rep_klass.send(:generate) { raise }
 
     assert_raises(RuntimeError){ 
-      rep_klass.run(:tries => 3, :interval => 1, :log_level => :log_only)
+      rep_klass.run(:tries => 3, :interval => 1)
     }
     
     rep_klass.send(:generate) { sleep 1.1 }

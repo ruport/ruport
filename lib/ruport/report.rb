@@ -186,17 +186,6 @@ module Ruport
       raise RuntimeError, "You need RedCloth!\n gem install RedCloth -v 3.0.3"
     end
 
-    def config
-      Ruport::Config
-    end
-    
-    # Allows logging and other fun stuff. 
-    # See also Ruport.log
-    #
-    def log(*args); Ruport.log(*args) end
-
-    def_delegators Ruport::Config, :log_file, :log_file=
-    
     class << self
 
       def as(format,*args)
@@ -299,7 +288,6 @@ module Ruport
             a.tries = options[:tries]
             a.interval = options[:interval] if options[:interval]
             a.timeout = options[:timeout] if options[:timeout]
-            a.log_level = options[:log_level]
           }
           code.attempt(&process)
         else
