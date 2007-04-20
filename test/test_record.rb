@@ -292,4 +292,11 @@ class TestRecord < Test::Unit::TestCase
     assert_equal(["a","b","c"], a.attributes)
   end
 
+  class MyRecordSub < Ruport::Data::Record; end
+
+  def test_ensure_record_subclasses_render_properly
+    a = MyRecordSub.new [1,2,3]
+    assert_equal "1,2,3\n", a.to_csv
+  end
+
 end

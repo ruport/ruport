@@ -109,6 +109,10 @@ module Ruport::Data
 
     include Ruport::Renderer::Hooks
     renders_as_table
+
+    def self.inherited(base)
+      base.renders_as_table
+    end
     
     # Creates a new table based on the supplied options.
     # Valid options: 

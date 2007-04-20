@@ -670,6 +670,15 @@ class TestTable < Test::Unit::TestCase
      a.each { |r| assert_kind_of(DuckRecord,r) }
   end
 
+
+  class MySubClass < Ruport::Data::Table; end
+  
+  def test_ensure_table_subclasses_render_properly
+    a = MySubClass.new
+    a << [1,2,3] << [4,5,6]
+    assert_equal("1,2,3\n4,5,6\n",a.as(:csv))
+  end
+
 end
 
 class DuckRecord < Ruport::Data::Record; end

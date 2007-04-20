@@ -17,6 +17,7 @@ class Ruport::Renderer
   class RequiredOptionNotSet < RuntimeError; end
   class UnknownFormatError < RuntimeError; end
   class StageAlreadyDefinedError < RuntimeError; end
+  class RendererNotSetError < RuntimeError; end
 
   require "ostruct"
   class Options < OpenStruct #:nodoc:
@@ -69,6 +70,7 @@ class Ruport::Renderer
     end      
 
     def as(format,options={})
+      raise RendererNotSetError unless self.class.renderer
       unless self.class.renderer.formats.include?(format)
         raise UnknownFormatError
       end

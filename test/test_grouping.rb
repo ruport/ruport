@@ -99,6 +99,13 @@ class TestGroup < Test::Unit::TestCase
     assert_raises(Ruport::Renderer::UnknownFormatError) { group.as(:nothing) }
     assert_raises(Ruport::Renderer::UnknownFormatError) { group.to_nothing }
   end
+
+  class MyGroupSub < Ruport::Data::Group; end
+
+  def test_ensure_grouping_subclasses_render_properly
+    t = MyGroupSub.new(:column_names => %w[b c],:name => "1") << [2,3]
+    assert_equal "1\n\nb,c\n2,3\n", t.to_csv
+  end
  
   
 end
@@ -280,6 +287,14 @@ class TestGrouping < Test::Unit::TestCase
     b = Ruport::Data::Grouping.new(a, :by => "a")
     assert_equal MyRecord, b[1].record_class
   end   
+
+  class MyGroupingSub < Ruport::Data::Grouping; end
+
+  def test_ensure_grouping_subclasses_render_properly
+    t = Table(%w[a b c]) << [1,2,3]
+    a = MyGroupingSub.new(t, :by => "a") 
+    assert_equal "1\n\nb,c\n2,3\n\n", a.to_csv
+  end
   
 end
 

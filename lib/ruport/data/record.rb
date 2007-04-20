@@ -240,6 +240,10 @@ module Ruport::Data
     include Ruport::Renderer::Hooks
     renders_as_row
 
+    def self.inherited(base)
+      base.renders_as_row
+    end
+
     #
     # Provides a unique hash value. If a Record contains the same data and
     # attributes as another Record, they will hash to the same value, even if

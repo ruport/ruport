@@ -33,6 +33,10 @@ module Ruport::Data
     include Ruport::Renderer::Hooks
     renders_as_group
 
+    def self.inherited(base)
+      base.renders_as_group
+    end
+
     # Create a copy of the Group: records will be copied as well.
     #
     # Example:
@@ -247,6 +251,11 @@ module Ruport::Data
     
     include Ruport::Renderer::Hooks
     renders_as_grouping
+
+    def self.inherited(base)
+      base.renders_as_grouping
+    end
+
     
     # Create a copy of the Grouping: groups will be copied as well.
     #
