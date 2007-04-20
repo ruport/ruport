@@ -82,10 +82,8 @@ module Ruport
     }
   end
 
-  # Builds a file called config/ruport_config.rb which stores a Ruport::Config
-  # skeleton
   def self.build_config
-    m = "#{project}/config/ruport_config.rb"
+    m = "#{project}/config/environment.rb"
     puts "  #{m}"
     File.open(m,"w") { |f| f << CONFIG }
   end
@@ -138,12 +136,8 @@ END_RAKEFILE
 CONFIG = <<END_CONFIG
 require "ruport"
 
-# For details, see Ruport::Config documentation
-Ruport.configure do |conf|
-  conf.source :default, :user     => "root", 
-                        :dsn      =>  "dbi:mysql:mydb"
-  conf.log_file "log/ruport.log"
-end
+Ruport::Query.add_source :default, :user => "root",
+                                   :dsn  => "dbi:mysql:mydb"
 END_CONFIG
 
 BUILD = <<'END_BUILD'
@@ -170,23 +164,15 @@ if ARGV[0].eql? "report"
 REP = <<EOR
 require "lib/init"
 class #{class_name} < Ruport::Report
-  
-  def prepare
 
-  end
- 
   def generate
 
   end
-
-  def cleanup
-
-  end
-
+  
 end
 
 if __FILE__ == $0
-   #{class_name}.run { |res| puts res.results }
+  puts #{class_name}.run
 end
 EOR
 
@@ -270,7 +256,7 @@ rescue LoadError
 end
 require "ruport"
 require "lib/helpers"
-require "config/ruport_config"
+require "config/environment"
 
 class String
   def /(other)
