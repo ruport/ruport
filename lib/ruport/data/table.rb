@@ -5,6 +5,7 @@
 # Copyright 2006 by respective content owners, all rights reserved.
 
 module Ruport::Data            
+
  
   # === Overview
   #
@@ -19,9 +20,88 @@ module Ruport::Data
   # to suit your needs, then used to build a report.
   #
   class Table 
+
+    module FromCSV
+      # Loads a CSV file directly into a Table using the FasterCSV library.
+      #
+      # Example:
+      #   
+      #   # treat first row as column_names
+      #   table = Table.load('mydata.csv')
+      #
+      #   # do not assume the data has column_names
+      #   table = Table.load('mydata.csv',:has_names => false)
+      #
+      #   # pass in FasterCSV options, such as column separators
+      #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
+      #
+      def load(csv_file, options={},&block)
+        get_table_from_csv(:foreach, csv_file, options,&block)
+      end
+      
+      # Creates a Table from a CSV string using FasterCSV.  See Table.load for
+      # additional examples.
+      #
+      #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
+      #
+      def parse(string, options={},&block) 
+        get_table_from_csv(:parse,string,options,&block)
+      end
+
+      private
+      
+      def get_table_from_csv(msg,param,options={},&block) #:nodoc:
+        require "fastercsv"
+
+        options = {:has_names => true,
+                   :csv_options => {} }.merge(options)
+        
+        # if people want to use FCSV's header support, let them           
+        adjust_options_for_fcsv_headers(options)
+
+        loaded_data = self.new(options)
+
+        first_line = true
+        FasterCSV.send(msg,param,options[:csv_options]) do |row|
+
+          if first_line
+            adjust_for_headers(loaded_data,row,options)          
+            first_line = false
+            next if options[:has_names] 
+          end
+
+          if block
+            if options[:records]
+              row = Record.new(row, :attributes => loaded_data.column_names)
+            end
+            block[loaded_data,row]
+          else
+            loaded_data << row
+          end
+
+        end
+
+        return loaded_data
+      end
+
+      def adjust_options_for_fcsv_headers(options)
+        options[:has_names] = false if options[:csv_options][:headers]
+      end
+
+      def adjust_for_headers(loaded,row,options)
+        if options[:has_names]
+          loaded.column_names = row
+        elsif options[:csv_options][:headers]
+          loaded.column_names = row.headers
+        end
+      end
+
+    end
+
+
     include Enumerable             
-    
     include Ruport::Renderer::Hooks
+    extend FromCSV
     renders_with Ruport::Renderer::Table
     
     # Creates a new table based on the supplied options.
@@ -584,69 +664,6 @@ module Ruport::Data
      super
     end
     
-    # Loads a CSV file directly into a Table using the FasterCSV library.
-    #
-    # Example:
-    #   
-    #   # treat first row as column_names
-    #   table = Table.load('mydata.csv')
-    #
-    #   # do not assume the data has column_names
-    #   table = Table.load('mydata.csv',:has_names => false)
-    #
-    #   # pass in FasterCSV options, such as column separators
-    #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
-    #
-    def self.load(csv_file, options={},&block)
-      get_table_from_csv(:foreach, csv_file, options,&block)
-    end
-    
-    # Creates a Table from a CSV string using FasterCSV.  See Table.load for
-    # additional examples.
-    #
-    #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
-    #
-    def self.parse(string, options={},&block) 
-      get_table_from_csv(:parse,string,options,&block)
-    end
-
-    private
-    
-    def self.get_table_from_csv(msg,param,options={},&block) #:nodoc:
-      options = {:has_names => true,
-                 :csv_options => {} }.merge(options)
-      
-      # if people want to use FCSV's header support, let them           
-      options[:has_names] = false if options[:csv_options][:headers]
-
-      require "fastercsv"
-      loaded_data = self.new(options)
-
-      first_line = true
-      FasterCSV.send(msg,param,options[:csv_options]) do |row|
-        if first_line && options[:has_names]
-          loaded_data.column_names = row
-          first_line = false
-        else
-          
-          if first_line && options[:csv_options][:headers]
-            loaded_data.column_names = row.headers
-            first_line = false
-          end
-          
-          if !block
-            loaded_data << row
-          else
-            if options[:records]
-              row = Record.new row, :attributes => loaded_data.column_names
-            end
-            block[loaded_data,row]
-          end
-
-        end
-      end ; loaded_data
-    end      
-
     def append_array(array)
       attributes = @column_names.empty? ? nil : @column_names
       @data << record_class.new(array.to_ary, :attributes => attributes)  
