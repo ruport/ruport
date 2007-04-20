@@ -95,23 +95,15 @@ module Ruport
       end
     end
     
-    # Sets the active source to the Ruport::Config source requested by <tt>label</tt>.
+    # Sets the active source to the Ruport::Query source requested by <tt>label</tt>.
     def use_source(label)
       @source = label
     end
 
-   
-    # Writes the contents of <tt>results</tt> to a file.  If a filename is
-    # specified, it will use it.  Otherwise, it will try to write to the file
-    # specified by the <tt>file</tt> attribute.
-    #
     def write(my_file=file,my_results=results)
       File.open(my_file,"w") { |f| f << my_results }
     end
 
-    # Like Report#write, but will append to a file rather than overwrite it if
-    # the file already exists.
-    #
     def append(my_file=file,my_results=results)
       File.open(my_file,"a") { |f| f << my_results }
     end
