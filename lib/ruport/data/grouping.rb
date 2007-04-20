@@ -188,6 +188,12 @@ module Ruport::Data
       @data.merge!({ group.name => group })
     end
 
+    alias_method :append, :<<
+
+    # Provides access to the subgroups of a particular group in the Grouping.
+    # Supply the name of a group and it returns a Grouping created from the
+    # subgroups of the group.
+    #
     def /(name)
       grouping = dup
       grouping.send(:data=, @data[name].subgroups)
@@ -196,7 +202,7 @@ module Ruport::Data
    
     # Useful for creating basic summaries from Grouping objects.
     # Takes a field to summarize on, and then for each group,
-    # runs the specified procs and returns the results as a Table
+    # runs the specified procs and returns the results as a Table.
     #     
     # The following example would show for each date group,
     # the sum for the attributes or methods :opened and :closed
@@ -221,15 +227,23 @@ module Ruport::Data
             s.merge(r[0] => r[1].call(group))
           end 
         end
-       t.reorder(cols)     
+        t.reorder(cols)     
       }   
     end
-    
-    alias_method :append, :<<
 
+    # Uses Ruport's built-in text formatter to render this Grouping
+    # 
+    # Example:
+    # 
+    #   table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    #
+    #   grouping = Grouping.new(table, :by => "a")
+    #
+    #   puts grouping.to_s
+    #
     def to_s
       as(:text)
-    end  
+    end
     
     include Ruport::Renderer::Hooks
     renders_with Ruport::Renderer::Grouping
@@ -248,9 +262,12 @@ module Ruport::Data
       @data = from.data.inject({}) { |h,d| h.merge!({ d[0] => d[1].dup }) }
     end
 
+    # Provides a shortcut for the <tt>as()</tt> method by converting a call to
+    # <tt>to_format_name</tt> into a call to <tt>as(:format_name)</tt>.
+    #
     def method_missing(id,*args)
-     return as($1.to_sym,*args) if id.to_s =~ /^to_(.*)/ 
-     super
+      return as($1.to_sym,*args) if id.to_s =~ /^to_(.*)/ 
+      super
     end
     
   end

@@ -262,6 +262,9 @@ module Ruport::Data
     #   my_record.foo = 2
     #   my_record.foo #=> 2
     #
+    # Also provides a shortcut for the <tt>as()</tt> method by converting a
+    # call to <tt>to_format_name</tt> into a call to <tt>as(:format_name)</tt>
+    #
     def method_missing(id,*args,&block)
       k = id.to_s.gsub(/=$/,"")
       key_index = @attributes.index(k) || @attributes.index(k.to_sym)
