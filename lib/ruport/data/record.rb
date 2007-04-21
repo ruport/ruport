@@ -157,19 +157,16 @@ module Ruport::Data
     #   a = Data::Record.new([1,2],:attributes => %w[a b])
     #   a.to_a #=> [1,2]
     #
-    # Note: in earlier versions of Ruport, to_a was aliased to data.
-    #       From now on to_a only for array representation! 
     def to_a
       @attributes.map { |a| @data[a] }
     end
          
-    # TODO: Rename to to_hash
     # Converts a Record into a Hash. 
     #
     # Example:
     #
     #   a = Data::Record.new([1,2],:attributes => %w[a b])
-    #   a.to_h #=> {"a" => 1, "b" => 2}
+    #   a.to_hash #=> {"a" => 1, "b" => 2}
     def to_hash
       @data.dup
     end

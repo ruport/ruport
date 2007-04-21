@@ -105,12 +105,12 @@ module Ruport
       
       private
       
-      def get_include_for_find(report_option)
+      def get_include_for_find(report_option) #:nodoc:
         includes = report_option.blank? ? aar_options[:include] : report_option
         includes.is_a?(Hash) ? includes.keys : includes
       end
       
-      def normalize_column_names(table)
+      def normalize_column_names(table) #:nodoc:
         renamed = table.column_names.inject({}) do |s,c|
            s.merge(c => c.sub(/.*\//,""))
         end                              
