@@ -1,7 +1,6 @@
 module Ruport
 
-  # This formatter implements the CSV format for tabular data output. 
-  # See also:  Renderer::Table
+  # This formatter implements the CSV format for tabular data output.
   class Formatter::CSV < Formatter
     
     renders :csv, :for => [ Renderer::Row,   Renderer::Table, 

@@ -48,36 +48,10 @@ module Ruport
       @pdf_writer.extend(PDFWriterMemoryPatch)
     end
 
-    # If table_header_proc is defined, it will be executed and the PDF::Writer
-    # object will be yielded.
-    #
-    # This should be overridden by subclasses, or used as a shortcut for your
-    # own formatter implementations.
-    #
-    # This method is automatically called by the table renderer.
-    #
-    def build_table_header
-       table_header_proc[pdf_writer] if table_header_proc
-    end
-
     # Calls the draw_table method.
-    #
-    # This method is automatically called by the table renderer.
     #
     def build_table_body
       draw_table(data)
-    end
-
-    # If table_footer_proc is defined, it will be executed and the PDF::Writer
-    # object will be yielded.
-    #
-    # This should be overridden by subclasses, or used as a shortcut for your
-    # own formatter implementations.
-    #
-    # This method is automatically called by the table renderer.
-    #
-    def build_table_footer
-      table_footer_proc[pdf_writer] if table_footer_proc
     end
 
     # Appends the results of PDF::Writer#render to output for your 
@@ -268,7 +242,6 @@ module Ruport
         pdf_writer.y
       end
 
-      # rather than being whimsical, let's be really picky.
       def draw_text(text,text_opts)
         move_cursor_to(text_opts[:y]) if text_opts[:y]
         add_text(text,

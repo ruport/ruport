@@ -1,7 +1,6 @@
 module Ruport
   # Produces HTML output for tabular data.
   #
-  # See also Renderer::Table
   class Formatter::HTML < Formatter    
     
     renders :html, :for => [ Renderer::Row, Renderer::Table,
@@ -22,10 +21,6 @@ module Ruport
       end
     end
     
-    # Generates the <tr> and <td> tags for each row, calling to_s on each
-    # element of the Record.  If the Record has been tagged, the tags will be
-    # converted into class attributes in the HTML output.
-    #
     def build_table_body
       render_data_by_row do |rend|
         r = rend.data
@@ -66,12 +61,12 @@ module Ruport
       render_inline_grouping(options)
     end
 
-    # generates <table> tag enclosing the yielded content.
+    # Generates <table> tags enclosing the yielded content.
     #
-    # example:  
+    # Example:  
     #
-    #  output << html_table { "<tr><td>1</td><td>2</td></tr>\n" }
-    #  #=> "<table>\n<tr><td>1</td><td>2</td></tr>\n</table>"
+    #   output << html_table { "<tr><td>1</td><td>2</td></tr>\n" }
+    #   #=> "<table>\n<tr><td>1</td><td>2</td></tr>\n</table>\n"
     #
     def html_table
       "<table>\n" << yield << "</table>\n"
