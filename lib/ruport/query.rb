@@ -3,7 +3,6 @@ require "ruport/query/sql_split"
 
 module Ruport
   
-  #
   # === Overview
   # 
   # Query offers a way to interact with databases via DBI. It supports
@@ -19,30 +18,15 @@ module Ruport
     
     include Enumerable
     
-    #
-    # Queries are initialized with some SQL and a number of options that 
-    # affect their operation. They are NOT executed at initialization. This 
-    # is important to note as they will not query the database until either
-    # Query#result, Query#execute, Query#generator, or an Enumerable method 
-    # is called on them. 
-    #
-    # This kind of laziness is supposed to be A Good Thing, and
-    # as long as you keep it in mind, it should not cause any problems.
-    #
+    # Ruport::Query provides an interface for dealing with raw SQL queries.
     # The SQL can be single or multistatement, but the resulting Data::Table 
-    # will consist only of the result of the last statement which returns 
-    # something.
+    # will consist only of the result of the last statement.
     #
     # Available options:
     #
     # <b><tt>:source</tt></b>::         A source specified in 
     #                                   Ruport::Query.sources, defaults to 
     #                                   <tt>:default</tt>.
-    # <b><tt>:origin</tt></b>::         Query origin, defaults to 
-    #                                   <tt>:string</tt>, but it can be set to 
-    #                                   <tt>:file</tt>, loading the path 
-    #                                   specified by the <tt>sql</tt> 
-    #                                   parameter.
     # <b><tt>:dsn</tt></b>::            If specifed, the Query object will 
     #                                   manually override Ruport::Query.
     # <b><tt>:user</tt></b>::           If a DSN is specified, the user can 
@@ -119,10 +103,6 @@ module Ruport
 
     public
 
-    #
-    # Set this to <tt>true</tt> to get DBI:Rows, <tt>false</tt> to get Ruport 
-    # constructs.
-    #
     attr_accessor :raw_data
     
     # The data stored by Ruport when caching.
@@ -141,20 +121,12 @@ module Ruport
       @password = Ruport::Query.sources[label].password
     end 
     
-    #
-    # Standard <tt>each</tt> iterator, iterates through the result set row by 
-    # row.
-    #
     def each(&action)
       raise(LocalJumpError, "No block given!") unless action
       fetch(&action)
       self
     end
     
-    #
-    # Grabs the result set as a Data::Table or an Array of DBI::Row objects 
-    # if in <tt>raw_data</tt> mode.
-    #
     def result; fetch; end
     
     # Runs the query without returning its results.
@@ -165,7 +137,6 @@ module Ruport
       @cached_data = nil
     end
 
-    #
     # Clears the contents of the cache, then runs the query, filling the
     # cache with the new result.
     #
@@ -174,7 +145,6 @@ module Ruport
       clear_cache; fetch
     end
     
-    #
     # Turns on caching.  New data will not be loaded until the cache is clear 
     # or caching is disabled.
     #
@@ -188,7 +158,6 @@ module Ruport
       @cache_enabled = false
     end
     
-    #
     # Returns a Data::Table, even if in <tt>raw_data</tt> mode.
     # This doesn't work with raw data if the cache is enabled and filled.
     #
