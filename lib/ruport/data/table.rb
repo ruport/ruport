@@ -200,7 +200,8 @@ module Ruport::Data
     alias_method :==, :eql?
 
     # Used to add extra data to the Table. <tt>other</tt> can be an Array, 
-    # Hash or Record.
+    # Hash or Record. It also can be anything that implements a meaningful
+    # to_hash or to_ary
     #
     # Example:
     #
@@ -224,6 +225,7 @@ module Ruport::Data
       return self
     end    
     
+    # returns the record class constant being used by the table
     def record_class
       @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
     end
@@ -251,15 +253,6 @@ module Ruport::Data
     end
   
     
-    # Reorders the table's columns.
-    #
-    # Example:
-    # 
-    #   one = Table.new :data => [[1,2], [3,4]], 
-    #                   :column_names => %w[a b]
-    #
-    #   two = one.reorder([1,0])  
-    #
     def reorder(*indices)
       raise(ArgumentError,"Can't reorder without column names set!") if
         @column_names.empty?
