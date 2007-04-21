@@ -95,7 +95,7 @@ module Ruport
       end
     end   
     
-    # allows the options specified to be accessed directly
+    # Allows the options specified to be accessed directly.
     # 
     #   opt_reader :something
     #   something == options.something #=> true
@@ -105,8 +105,7 @@ module Ruport
       opts.each { |o| def_delegator :@options, o }
     end
     
-    # Gives a list of formats registered for this plugin.
-    # (but not which renderers they're registered on)
+    # Gives a list of formats registered for this formatter.
     def self.formats
       @formats ||= []
     end
@@ -122,8 +121,7 @@ module Ruport
       @options ||= Renderer::Options.new
     end 
 
-    # clears output.  Useful if you are building your own interface to
-    # formatters.
+    # Clears output.
     def clear_output
       @output.replace("")
     end
@@ -131,7 +129,6 @@ module Ruport
     # Provides a shortcut for per format handlers.
     #
     # Example:
-    #
     #
     #   # will only be called if formatter is called for html output
     #   html { output << "Look, I'm handling html" }
