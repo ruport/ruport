@@ -20,8 +20,8 @@ module Ruport
       # Uses Renderer::Row to render the Row object with the
       # given options.
       #
-      # Sets the :io attribute by default to the existing formatter's
-      # output object.
+      # Sets the <tt>:io</tt> attribute by default to the existing 
+      # formatter's <tt>output</tt> object.
       def render_row(row,options={},&block)
         render_helper(Renderer::Row,row,options,&block)
       end
@@ -83,8 +83,8 @@ module Ruport
     # Registers the formatter with one or more Renderers
     #
     #   renders :pdf, :for => MyRenderer
-    #   renders [:csv,:html], :for => YourRenderer
     #   render :text, :for => [MyRenderer,YourRenderer]
+    #   renders [:csv,:html], :for => YourRenderer
     #
     def self.renders(fmts,options={})
       Array(fmts).each do |format|
