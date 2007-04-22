@@ -60,11 +60,8 @@ module Ruport
     #
     def initialize(sql, options={})
       options = { :source => :default, :origin => :string }.merge(options)
-      options[:binding] ||= binding
       options[:origin] = :file if sql =~ /.sql$/
-
-      q = ERB.new(get_query(options[:origin],sql)).result(options[:binding])
-      @statements = SqlSplit.new(q)
+      @statements = SqlSplit.new(get_query(options[:origin],sql))
       @sql = @statements.join
       
       if options[:dsn]
@@ -76,10 +73,8 @@ module Ruport
       
       select_source(options[:source])
       
-      @raw_data = options[:raw_data]
-      @cache_enabled  = options[:cache_enabled]
+      @raw_data = options[:row_type].eql?(:raw)
       @params = options[:params]
-      @cached_data = nil
     end
 
     def self.default_source
@@ -105,9 +100,6 @@ module Ruport
 
     attr_accessor :raw_data
     
-    # The data stored by Ruport when caching.
-    attr_accessor :cached_data
-    
     # The original SQL for the Query object
     attr_reader :sql
     
@@ -130,32 +122,6 @@ module Ruport
     
     # Runs the query without returning its results.
     def execute; fetch; nil; end
-    
-    # Clears the contents of the cache.
-    def clear_cache
-      @cached_data = nil
-    end
-
-    # Clears the contents of the cache, then runs the query, filling the
-    # cache with the new result.
-    #
-    def update_cache
-      return unless @cache_enabled
-      clear_cache; fetch
-    end
-    
-    # Turns on caching.  New data will not be loaded until the cache is clear 
-    # or caching is disabled.
-    #
-    def enable_caching
-      @cache_enabled = true
-    end
-
-    # Turns off caching and flushes the cached data.
-    def disable_caching
-      clear_cache
-      @cache_enabled = false
-    end
     
     # Returns a Data::Table, even if in <tt>raw_data</tt> mode.
     # This doesn't work with raw data if the cache is enabled and filled.

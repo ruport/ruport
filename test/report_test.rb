@@ -28,10 +28,6 @@ class TestReport < Test::Unit::TestCase
 
   def setup
     @report = Report.new
-    Ruport::Query.add_source :default, :dsn => "ruport:test", 
-                                       :user => "foo", :password => "bar" 
-    @query1 = Ruport::Query.new "select * from foo", :cache_enabled => true 
-    @query1.cached_data = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]) 
   end
 
   def test_renders_with_shortcuts
@@ -55,18 +51,6 @@ class TestReport < Test::Unit::TestCase
     @report.results = "foo"
     assert_equal "foo", @report.erb("<%= @results %>")
     assert_equal "foo\n4\n---\n", @report.erb("test/samples/foo.rtxt")
-  end
-
-  def test_query
-    assert_kind_of Ruport::Data::Table, 
-      @report.query("blah",:query_obj => @query1)
-    expected = [[1,2,3],[4,5,6],[7,8,9]]
-    @report.query("blah",:query_obj => @query1, :yield_type => :by_row) { |r|
-      assert_equal expected.shift, r.to_a
-      assert_equal %w[a b c], r.attributes
-    }
-    assert_equal "a,b,c\n1,2,3\n4,5,6\n7,8,9\n", 
-       @report.query("blah",:query_obj => @query1, :as => :csv)       
   end
 
   class MyReport < Report; end
