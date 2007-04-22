@@ -10,50 +10,36 @@
 #
 # = What Ruport Is. 
 #
-# Ruby Reports is a software library that aims to make the task of reporting
-# less tedious and painful.  It provides tools for data acquisition, database
-# interaction, formatting, and parsing/munging.  Designed to be extensible,
-# it is possible to use Ruport for quick specific tasks as well as to build
-# robust reporting applications.
+# Ruby Reports(Ruport) is an extensible reporting system.
+# 
+# It aims to be as lightweight as possible while still providing core support
+# for data aggregation and manipulation as well as multi-format rendering 
+# of reports.
+#
+# Ruport provides tools for using a number of data sources, including CSV files,
+# ActiveRecord models, and raw SQL connections via RubyDBI.
+#
+# Data manipulation is easy as there are standard structures that support
+# record, table, and grouping operations.  These all can be extended to
+# implement custom behavior as needed.
+#
+# For common tasks, Ruport provides formatters for CSV,HTML,PDF, and text based
+# reports.  However, the real power lies in building custom renderers and
+# formatters.  The base formatting libraries provide a number of helper
+# functions that will let you build complex reports while maintaining a DRY and
+# consistent interface.
+#
+# Since Ruport's core support is intentionally minimalistic, you may be looking
+# for some higher level support for specific needs such as graphing, invoices,
+# report mailing support, etc.  For this, you may wish to take a look at the
+# ruport-util package, which contains some generally useful tools and libraries
+# to extend Ruport's capabilities.
 #
 # = Installation 
-#
-# Dependencies:
-#   
-#   Ruport has a number of dependencies.
-#     
-#   Ruby/DBI and appropriate dbds: Makes Query useable 
-#   (must be installed manually)
-#
-#   FasterCSV: Enables fast CSV parsing
-#   (available via rubygems)
-#     
-#   RedCloth:  Enables textile/markdown filtering
-#   (available via rubygems)
-#    
-#   PDF::Writer: Enables printable documents 
-#   (available via rubygems)
-#
-#   MailFactory: For email support. 
-#   (available via rubygems)
-#
-#   Scruffy: For Graph Support
-#   (available via rubygems)
-#
-# Note that by installing any of the dependencies, either via gems or manually,
-# their functionality will automatically be enabled.
 #
 # To install ruport via rubygems with all it's dependencies (except DBI):
 #   
 #   sudo gem install ruport -y
-#
-# To install ruport manually via setup.rb:
-# 
-#   sudo ruby setup.rb
-#
-# To not install ruport at all:
-#
-#   ruby -Ipath/to/ruport/lib my_script.rb
 #
 # Check to see if it installed properly:
 #
@@ -62,38 +48,20 @@
 #
 # If you get an error, please consult the mailing list. 
 #
-# = Getting Started
+# Dependencies Details:
+#   
+#  -- formatting
 #
-# Building a report can be broadly broken up into two phases. 
+# Ruport relies on PDF::Writer and FasterCSV for its formatting support.
+# If you want to make use of textile helpers, you'll also need RedCloth
 #
-# == Data Collection and Manipulation
-# 
-# To begin, your data must be read from its source and stored in Ruport's 
-# standard data structures. Ruport::Data::Table, Ruport::Data::Record, and
-# Ruport::Data::Grouping have further information on how to work with
-# and store data in ruport.
+#  -- database interaction
 #
-# If you wish to retrieve your data using Ruby on Rails and ActiveRecord,
-# please see the acts_as_reportable plugin.
-# 
-# == Report Generation
+# If you wish to use Ruport to report against a rails project, 
+# a camping project, or do standalone AAR reports, you'll need ActiveRecord.
 #
-# Once the data is ready, it can be rendered using a combination of
-# Ruport::Renderer and Ruport::Formatter. 
-# The renderer defines the report type (tabular, graph, etc), and 
-# the formatter renders the engine into a final format (PDF, CSV, HTML, SVG). 
-# Renderers will often interact with more than one formatter, to allow the same
-# report to be rendered in multiple ways ie. as HTML and a PDF.
-# 
-# To tie these together, a basic DSL is provided by Ruport::Report
-#
-# For further reading and specific examples, please explore the examples/ 
-# directory in the source tree.
-#
-# = Bug Reports / Feature Requests
-#
-#  Our Trac is at: http://code.stonecode.org
-#  You may use the username ruport and password blinky to file tickets
+# If you want to use Ruport::Query for raw SQL support, you'll need to 
+# install RubyDBI and whatever database drivers you might need.
 #
 # = Resources
 #
@@ -104,37 +72,14 @@
 # - You can sign up and/or view the archives here:
 #     http://groups.google.com/group/ruby-reports
 #
-# Please do not hesitate to use this list!  I am happily accepting patches and
-# documentation, as well as encouraging design discussions and also am quite
-# curious about what people use or want to use ruport for.
-#
-# I will announce Ruport releases on RubyTalk, on the Ruport mailing list, on
-# Freshmeat, and RAA.  If you would like to
-# keep an eye out for releases, please monitor one of those places.
-#
-#   - You may download Ruport's source from the project page:
-#     http://rubyforge.org/projects/ruport
-#
-#   - The latest stable API documentation is available at:
+#  - The latest stable API documentation is available at:
 #     http://api.rubyreports.org
 #
-# There are also some tutorial available:
-# http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/TutorialsAndArticles
+#  -  Our Trac is at: http://code.stonecode.org
+#     You may use the username ruport and password blinky to file tickets
 #
-# If you are interested in developing Ruport, please *never* study code in
-# official releases.  As this software is in it's early stages, it's essential
-# to keep an eye on the subversion repository.  If you let me know you are
-# interested in working on something, I will let you know if I'm actively
-# working on that section.
+# = Hacking
 #
-# - Grabbing the code from the svn trunk is simple:
-#
-#   svn co svn://rubyforge.org//var/svn/ruport/trunk/ ruport
-#
-# - Or if you are interested in the latest updates to the stable branch
-#
-#   svn co svn://rubyforge.org//var/svn/ruport/branches/stable ruport
-#
-# Thanks for checking out Ruport!
-#
-# If you have any questions or concerns, hop on the mailing list and fire away!
+# If you'd like to work on Ruport, please post on the list and let us know what
+# you're interested in doing, or contact Gregory Brown or Michael Milner if you
+# have questions.
