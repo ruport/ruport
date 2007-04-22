@@ -95,5 +95,10 @@ class TestFormatHTML < Test::Unit::TestCase
                  "\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>7</td>\n"+
                  "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
   end
+  
+  def test_textile
+    a = Ruport::Formatter::HTML.new
+    assert_equal "<p><strong>foo</strong></p>", a.textile("*foo*")
+  end
 
 end

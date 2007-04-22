@@ -57,11 +57,6 @@ class TestReport < Test::Unit::TestCase
     assert_equal "foo\n4\n---\n", @report.erb("test/samples/foo.rtxt")
   end
 
-  def test_textile
-    @report = Report.new
-    assert_equal "<p><strong>foo</strong></p>", @report.textile("*foo*")
-  end
-  
   def test_query
     assert_kind_of Ruport::Data::Table, 
       @report.query("blah",:query_obj => @query1)
