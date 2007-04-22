@@ -72,5 +72,18 @@ module Ruport
       "<table>\n" << yield << "</table>\n"
     end
 
+    # Uses RedCloth to turn a string containing textile markup into HTML.
+    #
+    # Example:
+    #
+    #   textile "*bar*" #=> "<p><strong>foo</strong></p>"
+    #
+    def textile(s)   
+      require "redcloth"
+      RedCloth.new(s).to_html   
+    rescue LoadError
+      raise RuntimeError, "You need RedCloth!\n gem install RedCloth -v 3.0.3"
+    end
+
   end
 end
