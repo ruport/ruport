@@ -19,7 +19,7 @@ module MyStuff
     end
 
     def build_document_body
-      pad(10) { draw_table }
+      pad(10) { draw_table(data) }
     end
 
     def build_document_footer

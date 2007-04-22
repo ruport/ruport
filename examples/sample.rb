@@ -1,4 +1,5 @@
-require "lib/init"
+require "ruport"
+
 class Sample < Ruport::Report
 
   renders_with Ruport::Renderer::Table

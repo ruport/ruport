@@ -6,14 +6,12 @@ module MyModule
      option :report_title
      required_option :titles
 
-     stage :document_header
-     stage :document_body
+     stage :document_header, :document_body
 
      finalize :document
   end
 
   class Text < Ruport::Formatter
-
     renders :txt, :for => SalesRenderer
 
     def pad(str, len)
@@ -82,7 +80,7 @@ module MyModule
     end
 
     def finalize_document
-      output << pdf_writer.render
+      render_pdf
     end 
 
   end

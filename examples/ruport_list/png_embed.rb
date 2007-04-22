@@ -5,7 +5,6 @@ class RoadmapRenderer < Ruport::Renderer
 
   option :image_file
 
-  prepare :roadmap
   stage :roadmap_image, :roadmap_text_body
   finalize :roadmap
 
@@ -49,7 +48,7 @@ class PDFRoadmap < Ruport::Formatter::PDF
   end
 
   def finalize_roadmap
-    output << pdf_writer.render
+    render_pdf
   end
 
 end
