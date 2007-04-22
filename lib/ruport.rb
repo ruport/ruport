@@ -38,7 +38,6 @@ module Ruport
   module SystemExtensions #:nodoc:
     module_function
     
-    #
     # This section builds character reading and terminal size functions
     # to suit the proper platform we're running on.  Be warned:  Here be
     # dragons!

@@ -236,7 +236,7 @@ class Ruport::Renderer
     formatter.data
   end
 
-  # Sets +data+ attribute on both the renderer and any active formatter.
+  # Sets +data+ attribute on the active formatter.
   def data=(val)
     formatter.data = val.dup 
   end

@@ -111,7 +111,6 @@ module Ruport
     # The original SQL for the Query object
     attr_reader :sql
     
-    #
     # This will set the <tt>dsn</tt>, <tt>username</tt>, and <tt>password</tt> 
     # to one specified by a source in Ruport::Query.
     #

@@ -49,7 +49,7 @@ module Ruport
     File.open(m,"w") { |f| f << RAKEFILE }
   end
 
-  # Generates the build.rb, sql_exec.rb, and cabinet.rb utilities
+  # Generates the build.rb and sql_exec.rb utilities
   def self.build_utils           
     
     m = "#{project}/util/build"   
