@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+require 'lib/init.rb'
+require "ruport/generator"
 include FileUtils
-
-def format_class_name(string)
-  string.downcase.split("_").map { |s| s.capitalize }.join
-end
+include Ruport::Generator::Helpers
 
 unless ARGV.length > 1
   puts "usage: build [command] [options]"
@@ -14,31 +13,23 @@ end
 
 class_name = format_class_name(ARGV[1])
 
-exit if File.exist? "lib/reports/#{ARGV[1]}.rb"
 if ARGV[0].eql? "report"
+  check_for_files
   File.open("lib/reports.rb", "a") { |f| 
     f.puts("require \"lib/reports/#{ARGV[1]}\"")
   }
 REP = <<EOR
 require "lib/init"
 class #{class_name} < Ruport::Report
-  
-  def prepare
 
-  end
- 
   def generate
 
   end
-
-  def cleanup
-
-  end
-
+  
 end
 
 if __FILE__ == $0
-   #{class_name}.run { |res| puts res.results }
+  puts #{class_name}.run
 end
 EOR
 
@@ -52,11 +43,54 @@ class Test#{class_name} < Test::Unit::TestCase
   end
 end
 EOR
-  puts "report file: lib/reports/#{ARGV[1]}.rb"
+
   File.open("lib/reports/#{ARGV[1]}.rb", "w") { |f| f << REP }
+  puts "reports file: lib/reports/#{ARGV[1]}.rb"
   puts "test file: test/test_#{ARGV[1]}.rb"
   puts "class name: #{class_name}" 
   File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }  
+
+elsif ARGV[0].eql? "renderer"
+
+  check_for_files
+  File.open("lib/renderers.rb","a") { |f|
+    f.puts("require \"lib/renderers/#{ARGV[1]}\"")
+  }
+REP = <<EOR
+require "lib/init"
+
+class #{class_name} < Ruport::Renderer
+  stage :#{class_name.downcase}
+end
+
+class #{class_name}Formatter < Ruport::Formatter
+
+  # change to your format name, or add additional formats
+  renders :my_format, :for => #{class_name}
+
+  def build_#{class_name.downcase}
+  
+  end
+
+end
+EOR
+
+TEST = <<EOR
+require "test/unit"
+require "lib/renderers/#{ARGV[1]}"
+
+class Test#{class_name} < Test::Unit::TestCase
+  def test_flunk
+    flunk "Write your real tests here or in any test/test_* file"
+  end
+end
+EOR
+  puts "renderer file: lib/renderers/#{ARGV[1]}.rb"
+  File.open("lib/renderers/#{ARGV[1]}.rb", "w") { |f| f << REP }
+  puts "test file: test/test_#{ARGV[1]}.rb"
+
+  puts "class name: #{class_name}"
+  File.open("test/test_#{ARGV[1]}.rb","w") { |f| f << TEST }
 else
   puts "Incorrect usage."
 end
