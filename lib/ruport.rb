@@ -14,31 +14,7 @@ module Ruport
   
   VERSION = "0.9.6"
   
-  # This method yields a <tt>Ruport::Config</tt> object, allowing you to 
-  # set the configuration options for your application.
-  #
-  # Example: 
-  #
-  #   Ruport.configure do |c|
-  #
-  #     c.source :default, 
-  #              :dsn => "dbi:mysql:foo",
-  #              :user => "clyde", 
-  #              :password => "pman"
-  #
-  #     c.mailer :default, 
-  #              :host => "mail.example.com", 
-  #              :address => "inky@example.com"
-  #
-  #   end
-  #
-  def self.configure(&block)
-    block.call(Ruport::Config)
-  end
-
-
-  # SystemExtensions
-  # lovingly ganked from HighLine 1.2.1
+  # SystemExtensions lovingly ganked from HighLine 1.2.1
   #
   # The following modifications have been made by Gregory Brown on 2006.06.25
   #
