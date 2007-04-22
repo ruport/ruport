@@ -198,11 +198,13 @@ module Ruport::Data
     # Supply the name of a group and it returns a Grouping created from the
     # subgroups of the group.
     #
-    def /(name)
+    def subgrouping(name)
       grouping = dup
       grouping.send(:data=, @data[name].subgroups)
       return grouping
-    end 
+    end
+    
+    alias_method :/, :subgrouping
    
     # Useful for creating basic summaries from Grouping objects.
     # Takes a field to summarize on, and then for each group,

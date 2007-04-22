@@ -217,15 +217,18 @@ class TestGrouping < Test::Unit::TestCase
     assert_equal e, b[4].subgroups
   end      
 
-  def test_slash
+  def test_subgrouping
     a = Table(%w[first_name last_name id])
     a << %w[ greg brown awesome ]
     a << %w[ mike milner schweet ]
     a << %w[ greg brown sick ]
     g = Grouping(a,:by => %w[first_name last_name])
 
-    sub = (g / "greg")["brown"]
+    sub = g.subgrouping("greg")["brown"]
     assert_equal %w[awesome sick], sub.column("id")
+
+    sub = (g / "mike")["milner"]
+    assert_equal %w[schweet], sub.column("id")
   end
   
   def test_as_throws_proper_errors
