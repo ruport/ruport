@@ -28,7 +28,7 @@ spec = Gem::Specification.new do |spec|
                       ["Rakefile", "setup.rb"]
   spec.require_path = "lib"
   
-  spec.test_files = Dir[ "test/test_*.rb" ]
+  spec.test_files = Dir[ "test/*_test.rb" ]
   spec.bindir = "bin"
   spec.executables = FileList["rope"]
   spec.has_rdoc = true
@@ -91,7 +91,7 @@ end
 begin
   require 'rcov/rcovtask'
   Rcov::RcovTask.new do |t|
-    t.test_files = Dir[ "test/test_*.rb" ]
+    t.test_files = Dir[ "test/*_test.rb" ]
   end
 rescue LoadError
   nil
