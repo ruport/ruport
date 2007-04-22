@@ -1,16 +1,14 @@
 # ------------------------------------------------------------------------
 # Contents:
 # 
-#  - What Ruport Is.
+#  - What Ruport Is
 #  - Installation
-#  - Getting Started
-#  - Caveats.
 #  - Resources
-#  - Background and Summary 
+#  - Hacking
 #
-# = What Ruport Is. 
+# = What Ruport Is
 #
-# Ruby Reports(Ruport) is an extensible reporting system.
+# Ruby Reports (Ruport) is an extensible reporting system.
 # 
 # It aims to be as lightweight as possible while still providing core support
 # for data aggregation and manipulation as well as multi-format rendering 
@@ -23,8 +21,8 @@
 # record, table, and grouping operations.  These all can be extended to
 # implement custom behavior as needed.
 #
-# For common tasks, Ruport provides formatters for CSV,HTML,PDF, and text based
-# reports.  However, the real power lies in building custom renderers and
+# For common tasks, Ruport provides formatters for CSV, HTML, PDF, and text-
+# based reports.  However, the real power lies in building custom renderers and
 # formatters.  The base formatting libraries provide a number of helper
 # functions that will let you build complex reports while maintaining a DRY and
 # consistent interface.
@@ -44,7 +42,6 @@
 # Check to see if it installed properly:
 #
 #   ruby -rubygems -e "require 'ruport'; puts Ruport::VERSION"
-#   (omit the -rubygems flag if installed manually)
 #
 # If you get an error, please consult the mailing list. 
 #
@@ -69,10 +66,10 @@
 # This software is on the move, so the list is the most reliable way of getting
 # up to date information.
 #
-# - You can sign up and/or view the archives here:
+#  -  You can sign up and/or view the archives here:
 #     http://groups.google.com/group/ruby-reports
 #
-#  - The latest stable API documentation is available at:
+#  -  The latest stable API documentation is available at:
 #     http://api.rubyreports.org
 #
 #  -  Our Trac is at: http://code.stonecode.org
