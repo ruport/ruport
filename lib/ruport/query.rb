@@ -186,15 +186,9 @@ module Ruport
     
     def fetch(&block)
       data = nil
-      if @cache_enabled and @cached_data
-        data = @cached_data
-        data.each { |r| yield(r) } if block_given?
-      else
-        final = @statements.size - 1
-        @statements.each_with_index do |query_text, index|
-          data = query_data(query_text, &(index == final ? block : nil))
-        end
-        @cached_data = data if @cache_enabled
+      final = @statements.size - 1
+      @statements.each_with_index do |query_text, index|
+        data = query_data(query_text, &(index == final ? block : nil))
       end
       return data
     end
