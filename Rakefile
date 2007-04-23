@@ -3,7 +3,7 @@ require "rake/testtask"
 require "rake/gempackagetask"
 
 
-RUPORT_VERSION = "0.9.6"
+RUPORT_VERSION = "0.10.0"
 
 begin
   require "rubygems"
