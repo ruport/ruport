@@ -31,6 +31,9 @@ class SVG < Ruport::Formatter
   def initialize
     require "builder"
     @builder = Builder::XmlMarkup.new(:indent => 2)
+  rescue LoadError
+    STDERR.puts "You need Builder to run this example:\ngem install builder"
+    exit
   end
 
   def render_plot
