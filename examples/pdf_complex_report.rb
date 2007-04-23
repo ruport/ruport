@@ -1,4 +1,3 @@
-require 'rubygems'
 require "ruport"
 
 module MyStuff
