@@ -72,13 +72,12 @@ class MultiPurposeFormatter < Ruport::Formatter
      output << options.body_text
      html { output << "\n</pre>\n" }
    end
-    
-   # FIXME: stage should use maybe()
-   def build_footer; end
 
+   def build_footer; end 
 end
 
 
+# FIXME: come up with a better name
 class RendererWithHelpers < Ruport::Renderer
 
   add_format DummyText, :text
@@ -114,6 +113,17 @@ class RendererWithRunHook < Ruport::Renderer
     formatter.output << "|"
   end
 
+end
+
+class RendererWithHelperModule < TrivialRenderer2
+
+  add_format DummyText, :stub
+
+  module Helpers
+    def say_hello
+      "Hello Dolly"
+    end
+  end
 end
 
 class TestRenderer < Test::Unit::TestCase
@@ -322,5 +332,13 @@ class TestRenderer < Test::Unit::TestCase
      assert_equal "---\nheader\nbody\nfooter\n---\n", 
                   YetAnotherRenderer.render_text_with_layout
   end
+
+  def test_renderer_helper_module
+    RendererWithHelperModule.render_stub do |r|
+      assert_equal "Hello Dolly", r.formatter.say_hello
+    end
+  end
+
+
 
 end

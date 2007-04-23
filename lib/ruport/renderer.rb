@@ -201,7 +201,9 @@ class Ruport::Renderer
 
       rend.send(:use_formatter,args[0])
       rend.send(:options=, options.dup)
-
+      if rend.class.const_defined? :Helpers
+        rend.formatter.extend(rend.class.const_get(:Helpers))
+      end
       if args[1].kind_of?(Hash)
         d = args[1].delete(:data)
         rend.data = d if d
