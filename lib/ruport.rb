@@ -12,7 +12,7 @@
 
 module Ruport
   
-  VERSION = "0.10.0"
+  VERSION = "0.10.1"
   
   # SystemExtensions lovingly ganked from HighLine 1.2.1
   #
