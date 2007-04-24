@@ -26,7 +26,7 @@ you should do:
 1) Sign up on the mailing list: http://list.rubyreports.org/
 
 2) Post and introduce yourself, letting us know what you'd like to work on OR
-   Find dudleyf,sandal,or jh in #ruport on Freenode and let us know there.
+   Find sandal or mikem836 on #ruport
 
 3) If you plan on implementing new features, please take a look at our
    project roadmap:
@@ -36,8 +36,7 @@ you should do:
 4) Also, please read the SubmittingChangeRequests, ReportingDefects, and
    SubmittingPatches Trac wiki pages, where appropriate.
 
-5) Please pull the latest code from SVN.  If you are hunting bugs in released
-   code, please grab the latest code from branches/stable, otherwise use trunk.
+5) Please pull the latest code from SVN. (ruport/trunk)
 
 
 This should hopefully be enough to get you on the right track.  We welcome your
