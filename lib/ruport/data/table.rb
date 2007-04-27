@@ -83,7 +83,8 @@ module Ruport::Data
 
       def handle_csv_row_proc(data,row,options,block)
         if options[:records]
-          row = Record.new(row, :attributes => data.column_names)
+          rc = options[:record_class] || Record
+          row = rc.new(row, :attributes => data.column_names)
         end
         
         block[data,row]

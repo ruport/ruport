@@ -668,8 +668,14 @@ class TestTable < Test::Unit::TestCase
   def test_ensure_csv_loading_accepts_table_options
      a = Table("test/samples/addressbook.csv",:record_class => DuckRecord)
      a.each { |r| assert_kind_of(DuckRecord,r) }
+  end    
+  
+  def test_ensure_table_from_csv_accepts_record_class_in_block_usage
+    a = Table("test/samples/addressbook.csv",:record_class => DuckRecord,
+                                             :records => true) do |s,r|
+       assert_kind_of(DuckRecord,r) 
+    end
   end
-
 
   class MySubClass < Ruport::Data::Table; end
   
@@ -736,6 +742,6 @@ class TestTableKernelHack < Test::Unit::TestCase
   def test_ensure_table_hack_accepts_normal_constructor_args
     assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),
                  Table(:column_names => %w[a b c])
-  end     
+  end    
   
 end
