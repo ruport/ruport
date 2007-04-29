@@ -39,11 +39,10 @@ class TestReport < Test::Unit::TestCase
     a = SampleReport.new
     assert_equal("not,abc\no,r\none,two\nthr,ee\n",a.to_csv)
 
-    #not sure if this is 'good behaviour'
-    assert_equal :csv, a.format
+    assert_nil nil, a.format
     a.to_text
 
-    assert_equal :text, a.format
+    assert_nil a.format
   end
 
   def test_erb

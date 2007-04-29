@@ -10,7 +10,7 @@
 # See LICENSE and COPYING for details
 #
 
-module Ruport
+module Ruport #:nodoc:#
   
   VERSION = "0.10.1"
   

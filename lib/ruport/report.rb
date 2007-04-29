@@ -13,23 +13,43 @@ module Ruport
 
   # === Overview
   #
-  # The Ruport::Report class provides a high level interface to most of Ruport's
+  # The Ruport::Report class provides a high level interface to much of Ruport's
   # functionality.  It is designed to allow you to build and run reports easily.
   # If your needs are complicated, you will probably need to take a look at the
   # individual classes of the library, but if they are fairly simple, you may be
-  # able to get away using this class alone.
+  # able to get away using this class alone. 
   #
-  # FIXME: New example
+  # Ruport::Report is primarily meant to be used with Ruport's code generator, 
+  # rope, and is less useful when integrated within another system, such as
+  # Rails or Camping.
+  #
+  # Below is a simple example of loading a report in from a CSV, performing a
+  # grouping operation, and then rendering the resulting PDF to file.
+  #
+  #   require "rubygems"
+  #   require "ruport"
+  #   class MyReport < Ruport::Report 
+  #
+  #     renders_as_grouping(:style => :inline)   
+  #
+  #     def generate
+  #       table = load_csv "foo.csv"
+  #       Grouping(table, :by => "username")
+  #     end  
+  #
+  #   end   
+  #
+  #   report = MyReport.new(:pdf) 
+  #   report.run { |results| results.write("bar.pdf") }
+  #
   class Report   
     extend Forwardable
     include Renderer::Hooks
-    
-    # If your report does not need any sort of specialized information, you can
-    # simply use Report.run (Or MyReportName.run if you've inherited).
+        
+    # Builds a report instance.  If provided a format parameter, 
+    # this format will be used by default when rendering the report.
     #
-    # This will auto-initialize a report.
-    #
-    def initialize( format=nil, options={} )
+    def initialize( format=nil )
       use_source :default
       @format      = format
       @report_name = "" 
@@ -44,7 +64,8 @@ module Ruport
     # run.
     #
     attr_accessor :results
-
+     
+    # This attribute defines which format the Report will render in by default.
     attr_accessor :format
 
     # This is a simplified interface to Ruport::Query.
@@ -94,15 +115,50 @@ module Ruport
       end
     end
     
-    # Sets the active source to the Ruport::Query source requested by <tt>label</tt>.
+    # Sets the active source to the Ruport::Query source requested by
+    # <tt>label</tt>. 
+    #
+    # For example, if you have a data source :test, which is defined as such:
+    #
+    #   Ruport::Query.add_source(:test, :dsn => "dbi:mysql:test", 
+    #                                   :user => "root" ) 
+    #
+    #  
+    # The following report would use that data source rather than the
+    # <tt>:default</tt> source:
+    #
+    #   class MyReport < Ruport::Report
+    #
+    #     renders_as_table     
+    #
+    #     def generate
+    #        use_source :test
+    #        query "select * from foo" 
+    #     end             
+    #
+    #   end
     def use_source(label)
       @source = label
     end
-
+     
+    # Writes the contents of Report#results to file.
+    # If given a string as a second argument, writes that to file, instead.
+    #
+    # Examples:
+    #   
+    #   # write the results of the report to a file
+    #   Report.run { |r| r.write("foo.txt") } 
+    #   
+    #   # write the results in reverse     
+    #   Report.run { |r| r.write("foo.txt",r.results.reverse) }     
+    #    
     def write(my_file=file,my_results=results)
       File.open(my_file,"w") { |f| f << my_results }
     end
-
+    
+    # Behaves the same way as Report#write, but will append to a file rather
+    # than create a new file if it already exists.
+    #
     def append(my_file=file,my_results=results)
       File.open(my_file,"a") { |f| f << my_results }
     end
@@ -115,10 +171,17 @@ module Ruport
       options[:reports] ||= [self]
       self.class.run(options,&block)
     end
-
-    def as(format,*args)
-      self.format = format
-      run(*args)
+       
+    # Allows you to override the default format.
+    #
+    # Example:
+    #
+    #   my_report.as(:csv)
+    def as(format,*args)   
+      self.format,old = format, self.format
+      results = run(*args)  
+      self.format = old 
+      return results
     end
 
     def method_missing(id,*args)
@@ -166,13 +229,13 @@ module Ruport
     end
 
     class << self
-
+      
       def as(format,options={})
         report = new(format)
         report.run(rendering_options.merge(options))
-      end
-
-      def method_missing(id,*args)
+      end 
+            
+      def method_missing(id,*args) #:nodoc#
         id.to_s =~ /^to_(.*)/
         $1 ? as($1.to_sym,*args) : super
       end
@@ -201,15 +264,21 @@ module Ruport
       # Runs the reports specified.  If no reports are specified, then it
       # creates a new instance via <tt>self.new</tt>.
       #
-      # Tries to execute the prepare instance method, then runs generate.
-      # It then yields the object so that you may do something with it
-      # (print something out, write to file, email, etc.).
+      # Hooks called, in order:
+      #    * Report#prepare
+      #    * Report#generate #=> return value stored in @results
+      #    * yields self to block, if given   
+      #    * if a renderer is specified, passes along @results and options
+      #    * Report#cleanup    
+      #
+      # Options: 
+      #   :reports:  A list of reports to run, defaults to a single generic
+      #              instance of the current report (self.new).  
       # 
-      # Finally, it tries to call cleanup.
-      #
-      # This method will return the contents of Report#results, as a single
-      # value for single reports, and an array of outputs for multiple reports.
-      #
+      #   :tries:, :timeout:, :interval:   Wrappers on attempt.rb
+      # 
+      #    all other options will be forwarded to a renderer if one is specified
+      #    via the Renderer::Hooks methods
       def run(options={})
         options[:reports] ||= [self.new]
 
