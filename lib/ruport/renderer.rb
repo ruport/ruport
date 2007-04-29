@@ -23,7 +23,10 @@ class Ruport::Renderer
   class RendererNotSetError < RuntimeError #:nodoc:
   end
                                           
-  require "ostruct"
+  require "ostruct"              
+  
+  # Structure for holding renderer options.  
+  # Simplified version of HashWithIndifferentAccess
   class Options < OpenStruct 
     def to_hash
       @table

@@ -193,8 +193,10 @@ module Ruport
     end
 
     def draw_table(table_data, format_opts={})
-      m = "Sorry, cant build PDFs from array like things (yet)"
-      raise m if table_data.column_names.empty?
+      m = "PDF Formatter requires column_names to be defined"
+      raise FormatterError, m if table_data.column_names.empty?
+      
+      table_data.rename_columns { |c| c.to_s } 
       
       format_opts = table_format.merge(format_opts) if table_format  
       

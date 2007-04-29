@@ -12,7 +12,10 @@
 
 module Ruport #:nodoc:#
   
-  VERSION = "0.10.1"
+  VERSION = "0.10.1"   
+  
+  class FormatterError < RuntimeError #:nodoc:
+  end
   
   # SystemExtensions lovingly ganked from HighLine 1.2.1
   #
