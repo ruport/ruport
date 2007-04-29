@@ -5,7 +5,6 @@
 # Copyright 2006 by respective content owners, all rights reserved.
 module Ruport::Data
 
-  #
   # === Overview
   # 
   # Data::Records are the work horse of Ruport's data model. These can behave
@@ -16,7 +15,6 @@ module Ruport::Data
 
     include Enumerable  
     
-    # 
     # Creates a new Record object.  If the <tt>:attributes</tt> 
     # keyword is specified, Hash-like and Struct-like 
     # access will be enabled.  Otherwise, Record elements may be 
@@ -71,7 +69,6 @@ module Ruport::Data
       @attributes.dup
     end
     
-    #
     # Sets the <tt>attribute</tt> list for this Record. 
     # (Dangerous when used within Table objects!)
     #
@@ -89,7 +86,6 @@ module Ruport::Data
     # Access Methods #
     ##################
     
-    #
     # Allows either Array or Hash-like indexing.
     #
     # Examples:
@@ -106,7 +102,6 @@ module Ruport::Data
       end
     end
         
-    # 
     # Allows setting a <tt>value</tt> at an <tt>index</tt>.
     # 
     # Examples:
@@ -149,7 +144,6 @@ module Ruport::Data
     #  Conversions #
     ################
     
-    #
     # Converts a Record into an Array.
     #
     # Example:
@@ -208,7 +202,6 @@ module Ruport::Data
       @data[new_name] = @data.delete(old_name)
     end
     
-    #
     # Allows you to change the order of or reduce the number of columns in a
     # Record.  
     #
@@ -241,7 +234,6 @@ module Ruport::Data
       base.renders_as_row
     end
 
-    #
     # Provides a unique hash value. If a Record contains the same data and
     # attributes as another Record, they will hash to the same value, even if
     # they are not the same object. This is similar to the way Array works, 
