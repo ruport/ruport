@@ -13,14 +13,18 @@
 # This class can easily be extended to build custom formatting systems, but if
 # you do not need that, it may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
-
-  class RequiredOptionNotSet < RuntimeError; end
-  class UnknownFormatError < RuntimeError; end
-  class StageAlreadyDefinedError < RuntimeError; end
-  class RendererNotSetError < RuntimeError; end
-
+  
+  class RequiredOptionNotSet < RuntimeError #:nodoc:
+  end
+  class UnknownFormatError < RuntimeError #:nodoc:
+  end
+  class StageAlreadyDefinedError < RuntimeError #:nodoc: 
+  end
+  class RendererNotSetError < RuntimeError #:nodoc:
+  end
+                                          
   require "ostruct"
-  class Options < OpenStruct #:nodoc:
+  class Options < OpenStruct 
     def to_hash
       @table
     end   
@@ -32,7 +36,7 @@ class Ruport::Renderer
     end
   end
 
-  module Hooks #:nodoc:
+  module Hooks 
     module ClassMethods
       def renders_with(renderer,opts={})
         @renderer = renderer.name
@@ -65,7 +69,7 @@ class Ruport::Renderer
       end
     end
 
-    def self.included(base)
+    def self.included(base) #:nodoc:
       base.extend(ClassMethods)
     end      
 
