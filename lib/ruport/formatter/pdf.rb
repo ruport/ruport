@@ -288,7 +288,7 @@ module Ruport
       data.each do |name,group|
         group_column = { data.grouped_by => "<b>#{name}</b>\n" }
         group.each_with_index do |rec,i|
-          i == 0 ? table << group_column.merge(rec.to_h) : table << rec
+          i == 0 ? table << group_column.merge(rec.to_hash) : table << rec
         end
         table << Array.new(grouping_columns.length,' ') if style == :separated
       end

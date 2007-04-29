@@ -28,7 +28,21 @@ class TestFormatPDF < Test::Unit::TestCase
   def test_tables_should_render_with_symbol_column_name
     data = [[1,2,3],[4,5,6]].to_table([:a,:b,:c])
     assert_nothing_raised { data.to_pdf }
+  end                                    
+  
+  # As of Ruport 0.10.0, PDF's justified group output was throwing
+  # UnknownFormatError  (#288)
+  def test_group_styles_should_not_throw_error
+     table = [[1,2,3],[4,5,6],[1,7,9]].to_table(%w[a b c]) 
+     grouping = Grouping(table,:by => "a")
+     assert_nothing_raised { grouping.to_pdf } 
+     assert_nothing_raised { grouping.to_pdf(:style => :inline) }
+     assert_nothing_raised { grouping.to_pdf(:style => :offset) }     
+     assert_nothing_raised { grouping.to_pdf(:style => :justified) }
+     assert_nothing_raised { grouping.to_pdf(:style => :separated) }    
   end
+  
+  
   
 
 end
