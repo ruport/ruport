@@ -176,15 +176,17 @@ module Ruport
     #
     # Example:
     #
-    #   my_report.as(:csv)
+    #   my_report.as(:csv) 
+    #
     def as(format,*args)   
       self.format,old = format, self.format
       results = run(*args)  
       self.format = old 
       return results
     end
-
-    def method_missing(id,*args)
+                                 
+    # Provides syntactic sugar, allowing to_foo in place of as(:foo)
+    def method_missing(id,*args) 
       id.to_s =~ /^to_(.*)/
       $1 ? as($1.to_sym,*args) : super
     end
@@ -196,7 +198,7 @@ module Ruport
     #   my_table = load_csv "foo.csv"                 #=> Data::Table
     #   my_array = load_csv "foo.csv", :as => :array  #=> Array
     #
-    # See also Ruport::Data::Table.load
+    # See also Ruport::Data::Table.load and Table()
     #
     def load_csv(file,options={})
       case options[:as]
@@ -230,12 +232,19 @@ module Ruport
 
     class << self
       
+      # Allows you to override the default format.
+      #
+      # Example:
+      #
+      #   my_report.as(:csv) 
+      #
       def as(format,options={})
         report = new(format)
         report.run(rendering_options.merge(options))
       end 
-            
-      def method_missing(id,*args) #:nodoc#
+      
+      # Provides syntactic sugar, allowing to_foo in place of as(:foo)        
+      def method_missing(id,*args) 
         id.to_s =~ /^to_(.*)/
         $1 ? as($1.to_sym,*args) : super
       end
