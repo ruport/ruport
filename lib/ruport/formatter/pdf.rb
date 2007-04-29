@@ -21,9 +21,7 @@ module Ruport
                             Renderer::Group, Renderer::Grouping ]
     
     attr_writer :pdf_writer
-    attr_accessor :table_header_proc
-    attr_accessor :table_footer_proc
-    
+
     opt_reader  :show_table_headers,
                 :style,
                 :table_format,
