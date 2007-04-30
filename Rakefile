@@ -29,8 +29,6 @@ spec = Gem::Specification.new do |spec|
   spec.require_path = "lib"
   
   spec.test_files = Dir[ "test/*_test.rb" ]
-  spec.bindir = "bin"
-  spec.executables = FileList["rope"]
   spec.has_rdoc = true
   spec.extra_rdoc_files = %w{README LICENSE AUTHORS}
   spec.rdoc_options << '--title' << 'Ruport Documentation' <<
