@@ -27,45 +27,122 @@ class Ruport::Renderer
   
   # Structure for holding renderer options.  
   # Simplified version of HashWithIndifferentAccess
-  class Options < OpenStruct 
+  class Options < OpenStruct  
+    # returns a Hash object.  Use this if you need methods other than []
     def to_hash
       @table
-    end   
+    end            
+    # indifferent lookup of an attribute, e.g.
+    #
+    #  options[:foo] == options["foo"]
     def [](key)
       send(key)
-    end
+    end 
+    
+    # Sets an attribute, with indifferent access.
+    #  
+    #  options[:foo] = "bar"  
+    #
+    #  options[:foo] == options["foo"] #=> true
+    #  options["foo"] == options.foo #=> true
+    #  options.foo #=> "bar"
     def []=(key,value)
-      send("#{key}=",value)
+      send("#{key}=",value)e
     end
   end
-
+   
+  # This module provides hooks into Ruport's formatting system.
+  # It is used to implement the as() method for all of Ruport's datastructures,
+  # as well as the renders_with and renders_as_* helpers.
+  #
+  # You can actually use this with any data structure, it will look for a
+  # renderable_data method to pass to the <tt>renderer</tt> you specify, 
+  # but if that is not defined, it will pass <tt>self</tt> 
+  #
+  # Examples:
+  #
+  #   # Render Arrays with Ruport's Row Renderer
+  #   class Array
+  #     include Ruport::Renderer::Hooks
+  #     renders_as_row
+  #   end
+  #
+  #   # >> [1,2,3].as(:csv) 
+  #   # => "1,2,3\n" 
+  #
+  #   # Render Hashes with Ruport's Row Renderer
+  #   class Hash
+  #      include Ruport::Renderer::Hooks
+  #      renders_as_row
+  #      attr_accessor :column_order
+  #      def renderable_data
+  #         column_order.map { |c| self[c] }
+  #      end
+  #   end       
+  #
+  #   # >> a = { :a => 1, :b => 2, :c => 3 }
+  #   # >> a.column_order = [:b,:a,:c]
+  #   # >> a.as(:csv)
+  #   # => "2,1,3\n"
   module Hooks 
-    module ClassMethods
+    module ClassMethods 
+      
+      # Tells the class which renderer as() will forward to.
+      #
+      # usage:
+      #
+      #   class MyStructure
+      #     include Renderer::Hooks
+      #     renders_with CustomRenderer
+      #   end
+      #   
+      # You can also specify default rendering options, which will be used
+      # if they are not overriden by the options passed to as()
+      #
+      #   class MyStructure
+      #      include Renderer::Hooks
+      #      renders_with CustomRenderer, :font_size => 14
+      #   end
       def renders_with(renderer,opts={})
         @renderer = renderer.name
         @rendering_options=opts
       end  
-
+      
+      # The default rendering options for a class, stored as a hash.
       def rendering_options
         @rendering_options
       end
-      
+       
+      # Shortcut for renders_with(Ruport::Renderer::Table), you
+      # may wish to override this if you build a custom table renderer.
       def renders_as_table(options={})
         renders_with Ruport::Renderer::Table,options
       end
-       
+      
+      # Shortcut for renders_with(Ruport::Renderer::Row), you
+      # may wish to override this if you build a custom row renderer. 
       def renders_as_row(options={})
         renders_with Ruport::Renderer::Row, options
       end
-        
+      
+      # Shortcut for renders_with(Ruport::Renderer::Group), you
+      # may wish to override this if you build a custom group renderer.  
       def renders_as_group(options={})
         renders_with Ruport::Renderer::Group,options
       end 
       
+      # Shortcut for renders_with(Ruport::Renderer::Grouping), you
+      # may wish to override this if you build a custom grouping renderer.
       def renders_as_grouping(options={})
         renders_with Ruport::Renderer::Grouping,options
       end
-
+      
+      # The class of the renderer object for the base class.
+      #
+      # Example
+      # 
+      #   >> Ruport::Data::Table.renderer
+      #   => Ruport::Renderer::Table
       def renderer
         return unless @renderer
         @renderer.split("::").inject(Class) { |c,el| c.const_get(el) }
@@ -75,7 +152,17 @@ class Ruport::Renderer
     def self.included(base) #:nodoc:
       base.extend(ClassMethods)
     end      
-
+    
+    # Uses the Renderer specified by renders_with to generate formatted
+    # output.  Passes the return value of the <tt>renderable_data</tt> method if
+    # the method is defined, otherwise passes <tt>self</tt> as :data
+    #
+    # The remaining options are converted to a Renderer::Options object and
+    # accessible in both the renderer and formatter.
+    #
+    #  Example:
+    #
+    #    table.as(:csv, :show_table_headers => false)
     def as(format,options={})
       raise RendererNotSetError unless self.class.renderer
       unless self.class.renderer.formats.include?(format)
@@ -129,28 +216,125 @@ class Ruport::Renderer
   class << self
     
     attr_accessor :first_stage,:final_stage,:required_options,:stages #:nodoc: 
-
+    
+    # Registers a hook to look for in the Formatter object when the render()
+    # method is called.                           
+    #
+    # Usage:
+    #
+    #   class MyRenderer < Ruport::Renderer
+    #      # other details omitted...
+    #      finalize :apple
+    #   end
+    #
+    #   class MyFormatter < Ruport::Formatter
+    #      renders :example, :for => MyRenderer
+    # 
+    #      # other details omitted... 
+    #    
+    #      def finalize_apple
+    #         # this method will be called when MyRenderer tries to render
+    #         # the :example format
+    #      end
+    #   end  
+    #
+    #  If a formatter does not implement this hook, it is simply ignored.
     def finalize(stage)
       if final_stage
         raise StageAlreadyDefinedError, 'final stage already defined'      
       end
       self.final_stage = stage
     end
-
+    
+    # Registers a hook to look for in the Formatter object when the render()
+    # method is called.                           
+    #
+    # Usage:
+    #
+    #   class MyRenderer < Ruport::Renderer
+    #      # other details omitted...
+    #      prepare :apple
+    #   end
+    #
+    #   class MyFormatter < Ruport::Formatter
+    #      renders :example, :for => MyRenderer
+    #
+    #      def prepare_apple
+    #         # this method will be called when MyRenderer tries to render
+    #         # the :example format
+    #      end        
+    #      
+    #      # other details omitted...
+    #   end  
+    #
+    #  If a formatter does not implement this hook, it is simply ignored.
     def prepare(stage)
       if first_stage
         raise StageAlreadyDefinedError, "prepare stage already defined"      
       end 
       self.first_stage = stage
     end
-
+    
+    # Registers hooks to look for in the Formatter object when the render()
+    # method is called.                           
+    #
+    # Usage:
+    #
+    #   class MyRenderer < Ruport::Renderer
+    #      # other details omitted...
+    #      stage :apple,:banana
+    #   end
+    #
+    #   class MyFormatter < Ruport::Formatter
+    #      renders :example, :for => MyRenderer
+    #
+    #      def build_apple
+    #         # this method will be called when MyRenderer tries to render
+    #         # the :example format
+    #      end 
+    #   
+    #      def build_banana
+    #         # this method will be called when MyRenderer tries to render
+    #         # the :example format
+    #      end    
+    #      
+    #      # other details omitted...
+    #   end  
+    #
+    #  If a formatter does not implement these hooks, they are simply ignored.          
+    def stage(*stage_list)
+      self.stages ||= []
+      stage_list.each { |stage|
+        self.stages << stage.to_s 
+      }
+    end
+     
+    # Defines attribute writers for the Renderer::Options object shared
+    # between Renderer and Formatter
+    #
+    # usage:
+    #   
+    #   class MyRenderer < Ruport::Renderer
+    #      option :font_size, :font_style
+    #      # other details omitted
+    #   end
     def option(*opts)
       opts.each do |opt|
         opt = "#{opt}="
         define_method(opt) {|t| options.send(opt, t) } 
       end
     end
-
+    
+    # Defines attribute writers for the Renderer::Options object shared
+    # between Renderer and Formatter. Will throw an error if the user does
+    # not provide values for these options upon rendering.
+    #
+    # usage:
+    #   
+    #   class MyRenderer < Ruport::Renderer
+    #      required_option :employee_name, :address
+    #      # other details omitted
+    #   end
     def required_option(*opts) 
       self.required_options ||= []
       opts.each do |opt|
@@ -158,18 +342,38 @@ class Ruport::Renderer
         option opt
       end
     end
+    
 
-    def stage(*stage_list)
-      self.stages ||= []
-      stage_list.each { |stage|
-        self.stages << stage.to_s 
-      }
-    end
-
+    # Lists the formatters that are currently registered on a renderer,
+    # as a hash keyed by format name.
+    #
+    # Example:
+    # 
+    #   >> Ruport::Renderer::Table.formats
+    #   => {:html=>Ruport::Formatter::HTML, 
+    #   ?>  :csv=>Ruport::Formatter::CSV, 
+    #   ?>  :text=>Ruport::Formatter::Text, 
+    #   ?>  :pdf=>Ruport::Formatter::PDF}
     def formats
       @formats ||= {}
     end
-
+    
+    # Builds up a renderer object, looks up the appropriate formatter,
+    # sets the data and options, and then does the following process:
+    #
+    #   * If the renderer contains a module Helpers, mix it in to the instance.
+    #   * If a setup() method is defined on the Renderer, call it
+    #   * If a block is given, yield the Renderer instance
+    #   * If the renderer has defined a run() method, call it, otherwise,
+    #     include Renderer::AutoRunner. (you usually won't need a run() method )
+    #   * call _run_ if it exists (This is provided by default, by AutoRunner)
+    #   * return the results of formatter.output
+    #
+    # Note that the only time you will need a run() method is if you can't
+    # do what you need to via a helpers module or via setup()
+    #
+    # Please see the examples/ directory for custom renderer examples, because
+    # this is not nearly as complicated as it sounds in most cases.
     def render(*args)
       rend = build(*args) { |r|
         r.setup if r.respond_to? :setup
@@ -237,10 +441,14 @@ class Ruport::Renderer
     end
     
   end
-
-  attr_accessor :format
+  
+  # The name of format being used
+  attr_accessor :format  
+  
+  # The formatter object being used
   attr_writer :formatter  
-
+  
+  # The +data+ that has been passed to the active formatter.
   def data
     formatter.data
   end
