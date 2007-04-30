@@ -3,11 +3,13 @@ quiet { require "active_record" }
 
 module Ruport
   
-  # This module is designed to be mixed in with an ActiveRecord model
-  # to add easy conversion to Ruport's data structures.
+  # This module is designed to allow an ActiveRecord model to be converted to
+  # Ruport's data structures.  If ActiveRecord is available when Ruport is
+  # loaded, this module will be automatically mixed into ActiveRecord::Base.
+  #
   module Reportable
     
-    def self.included(base) # :nodoc:
+    def self.included(base) #:nodoc:
       base.extend ClassMethods  
     end
     
@@ -18,12 +20,29 @@ module Ruport
       #
       #   acts_as_reportable
       #
-      # This will automatically make all the methods in this module available
-      # in the model.
+      # This will automatically make all the methods in
+      # Ruport::Reportable::SingletonMethods available to the model class and
+      # all the methods in Ruport::Reportable::InstanceMethods available to
+      # instances of the model.
       #
-      # You may pass the acts_as_reportable method the :only, :except,
-      # :methods, and :include options.  See report_table for the format
-      # of these options.
+      # Available options:
+      #
+      # <b><tt>:only</tt></b>::     an attribute name or array of attribute
+      #                             names to include in the results, other
+      #                             attributes will be excuded.
+      # <b><tt>:except</tt></b>::   an attribute name or array of attribute
+      #                             names to exclude from the results.
+      # <b><tt>:methods</tt></b>::  a method name or array of method names
+      #                             whose result(s) will be included in the
+      #                             table.
+      # <b><tt>:include</tt></b>::  an associated model or array of associated
+      #                             models to include in the results.
+      #
+      # Example:
+      # 
+      #   class Book < ActiveRecord::Base
+      #     acts_as_reportable, :only => 'title', :include => :author
+      #   end
       #
       def acts_as_reportable(options = {})
         cattr_accessor :aar_options, :aar_columns
@@ -38,48 +57,57 @@ module Ruport
     module SingletonMethods
       
       # Creates a Ruport::Data::Table from an ActiveRecord find. Takes 
-      # parameters just like a regular find. If you use the :include 
-      # option, it will return a table with all columns from the model and 
-      # the included associations. If you use the :only option, it will
-      # return a table with only the specified columns. If you use the
-      # :except option, it will return a table with all columns except
-      # those specified.
-      # 
-      # Options may be passed to the :include option in order to specify
-      # the output for any associated models. In this case, the :include
-      # option must be a hash, where the keys are the names of the
-      # associations and the values are hashes of options.
+      # parameters just like a regular find.
       #
-      # Use the :methods option to include a column with the same name as
-      # the method and the value resulting from calling the method on the
-      # model object.
+      # Additional options include:
+      #
+      # <b><tt>:only</tt></b>::     an attribute name or array of attribute
+      #                             names to include in the results, other
+      #                             attributes will be excuded.
+      # <b><tt>:except</tt></b>::   an attribute name or array of attribute
+      #                             names to exclude from the results.
+      # <b><tt>:methods</tt></b>::  a method name or array of method names
+      #                             whose result(s) will be included in the
+      #                             table.
+      # <b><tt>:include</tt></b>::  an associated model or array of associated
+      #                             models to include in the results.
+      #
+      # The same set of options may be passed to the :include option in order to
+      # specify the output for any associated models. In this case, the
+      # :include option must be a hash, where the keys are the names of the
+      # associations and the values are hashes of options.
       #
       # Any options passed to report_table will disable the options set by
       # the acts_as_reportable class method.
       #
       # Example:
       # 
-      # class Book < ActiveRecord::Base
-      #   belongs_to :author
-      #   acts_as_reportable
-      # end
+      #   class Book < ActiveRecord::Base
+      #     belongs_to :author
+      #     acts_as_reportable
+      #   end
       #
-      # Book.report_table(:all, :only => ['title'],
-      #   :include => { :author => { :only => 'name' } }).as(:html)
+      #   Book.report_table(:all, :only => ['title'],
+      #     :include => { :author => { :only => 'name' } }).as(:html)
       #
-      # Returns: an html version of a report with two columns, title from 
+      # Returns:
+      #
+      # an html version of the table with two columns, title from 
       # the book, and name from the associated author.
       #
-      # Calling Book.report_table(:all, :include => [:author]).as(:html) will 
-      # return a table with all columns from books and authors.
+      #   Book.report_table(:all, :include => :author).as(:html)
+      #
+      # Returns:
+      #
+      # an html version of the table with all columns from books and authors.
       #
       # Note: column names for attributes of included models will be qualified
-      #       with the model's underscored class name, e.g. 'author.name'
-      #       By default, this will not preserve the entire namespace, but you
-      #       can get the fully qualified namespace by using the
-      #       :preserve_namespace => true option to report_table.  So if the
-      #       Author model was enclosed in a module called MyModule, you'd
-      #       get 'my_module/author.name' as the column name. 
+      # with the model's underscored class name, e.g. 'author.name'
+      # By default, this will not preserve the entire namespace, but you
+      # can get the fully qualified namespace by using the
+      # :preserve_namespace => true option to report_table.  So if the
+      # Author model was enclosed in a module called MyModule, you'd
+      # get 'my_module/author.name' as the column name. 
       #
       def report_table(number = :all, options = {})
         only = options.delete(:only)
@@ -105,12 +133,12 @@ module Ruport
       
       private
       
-      def get_include_for_find(report_option) #:nodoc:
+      def get_include_for_find(report_option)
         includes = report_option.blank? ? aar_options[:include] : report_option
         includes.is_a?(Hash) ? includes.keys : includes
       end
       
-      def normalize_column_names(table) #:nodoc:
+      def normalize_column_names(table)
         renamed = table.column_names.inject({}) do |s,c|
            s.merge(c => c.sub(/.*\//,""))
         end                              
@@ -135,16 +163,18 @@ module Ruport
       #
       # Example:
       # 
-      # class Book < ActiveRecord::Base
-      #   belongs_to :author
-      #   acts_as_reportable
-      # end
+      #   class Book < ActiveRecord::Base
+      #     belongs_to :author
+      #     acts_as_reportable
+      #   end
       # 
-      # abook.reportable_data(:only => ['title'], :include => [:author])
+      #   abook.reportable_data(:only => ['title'], :include => [:author])
       #
-      # Returns:  [{'title' => 'book title',
-      #             'author.id' => 'author id',
-      #             'author.name' => 'author name' }]
+      # Returns:
+      #
+      #   [{'title' => 'book title',
+      #     'author.id' => 'author id',
+      #     'author.name' => 'author name' }]
       #  
       # NOTE: title will only be returned if the value exists in the table.
       # If the books table does not have a title column, it will not be
@@ -152,11 +182,13 @@ module Ruport
       #
       # Example:
       #
-      # abook.reportable_data(:only => ['title'],
-      #   :include => { :author => { :only => ['name'] } })
+      #   abook.reportable_data(:only => ['title'],
+      #     :include => { :author => { :only => ['name'] } })
       #
-      # Returns:  [{'title' => 'book title',
-      #             'author.name' => 'author name' }]
+      # Returns:
+      #
+      #   [{'title' => 'book title',
+      #     'author.name' => 'author name' }]
       #
       def reportable_data(options = {})
         options = options.merge(self.class.aar_options) unless
