@@ -47,7 +47,7 @@ class Ruport::Renderer
     #  options["foo"] == options.foo #=> true
     #  options.foo #=> "bar"
     def []=(key,value)
-      send("#{key}=",value)e
+      send("#{key}=",value)
     end
   end
    
