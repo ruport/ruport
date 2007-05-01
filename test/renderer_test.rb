@@ -74,8 +74,7 @@ class MultiPurposeFormatter < Ruport::Formatter
    end
 
    def build_footer; end 
-end
-
+end   
 
 # FIXME: come up with a better name
 class RendererWithHelpers < Ruport::Renderer
@@ -124,6 +123,38 @@ class RendererWithHelperModule < TrivialRenderer2
       "Hello Dolly"
     end
   end
+end   
+
+class ErbFormatter < Ruport::Formatter
+   
+  renders :terb, :for  => TrivialRenderer2
+  
+  def build_header; end #gross, refactor            
+  def build_footer; end #gross, refactor 
+  def build_body    
+     # demonstrate local binding
+     @foo = "bar"                         
+     if options.binding
+       output << erb("Binding Override: <%= reverse %>", 
+                     :binding => options.binding) 
+     else   
+       output << erb("Default Binding: <%= @foo %>") 
+     end   
+  end
+  
+end
+
+class TestFormatterErbHelper < Test::Unit::TestCase
+   def test_self_bound
+     assert_equal "Default Binding: bar", TrivialRenderer2.render_terb
+   end
+   
+   def test_custom_bound
+     a = [1,2,3]
+     arr_binding = a.instance_eval { binding }
+     assert_equal "Binding Override: 321", 
+                  TrivialRenderer2.render_terb(:binding => arr_binding)
+   end
 end
 
 class TestRenderer < Test::Unit::TestCase

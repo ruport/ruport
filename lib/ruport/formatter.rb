@@ -124,6 +124,19 @@ module Ruport
     # Clears output.
     def clear_output
       @output.replace("")
+    end   
+    
+    # Evaluates the string using ERB and returns the results.
+    #
+    # If <tt>:binding</tt> is specified, it will evaluate the template
+    # in that context.
+    def erb(string,options={})      
+      require "erb"
+      if string =~ /\.r\w+$/
+        ERB.new(File.read(string)).result(options[:binding]||binding)
+      else
+        ERB.new(string).result(options[:binding]||binding)
+      end
     end
 
     # Provides a shortcut for per format handlers.
