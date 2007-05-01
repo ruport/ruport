@@ -1,14 +1,70 @@
-# formatter.rb : Generalized formatting base class for Ruby Reports
+# Ruport : Extensible Reporting System                                
 #
-# Created by Gregory Brown.  Copyright December 2006, All Rights Reserved.
+# formatter.rb provides a generalized base class for creating ruport formatters.
+#     
+# Created By Gregory Brown
+# Copyright (C) December 2006, All Rights Reserved.   
 #
-# This is free software, please see LICENSE and COPYING for details.
-
-module Ruport
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.
+module Ruport    
+  # Formatter is the base class for Ruport's format implementations.
+  #
+  # Typically, a Formatter will implement one or more output types,
+  # and be registered with one or more Renderer classes. 
+  #
+  # This class provides all the necessary base functionality to make
+  # use of Ruport's rendering system, including option handling, data
+  # access, and basic output wrapping.
+  #
+  # The following example should provide a general idea of how formatters
+  # work, but see the built in formatters for reference implementations. 
+  # 
+  # A simple Renderer definition is included to help show the example in
+  # context, but you can also build your own custom interface to formatter
+  # if you wish.
+  #
+  #   class ReverseRenderer < Ruport::Renderer
+  #      stage :reversed_header, :reversed_body 
+  #      option :header_text
+  #   end
+  #                                            
+  #   class ReversedText < Ruport::Formatter 
+  #      
+  #      # Hooks formatter up to renderer
+  #      renders :txt, :for => ReverseRenderer      
+  #      
+  #      # Implements ReverseRenderer's :reversed_header hook
+  #      # but can be used by any renderer   
+  #      def build_reversed_header   
+  #         output << "#{options.header_text}\n"
+  #         output << "The reversed text will follow\n"
+  #      end  
+  # 
+  #      # Implements ReverseRenderer's :reversed_body hook
+  #      # but can be used by any renderer
+  #      def build_reversed_body
+  #         output << data.reverse << "\n"
+  #      end         
+  #
+  #   end    
+  #
+  #   puts ReverseRenderer.render_txt(:data => "apple",
+  #                                   :header_text => "Hello Mike, Hello Joe!")
+  #   
+  #   -----
+  #   OUTPUT: 
+  # 
+  #   Hello Mike, Hello Joe!
+  #   The reversed text will follow
+  #   elppa
+  #   
   class Formatter
-    
+     
+    # Provides shortcuts so that you can use Ruport's default rendering
+    # capabilities within your custom formatters   
+    #
     module RenderingTools
-
       # Iterates through <tt>data</tt> and passes
       # each row to render_row with the given options
       def render_data_by_row(options={},&block)
@@ -75,9 +131,15 @@ module Ruport
     end
 
     include RenderingTools
-
-    attr_accessor :data
-    attr_accessor :format
+   
+    # Set by the <tt>:data</tt> attribute from Renderer#render
+    attr_accessor :data              
+    
+    # Set automatically by Renderer#render(format) or Renderer#render_format
+    attr_accessor :format                                                    
+    
+    # Set automatically by Renderer#render as a Renderer::Options option built
+    # by the hash provided.
     attr_writer :options
 
     # Registers the formatter with one or more Renderers
@@ -116,7 +178,7 @@ module Ruport
       @output ||= ""
     end
 
-    # Provides a generic OpenStruct for storing formatter options
+    # Provides a Renderer::Options object for storing formatting options
     def options
       @options ||= Renderer::Options.new
     end 
