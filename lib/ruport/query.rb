@@ -46,7 +46,7 @@ module Ruport
     #                                   be set with this option.
     # <b><tt>:password</tt></b>::       If a DSN is specified, the password 
     #                                   can be set with this option.
-    # <b><tt>:raw_data</tt></b>::       When set to true, DBI::Rows will be 
+    # <b><tt>:row_type</tt></b>::       When set to :raw, DBI::Rows will be 
     #                                   returned instead of a Data::Table
     #
     # Examples:
@@ -65,12 +65,19 @@ module Ruport
     #   Ruport::Query.new("my_query.sql")
     #
     #   # explicitly use a file, even if it doesn't end in .sql
-    #   Ruport::Query.new("foo",:origin => :file)
+    #   Ruport::Query.new(:file => "foo")
     #
-    def initialize(sql, options={})
-      options = { :source => :default, :origin => :string }.merge(options)
-      options[:origin] = :file if sql =~ /.sql$/
-      @statements = SqlSplit.new(get_query(options[:origin],sql))
+    def initialize(sql, options={})   
+      if sql.kind_of?(Hash)  
+        options = { :source => :default }.merge(sql)   
+        sql = options[:file] || options[:string]
+      else 
+        options = { :source => :default, :string => sql }.merge(options)
+        options[:file] = sql if sql =~ /.sql$/    
+      end                                                 
+      origin = options[:file] ? :file : :string      
+      
+      @statements = SqlSplit.new(get_query(origin,sql))
       @sql = @statements.join
       
       if options[:dsn]

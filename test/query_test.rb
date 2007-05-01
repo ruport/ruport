@@ -97,6 +97,18 @@
        
        query = Ruport::Query.new "query_test.sql"
        assert_equal "select * from foo", query.sql
+     end      
+     
+     def test_explicit
+       File.expects(:read).
+       with("query_test").
+       returns("select * from foo\n")  
+
+       query = Ruport::Query.new(:file => "query_test")
+       assert_equal "select * from foo", query.sql 
+       
+       query = Ruport::Query.new(:string => "query_test")
+       assert_equal "query_test", query.sql       
      end
    
      def test_load_file_not_found
