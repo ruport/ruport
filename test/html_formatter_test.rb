@@ -96,9 +96,12 @@ class TestFormatHTML < Test::Unit::TestCase
                  "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
   end
   
-  def test_textile
+  def test_textile     
+    require "redcloth"
     a = Ruport::Formatter::HTML.new
     assert_equal "<p><strong>foo</strong></p>", a.textile("*foo*")
+  rescue LoadError
+    STDERR.puts "Skipping textile test... needs redcloth"
   end
 
 end
