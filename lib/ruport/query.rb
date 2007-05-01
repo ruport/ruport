@@ -1,3 +1,15 @@
+# Ruport : Extensible Reporting System                                
+#
+# query.rb provides a basic wrapper around RubyDBI for SQL interaction
+#
+# Original work began by Gregory Brown based on ideas from James Edward Gray II
+# in August, 2005.
+#
+# Copyright (C) 2005-2007, Gregory Brown
+# All Rights Reserved.   
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.
 require "generator"
 require "ruport/query/sql_split"
 
@@ -5,17 +17,18 @@ module Ruport
   
   # === Overview
   # 
-  # Query offers a way to interact with databases via DBI. It supports
-  # returning result sets in either Ruport's native Data::Table, or in their 
+  # Query offers a way to interact with databases via RubyDBI. It supports
+  # returning result sets in either Ruport's Data::Table, or in their 
   # raw form as DBI::Rows.
   #
-  # It offers basic caching support, the ability to instantiate a generator 
-  # for a result set, and the ability to quickly and easily swap between data
-  # sources.
+  # Query allows you to treat your result sets as an Enumerable data structure
+  # that plays well with the rest of Ruport.
+  #
+  # If you are using ActiveRecord, you might prefer our acts_as_reportable
+  # extension.       
   #
   class Query 
-    
-    
+       
     include Enumerable
     
     # Ruport::Query provides an interface for dealing with raw SQL queries.
@@ -34,11 +47,7 @@ module Ruport
     # <b><tt>:password</tt></b>::       If a DSN is specified, the password 
     #                                   can be set with this option.
     # <b><tt>:raw_data</tt></b>::       When set to true, DBI::Rows will be 
-    #                                   returned instead of a Data::Table.
-    # <b><tt>:cache_enabled</tt></b>::  When set to true, Query will download 
-    #                                   results only once, and then return 
-    #                                   cached values until the cache has been 
-    #                                   cleared.
+    #                                   returned instead of a Data::Table
     #
     # Examples:
     #   
@@ -76,27 +85,42 @@ module Ruport
       @raw_data = options[:row_type].eql?(:raw)
       @params = options[:params]
     end
-
+     
+    # Returns an OpenStruct with the configuration options for the default
+    # database source.
+    #
     def self.default_source
       sources[:default]
     end
-
+     
+    # Returns a hash of database sources, keyed by label.
     def self.sources
       @sources ||= {}
     end
-
+    
+    # Allows you to add a labeled DBI source configuration. 
+    #
+    # Query objects will use the source labeled <tt>:default</tt>,
+    # unless another source is specified.
+    #
+    # Examples:
+    #
+    #   # a connection to a MySQL database foo with user root, pass chunkybacon
+    #   Query.add_source :default, :dsn => "dbi:mysql:foo", 
+    #                              :user => "root",
+    #                              :password => "chunkybacon"
+    #
+    #
+    #   # a second connection to a MySQL database bar
+    #   Query.add_source :test, :dsn => "dbi:mysql:bar",
+    #                           :user => "tester",
+    #                           :password => "blinky" 
+    #
+    # 
     def self.add_source(name,options={})
       sources[name] = OpenStruct.new(options)
       check_source(sources[name],name)
     end
-
-    private
-
-    def self.check_source(settings,label) # :nodoc:
-      raise ArgumentError unless settings.dsn
-    end
-
-    public
 
     attr_accessor :raw_data
     
@@ -112,20 +136,20 @@ module Ruport
       @password = Ruport::Query.sources[label].password
     end 
     
+    # Yields result set by row.
     def each(&action)
       raise(LocalJumpError, "No block given!") unless action
       fetch(&action)
       self
     end
     
+    # Runs the SQL query and returns the result set 
     def result; fetch; end
     
     # Runs the query without returning its results.
     def execute; fetch; nil; end
     
     # Returns a Data::Table, even if in <tt>raw_data</tt> mode.
-    # This doesn't work with raw data if the cache is enabled and filled.
-    #
     def to_table
       data_flag, @raw_data = @raw_data, false
       data = fetch; @raw_data = data_flag; return data
@@ -176,14 +200,6 @@ module Ruport
       type.eql?(:file) ? load_file( query ) : query
     end
     
-    def load_file(query_file)
-      begin
-        File.read( query_file ).strip
-      rescue
-        raise LoadError, "Could not open #{query_file}"
-      end
-    end
-    
     def fetch(&block)
       data = nil
       final = @statements.size - 1
@@ -192,5 +208,18 @@ module Ruport
       end
       return data
     end
+    
+    def load_file(query_file)
+      begin
+        File.read( query_file ).strip
+      rescue
+        raise LoadError, "Could not open #{query_file}"
+      end
+    end
+
+    def self.check_source(settings,label) # :nodoc:
+      raise ArgumentError unless settings.dsn
+    end
+    
   end
 end

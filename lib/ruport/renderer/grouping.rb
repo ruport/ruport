@@ -40,8 +40,8 @@ module Ruport
   #
   # == Default layout options 
   #
-  # * <tt>show_group_headers</tt> #=> true
-  # * <tt>style</tt> #=> :inline
+  # * <tt>show_group_headers</tt> #=> true    
+  # * <tt>style</tt> #=> :inline  
   #
   # == Formatter hooks called (in order)
   #
