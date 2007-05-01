@@ -1,11 +1,37 @@
-module Ruport
+module Ruport           
+  # This class provides text output for Ruport's Row,Table,Group, and Grouping
+  # renderers
+  #
+  # It handles things like automatically truncating tables that go off the
+  # edge of the screen in the console, proper column alignment, and pretty
+  # output that looks something like this:
+  #
+  #   +-----------------------------+
+  #   | apple | banana | strawberry |
+  #   +-----------------------------+
+  #   | yes   | no     | yes        |
+  #   | yes   | yes    | god yes    |
+  #   | what  | the    | f?         |
+  #   +-----------------------------+ 
+  #
+  # The following options are supported:
+  #
+  # <tt>:max_col_width:</tt> Ordinal array of column widths.  Set automatically
+  #                          but can be overridden
+  # <tt>:alignment:</tt> Defaults to left justify text and right justify numbers.
+  #                     centers all fields when set to :center
+  # <tt>:table_width:</tt> Will truncate rows at this limit. 
+  # <tt>:show_table_headers:</tt> Defaults to true
+  # <tt>:show_group_headers:</tt> Defaults to true  
+  # <tt>:ignore_table_width:</tt> When set to true, outputs full table
   class Formatter::Text < Formatter
    
     renders :text, :for => [ Renderer::Row, Renderer::Table,
                              Renderer::Group, Renderer::Grouping ]
 
     opt_reader :max_col_width, :alignment, :table_width, 
-               :show_table_headers, :show_group_headers
+               :show_table_headers, :show_group_headers,
+               :ignore_table_width
     
     # Checks to ensure the table is not empty and then calls
     # calculate_max_col_widths
@@ -47,13 +73,22 @@ module Ruport
         rend.options do |o|
           o.max_col_width = max_col_width
           o.alignment     = alignment
-          o.table_width   = table_width
+          o.table_width   = table_width   
+          o.ignore_table_width = ignore_table_width
         end
       end
 
       output << fit_to_width(hr)
     end
-
+    
+    # Generates a formatted text row. 
+    #
+    # Defaults to numeric values being right justified, and other values being
+    # left justified.  Can be changed to support centering of output by
+    # setting options.alignment to :center
+    #
+    # Uses fit_to_width to truncate table if necessary.
+    #
     def build_row
       max_col_widths_for_row(data) unless max_col_width
 
@@ -113,7 +148,8 @@ module Ruport
     end
 
     # Truncates a string so that it does not exceed Text#width
-    def fit_to_width(s)
+    def fit_to_width(s)      
+      return s if options.ignore_table_width
       # workaround for Rails setting terminal_width to 1
       max_width = width < 2 ? 80 : width
       

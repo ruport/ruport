@@ -47,8 +47,18 @@ class TestFormatText < Test::Unit::TestCase
     }
 
     assert_equal("+------->>\n|   1 | >>\n| 300 | >>\n+------->>\n",a)
-  end
+  end  
+  
+  def test_ignore_wrapping
+      a = [[1,2],[300,4]].to_table.as(:text) { |r|
+      r.options { |l| 
+        l.table_width = 10 
+        l.ignore_table_width = true
+      }
+    }
 
+    assert_equal("+---------+\n|   1 | 2 |\n| 300 | 4 |\n+---------+\n",a)
+  end
 
   def test_make_sure_this_damn_column_names_bug_dies_a_horrible_death!
     a = [[1,2,3]].to_table.to_text
