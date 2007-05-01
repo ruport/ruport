@@ -1,5 +1,25 @@
+# Ruport : Extensible Reporting System                                
+#
+# formatter/html.rb provides html formatting for Ruport.
+#     
+# Created by Gregory Brown, late 2005.  Updated numerous times as needed to 
+# fit new formatting systems.
+#    
+# Copyright (C) 2005-2007 Gregory Brown, All Rights Reserved.  
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.   
+#
 module Ruport
-  # Produces HTML output for tabular data.
+  # This class produces HTML output for Ruport's Row,Table,Group, and Grouping
+  # renderers.  It can be used as a subclass, as it has some helper methods
+  # that might be useful for custom output
+  #
+  # === Rendering Options
+  #
+  # <tt>:show_table_headers</tt>  True by default   
+  #
+  # <tt>:show_group_headers</tt>  True by default   
   #
   class Formatter::HTML < Formatter    
     
@@ -21,6 +41,8 @@ module Ruport
       end
     end
     
+    # Uses the Row renderer to build up the table body.
+    # Replaces nil and empty strings with "&nbsp;" 
     def build_table_body
       render_data_by_row do |rend|
         r = rend.data

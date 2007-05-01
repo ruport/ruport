@@ -1,6 +1,32 @@
+# Ruport : Extensible Reporting System                                
+#
+# formatter/csv.rb provides csv formatting for Ruport.
+#     
+# Original code dates back to the earliest versions of Ruport in August 2005
+# Extended over time, with much of the existing code being added around
+# December 2006.
+#    
+# Copyright (C) 2005-2007 Gregory Brown, All Rights Reserved.  
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.   
+#
 module Ruport
 
-  # This formatter implements the CSV format for tabular data output.
+  # This formatter implements the CSV format for Ruport's Row, Table, Group
+  # and Grouping renderers.  It is a light wrapper around James Edward Gray II's
+  # FasterCSV.
+  #
+  # === Rendering Options
+  #                                                     
+  # <tt>:style</tt> Used for grouping (:inline,:justified,:raw)      
+  #
+  # <tt>:format_options</tt> A hash of FasterCSV options  
+  #
+  # <tt>:show_table_headers</tt> True by default
+  #
+  # <tt>:show_group_headers</tt> True by default
+  #
   class Formatter::CSV < Formatter
     
     renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
@@ -55,7 +81,8 @@ module Ruport
         output << "#{data.grouped_by}," << grouping_columns
       end
     end
-
+   
+    # determines the proper style to use and renders the Grouping.
     def build_grouping_body
       case style
       when :inline

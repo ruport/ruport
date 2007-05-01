@@ -37,7 +37,7 @@ module Ruport
   #       * table_format[:maximum_width] #=> 500   
   #
   #     Grouping:
-  #       * style ((:inline,:justified/:seperated, :offset))
+  #       * style (:inline,:justified,:separated,:offset)
   #
   class Formatter::PDF < Formatter    
     
