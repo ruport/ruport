@@ -14,16 +14,22 @@ module Ruport
   #   | what  | the    | f?         |
   #   +-----------------------------+ 
   #
-  # The following options are supported:
+  # === Supported Options 
   #
   # <tt>:max_col_width:</tt> Ordinal array of column widths.  Set automatically
-  #                          but can be overridden
+  # but can be overridden       
+  #
   # <tt>:alignment:</tt> Defaults to left justify text and right justify numbers.
-  #                     centers all fields when set to :center
+  # centers all fields when set to :center
+  #
   # <tt>:table_width:</tt> Will truncate rows at this limit. 
+  #
   # <tt>:show_table_headers:</tt> Defaults to true
+  #
   # <tt>:show_group_headers:</tt> Defaults to true  
-  # <tt>:ignore_table_width:</tt> When set to true, outputs full table
+  #
+  # <tt>:ignore_table_width:</tt> When set to true, outputs full table without
+  # truncating it.  Useful for file output
   class Formatter::Text < Formatter
    
     renders :text, :for => [ Renderer::Row, Renderer::Table,
@@ -173,7 +179,9 @@ module Ruport
           
       data.each { |r| max_col_widths_for_row(r) } 
     end
-
+    
+    # used to calculate the <tt>max_col_widths</tt> array.
+    # Override this to tweak the automatic column size adjustments.
     def max_col_widths_for_row(row)
       options.max_col_width ||= []
       row.each_with_index do |f,i|
