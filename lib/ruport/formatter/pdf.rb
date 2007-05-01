@@ -1,19 +1,43 @@
+# Ruport : Extensible Reporting System                                
+#
+# formatter/pdf.rb provides text formatting for Ruport.
+#     
+# Created by Gregory Brown, February 2006     
+# Extended by James Healy, Fall 2006
+# Copyright (C) 2006-2007 Gregory Brown / James Healy, All Rights Reserved.  
+#
+# Initially inspired by some ideas and code from Simon Claret,
+# with many improvements from James Healy and Michael Milner over time.
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.   
+#
 module Ruport
    
-  # PDF generation formatter
+  # This class provides PDF output for Ruport's Table, Group, and Grouping
+  # renderers.  It wraps Austin Ziegler's PDF::Writer to provide a higher
+  # level interface and provides a number of helpers designed to make
+  # generating PDF reports much easier.  You will typically want to build
+  # subclasses of this formatter to customize it as needed.
   #
-  #  options:
+  # Many methods forward options to PDF::Writer, so you may wish to consult
+  # its API docs.
+  #
+  # === Rendering Options
   #     General:
   #       * paper_size  #=> "LETTER"
   #       * paper_orientation #=> :portrait
   #
   #     Text:
-  #       * text_format
+  #       * text_format (sets options to be passed to add_text by default)  
   #     
   #     Table:
   #       * table_format (a hash that can take any of the options available
   #           to PDF::SimpleTable)
-  #       * table_format[:maximum_width] #=> 500
+  #       * table_format[:maximum_width] #=> 500   
+  #
+  #     Grouping:
+  #       * style ((:inline,:justified/:seperated, :offset))
   #
   class Formatter::PDF < Formatter    
     
@@ -38,7 +62,7 @@ module Ruport
 
     # Returns the current PDF::Writer object or creates a new one if it has not
     # been set yet.
-    #
+    #    
     def pdf_writer
       @pdf_writer ||= options.formatter ||
         ::PDF::Writer.new( :paper => paper_size || "LETTER",
@@ -58,15 +82,19 @@ module Ruport
     def finalize_table
       render_pdf unless options.skip_finalize_table
     end
-
+    
+    # Generates a header with the group name for Renderer::Group
     def build_group_header
       pad(10) { add_text data.name.to_s, :justification => :center }
     end
-
+    
+    # Renders the group as a table for Renderer::Group
     def build_group_body
       render_table data, options.to_hash.merge(:formatter => pdf_writer)
     end
-
+                     
+    # Determines which style to use and renders the main body for
+    # Renderer::Grouping
     def build_grouping_body
       case style
       when :inline
@@ -80,12 +108,21 @@ module Ruport
         raise NotImplementedError, "Unknown style"
       end
     end
-    
+   
+    # calls <tt>render_pdf</tt> 
     def finalize_grouping
       render_pdf
     end
 
-    # Call PDF::Writer#text with the given arguments
+    # Call PDF::Writer#text with the given arguments, using <tt>text_format</tt>
+    # defaults, if they are defined.                                       
+    #
+    # Example:
+    #
+    #   options.text_format { :font_size => 14 }
+    #
+    #   add_text("Hello Joe") #renders at 14pt
+    #   add_text("Hello Mike",:font_size => 16) # renders at 16pt
     def add_text(text, format_opts={})
       format_opts = text_format.merge(format_opts) if text_format
       pdf_writer.text(text, format_opts)
@@ -123,7 +160,22 @@ module Ruport
       pdf_writer.add_image_from_file(path, x, y, img_width, img_height) 
     end
 
-    # Draws some text on the canvas, surrounded by a box with rounded corners
+    # Draws some text on the canvas, surrounded by a box with rounded corner
+    #
+    # Yields an OpenStruct which options can be defined on.
+    # 
+    # Example:
+    #
+    #    rounded_text_box(options.text) do |o|
+    #      o.radius = 5
+    #      o.width     = options.width  || 400
+    #      o.height    = options.height || 130
+    #      o.font_size = options.font_size || 12
+    #      o.heading   = options.heading
+    #   
+    #      o.x = pdf_writer.absolute_x_middle - o.width/2
+    #      o.y = 300
+    #    end
     #
     def rounded_text_box(text)
       opts = OpenStruct.new
@@ -165,31 +217,55 @@ module Ruport
         pdf_writer.add_object(wm, :all_pages)
       end
     end
-
+    
+    # adds n to pdf_writer.y, moving the vertical drawing position in the
+    # document 
     def move_cursor(n) 
       pdf_writer.y += n
     end
-
+    
+    # moves the cursor to a specific y coordinate in the document
     def move_cursor_to(n)
       pdf_writer.y = n
     end
-
+    
+    # puts a specified amount of whitespace above and below the code
+    # in your block.  For example, if you want to surround the top and
+    # bottom of a line of text with 5 pixels of whitespace:
+    #
+    #    pad(5) { add_text "This will be padded" }
     def pad(y,&block)
       move_cursor(-y)
       block.call
       move_cursor(-y)
     end
-
+    
+    # Adds a specified amount of whitespace above the code in your block.  
+    # For example, if you want to add a 10 pixel buffer to the top of a
+    # line of text:
+    #
+    #    pad_top(10) { add_text "This will be padded on top" }
     def pad_top(y,&block)
       move_cursor(-y)
       block.call
     end
-
+    
+    # Adds a specified amount of whitespace below the code in your block.  
+    # For example, if you want to add a 10 pixel buffer to the bottom of a
+    # line of text:
+    #
+    #    pad_bottom(10) { add_text "This will be padded on top" }
     def pad_bottom(y,&block)
       block.call
       move_cursor(-y)
     end
-
+    
+    # Draws a PDF::SimpleTable using the given data (usually a Data::Table)
+    # Takes all the options you can set on a PDF::SimpleTable object,
+    # see the PDF::Writer API docs for details, or check our quick reference
+    # at: 
+    # 
+    # http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/PdfWriterQuickRef
     def draw_table(table_data, format_opts={})
       m = "PDF Formatter requires column_names to be defined"
       raise FormatterError, m if table_data.column_names.empty?
@@ -210,38 +286,53 @@ module Ruport
         table.render_on(pdf_writer)
       end
     end
-
+    
+    # This module provides tools to simplify some common drawing operations
+    # it is included by default in the PDF formatter
+    #
     module DrawingHelpers
-
+      
+      # draws a horizontal line from x1 to x2
       def horizontal_line(x1,x2)
         pdf_writer.line(x1,cursor,x2,cursor)
         pdf_writer.stroke
       end
-
+                    
+      # draws a vertical line at x from y1 to y2
       def vertical_line_at(x,y1,y2)
         pdf_writer.line(x,y1,x,y2)
+        pdf_writer.stroke 
       end
-
+    
+      # Alias for PDF::Writer#absolute_left_margin
       def left_boundary
         pdf_writer.absolute_left_margin
       end
-
+      
+      # Alias for PDF::Writer#absolute_right_margin
       def right_boundary
         pdf_writer.absolute_right_margin
       end
-
+      
+      # Alias for PDF::Writer#absolute_top_margin
       def top_boundary
         pdf_writer.absolute_top_margin
       end
-
+      
+      # Alias for PDF::Writer#absolute_bottom_margin
       def bottom_boundary
         pdf_writer.absolute_bottom_margin
       end
-
+      
+      # Alias for PDF::Writer#y
       def cursor
         pdf_writer.y
       end
-
+      
+      # Draws text at an absolute location, defined by
+      # :y, :x1|:left, :x2|:right 
+      # 
+      # All usual options to add_text are also supported
       def draw_text(text,text_opts)
         move_cursor_to(text_opts[:y]) if text_opts[:y]
         add_text(text,

@@ -1,3 +1,15 @@
+# Ruport : Extensible Reporting System                                
+#
+# formatter/text.rb provides text formatting for Ruport.
+#     
+# Created by Gregory Brown, some time around Spring 2006.
+# Copyright (C) 2006-2007, All Rights Reserved.  
+#
+# Mathijs Mohlmann and Marshall T. Vandegrift have provided some patches for
+# this class, see AUTHORS file for details.
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.
 module Ruport           
   # This class provides text output for Ruport's Row,Table,Group, and Grouping
   # renderers
