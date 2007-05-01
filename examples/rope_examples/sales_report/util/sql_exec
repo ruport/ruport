@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby
-
-require "lib/init"
-
-puts Ruport::Query.new(ARGF.read).result
