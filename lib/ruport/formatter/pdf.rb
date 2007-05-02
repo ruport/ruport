@@ -39,7 +39,45 @@ module Ruport
   #     Grouping:
   #       * style (:inline,:justified,:separated,:offset)
   #
-  class Formatter::PDF < Formatter    
+  class Formatter::PDF < Formatter          
+    
+    ## THESE ARE WHY YOU SHOULD NEVER USE PDF::Writer 
+    
+    module PDFWriterMemoryPatch #:nodoc:
+      unless self.class.instance_methods.include?("_post_transaction_rewind")
+        def _post_transaction_rewind
+          @objects.each { |e| e.instance_variable_set(:@parent,self) }
+        end
+      end
+    end    
+    
+    module PDFSimpleTableOrderingPatch #:nodoc:
+      def __find_table_max_width__(pdf)      
+         #p "this actually gets called"
+         max_width = PDF::Writer::OHash.new(-1)
+
+           # Find the maximum cell widths based on the data and the headings.
+           # Passing through the data multiple times is unavoidable as we must do
+           # some analysis first.
+         @data.each do |row|
+           @cols.each do |name, column|
+             w = pdf.text_width(row[name].to_s, @font_size)
+             w *= PDF::SimpleTable::WIDTH_FACTOR
+
+             max_width[name] = w if w > max_width[name]
+           end
+         end
+
+         @cols.each do |name, column|
+           title = column.heading.title if column.heading
+           title ||= column.name
+           w = pdf.text_width(title, @heading_font_size)
+           w *= PDF::SimpleTable::WIDTH_FACTOR  
+           max_width[name] = w if w > max_width[name]
+         end
+         max_width
+      end
+    end
     
     renders :pdf, :for => [ Renderer::Row, Renderer::Table,
                             Renderer::Group, Renderer::Grouping ]
@@ -54,7 +92,7 @@ module Ruport
                 :paper_orientation
 
     def initialize
-      quiet do
+      quiet do   
         require "pdf/writer"
         require "pdf/simpletable"
       end
@@ -274,15 +312,14 @@ module Ruport
       
       format_opts = table_format.merge(format_opts) if table_format  
       
-      ::PDF::SimpleTable.new do |table|              
-        table.data = table_data  
+      ::PDF::SimpleTable.new do |table| 
+        table.extend(PDFSimpleTableOrderingPatch)             
         table.maximum_width = 500
-        table.column_order  = table_data.column_names                                            
-          
+        table.column_order  = table_data.column_names
+        table.data = table_data                                                 
         apply_pdf_table_column_opts(table,table_data,format_opts)
 
-        format_opts.each {|k,v| table.send("#{k}=", v) }
-
+        format_opts.each {|k,v| table.send("#{k}=", v) }  
         table.render_on(pdf_writer)
       end
     end
@@ -343,14 +380,6 @@ module Ruport
     end   
 
     include DrawingHelpers
-     
-    module PDFWriterMemoryPatch #:nodoc:
-      unless self.class.instance_methods.include?("_post_transaction_rewind")
-        def _post_transaction_rewind
-          @objects.each { |e| e.instance_variable_set(:@parent,self) }
-        end
-      end
-    end
     
     private   
     
