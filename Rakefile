@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |spec|
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A generalized Ruby report generation and templating engine."
   spec.files =  Dir.glob("{examples,lib,test,bin,util/bench}/**/**/*") +
-                      ["Rakefile", "setup.rb"]
+                      ["Rakefile"]
   spec.require_path = "lib"
   
   spec.test_files = Dir[ "test/*_test.rb" ]
