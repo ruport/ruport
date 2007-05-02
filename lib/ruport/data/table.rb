@@ -1,11 +1,14 @@
-# The Ruport Data Collections.
-# Authors: Gregory Brown / Dudley Flanders
+# Ruport : Extensible Reporting System
 #
-# This is Free Software.  For details, see LICENSE and COPYING
-# Copyright 2006 by respective content owners, all rights reserved.
-
-module Ruport::Data            
-
+# data/table.rb provides a table data structure for Ruport.
+# 
+# Created by Gregory Brown / Dudley Flanders, 2006
+# Copyright (C) 2006 Gregory Brown / Dudley Flanders, All Rights Reserved.  
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.   
+#
+module Ruport::Data
  
   # === Overview
   #
@@ -16,11 +19,15 @@ module Ruport::Data
   # Table is intended to be used as the data store for structured, tabular
   # data.
   #
-  # Once your data is in a Ruport::Data::Table object, it can be manipulated
+  # Once your data is in a Table object, it can be manipulated
   # to suit your needs, then used to build a report.
   #
   class Table 
 
+    # === Overview
+    #
+    # This module provides facilities for creating tables from csv data.
+    #
     module FromCSV
       # Loads a CSV file directly into a Table using the FasterCSV library.
       #
@@ -101,9 +108,7 @@ module Ruport::Data
           loaded.column_names = row.headers
         end
       end
-
     end
-
 
     include Enumerable             
     extend FromCSV
@@ -111,16 +116,17 @@ module Ruport::Data
     include Ruport::Renderer::Hooks
     renders_as_table
 
-    def self.inherited(base)
+    def self.inherited(base) #:nodoc:
       base.renders_as_table
     end
     
     # Creates a new table based on the supplied options.
-    # Valid options: 
-    # <b><tt>:data</tt></b>::         An Array of Arrays representing the 
-    #                                 records in this Table
-    # <b><tt>:column_names</tt></b>:: An Array containing the column names 
-    #                                 for this Table.
+    #
+    # Valid options:
+    # <b><tt>:data</tt></b>::           An Array of Arrays representing the 
+    #                                   records in this Table.
+    # <b><tt>:column_names</tt></b>::   An Array containing the column names 
+    #                                   for this Table.
     # Example:
     #
     #   table = Table.new :data => [[1,2,3], [3,4,5]], 
@@ -146,8 +152,10 @@ module Ruport::Data
       end
     end
 
-    # This Table's column names.
+    # This Table's column names
     attr_reader :column_names
+    
+    # This Table's data
     attr_reader :data        
     
     require "forwardable"
@@ -200,9 +208,9 @@ module Ruport::Data
 
     alias_method :==, :eql?
 
-    # Used to add extra data to the Table. <tt>other</tt> can be an Array, 
+    # Used to add extra data to the Table. <tt>row</tt> can be an Array, 
     # Hash or Record. It also can be anything that implements a meaningful
-    # to_hash or to_ary
+    # to_hash or to_ary.
     #
     # Example:
     #
@@ -226,14 +234,13 @@ module Ruport::Data
       return self
     end    
     
-    # returns the record class constant being used by the table
+    # Returns the record class constant being used by the table.
     def record_class
       @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
     end
-  
     
     # Used to merge two Tables by rows.
-    # Throws an ArgumentError if the Tables don't have identical columns.
+    # Raises an ArgumentError if the Tables don't have identical columns.
     #
     # Example:
     #
@@ -253,7 +260,23 @@ module Ruport::Data
                       :record_class => record_class )
     end
   
-    
+    # Allows you to change the order of, or reduce the number of columns in a
+    # Table.
+    #
+    # Example:
+    #
+    #   a = Table.new :data => [[1,2,3],[4,5,6]], :column_names => %w[a b c]
+    #   a.reorder("b","c","a")
+    #   a.column_names #=> ["b","c","a"]
+    #
+    #   a = Table.new :data => [[1,2,3],[4,5,6]], :column_names => %w[a b c]
+    #   a.reorder(1,2,0)
+    #   a.column_names #=> ["b","c","a"]
+    #
+    #   a = Table.new :data => [[1,2,3],[4,5,6]], :column_names => %w[a b c]
+    #   a.reorder(0,2)
+    #   a.column_names #=> ["a","c"]
+    #
     def reorder(*indices)
       raise(ArgumentError,"Can't reorder without column names set!") if
         @column_names.empty?
@@ -265,11 +288,11 @@ module Ruport::Data
       end
       
       reduce(indices)
-    end     
-
+    end
     
-    # Adds an extra column to the Table. Available Options:
+    # Adds an extra column to the Table.
     #
+    # Available Options:
     # <b><tt>:default</tt></b>:: The default value to use for the column in 
     #                            existing rows. Set to nil if not specified.
     # 
@@ -277,13 +300,12 @@ module Ruport::Data
     #                             number.
     #
     # <b><tt>:before</tt></b>:: Inserts the new column before the column 
-    #                           indicated. (by name)
+    #                           indicated (by name).
     #
     # <b><tt>:after</tt></b>:: Inserts the new column after the column
-    #                          indicated. (by name)
+    #                          indicated (by name).
     #
     # If a block is provided, it will be used to build up the column.
-    #      
     #   
     # Example:
     #
@@ -319,6 +341,15 @@ module Ruport::Data
       end; self
     end     
     
+    # Add multiple extra columns to the Table. See <tt>add_column</tt> for
+    # a list of available options.
+    #   
+    # Example:
+    #
+    #   data = Table("a","b") { |t| t << [1,2] << [3,4] }
+    #   
+    #   data.add_columns ['new_column_1','new_column_2'], :default => 1
+    #
     def add_columns(names,options={})     
       raise "Greg isn't smart enough to figure this out.\n"+
             "Send ideas in at http://list.rubyreports.org" if block_given?           
@@ -353,7 +384,7 @@ module Ruport::Data
       cols.each { |col| remove_column(col) }
     end
     
-    # Renames a column.  Will update Record attributes as well
+    # Renames a column.  Will update Record attributes as well.
     # 
     # Example:
     #
@@ -517,6 +548,11 @@ module Ruport::Data
     
     # Returns an array of values for the given column name.
     #
+    # Example:
+    #
+    #   table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
+    #   table.column("col1")   #=> [1,3,5]
+    #
     def column(name)
       case(name)
       when Integer
@@ -601,12 +637,25 @@ module Ruport::Data
       return table
     end   
     
-    # same as Table#sort_rows_by, but self modifiying
+    # Same as Table#sort_rows_by, but self modifying.
+    # See <tt>sort_rows_by</tt> for documentation.
+    #
     def sort_rows_by!(col_names=nil,&block)
       table = sort_rows_by(col_names,&block) 
       @data = table.data
     end
     
+    # Get an array of records from the Table limited by the criteria specified.
+    #
+    # Example:
+    #
+    #   table = Table.new :data => [[1,2,3], [1,4,6], [4,5,6]], 
+    #                     :column_names => %w[a b c]
+    #   table.rows_with(:a => 1)           #=> [[1,2,3], [1,4,6]]
+    #   table.rows_with(:a => 1, :b => 4)  #=> [[1,4,6]]
+    #   table.rows_with_a(1)               #=> [[1,2,3], [1,4,6]]
+    #   table.rows_with(%w[a b]) {|a,b| [a,b] == [1,4] }  #=> [[1,4,6]]
+    #
     def rows_with(columns,&block) 
       select { |r|
         if block
@@ -617,7 +666,7 @@ module Ruport::Data
       }
     end
                                                                                 
-    # Create a copy of the Table: records will be copied as well.
+    # Create a copy of the Table. Records will be copied as well.
     #
     # Example:
     #
@@ -632,7 +681,7 @@ module Ruport::Data
       from.data.each { |r| self << r.dup }
     end
     
-    # Uses Ruport's built-in text formatter to render this Table into a String
+    # Uses Ruport's built-in text formatter to render this Table into a String.
     # 
     # Example:
     # 
@@ -662,23 +711,30 @@ module Ruport::Data
 
     # Provides a shortcut for the <tt>as()</tt> method by converting a call to
     # <tt>as(:format_name)</tt> into a call to <tt>to_format_name</tt>
+    #
+    # Also converts a call to <tt>rows_with_columnname</tt> to a call to
+    # <tt>rows_with(:columnname => args[0])</tt>.
+    #
     def method_missing(id,*args,&block)
      return as($1.to_sym,*args,&block) if id.to_s =~ /^to_(.*)/ 
      return rows_with($1.to_sym => args[0]) if id.to_s =~ /^rows_with_(.*)/
      super
     end
     
+    # Appends an array as a record in the Table.
     def append_array(array)
       attributes = @column_names.empty? ? nil : @column_names
       @data << record_class.new(array.to_ary, :attributes => attributes)  
     end      
     
+    # Appends a hash as a record in the Table.
     def append_hash(hash_obj) 
       hash_obj = hash_obj.to_hash 
       raise ArgumentError unless @column_names
       @data << record_class.new(hash_obj, :attributes => @column_names)
     end
     
+    # Appends a record to the Table.
     def append_record(record)        
       self << record.send(column_names.empty? ? :to_a : :to_hash)
     end
