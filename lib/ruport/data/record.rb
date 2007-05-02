@@ -1,13 +1,18 @@
-# The Ruport Data Collections.
-# Authors: Gregory Brown / Dudley Flanders
+# Ruport : Extensible Reporting System
 #
-# This is Free Software.  For details, see LICENSE and COPYING
-# Copyright 2006 by respective content owners, all rights reserved.
+# data/record.rb provides a record data structure for Ruport.
+# 
+# Created by Gregory Brown / Dudley Flanders, 2006
+# Copyright (C) 2006 Gregory Brown / Dudley Flanders, All Rights Reserved.  
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.   
+#
 module Ruport::Data
 
   # === Overview
   # 
-  # Data::Records are the work horse of Ruport's data model. These can behave
+  # Data::Records are the work-horse of Ruport's data model. These can behave
   # as Array-like, Hash-like, or Struct-like objects.  They are used as the 
   # base element for Data::Table
   #
@@ -53,7 +58,6 @@ module Ruport::Data
       end
     end        
     
-    
     ##############
     # Delegators #
     ##############
@@ -71,14 +75,12 @@ module Ruport::Data
     
     # Sets the <tt>attribute</tt> list for this Record. 
     # (Dangerous when used within Table objects!)
-    #
-    # Example:
-    #
-    #   my_record.attributes = %w[foo bar baz]
-    #
     attr_writer :attributes        
  
-    attr_reader :data   
+    # The data for the record
+    attr_reader :data
+    
+    # The size of the record (the number of items in the record's data).
     def size; @data.size; end
     alias_method :length, :size
     
@@ -129,6 +131,7 @@ module Ruport::Data
     #   record.get("foo") # looks for an attribute "foo" or :foo
     #
     #   record.get(0) # Gets the first element
+    #
     def get(name)
       case name
       when String,Symbol
@@ -161,6 +164,7 @@ module Ruport::Data
     #
     #   a = Data::Record.new([1,2],:attributes => %w[a b])
     #   a.to_hash #=> {"a" => 1, "b" => 2}
+    #
     def to_hash
       @data.dup
     end
@@ -169,7 +173,6 @@ module Ruport::Data
     #  Comparisons #
     ################
     
-    #
     # If <tt>attributes</tt> and <tt>to_a</tt> are equivalent, then 
     # <tt>==</tt> evaluates to true. Otherwise, <tt>==</tt> returns false.
     #
@@ -178,14 +181,13 @@ module Ruport::Data
        to_a == other.to_a
     end
     
-    alias_method :eql?, :==  
-    
+    alias_method :eql?, :==
     
     #############
     # Iterators #
     #############
     
-    # Yields each element of the Record.  Does not provide attribute names
+    # Yields each element of the Record.  Does not provide attribute names.
     def each 
       to_a.each { |e| yield(e) }
     end   
@@ -230,7 +232,7 @@ module Ruport::Data
     include Ruport::Renderer::Hooks
     renders_as_row
 
-    def self.inherited(base)
+    def self.inherited(base) #:nodoc:
       base.renders_as_row
     end
 
@@ -243,6 +245,13 @@ module Ruport::Data
       @attributes.hash + to_a.hash
     end
     
+    # Create a copy of the Record.
+    #
+    # Example:
+    #
+    #   one = Record.new([1,2,3,4],:attributes => %w[a b c d])
+    #   two = one.dup
+    #
     def initialize_copy(from)
        @data = from.data.dup
        @attributes = from.attributes.dup
