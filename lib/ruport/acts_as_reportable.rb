@@ -1,11 +1,37 @@
+# Ruport : Extensible Reporting System                                
+#
+# acts_as_reportable.rb provides ActiveRecord integration for Ruport.
+#     
+# Originally created by Dudley Flanders, 2006
+# Revised and updated by Michael Milner, 2007     
+# Copyright (C) 2006-2007 Dudley Flanders / Michael Milner, All Rights Reserved.  
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.   
+#
 require "ruport"
 quiet { require "active_record" }
 
 module Ruport
   
+  # === Overview
+  # 
   # This module is designed to allow an ActiveRecord model to be converted to
   # Ruport's data structures.  If ActiveRecord is available when Ruport is
   # loaded, this module will be automatically mixed into ActiveRecord::Base.
+  #
+  # Add the acts_as_reportable call to the model class that you want to
+  # integrate with Ruport:
+  #
+  #   class Book < ActiveRecord::Base
+  #     acts_as_reportable
+  #     belongs_to :author
+  #   end
+  #
+  # Then you can use the <tt>report_table</tt> method to get data from the
+  # model using ActiveRecord.
+  #
+  #   Book.report_table(:all, :include => :author)
   #
   module Reportable
     
@@ -13,17 +39,17 @@ module Ruport
       base.extend ClassMethods  
     end
     
+    # === Overview
+    # 
+    # This module contains class methods that will automatically be available
+    # to ActiveRecord models.
+    #
     module ClassMethods 
       
       # In the ActiveRecord model you wish to integrate with Ruport, add the 
       # following line just below the class definition:
       #
       #   acts_as_reportable
-      #
-      # This will automatically make all the methods in
-      # Ruport::Reportable::SingletonMethods available to the model class and
-      # all the methods in Ruport::Reportable::InstanceMethods available to
-      # instances of the model.
       #
       # Available options:
       #
@@ -54,6 +80,12 @@ module Ruport
       end
     end
     
+    # === Overview
+    # 
+    # This module contains methods that will be made available as singleton
+    # class methods to any ActiveRecord model that calls
+    # <tt>acts_as_reportable</tt>.
+    #
     module SingletonMethods
       
       # Creates a Ruport::Data::Table from an ActiveRecord find. Takes 
@@ -95,6 +127,8 @@ module Ruport
       # an html version of the table with two columns, title from 
       # the book, and name from the associated author.
       #
+      # Example:
+      # 
       #   Book.report_table(:all, :include => :author).as(:html)
       #
       # Returns:
@@ -146,6 +180,11 @@ module Ruport
      end
     end
     
+    # === Overview
+    # 
+    # This module contains methods that will be made available as instance
+    # methods to any ActiveRecord model that calls <tt>acts_as_reportable</tt>.
+    #
     module InstanceMethods
       
       # Grabs all of the object's attributes and the attributes of the

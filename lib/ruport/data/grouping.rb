@@ -1,13 +1,27 @@
+# Ruport : Extensible Reporting System                                
+#
+# data/grouping.rb provides group and grouping data structures for Ruport.
+#     
+# Created by Michael Milner / Gregory Brown, 2007     
+# Copyright (C) 2007 Michael Milner / Gregory Brown, All Rights Reserved.  
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.   
+#
 module Ruport::Data
 
   # === Overview
   #
   # This class implements a group data structure for Ruport. Group is
-  # simply a subclass of Table that adds a :name attribute.
+  # simply a subclass of Table that adds a <tt>:name</tt> attribute.
   # 
   class Group < Table
     
-    attr_reader :name, :subgroups
+    # The name of the group
+    attr_reader :name
+    
+    # A hash of subgroups
+    attr_reader :subgroups
 
     # Creates a new Group based on the supplied options.
     #
@@ -33,11 +47,11 @@ module Ruport::Data
     include Ruport::Renderer::Hooks
     renders_as_group
 
-    def self.inherited(base)
+    def self.inherited(base) #:nodoc:
       base.renders_as_group
     end
 
-    # Create a copy of the Group: records will be copied as well.
+    # Create a copy of the Group. Records will be copied as well.
     #
     # Example:
     #
@@ -94,7 +108,7 @@ module Ruport::Data
 
     protected
 
-    attr_writer :name, :subgroups
+    attr_writer :name, :subgroups #:nodoc:
     
     private
     
@@ -153,7 +167,10 @@ module Ruport::Data
       end
     end
     
-    attr_accessor :data 
+    # The grouping's data
+    attr_accessor :data
+    
+    # The name of the column used to group the data
     attr_reader :grouped_by
     
     require "forwardable"
@@ -171,7 +188,7 @@ module Ruport::Data
         raise(IndexError,"Group Not Found")
     end 
     
-    # Used to add extra data to the Grouping. <tt>other</tt> should be a Group.
+    # Used to add extra data to the Grouping. <tt>group</tt> should be a Group.
     #
     # Example:
     #
@@ -211,10 +228,11 @@ module Ruport::Data
     # runs the specified procs and returns the results as a Table.
     #     
     # The following example would show for each date group,
-    # the sum for the attributes or methods :opened and :closed
-    # and order them by the :order array.
+    # the sum for the attributes or methods <tt>:opened</tt> and
+    # <tt>:closed</tt> and order them by the <tt>:order</tt> array.
     #
-    # If :order is not specified, you cannot depend on predictable column order
+    # If <tt>:order</tt> is not specified, you cannot depend on predictable
+    # column order.
     #
     #   grouping.summary :date,
     #     :opened => lambda { |g| g.sigma(:opened) },
@@ -254,12 +272,11 @@ module Ruport::Data
     include Ruport::Renderer::Hooks
     renders_as_grouping
 
-    def self.inherited(base)
+    def self.inherited(base) #:nodoc:
       base.renders_as_grouping
     end
-
     
-    # Create a copy of the Grouping: groups will be copied as well.
+    # Create a copy of the Grouping. Groups will be copied as well.
     #
     # Example:
     #
