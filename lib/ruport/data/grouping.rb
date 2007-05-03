@@ -173,10 +173,6 @@ module Ruport::Data
     # The name of the column used to group the data
     attr_reader :grouped_by
     
-    require "forwardable"
-    extend Forwardable
-    def_delegator :@data, :each
-    
     # Allows Hash-like indexing of the grouping data.
     #
     # Examples:
@@ -186,6 +182,12 @@ module Ruport::Data
     def [](name)
       @data[name] or 
         raise(IndexError,"Group Not Found")
+    end                    
+    
+    # Iterates through the Grouping, yielding each group name and Group object
+    #
+    def each
+      @data.each { |name,group| yield(name,group) }
     end 
     
     # Used to add extra data to the Grouping. <tt>group</tt> should be a Group.
