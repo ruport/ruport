@@ -1,8 +1,24 @@
 require 'test/unit'
 require 'ruport'
 
+###########################################################################
+#
+#  NOTE:
+#
+#  As it stands, we haven't found a more clever way to test the formatting
+#  system than to just create a bunch of renderers and basic formatters for
+#  different concepts we're trying to test.  Patches and ideas welcome:
+#
+#  list.rubyreports.org
+############################################################################
 
-class TrivialRenderer < Ruport::Renderer
+#============================================================================
+# These two renderers represent the two styles that can be used when defining
+# renderers in Ruport.  The OldSchoolRenderer approach has largely been
+# deprecated, but still has uses in edge cases that we need to support.
+#============================================================================
+
+class OldSchoolRenderer < Ruport::Renderer
 
   def run
     formatter do
@@ -14,13 +30,17 @@ class TrivialRenderer < Ruport::Renderer
 
 end               
 
-class YetAnotherRenderer < Ruport::Renderer
+class VanillaRenderer < Ruport::Renderer
   stage :header,:body,:footer
 end
 
+
+# This formatter implements some junk output so we can be sure
+# that the hooks are being set up right.  Perhaps these could
+# be replaced by mock objects in the future.
 class DummyText < Ruport::Formatter
   
-  renders :text, :for => TrivialRenderer
+  renders :text, :for => OldSchoolRenderer
   
   def prepare_document
     output << "p"
@@ -43,8 +63,11 @@ class DummyText < Ruport::Formatter
   end
 end   
 
+
+# This formatter is meant to check out a special case in Ruport's renderer,
+# in which a layout method is called and yielded to when defined
 class WithLayout < DummyText
-   renders :text_with_layout, :for => YetAnotherRenderer 
+   renders :text_with_layout, :for => VanillaRenderer 
    
    def layout     
      output << "---\n"
@@ -54,11 +77,11 @@ class WithLayout < DummyText
    
 end
 
-class TrivialRenderer2 < TrivialRenderer; end
 
+# This provides a way to check the multi-format hooks for the Renderer
 class MultiPurposeFormatter < Ruport::Formatter 
 
-   renders [:html,:text], :for => TrivialRenderer2
+   renders [:html,:text], :for => VanillaRenderer
 
    def build_header
      a = 10
@@ -73,11 +96,10 @@ class MultiPurposeFormatter < Ruport::Formatter
      html { output << "\n</pre>\n" }
    end
 
-   def build_footer; end 
 end   
 
-# FIXME: come up with a better name
-class RendererWithHelpers < Ruport::Renderer
+# This provides a way to check several hooks that Renderer supports
+class RendererWithManyHooks < Ruport::Renderer
 
   add_format DummyText, :text
 
@@ -97,6 +119,8 @@ class RendererWithHelpers < Ruport::Renderer
 
 end
 
+
+# This checks the evil AutoRunner edgecase
 class RendererWithRunHook < Ruport::Renderer
   
   include AutoRunner
@@ -114,55 +138,32 @@ class RendererWithRunHook < Ruport::Renderer
 
 end
 
-class RendererWithHelperModule < TrivialRenderer2
+class TestRendererWithHelperModule < Test::Unit::TestCase
 
-  add_format DummyText, :stub
+  class RendererWithHelperModule < VanillaRenderer
 
-  module Helpers
-    def say_hello
-      "Hello Dolly"
+    add_format DummyText, :stub
+
+    module Helpers
+      def say_hello
+        "Hello Dolly"
+      end
+    end
+  end   
+
+  def test_renderer_helper_module
+    RendererWithHelperModule.render_stub do |r|
+      assert_equal "Hello Dolly", r.formatter.say_hello
     end
   end
-end   
-
-class ErbFormatter < Ruport::Formatter
-   
-  renders :terb, :for  => TrivialRenderer2
-  
-  def build_header; end #gross, refactor            
-  def build_footer; end #gross, refactor 
-  def build_body    
-     # demonstrate local binding
-     @foo = "bar"                         
-     if options.binding
-       output << erb("Binding Override: <%= reverse %>", 
-                     :binding => options.binding) 
-     else   
-       output << erb("Default Binding: <%= @foo %>") 
-     end   
-  end
-  
-end
-
-class TestFormatterErbHelper < Test::Unit::TestCase
-   def test_self_bound
-     assert_equal "Default Binding: bar", TrivialRenderer2.render_terb
-   end
-   
-   def test_custom_bound
-     a = [1,2,3]
-     arr_binding = a.instance_eval { binding }
-     assert_equal "Binding Override: 321", 
-                  TrivialRenderer2.render_terb(:binding => arr_binding)
-   end
 end
 
 class TestRenderer < Test::Unit::TestCase
 
   def test_multi_purpose
-    text = TrivialRenderer2.render_text(:body_text => "foo")
+    text = VanillaRenderer.render_text(:body_text => "foo")
     assert_equal "Foo: 10\nfoo", text
-    html = TrivialRenderer2.render_html(:body_text => "bar")
+    html = VanillaRenderer.render_html(:body_text => "bar")
     assert_equal "<b>Foo: 10</b>\n<pre>\nbar\n</pre>\n",html
   end
 
@@ -193,7 +194,7 @@ class TestRenderer < Test::Unit::TestCase
   end
 
   def test_hash_options_setters
-    a = RendererWithHelpers.render(:text, :subtitle => "foo",
+    a = RendererWithManyHooks.render(:text, :subtitle => "foo",
                                        :subsubtitle => "bar") { |r|
       assert_equal "foo", r.options.subtitle
       assert_equal "bar", r.options.subsubtitle
@@ -201,15 +202,15 @@ class TestRenderer < Test::Unit::TestCase
   end
 
   def test_data_accessors
-   a = RendererWithHelpers.render(:text, :data => [1,2,4]) { |r|
+   a = RendererWithManyHooks.render(:text, :data => [1,2,4]) { |r|
      assert_equal [1,2,4], r.data
    }
   
-   b = RendererWithHelpers.render_text(%w[a b c]) { |r|
+   b = RendererWithManyHooks.render_text(%w[a b c]) { |r|
      assert_equal %w[a b c], r.data
    }
   
-   c = RendererWithHelpers.render_text(%w[a b f],:snapper => :red) { |r|
+   c = RendererWithManyHooks.render_text(%w[a b f],:snapper => :red) { |r|
      assert_equal %w[a b f], r.data
      assert_equal :red, r.options.snapper
    }
@@ -218,71 +219,71 @@ class TestRenderer < Test::Unit::TestCase
   def test_using_io
     require "stringio"
     out = StringIO.new
-    a = TrivialRenderer.render(:text) { |r| r.io = out }
+    a = OldSchoolRenderer.render(:text) { |r| r.io = out }
     out.rewind
     assert_equal "header\nbody\nfooter\n", out.read
     assert_equal "", out.read
   end
 
   def test_trivial
-    actual = TrivialRenderer.render(:text)
+    actual = OldSchoolRenderer.render(:text)
     assert_equal "header\nbody\nfooter\n", actual
   end
 
   def test_formats
     assert_equal( {}, Ruport::Renderer.formats )
-    assert_equal( { :text => DummyText },TrivialRenderer.formats )
+    assert_equal( { :text => DummyText },OldSchoolRenderer.formats )
   end
 
   def test_stage_helper
-    assert RendererWithHelpers.stages.include?('body')
+    assert RendererWithManyHooks.stages.include?('body')
   end
  
   def test_finalize_helper
-    assert_equal :document, RendererWithHelpers.final_stage
+    assert_equal :document, RendererWithManyHooks.final_stage
   end
 
   def test_prepare_helper
-   assert_equal :document, RendererWithHelpers.first_stage
+   assert_equal :document, RendererWithManyHooks.first_stage
   end
 
   def test_finalize_again
    assert_raise(Ruport::Renderer::StageAlreadyDefinedError) { 
-     RendererWithHelpers.finalize :report 
+     RendererWithManyHooks.finalize :report 
    }
   end
 
   def test_prepare_again
    assert_raise(Ruport::Renderer::StageAlreadyDefinedError) { 
-     RendererWithHelpers.prepare :foo 
+     RendererWithManyHooks.prepare :foo 
    }
   end
 
   def test_renderer_using_helpers
-   actual = RendererWithHelpers.render(:text)
+   actual = RendererWithManyHooks.render(:text)
    assert_equal "pheader\nbody\nfooter\nf", actual
 
-   actual = RendererWithHelpers.render_text
+   actual = RendererWithManyHooks.render_text
    assert_equal "pheader\nbody\nfooter\nf", actual
   end
 
   def test_setup
    actual = false
-   RendererWithHelpers.render_text { |r|
+   RendererWithManyHooks.render_text { |r|
      actual = r.options.apple
    }
    assert actual
   end
 
   def test_option_helper
-   RendererWithHelpers.render_text do |r|
+   RendererWithManyHooks.render_text do |r|
      r.subtitle = "Test Report"
      assert_equal "Test Report", r.options.subtitle
    end
   end
 
   def test_required_option_helper
-   a = RendererWithHelpers.dup
+   a = RendererWithManyHooks.dup
    a.required_option :title
 
    a.render_text do |r|
@@ -293,41 +294,38 @@ class TestRenderer < Test::Unit::TestCase
   end
 
   def test_without_required_option
-
-   a = RendererWithHelpers.dup
+   a = RendererWithManyHooks.dup
    a.required_option :title
 
    assert_raise(Ruport::Renderer::RequiredOptionNotSet) { a.render(:text) }
   end
                                            
   def test_method_missing
-    actual = TrivialRenderer.render_text
+    actual = OldSchoolRenderer.render_text
     assert_equal "header\nbody\nfooter\n", actual
   end
 
   def test_formatter
-     #RendererWithHelpers.required_option :title
- 
-     assert_raise(RuntimeError) { RendererWithHelpers.render(:text) }
-   end
+   assert_raise(RuntimeError) { RendererWithManyHooks.render(:text) }
+  end
 
 
   def test_method_missing
-    actual = TrivialRenderer.render_text
+    actual = OldSchoolRenderer.render_text
     assert_equal "header\nbody\nfooter\n", actual
   end
 
   def test_formatter
     # normal instance mode
     
-    rend = TrivialRenderer.new
+    rend = OldSchoolRenderer.new
     rend.send(:use_formatter,:text)
 
     assert_kind_of Ruport::Formatter, rend.formatter
     assert_kind_of DummyText, rend.formatter
 
     # render mode
-    TrivialRenderer.render_text do |r|
+    OldSchoolRenderer.render_text do |r|
       assert_kind_of Ruport::Formatter, r.formatter
       assert_kind_of DummyText, r.formatter
     end
@@ -361,15 +359,39 @@ class TestRenderer < Test::Unit::TestCase
   
   def test_layout
      assert_equal "---\nheader\nbody\nfooter\n---\n", 
-                  YetAnotherRenderer.render_text_with_layout
+                  VanillaRenderer.render_text_with_layout
   end
-
-  def test_renderer_helper_module
-    RendererWithHelperModule.render_stub do |r|
-      assert_equal "Hello Dolly", r.formatter.say_hello
-    end
-  end
-
-
 
 end
+
+class ErbFormatter < Ruport::Formatter
+   
+  renders :terb, :for  => VanillaRenderer
+  
+  def build_body    
+     # demonstrate local binding
+     @foo = "bar"                         
+     if options.binding
+       output << erb("Binding Override: <%= reverse %>", 
+                     :binding => options.binding) 
+     else   
+       output << erb("Default Binding: <%= @foo %>") 
+     end   
+  end
+  
+end
+
+class TestFormatterErbHelper < Test::Unit::TestCase
+   def test_self_bound
+     assert_equal "Default Binding: bar", VanillaRenderer.render_terb
+   end
+   
+   def test_custom_bound
+     a = [1,2,3]
+     arr_binding = a.instance_eval { binding }
+     assert_equal "Binding Override: 321", 
+                   VanillaRenderer.render_terb(:binding => arr_binding)
+   end
+end
+
+
