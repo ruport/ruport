@@ -296,6 +296,7 @@ class TestRendererWithRunHook < Test::Unit::TestCase
 
 end
 
+
 class TestRendererWithHelperModule < Test::Unit::TestCase
 
   class RendererWithHelperModule < VanillaRenderer
