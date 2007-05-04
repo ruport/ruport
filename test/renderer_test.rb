@@ -66,6 +66,11 @@ end
 
 class TestRenderer < Test::Unit::TestCase
 
+  def test_trivial
+    actual = OldSchoolRenderer.render(:text)
+    assert_equal "header\nbody\nfooter\n", actual
+  end
+
   def test_using_io
     require "stringio"
     out = StringIO.new
@@ -73,11 +78,6 @@ class TestRenderer < Test::Unit::TestCase
     out.rewind
     assert_equal "header\nbody\nfooter\n", out.read
     assert_equal "", out.read
-  end
-
-  def test_trivial
-    actual = OldSchoolRenderer.render(:text)
-    assert_equal "header\nbody\nfooter\n", actual
   end
 
   def test_formats
@@ -92,7 +92,6 @@ class TestRenderer < Test::Unit::TestCase
 
   def test_formatter
     # normal instance mode
-    
     rend = OldSchoolRenderer.new
     rend.send(:use_formatter,:text)
 
@@ -127,10 +126,6 @@ class TestRenderer < Test::Unit::TestCase
      assert_equal "banana", opts["apple"]
      assert_equal "banana", opts[:apple]
   end     
-  
-  def test_add_format_private
-     assert_raise(NoMethodError) { Ruport::Renderer.add_format }
-  end 
   
 end
 
