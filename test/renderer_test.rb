@@ -64,133 +64,119 @@ class DummyText < Ruport::Formatter
 end   
 
 
-# This formatter is meant to check out a special case in Ruport's renderer,
-# in which a layout method is called and yielded to when defined
-class WithLayout < DummyText
-   renders :text_with_layout, :for => VanillaRenderer 
-   
-   def layout     
-     output << "---\n"
-     yield
-     output << "---\n"
-   end
-   
-end
-
-
-# This provides a way to check the multi-format hooks for the Renderer
-class MultiPurposeFormatter < Ruport::Formatter 
-
-   renders [:html,:text], :for => VanillaRenderer
-
-   def build_header
-     a = 10
-
-     text { output << "Foo: #{a}\n" }
-     html { output << "<b>Foo: #{a}</b>\n" } 
-   end
-
-   def build_body
-     html { output << "<pre>\n" }
-     output << options.body_text
-     html { output << "\n</pre>\n" }
-   end
-
-end   
-
-# This provides a way to check several hooks that Renderer supports
-class RendererWithManyHooks < Ruport::Renderer
-
-  add_format DummyText, :text
-
-  prepare :document
-
-  option :subtitle, :subsubtitle
-
-  stage :header
-  stage :body
-  stage :footer
-
-  finalize :document
-
-  def setup
-    options.apple = true
-  end
-
-end
-
-
-# This checks the evil AutoRunner edgecase
-class RendererWithRunHook < Ruport::Renderer
-  
-  include AutoRunner
-
-  add_format DummyText, :text
-
-  required_option :foo,:bar
-  stage :header
-  stage :body
-  stage :footer
-
-  def run
-    formatter.output << "|"
-  end
-
-end
-
-class TestRendererWithHelperModule < Test::Unit::TestCase
-
-  class RendererWithHelperModule < VanillaRenderer
-
-    add_format DummyText, :stub
-
-    module Helpers
-      def say_hello
-        "Hello Dolly"
-      end
-    end
-  end   
-
-  def test_renderer_helper_module
-    RendererWithHelperModule.render_stub do |r|
-      assert_equal "Hello Dolly", r.formatter.say_hello
-    end
-  end
-end
-
 class TestRenderer < Test::Unit::TestCase
 
-  def test_multi_purpose
-    text = VanillaRenderer.render_text(:body_text => "foo")
-    assert_equal "Foo: 10\nfoo", text
-    html = VanillaRenderer.render_html(:body_text => "bar")
-    assert_equal "<b>Foo: 10</b>\n<pre>\nbar\n</pre>\n",html
+  def test_using_io
+    require "stringio"
+    out = StringIO.new
+    a = OldSchoolRenderer.render(:text) { |r| r.io = out }
+    out.rewind
+    assert_equal "header\nbody\nfooter\n", out.read
+    assert_equal "", out.read
   end
 
-
-  def test_renderer_with_run_hooks
-    assert_equal "|header\nbody\nfooter\n", 
-       RendererWithRunHook.render_text(:foo => "bar",:bar => "baz")
+  def test_trivial
+    actual = OldSchoolRenderer.render(:text)
+    assert_equal "header\nbody\nfooter\n", actual
   end
 
-  def test_method_missing_hack_formatter
-    assert_equal [:html,:text], MultiPurposeFormatter.formats
+  def test_formats
+    assert_equal( {}, Ruport::Renderer.formats )
+    assert_equal( { :text => DummyText },OldSchoolRenderer.formats )
+  end
 
-    a = MultiPurposeFormatter.new
-    a.format = :html
+  def test_method_missing
+    actual = OldSchoolRenderer.render_text
+    assert_equal "header\nbody\nfooter\n", actual
+  end
+
+  def test_formatter
+    # normal instance mode
     
-    visited = false
-    a.html { visited = true }
+    rend = OldSchoolRenderer.new
+    rend.send(:use_formatter,:text)
 
-    assert visited
-    
-    visited = false
-    a.text { visited = true }
-    assert !visited
+    assert_kind_of Ruport::Formatter, rend.formatter
+    assert_kind_of DummyText, rend.formatter
 
-    assert_raises(NoMethodError) do
-      a.pdf { 'do nothing' }
+    # render mode
+    OldSchoolRenderer.render_text do |r|
+      assert_kind_of Ruport::Formatter, r.formatter
+      assert_kind_of DummyText, r.formatter
     end
+
+    assert_equal "body\n", rend.formatter { build_body }.output
+
+    rend.formatter.clear_output
+    assert_equal "", rend.formatter.output
+  end  
+  
+  def test_options_act_like_indifferent_hash
+     opts = Ruport::Renderer::Options.new
+     opts.foo = "bar"
+     assert_equal "bar", opts[:foo]
+     assert_equal "bar", opts["foo"]    
+     
+     opts["f"] = "bar"
+     assert_equal "bar", opts[:f]
+     assert_equal "bar", opts.f
+     assert_equal "bar", opts["f"]
+     
+     opts[:apple] = "banana"
+     assert_equal "banana", opts.apple
+     assert_equal "banana", opts["apple"]
+     assert_equal "banana", opts[:apple]
+  end     
+  
+  def test_add_format_private
+     assert_raise(NoMethodError) { Ruport::Renderer.add_format }
+  end 
+  
+end
+
+
+class TestFormatterWithLayout < Test::Unit::TestCase
+  # This formatter is meant to check out a special case in Ruport's renderer,
+  # in which a layout method is called and yielded to when defined
+  class WithLayout < DummyText
+     renders :text_with_layout, :for => VanillaRenderer 
+     
+     def layout     
+       output << "---\n"
+       yield
+       output << "---\n"
+     end
+     
+  end
+
+  def test_layout
+     assert_equal "---\nheader\nbody\nfooter\n---\n", 
+                  VanillaRenderer.render_text_with_layout
+  end
+
+end
+
+
+class TestRendererWithManyHooks < Test::Unit::TestCase
+  # This provides a way to check several hooks that Renderer supports
+  class RendererWithManyHooks < Ruport::Renderer
+
+    add_format DummyText, :text
+
+    prepare :document
+
+    option :subtitle, :subsubtitle
+
+    stage :header
+    stage :body
+    stage :footer
+
+    finalize :document
+
+    def setup
+      options.apple = true
+    end
+
   end
 
   def test_hash_options_setters
@@ -214,25 +200,6 @@ class TestRenderer < Test::Unit::TestCase
      assert_equal %w[a b f], r.data
      assert_equal :red, r.options.snapper
    }
-  end
-
-  def test_using_io
-    require "stringio"
-    out = StringIO.new
-    a = OldSchoolRenderer.render(:text) { |r| r.io = out }
-    out.rewind
-    assert_equal "header\nbody\nfooter\n", out.read
-    assert_equal "", out.read
-  end
-
-  def test_trivial
-    actual = OldSchoolRenderer.render(:text)
-    assert_equal "header\nbody\nfooter\n", actual
-  end
-
-  def test_formats
-    assert_equal( {}, Ruport::Renderer.formats )
-    assert_equal( { :text => DummyText },OldSchoolRenderer.formats )
   end
 
   def test_stage_helper
@@ -299,89 +266,129 @@ class TestRenderer < Test::Unit::TestCase
 
    assert_raise(Ruport::Renderer::RequiredOptionNotSet) { a.render(:text) }
   end
-                                           
-  def test_method_missing
-    actual = OldSchoolRenderer.render_text
-    assert_equal "header\nbody\nfooter\n", actual
-  end
-
-  def test_formatter
-   assert_raise(RuntimeError) { RendererWithManyHooks.render(:text) }
-  end
+ 
+end
 
 
-  def test_method_missing
-    actual = OldSchoolRenderer.render_text
-    assert_equal "header\nbody\nfooter\n", actual
-  end
+class TestRendererWithRunHook < Test::Unit::TestCase
 
-  def test_formatter
-    # normal instance mode
+  class RendererWithRunHook < Ruport::Renderer
     
-    rend = OldSchoolRenderer.new
-    rend.send(:use_formatter,:text)
+    include AutoRunner
 
-    assert_kind_of Ruport::Formatter, rend.formatter
-    assert_kind_of DummyText, rend.formatter
+    add_format DummyText, :text
 
-    # render mode
-    OldSchoolRenderer.render_text do |r|
-      assert_kind_of Ruport::Formatter, r.formatter
-      assert_kind_of DummyText, r.formatter
+    required_option :foo,:bar
+    stage :header
+    stage :body
+    stage :footer
+
+    def run
+      formatter.output << "|"
     end
 
-    assert_equal "body\n", rend.formatter { build_body }.output
+  end
 
-    rend.formatter.clear_output
-    assert_equal "", rend.formatter.output
-  end  
-  
-  def test_options_act_like_indifferent_hash
-     opts = Ruport::Renderer::Options.new
-     opts.foo = "bar"
-     assert_equal "bar", opts[:foo]
-     assert_equal "bar", opts["foo"]    
-     
-     opts["f"] = "bar"
-     assert_equal "bar", opts[:f]
-     assert_equal "bar", opts.f
-     assert_equal "bar", opts["f"]
-     
-     opts[:apple] = "banana"
-     assert_equal "banana", opts.apple
-     assert_equal "banana", opts["apple"]
-     assert_equal "banana", opts[:apple]
-  end     
-  
-  def test_add_format_private
-     assert_raise(NoMethodError) { Ruport::Renderer.add_format }
-  end 
-  
-  def test_layout
-     assert_equal "---\nheader\nbody\nfooter\n---\n", 
-                  VanillaRenderer.render_text_with_layout
+  def test_renderer_with_run_hooks
+    assert_equal "|header\nbody\nfooter\n", 
+       RendererWithRunHook.render_text(:foo => "bar",:bar => "baz")
   end
 
 end
 
-class ErbFormatter < Ruport::Formatter
-   
-  renders :terb, :for  => VanillaRenderer
-  
-  def build_body    
-     # demonstrate local binding
-     @foo = "bar"                         
-     if options.binding
-       output << erb("Binding Override: <%= reverse %>", 
-                     :binding => options.binding) 
-     else   
-       output << erb("Default Binding: <%= @foo %>") 
-     end   
+class TestRendererWithHelperModule < Test::Unit::TestCase
+
+  class RendererWithHelperModule < VanillaRenderer
+
+    add_format DummyText, :stub
+
+    module Helpers
+      def say_hello
+        "Hello Dolly"
+      end
+    end
+  end   
+
+  def test_renderer_helper_module
+    RendererWithHelperModule.render_stub do |r|
+      assert_equal "Hello Dolly", r.formatter.say_hello
+    end
   end
-  
 end
+
+
+class TestMultiPurposeFormatter < Test::Unit::TestCase
+  # This provides a way to check the multi-format hooks for the Renderer
+  class MultiPurposeFormatter < Ruport::Formatter 
+
+     renders [:html,:text], :for => VanillaRenderer
+
+     def build_header
+       a = 10
+
+       text { output << "Foo: #{a}\n" }
+       html { output << "<b>Foo: #{a}</b>\n" } 
+     end
+
+     def build_body
+       html { output << "<pre>\n" }
+       output << options.body_text
+       html { output << "\n</pre>\n" }
+     end
+
+  end   
+
+  def test_multi_purpose
+    text = VanillaRenderer.render_text(:body_text => "foo")
+    assert_equal "Foo: 10\nfoo", text
+    html = VanillaRenderer.render_html(:body_text => "bar")
+    assert_equal "<b>Foo: 10</b>\n<pre>\nbar\n</pre>\n",html
+  end
+
+
+  def test_method_missing_hack_formatter
+    assert_equal [:html,:text], MultiPurposeFormatter.formats
+
+    a = MultiPurposeFormatter.new
+    a.format = :html
+    
+    visited = false
+    a.html { visited = true }
+
+    assert visited
+    
+    visited = false
+    a.text { visited = true }
+    assert !visited
+
+    assert_raises(NoMethodError) do
+      a.pdf { 'do nothing' }
+    end
+  end
+
+end
+
 
 class TestFormatterErbHelper < Test::Unit::TestCase
+  class ErbFormatter < Ruport::Formatter
+     
+    renders :terb, :for  => VanillaRenderer
+    
+    def build_body    
+       # demonstrate local binding
+       @foo = "bar"                         
+       if options.binding
+         output << erb("Binding Override: <%= reverse %>", 
+                       :binding => options.binding) 
+       else   
+         output << erb("Default Binding: <%= @foo %>") 
+       end   
+    end
+    
+  end
+
+   #FIXME: need to test file
+
    def test_self_bound
      assert_equal "Default Binding: bar", VanillaRenderer.render_terb
    end
