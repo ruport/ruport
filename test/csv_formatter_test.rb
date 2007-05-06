@@ -62,7 +62,7 @@ class RenderCSVGrouping < Test::Unit::TestCase
                                           %w[is it funny]
     grouping = Grouping(table,:by => "hi")
 
-    actual = grouping.to_csv #(:show_group_headers => false)
+    actual = grouping.to_csv
 
     assert_equal "is\n\nred,snapper\nthis,annoying\nit,funny\n\n", actual
   end

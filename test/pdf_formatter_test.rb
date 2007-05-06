@@ -9,17 +9,35 @@ end
 
 #require "pdf/writer"    
 
-class TestFormatPDF < Test::Unit::TestCase
+class TestRenderPDFTable < Test::Unit::TestCase
 
-  def test_render_pdf_basic
+  def test_render_pdf_basic  
+    # can't render without column names
     data = [[1,2],[3,4]].to_table
-    assert_raise(Ruport::FormatterError) { 
+    assert_raise(Ruport::FormatterError) do
       data.to_pdf 
-    }
+    end
 
     data.column_names = %w[a b]
     assert_nothing_raised { data.to_pdf }
+  end     
+                              
+  # this is mostly to check that the transaction hack gets called
+  def test_relatively_large_pdf
+     table = Table("test/samples/dates.csv")  
+     table.reduce(0..99)
+     assert_nothing_raised { table.to_pdf }
   end 
+     
+  # this is just to make sure that the column_opts code is being called.
+  # FIXME: add mocks to be sure
+  def test_table_with_options
+    data = [[1,2],[3,4]].to_table(%w[a b])
+    assert_nothing_raised do
+      data.to_pdf(:table_format => { 
+            :column_options => { :justification => :center } } ) 
+    end
+  end
   
   #--------BUG TRAPS--------#
   
@@ -28,7 +46,13 @@ class TestFormatPDF < Test::Unit::TestCase
   def test_tables_should_render_with_symbol_column_name
     data = [[1,2,3],[4,5,6]].to_table([:a,:b,:c])
     assert_nothing_raised { data.to_pdf }
-  end                                    
+  end  
+  
+end    
+
+class TestRenderPDFGrouping < Test::Unit::TestCase                                  
+   
+  #--------BUG TRAPS----------#
   
   # As of Ruport 0.10.0, PDF's justified group output was throwing
   # UnknownFormatError  (#288)
@@ -39,10 +63,78 @@ class TestFormatPDF < Test::Unit::TestCase
      assert_nothing_raised { grouping.to_pdf(:style => :inline) }
      assert_nothing_raised { grouping.to_pdf(:style => :offset) }     
      assert_nothing_raised { grouping.to_pdf(:style => :justified) }
-     assert_nothing_raised { grouping.to_pdf(:style => :separated) }    
+     assert_nothing_raised { grouping.to_pdf(:style => :separated) }
+     assert_raises(NotImplementedError) do 
+       grouping.to_pdf(:style => :red_snapper) 
+     end       
   end
   
-  
-  
+end
 
+class TestPDFFormatterHelpers < Test::Unit::TestCase   
+  
+  def test_boundaries
+     a = Ruport::Formatter::PDF.new
+     
+     assert_equal 36, a.left_boundary    
+     a.pdf_writer.left_margin = 50 
+     assert_equal 50, a.left_boundary   
+     
+     assert_equal 576, a.right_boundary
+     a.pdf_writer.right_margin -= 10  
+     assert_equal 586, a.right_boundary 
+     
+     assert_equal 756, a.top_boundary
+     a.pdf_writer.top_margin -= 10
+     assert_equal 766, a.top_boundary
+     
+     assert_equal 36, a.bottom_boundary
+     a.pdf_writer.bottom_margin -= 10
+     assert_equal 26, a.bottom_boundary             
+  end
+     
+  def test_move_cursor
+     a = Ruport::Formatter::PDF.new
+     a.move_cursor_to(500)
+     assert_equal(500,a.cursor)  
+     a.move_cursor(-25)
+     assert_equal(475,a.cursor)
+     a.move_cursor(50)
+     assert_equal(525,a.cursor)
+  end           
+  
+  def test_padding
+    a = Ruport::Formatter::PDF.new
+    a.move_cursor_to(100)             
+    
+    # padding on top and bottom
+    a.pad(10) do        
+      assert_equal 90, a.cursor
+      a.move_cursor(-10)      
+      assert_equal 80, a.cursor
+    end
+    assert_equal(70,a.cursor)  
+    
+    a.move_cursor_to(100)
+    
+    # padding just on top  
+    a.pad_top(10) do
+      assert_equal 90, a.cursor
+      a.move_cursor(-10)
+      assert_equal 80, a.cursor
+    end
+    
+    assert_equal 80, a.cursor   
+    
+    a.move_cursor_to(100)  
+    
+    # padding just on bottom
+    a.pad_bottom(10) do
+      assert_equal 100, a.cursor
+      a.move_cursor(-10)
+      assert_equal 90, a.cursor
+    end  
+    
+    assert_equal 80, a.cursor        
+  end
 end
