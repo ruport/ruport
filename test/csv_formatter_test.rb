@@ -7,7 +7,7 @@ rescue LoadError
   nil
 end
 
-class TestFormatCSV < Test::Unit::TestCase
+class TestRenderCSVTable < Test::Unit::TestCase
 
   def test_render_csv_table
     actual = Ruport::Renderer::Table.render_csv { |r| 
@@ -19,7 +19,10 @@ class TestFormatCSV < Test::Unit::TestCase
       r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
     }
     assert_equal("a,b,c\n1,2,3\n4,5,6\n",actual)
-  end
+  end      
+end     
+
+class TestRenderCSVGroup < Test::Unit::TestCase
 
   def test_render_csv_group
     group = Ruport::Data::Group.new(:name => 'test',
@@ -31,17 +34,17 @@ class TestFormatCSV < Test::Unit::TestCase
   end
 
   def test_render_csv_grouping
-    table = Table(%w[hi chris carter]) << %w[is this annoying] <<
+    table = Table(%w[hi red snapper]) << %w[is this annoying] <<
                                           %w[is it funny]
     grouping = Grouping(table,:by => "hi")
 
     actual = grouping.to_csv #(:show_group_headers => false)
 
-    assert_equal "is\n\nchris,carter\nthis,annoying\nit,funny\n\n", actual
+    assert_equal "is\n\nred,snapper\nthis,annoying\nit,funny\n\n", actual
   end
 
   def test_render_csv_grouping_without_header
-    table = Table(%w[hi chris carter]) << %w[is this annoying] <<
+    table = Table(%w[hi red snapper]) << %w[is this annoying] <<
                                           %w[is it funny]
     grouping = Grouping(table,:by => "hi")
 

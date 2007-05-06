@@ -1,5 +1,9 @@
+require "test/unit"      
+require "ruport"         
+
 begin
-  require "rubygems"
+  require "rubygems"  
+  gem "mocha", ">=0.4.0"
   require "mocha"
   require "stubba"
   require "active_record"
@@ -7,8 +11,7 @@ rescue LoadError
   nil
 end
 
-require "test/unit"
-require "ruport"
+require "ruport/acts_as_reportable"
 
 if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
 
