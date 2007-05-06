@@ -1,5 +1,6 @@
 require "test/unit"
-require "ruport"
+require "ruport"        
+
 class TestRenderTextTable < Test::Unit::TestCase 
   
   def test_basic
@@ -67,6 +68,7 @@ class TestRenderTextTable < Test::Unit::TestCase
   end
   
 end
+    
 
 class TestRenderTextRow < Test::Unit::TestCase
 
@@ -76,6 +78,7 @@ class TestRenderTextRow < Test::Unit::TestCase
   end
 
 end
+        
 
 class TestRenderTextGroup < Test::Unit::TestCase
 
@@ -112,6 +115,7 @@ class TestRenderTextGroup < Test::Unit::TestCase
     assert_equal(expected, actual)
   end                                           
 end       
+       
 
 class TestRenderTextGrouping < Test::Unit::TestCase
 
