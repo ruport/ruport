@@ -333,7 +333,14 @@ module Ruport
       def horizontal_line(x1,x2)
         pdf_writer.line(x1,cursor,x2,cursor)
         pdf_writer.stroke
-      end
+      end 
+      
+      # draws a horizontal line from left_boundary to right_boundary
+      def horizontal_rule
+        horizontal_line(left_boundary,right_boundary)                                            
+      end                                            
+      
+      alias_method :hr, :horizontal_rule
                     
       # draws a vertical line at x from y1 to y2
       def vertical_line_at(x,y1,y2)
