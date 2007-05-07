@@ -78,11 +78,6 @@ class TestGroup < Test::Unit::TestCase
                                         :name => 4 ) }
     assert_equal b, a.send(:grouped_data, "a")
   end
-  
-  def test_kernel_hack
-    assert_equal @group, Group('test', :data => [[1,2,3]],
-                                       :column_names => %w[a b c]) 
-  end
 end
 
 class TestGroupRendering < Test::Unit::TestCase
@@ -174,16 +169,6 @@ class TestGrouping < Test::Unit::TestCase
   def test_grouped_by
     assert_equal "a", @grouping.grouped_by
   end
-
-  def test_kernel_hack
-    a = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
-                                        :column_names => %w[b c],
-                                        :name => 1 ),
-          4 => Ruport::Data::Group.new( :data => [[5,6]],
-                                        :column_names => %w[b c],
-                                        :name => 4 ) }
-    assert_equal a, @grouping.data
-  end   
 
   def test_grouping_on_multiple_columns
     a = [[1,2,3,4],[4,5,6,7]].to_table(%w[a b c d])
@@ -298,5 +283,28 @@ class TestGroupingRendering < Test::Unit::TestCase
       @grouping.as(:nothing) }
     assert_raises(Ruport::Renderer::UnknownFormatError) {
       @grouping.to_nothing }
+  end
+end
+
+class TestGroupingKernelHacks < Test::Unit::TestCase
+
+  def test_group_kernel_hack
+    group = Ruport::Data::Group.new( :name => 'test',
+                                     :data => [[1,2,3]],
+                                     :column_names => %w[a b c])
+    assert_equal group, Group('test', :data => [[1,2,3]],
+                                      :column_names => %w[a b c]) 
+  end
+
+  def test_grouping_kernel_hack
+    table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    grouping = Ruport::Data::Grouping.new(table, :by => "a")
+    a = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
+                                        :column_names => %w[b c],
+                                        :name => 1 ),
+          4 => Ruport::Data::Group.new( :data => [[5,6]],
+                                        :column_names => %w[b c],
+                                        :name => 4 ) }
+    assert_equal a, grouping.data
   end
 end
