@@ -53,7 +53,6 @@
  
        assert_equal nil, query.execute
      end
-
    
      def test_execute_sourced
        query = @query[:sourced]
