@@ -1,15 +1,17 @@
 require "test/unit"
 require "ruport"
-
-
-class TestRecord < Test::Unit::TestCase
-
-  include Ruport::Data
-
+                      
+module RecordTestSetup
   def setup
     @attributes = %w[a b c d]
     @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes 
   end
+end
+
+class TestRecord < Test::Unit::TestCase
+
+  include Ruport::Data
+  include RecordTestSetup 
 
   def test_init
     record = Ruport::Data::Record.new [1,2,3,4]
@@ -277,6 +279,9 @@ end
     
 
 class TestRecordRenderering < Test::Unit::TestCase
+  
+  include RecordTestSetup
+  include Ruport::Data
 
   def test_record_as
     rendered_row = @record.as(:text)
