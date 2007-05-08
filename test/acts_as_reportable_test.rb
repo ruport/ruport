@@ -87,6 +87,7 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
       @teams[0].stubs(:players).returns(@players)
       @teams[1].stubs(:players).returns([])
       Player.stubs(:find).returns(@players)
+      Player.stubs(:find_by_sql).returns(@players)
       @players[0].stubs(:team).returns(@teams[0])
       @players[1].stubs(:team).returns(@teams[0])
       @players[0].stubs(:personal_trainer).returns(@trainers[0])
@@ -107,6 +108,13 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
     
     def test_basic_report_table
       actual = Player.report_table
+      expected = [[1, "Player 1", 1],
+        [1, "Player 2", 2]].to_table(%w[team_id name personal_trainer_id])
+      assert_equal expected, actual
+    end
+    
+    def test_report_table_by_sql
+      actual = Player.report_table_by_sql("SELECT * FROM players")
       expected = [[1, "Player 1", 1],
         [1, "Player 2", 2]].to_table(%w[team_id name personal_trainer_id])
       assert_equal expected, actual
@@ -161,6 +169,10 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
 
     def test_record_class_option
       actual = Player.report_table(:all, :record_class => CustomRecord)
+      actual.each { |r| assert_equal CustomRecord, r.class }
+
+      actual = Player.report_table_by_sql("SELECT * FROM players",
+                 :record_class => CustomRecord)
       actual.each { |r| assert_equal CustomRecord, r.class }
     end
 

@@ -103,6 +103,8 @@ module Ruport
       #                             table.
       # <b><tt>:include</tt></b>::  an associated model or array of associated
       #                             models to include in the results.
+      # <b><tt>:record_class</tt></b>::  specify the class of the table's
+      #                                  records.
       #
       # The same set of options may be passed to the :include option in order to
       # specify the output for any associated models. In this case, the
@@ -167,6 +169,34 @@ module Ruport
         table
       end
       
+      # Creates a Ruport::Data::Table from an ActiveRecord find_by_sql.
+      #
+      # Additional options include:
+      #
+      # <b><tt>:record_class</tt></b>::  specify the class of the table's
+      #                                  records.
+      #
+      # Example:
+      # 
+      #   class Book < ActiveRecord::Base
+      #     belongs_to :author
+      #     acts_as_reportable
+      #   end
+      #
+      #   Book.report_table_by_sql("SELECT * FROM books")
+      #
+      def report_table_by_sql(sql, options = {})
+        record_class = options.delete(:record_class) || Ruport::Data::Record
+        self.aar_columns = []
+
+        data = find_by_sql(sql)
+        data = data.map {|r| r.reportable_data }.flatten
+
+        table = Ruport::Data::Table.new(:data => data,
+                                        :column_names => aar_columns,
+                                        :record_class => record_class)
+      end
+
       private
       
       def get_include_for_find(report_option)
