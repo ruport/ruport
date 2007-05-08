@@ -55,7 +55,8 @@ module Ruport
     # calculate_max_col_widths
     #
     def prepare_table
-      raise "Can't output empty table" if data.empty?
+      raise Ruport::FormatterError, "Can't output table without " +
+        "data or column names." if data.empty? && data.column_names.empty?
       calculate_max_col_widths
     end
 
@@ -84,6 +85,7 @@ module Ruport
     #
     def build_table_body
       output << fit_to_width(hr)
+      return if data.empty?
 
       calculate_max_col_widths unless max_col_width
 
@@ -154,8 +156,9 @@ module Ruport
     #
     #   "+------------------+"
     def hr
-      len = max_col_width.inject(data[0].to_a.length * 3) {|s,e|s+e}+1
-      "+" + "-"*(len-2) + "+\n"
+      ref = data.column_names.empty? ? data[0].to_a : data.column_names
+      len = max_col_width.inject(ref.length * 3) {|s,e|s+e}
+      "+" + "-"*(len-1) + "+\n"
     end
     
     # Returns options.table_width if specified.

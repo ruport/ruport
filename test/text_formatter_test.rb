@@ -51,9 +51,15 @@ class TestRenderTextTable < Test::Unit::TestCase
     assert_equal("+---------+\n|   1 | 2 |\n| 300 | 4 |\n+---------+\n",a)
   end 
   
-  def test_raise_error_on_empty_table
-    assert_raise(RuntimeError) { [].to_table.to_text }
-    assert_raise(RuntimeError) { [].to_table(%w[a b c]).to_text }
+  def test_render_empty_table
+    assert_raise(Ruport::FormatterError) { [].to_table.to_text }
+    assert_nothing_raised { Table(%w[a b c]).to_text }
+
+    a = Table(%w[a b c]).to_text
+    expected = "+-----------+\n"+
+               "| a | b | c |\n"+
+               "+-----------+\n"
+    assert_equal expected, a
   end
                                              
   # -- BUG TRAPS ------------------------------
@@ -64,7 +70,6 @@ class TestRenderTextTable < Test::Unit::TestCase
                "| 1 | 2 | 3 |\n"+
                "+-----------+\n"
     assert_equal(expected,a)
-
   end
   
 end
