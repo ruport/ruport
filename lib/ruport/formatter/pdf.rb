@@ -316,7 +316,8 @@ module Ruport
         table.extend(PDFSimpleTableOrderingPatch)             
         table.maximum_width = 500
         table.column_order  = table_data.column_names
-        table.data = table_data                                                 
+        table.data = table_data
+        table.data = [{}] if table.data.empty?                                                 
         apply_pdf_table_column_opts(table,table_data,format_opts)
 
         format_opts.each {|k,v| table.send("#{k}=", v) }  

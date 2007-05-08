@@ -16,10 +16,12 @@ class TestRenderPDFTable < Test::Unit::TestCase
     data = [[1,2],[3,4]].to_table
     assert_raise(Ruport::FormatterError) do
       data.to_pdf 
-    end
+    end      
 
     data.column_names = %w[a b]
     assert_nothing_raised { data.to_pdf }
+    
+    assert_nothing_raised { Table(%w[a b c]).to_pdf }
   end     
                               
   # this is mostly to check that the transaction hack gets called
