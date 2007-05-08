@@ -149,6 +149,7 @@ module Ruport
         methods = options.delete(:methods)
         includes = options.delete(:include)
         preserve_namespace = options.delete(:preserve_namespace)
+        record_class = options.delete(:record_class) || Ruport::Data::Record
         self.aar_columns = []
 
         options[:include] = get_include_for_find(includes)
@@ -159,8 +160,9 @@ module Ruport
                                :except => except,
                                :methods => methods) }.flatten
 
-        table =
-          Ruport::Data::Table.new(:data => data, :column_names => aar_columns)
+        table = Ruport::Data::Table.new(:data => data,
+                                        :column_names => aar_columns,
+                                        :record_class => record_class)
         normalize_column_names(table) unless preserve_namespace
         table
       end

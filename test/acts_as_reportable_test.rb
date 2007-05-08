@@ -157,6 +157,13 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
       assert_equal expected, actual
     end
     
+    class CustomRecord < Ruport::Data::Record; end
+
+    def test_record_class_option
+      actual = Player.report_table(:all, :record_class => CustomRecord)
+      actual.each { |r| assert_equal CustomRecord, r.class }
+    end
+
     def test_get_include_for_find
       assert_equal :players, Team.send(:get_include_for_find, nil)
       assert_equal nil, Player.send(:get_include_for_find, nil)
