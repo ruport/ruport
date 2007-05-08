@@ -208,27 +208,6 @@ class TestRecord < Test::Unit::TestCase
     new_object_id = @record.instance_variable_get(:@attributes).object_id
     assert_equal a.object_id, new_object_id
   end
-
-  def test_record_as
-    rendered_row = @record.as(:text)
-    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
-  end
-
-  def test_to_hack
-    rendered_row = @record.to_text
-    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)  
-    
-    rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
-    assert_equal("1\t2\t3\t4\n",rendered_row)
-  end             
-
-  def test_as_throws_proper_errors
-    a = Record.new({ "a" => 1, "b" => 2 })
-    assert_nothing_raised { a.as(:csv) }
-    assert_nothing_raised { a.to_csv }
-    assert_raises(Ruport::Renderer::UnknownFormatError) { a.as(:nothing) }
-    assert_raises(Ruport::Renderer::UnknownFormatError) { a.to_nothing }
-  end
   
   #----------------------------------------------------------------------
   #  BUG Traps
@@ -257,12 +236,7 @@ class TestRecord < Test::Unit::TestCase
     assert_equal(2,a.get("b"))
     assert_equal(2,a.get(:b))
   end
-
-  def test_ensure_attributes_not_broken_by_to_hack
-    record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
-    assert_equal 2, record.to_something
-  end
-
+  
   def test_ensure_get_throws_argument_error
     a = Record.new({"a" => 1, "b" => 2})
     assert_raises(ArgumentError) { a.get([]) }
@@ -297,6 +271,39 @@ class TestRecord < Test::Unit::TestCase
   def test_ensure_record_subclasses_render_properly
     a = MyRecordSub.new [1,2,3]
     assert_equal "1,2,3\n", a.to_csv
+  end
+    
+end 
+    
+
+class TestRecordRenderering < Test::Unit::TestCase
+
+  def test_record_as
+    rendered_row = @record.as(:text)
+    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
+  end
+
+  def test_to_hack
+    rendered_row = @record.to_text
+    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)  
+    
+    rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
+    assert_equal("1\t2\t3\t4\n",rendered_row)
+  end             
+
+  def test_as_throws_proper_errors
+    a = Record.new({ "a" => 1, "b" => 2 })
+    assert_nothing_raised { a.as(:csv) }
+    assert_nothing_raised { a.to_csv }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { a.as(:nothing) }
+    assert_raises(Ruport::Renderer::UnknownFormatError) { a.to_nothing }
+  end  
+  
+  ## -- BUG TRAPS --------------------
+  
+  def test_ensure_attributes_not_broken_by_to_hack
+    record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
+    assert_equal 2, record.to_something
   end
 
 end
