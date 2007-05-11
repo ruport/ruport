@@ -318,10 +318,16 @@ class Ruport::Renderer
     #      option :font_size, :font_style
     #      # other details omitted
     #   end
-    def option(*opts)
-      opts.each do |opt|
+    def option(*opts)       
+      opts.each do |opt|                                  
+        o = opt 
+        unless instance_methods(false).include?(o.to_s)   
+          define_method(o) {
+             options.send(o.to_s) 
+          }     
+        end
         opt = "#{opt}="
-        define_method(opt) {|t| options.send(opt, t) } 
+        define_method(opt) {|t| options.send(opt, t) }
       end
     end
     

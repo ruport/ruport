@@ -395,6 +395,40 @@ class TestFormatterErbHelper < Test::Unit::TestCase
      assert_equal "Binding Override: 321", 
                    VanillaRenderer.render_terb(:binding => arr_binding)
    end
+end    
+
+
+class TestOptionReaders < Test::Unit::TestCase
+  
+  class RendererForCheckingOptionReaders < Ruport::Renderer
+    option :foo  
+  end 
+  
+  class RendererForCheckingPassivity < Ruport::Renderer
+    def foo
+      "apples"
+    end
+    option :foo    
+  end
+
+   def setup 
+     @renderer = RendererForCheckingOptionReaders.new 
+     @renderer.formatter = Ruport::Formatter.new 
+     
+     @passive = RendererForCheckingPassivity.new
+     @passive.formatter = Ruport::Formatter.new
+   end
+   
+   def test_options_are_readable
+      @renderer.foo = 5
+      assert_equal 5, @renderer.foo
+   end                                   
+   
+   def test_methods_are_not_overridden
+     @passive.foo = 5
+     assert_equal "apples", @passive.foo
+     assert_equal 5, @passive.options.foo
+     assert_equal 5, @passive.formatter.options.foo
+   end
+     
 end
-
-
