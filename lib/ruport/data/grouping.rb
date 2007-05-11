@@ -156,14 +156,19 @@ module Ruport::Data
     #
     #   grouping = Grouping.new(table, :by => "a")
     #
-    def initialize(data,options={})
-      @grouped_by = options[:by] 
-      cols = Array(options[:by]).dup
-      @data = data.to_group.send(:grouped_data, cols.shift)
-      cols.each do |col|
-        @data.each do |name,group|
-          group.create_subgroups(col)
-        end
+    def initialize(data={},options={})
+      if data.kind_of?(Hash)
+        @grouped_by = data[:by] 
+        @data = {}
+      else
+        @grouped_by = options[:by] 
+        cols = Array(options[:by]).dup
+        @data = data.to_group.send(:grouped_data, cols.shift)
+        cols.each do |col|
+          @data.each do |name,group|
+            group.create_subgroups(col)
+          end
+        end    
       end
     end
     

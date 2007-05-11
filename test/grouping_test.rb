@@ -86,7 +86,7 @@ class TestGroupRendering < Test::Unit::TestCase
     @group = Ruport::Data::Group.new(:name => 'test',
                                      :data => [[1,2,3]],
                                      :column_names => %w[a b c])
-  end
+  end       
 
   def test_group_as
     assert_equal(7, @group.to_text.to_a.length)
@@ -129,7 +129,23 @@ class TestGrouping < Test::Unit::TestCase
                                         :column_names => %w[b c],
                                         :name => 4 ) }
     assert_equal c, b.data
-  end      
+  end        
+  
+  def test_empty_grouping
+    a = Ruport::Data::Grouping.new()
+    a << Group("foo",:data => [[1,2,3],[4,5,6]],
+                     :column_names => %w[a b c] )
+    assert_equal "foo", a["foo"].name    
+    assert_nil a.grouped_by         
+  end                               
+  
+  def test_empty_grouping_with_grouped_by
+    a = Ruport::Data::Grouping.new(:by => "nada")  
+    a << Group("foo",:data => [[1,2,3],[4,5,6]],
+                     :column_names => %w[a b c] )
+    assert_equal "foo", a["foo"].name    
+    assert_equal "nada", a.grouped_by
+  end
   
   def test_grouping_indexing
     a = [Ruport::Data::Group.new( :data => [[2,3]],
