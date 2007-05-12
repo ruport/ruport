@@ -50,6 +50,14 @@ end
 
 module Commaleon::Helpers
 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# This is the bulk of the Ruport code in this app
+# (CSVDiffRenderer and CSVDiffFormatter)
+# The rest is just camping.  The interesting thing here is that
+# you could easily define these in another file and just require
+# them here, and use them standalone outside of your web app.      
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
   class CSVDiffRenderer < Ruport::Renderer
      stage :diff_report
      option :key, :mcsv, :ccsv  
