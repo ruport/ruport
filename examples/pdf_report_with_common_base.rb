@@ -14,41 +14,40 @@ require "ruport"
 # concern of wanting to have a standard template.
 #
 class ClientRenderer < Ruport::Renderer
- prepare :standard_report
- stage :company_header, :client_header, :client_body, :client_footer
- finalize :standard_report
- option :example
+  prepare :standard_report
+  stage :company_header, :client_header, :client_body, :client_footer
+  finalize :standard_report
+  option :example
 
- def setup
-    # replace this with your header changing code
+  def setup
     data.rename_columns { |c| c.to_s.titleize }
-    # this just lets us omit the options prefix in the formatter
+    # this lets us omit the options prefix in the formatter
     formatter.class.opt_reader(:example)
- end
+  end 
 end
 
 # This defines your base PDF output, you'd do similar for other
-# formats if needed It doesn't do much of anything except 
-# implement the common hooks
+# formats if needed. It implements the common hooks that will be used
+# across your reports.
 class CompanyPDFBase < Ruport::Formatter::PDF
- def prepare_standard_report
+  def prepare_standard_report
     options.paper_size = "A4"
- end
+  end
 
- def build_company_header
+  def build_company_header
     add_text "This would be my company header",
              :justification => :center, :font_size => 14
- end
+  end
 
- def finalize_standard_report
+  def finalize_standard_report
    render_pdf
- end
+  end
 end
 
 #  This is your report's formatter
 #
 #  It implements the remaining hooks the standard formatter didn't
-#  Notice I left out a footer and it didn't complain. 
+#  Notice the footer is not implemented and it doesn't complain. 
 class ClientPDF < CompanyPDFBase
  renders :pdf, :for => ClientRenderer
 
@@ -64,7 +63,6 @@ class ClientPDF < CompanyPDFBase
  end
 
 end
-
 
 table = Table([:a,:b,:c]) << [1,2,3] << [4,5,6]
 File.open("example.pdf","w") { |f|
