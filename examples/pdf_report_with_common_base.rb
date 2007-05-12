@@ -1,17 +1,19 @@
-########################################################
-# This example shows how to build custom PDF output
-# with Ruport that shares some common elements 
-# between reports.  Basically, CompanyPDFBase implements
-# some default rendering options, and derived classes
-# such as ClientPDF would implement the stuff specific
-# to a given report.
-########################################################
+#################################################################
+# This example shows how to build custom PDF output with Ruport #
+# that shares some common elements between reports.  Basically, #
+# CompanyPDFBase implements some default rendering options,     #
+# and derived classes such as ClientPDF would implement the     #
+# stuff specific to a given report.                             #
+#################################################################
+                         
+require "ruport" 
 
-require "active_support"
-require "ruport"
+# only used for the titleize call in ClientRenderer#setup  
+# tweak as needed if you don't want to install AS.
+require "active_support" 
 
-# This looks a little more messy than usual, but it addresses your
-# concern of wanting to have a standard template.
+# This looks a little more messy than usual, but it addresses the
+# concern of wanting to have a standard template for reports.
 #
 class ClientRenderer < Ruport::Renderer
   prepare :standard_report
@@ -26,11 +28,13 @@ class ClientRenderer < Ruport::Renderer
   end 
 end
 
-# This defines your base PDF output, you'd do similar for other
+# This defines the base PDF output, you'd do similar for other
 # formats if needed. It implements the common hooks that will be used
-# across your reports.
+# across the company's reports. 
+#
 class CompanyPDFBase < Ruport::Formatter::PDF
-  def prepare_standard_report
+  def prepare_standard_report 
+    # defaults to US Letter, but this overrides
     options.paper_size = "A4"
   end
 
@@ -40,31 +44,32 @@ class CompanyPDFBase < Ruport::Formatter::PDF
   end
 
   def finalize_standard_report
-   render_pdf
+    render_pdf
   end
 end
 
-#  This is your report's formatter
+#  This is actual report's formatter
 #
 #  It implements the remaining hooks the standard formatter didn't
-#  Notice the footer is not implemented and it doesn't complain. 
+#  Notice the footer is not implemented and it doesn't complain.   
+#
 class ClientPDF < CompanyPDFBase
- renders :pdf, :for => ClientRenderer
+  renders :pdf, :for => ClientRenderer
 
- def build_client_header
+  def build_client_header
    pad(10) do
-    add_text "Specific Report Header with option #{example}",
+    add_text "Specific Report Header with example=#{example}",
              :justification => :center, :font_size => 12
    end
- end
+  end
 
- def build_client_body
+  def build_client_body
     draw_table(data, :width => 300)
- end
-
+  end 
 end
 
 table = Table([:a,:b,:c]) << [1,2,3] << [4,5,6]
-File.open("example.pdf","w") { |f|
- f << ClientRenderer.render_pdf(:data => table,:example => "foo")
-}
+
+File.open("example.pdf","w") do |f|
+  f << ClientRenderer.render_pdf(:data => table,:example => "apple")
+end
