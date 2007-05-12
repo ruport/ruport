@@ -9,17 +9,12 @@ class LinePlotter < Ruport::Renderer
     o.height       = "100%"
   end
 
-  def run
-    formatter do |f|
-      f.data = get_lines
-      f.render_plot
-    end
-  end
+  stage :plot
 
   Line = Struct.new(:x1,:y1,:x2,:y2)
-
-  def get_lines
-    data.map { |r| Line.new( r[0][0],r[0][1],r[1][0],r[1][1] ) }
+  
+  def setup
+    data.map! { |r| Line.new( r[0][0],r[0][1],r[1][0],r[1][1] ) }
   end
 
 end
@@ -36,7 +31,7 @@ class SVG < Ruport::Formatter
     exit
   end
 
-  def render_plot
+  def build_plot
 
     opts = { :width => options.width, :height => options.height,
              :xmlns => "http://www.w3.org/2000/svg" }
@@ -58,9 +53,9 @@ class SVG < Ruport::Formatter
 
 end
 
-puts LinePlotter.render_svg { |r|
-  r.data = [ [ [0,0],     [0,100]   ],
+puts LinePlotter.render_svg(
+  :data => [ [ [0,0],     [0,100]   ],
              [ [0,100],   [100,100] ],
              [ [100,100], [100,0]   ],
-             [ [100,0],   [0,0]     ] ]
-}
+             [ [100,0],   [0,0]     ] ] 
+)
