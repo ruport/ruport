@@ -229,14 +229,6 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
    assert_equal "pheader\nbody\nfooter\nf", actual
   end
 
-  def test_setup
-   actual = false
-   RendererWithManyHooks.render_text { |r|
-     actual = r.options.apple
-   }
-   assert actual
-  end
-
   def test_option_helper
    RendererWithManyHooks.render_text do |r|
      r.subtitle = "Test Report"
@@ -431,4 +423,33 @@ class TestOptionReaders < Test::Unit::TestCase
      assert_equal 5, @passive.formatter.options.foo
    end
      
+end
+     
+class TestSetupOrdering < Test::Unit::TestCase
+   
+  class RendererWithSetup < Ruport::Renderer
+     option :foo
+     stage :bar
+     def setup
+        foo.capitalize!
+     end        
+  end           
+  
+  class BasicFormatter < Ruport::Formatter 
+    renders :text, :for => RendererWithSetup
+    
+    def build_bar
+      output << options.foo
+    end
+  end
+  
+  def test_render_hash_options_should_be_called_before_setup
+     assert_equal "Hello", RendererWithSetup.render_text(:foo => "hello")
+  end       
+  
+  def test_render_block_should_be_called_before_setup
+     assert_equal "Hello", 
+                   RendererWithSetup.render_text { |r| r.foo = "hello" }
+  end
+  
 end

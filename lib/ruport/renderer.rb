@@ -381,9 +381,9 @@ class Ruport::Renderer
     # Please see the examples/ directory for custom renderer examples, because
     # this is not nearly as complicated as it sounds in most cases.
     def render(*args)
-      rend = build(*args) { |r|
+      rend = build(*args) { |r|        
+        yield(r) if block_given?   
         r.setup if r.respond_to? :setup
-        yield(r) if block_given?
       }
       if rend.respond_to? :run
         rend.run
