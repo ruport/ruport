@@ -368,8 +368,8 @@ class Ruport::Renderer
     # sets the data and options, and then does the following process:
     #
     #   * If the renderer contains a module Helpers, mix it in to the instance.
+    #   * If a block is given, yield the Renderer instance  
     #   * If a setup() method is defined on the Renderer, call it
-    #   * If a block is given, yield the Renderer instance
     #   * If the renderer has defined a run() method, call it, otherwise,
     #     include Renderer::AutoRunner. (you usually won't need a run() method )
     #   * call _run_ if it exists (This is provided by default, by AutoRunner)
@@ -382,7 +382,7 @@ class Ruport::Renderer
     # this is not nearly as complicated as it sounds in most cases.
     def render(*args)
       rend = build(*args) { |r|        
-        yield(r) if block_given?   
+          yield(r) if block_given?   
         r.setup if r.respond_to? :setup
       }
       if rend.respond_to? :run
