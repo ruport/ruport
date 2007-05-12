@@ -73,7 +73,7 @@ class TestRenderPDFGrouping < Test::Unit::TestCase
   
   def test_grouping_should_have_consistent_font_size
     a = Table(%w[a b c]) <<  %w[eye like chicken] << %w[eye like liver] << 
-                             %w[meow mix meow ] << %w[mix please deliver ] 
+                               %w[meow mix meow ] << %w[mix please deliver ] 
     b = Grouping(a, :by => "a")
     splat = b.to_pdf.split("\n") 
     splat.grep(/meow/).each do |m|

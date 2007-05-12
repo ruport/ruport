@@ -61,7 +61,15 @@ module Commaleon::Helpers
   class CSVDiffRenderer < Ruport::Renderer
      stage :diff_report
      option :key, :mcsv, :ccsv  
-     
+      
+     # This setup() idiom has become the default way of doing some 
+     # manipulations on the data and optionsbefore handing off the 
+     # rendering task to the formatters.
+     #   
+     # We're using grouping mainly for the renderer support,
+     # and rather than reducing a table, we're building up the
+     # group objects via the helper methods missing_from_compare
+     # and different_from_compare
      def setup
         @master_table = Table(:string => mcsv)
         @compare_table = Table(:string => ccsv)
@@ -69,7 +77,9 @@ module Commaleon::Helpers
         options.diff_report << missing_from_compare            
         options.diff_report << different_from_compare
      end                        
-     
+ 
+     # pulls the rows that are present in the master csv but not
+     # in the comparison csv and returns a group.    
      def missing_from_compare 
        missing_data = @master_table.rows_with(key) do |k| 
          missing_keys.include?(k)
@@ -79,7 +89,10 @@ module Commaleon::Helpers
         :data => missing_data, 
         :column_names => @master_table.column_names )  
      end     
-                         
+     
+     # pulls the rows that are present in the master csv but match
+     # a row with the same key in the compare csv that do not have
+     # identical attributes.  Returns a group                    
      def different_from_compare 
         shared = master_keys & compare_keys  
         m = @master_table.rows_with(key) do |k|
@@ -114,12 +127,25 @@ module Commaleon::Helpers
      end
   end   
   
+  # This is using the F plugin which saves us a line of code and just
+  # looks neat, IMO
+  # 
+  # For more details:
+  #
+  # http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/F
+  #
   class CSVDiffFormatter < F([:html,:text,:csv,:pdf], :for => CSVDiffRenderer)
-    def build_diff_report  
-     html { gussy_up_html }
-     render_grouping(options.diff_report, :style => options.style || :inline )  
+    def build_diff_report        
+     # this is using the selective blocks for formatters that implement
+     # more than one format.  The block below will only be called when this
+     # formatter is rendering HTML
+     html { gussy_up_html }       
+     
+     render_grouping( options.diff_report, 
+                      :style => options.style || :inline )  
     end   
-    
+   
+    # adds headers to group name to make the output a little prettier 
     def gussy_up_html
       options.diff_report.each do |n,g| 
          g.send(:name=, "<h4>#{n}</h4>")
