@@ -133,7 +133,7 @@ module Ruport
                      
     # Determines which style to use and renders the main body for
     # Renderer::Grouping
-    def build_grouping_body
+    def build_grouping_body 
       case style
       when :inline
         render_inline_grouping(options.to_hash.merge(:formatter => pdf_writer,
@@ -311,6 +311,8 @@ module Ruport
       table_data.rename_columns { |c| c.to_s } 
       
       format_opts = table_format.merge(format_opts) if table_format  
+        
+      old = pdf_writer.font_size
       
       ::PDF::SimpleTable.new do |table| 
         table.extend(PDFSimpleTableOrderingPatch)             
@@ -322,7 +324,9 @@ module Ruport
 
         format_opts.each {|k,v| table.send("#{k}=", v) }  
         table.render_on(pdf_writer)
-      end
+      end                                              
+      
+      pdf_writer.font_size = old
     end
     
     # This module provides tools to simplify some common drawing operations

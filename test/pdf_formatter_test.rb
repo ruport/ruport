@@ -69,6 +69,22 @@ class TestRenderPDFGrouping < Test::Unit::TestCase
      assert_raises(NotImplementedError) do 
        grouping.to_pdf(:style => :red_snapper) 
      end       
+  end    
+  
+  def test_grouping_should_have_consistent_font_size
+    a = Table(%w[a b c]) <<  %w[eye like chicken] << %w[eye like liver] << 
+                             %w[meow mix meow ] << %w[mix please deliver ] 
+    b = Grouping(a, :by => "a")
+    splat = b.to_pdf.split("\n") 
+    splat.grep(/meow/).each do |m|
+      assert_equal '10.0', m.split[5] 
+    end                  
+    splat.grep(/mix/).each do |m|
+      assert_equal '10.0', m.split[5] 
+    end                          
+    splat.grep(/eye/).each do |m|
+      assert_equal '10.0', m.split[5]
+    end
   end
   
 end

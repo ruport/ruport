@@ -113,7 +113,7 @@ module Ruport
       # followed by a newline.
       #
       def render_inline_grouping(options={},&block)
-        data.each do |_,group|
+        data.each do |_,group|                     
           render_group(group, options, &block)
           output << "\n"
         end
