@@ -47,14 +47,14 @@ class CenteredPDFTextBox < Ruport::Formatter::PDF
                                          :width => 239, :height => 359)
  
     rounded_text_box(options.text) do |o|       
-       o.x = pdf_writer.absolute_x_middle - o.width/2
-       o.y = 300                          
-       
        o.radius = 5
        o.width     = options.width  || 400
        o.height    = options.height || 130
        o.font_size = options.font_size || 12
-       o.heading   = options.heading
+       o.heading   = options.heading        
+       
+       o.x = pdf_writer.absolute_x_middle - o.width/2
+       o.y = 300                          
     end
   end
   
