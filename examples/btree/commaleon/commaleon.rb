@@ -1,3 +1,36 @@
+# This example is a simplified version of a tool actually used at BTree.
+# It does a very basic task:
+#
+# Given a master CSV file and a key column, it will compare the file
+# to another CSV, and report back what is missing in the second CSV
+# that was in the first, as well as what is changed in the second CSV
+# based on the first.
+#
+# It is not bidirectional, and is mostly meant to compare snapshots
+# of CSV dumps to see what has been removed or altered (we don't care
+# about new records )
+#
+# It's a camping app, but the core of it is a renderer/formatter combo. 
+# (Marked by %%%%%%%%%%% below)     
+#
+# You'll need the camping omnibus and the F() ruport plugin to run this app.
+#
+#   gem install camping-omnibus --source http://code.whytheluckystiff.net -y
+#   gem install f --source http://gems.rubyreports.org                                      
+#
+# Once you have them, just run camping commaleon.rb and browse to
+# http://localhost:3301
+#
+# Use ticket_count.csv as your master file and ticket_count2.csv as your
+# comparison file.  Use title as your key.
+#
+# Try out the different outputs, and tweak the app if you'd like to play
+# with it. 
+#
+# If your company has a need for tiny hackish camping/ruport amalgams,
+# you can always ask Gregory if he's looking for work:
+# <gregory.t.brown at gmail.com> 
+#
 require "rubygems"
 require "camping"               
 require "camping/session"   
@@ -52,9 +85,7 @@ module Commaleon::Helpers
         diff.each do |r|
           comp = @compare_table.rows_with(key => r[key])[0]
           r.to_hash.each do |k,v| 
-            if r[k] != comp[k]
-              r[k] << " ## " << comp[k]
-            end
+            v << " ## " << comp[k] unless v == comp[k]
           end
         end
         
