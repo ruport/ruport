@@ -7,7 +7,6 @@ class RoadmapRenderer < Ruport::Renderer
 
   stage :roadmap_image, :roadmap_text_body
   finalize :roadmap
-
 end
 
 class HTMLRoadmap < Ruport::Formatter
@@ -55,7 +54,7 @@ end
 
 formats = [:html, :pdf]
 formats.each do  |format|
-  File.open("roadmap.#{format}","w") { |f|
-     RoadmapRenderer.render format, :io => f, :image_file => "roadmap.png"
-   }
+  File.open("roadmap.#{format}","w") do |f|
+    f << RoadmapRenderer.render(format, :image_file => "roadmap.png")
+  end
 end
