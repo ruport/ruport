@@ -21,12 +21,14 @@ module Ruport
   #
   # <tt>:show_group_headers</tt>  True by default   
   #
+  # <tt>:style</tt> Used for grouping (:inline, :justified)
+  #
   class Formatter::HTML < Formatter    
     
     renders :html, :for => [ Renderer::Row, Renderer::Table,
                              Renderer::Group, Renderer::Grouping ]
 
-    opt_reader :show_table_headers, :show_group_headers
+    opt_reader :show_table_headers, :show_group_headers, :style
     
     # Generates table headers based on the column names of your Data::Table.  
     #
@@ -80,7 +82,12 @@ module Ruport
     # renders them using the group renderer.
     #
     def build_grouping_body
-      render_inline_grouping(options)
+      case style
+      when :inline
+        render_inline_grouping(options)
+      when :justified
+        render_justified_grouping
+      end
     end
 
     # Generates <table> tags enclosing the yielded content.
@@ -105,6 +112,32 @@ module Ruport
       RedCloth.new(s).to_html   
     rescue LoadError
       raise RuntimeError, "You need RedCloth!\n gem install RedCloth -v 3.0.3"
+    end
+    
+    private
+    
+    def render_justified_grouping
+      output << "\t<table>\n\t\t<tr>\n\t\t\t<th>" +
+        "#{data.grouped_by}</th>\n\t\t\t<th>" +
+        grouping_columns.join("</th>\n\t\t\t<th>") + 
+        "</th>\n\t\t</tr>\n"
+      data.each do |name, group|                     
+        group.each_with_index do |row, i|
+          output << "\t\t<tr>\n\t\t\t"
+          if i == 0
+            output << "<td class=\"groupName\">#{name}</td>\n\t\t\t<td>"
+          else
+            output << "<td>&nbsp;</td>\n\t\t\t<td>"
+          end
+          output << row.to_a.join("</td>\n\t\t\t<td>") +
+            "</td>\n\t\t</tr>\n"
+        end
+      end
+      output << "\t</table>"
+    end
+    
+    def grouping_columns
+      data.data.to_a[0][1].column_names
     end
 
   end

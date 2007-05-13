@@ -101,6 +101,22 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
                  "\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>7</td>\n"+
                  "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
   end
+
+  def test_render_justified_html_grouping
+    table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
+    g = Grouping(table,:by => "a")
+    actual = Ruport::Renderer::Grouping.render(:html, :data => g,
+                                               :style => :justified)
+
+    assert_equal "\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>\n"+
+                 "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t"+
+                 "<td class=\"groupName\">1</td>\n\t\t\t<td>"+
+                 "2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t"+
+                 "<td>&nbsp;</td>\n\t\t\t<td>1</td>\n\t\t\t<td>3</td>"+
+                 "\n\t\t</tr>\n\t\t<tr>\n\t\t\t"+
+                 "<td class=\"groupName\">2</td>\n\t\t\t<td>7</td>\n"+
+                 "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>", actual
+  end
 end  
      
 
