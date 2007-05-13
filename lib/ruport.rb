@@ -2,7 +2,7 @@
 #
 # Author: Gregory T. Brown (gregory.t.brown at gmail dot com)
 #
-# Copyright (c) 2006, All Rights Reserved.
+# Copyright (c) 2005-2007, All Rights Reserved.
 #
 # This is free software.  You may modify and redistribute this freely under
 # your choice of the GNU General Public License or the Ruby License. 
