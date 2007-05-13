@@ -41,8 +41,6 @@ module Ruport
   #
   class Formatter::PDF < Formatter          
     
-    ## THESE ARE WHY YOU SHOULD NEVER USE PDF::Writer 
-    
     module PDFWriterMemoryPatch #:nodoc:
       unless self.class.instance_methods.include?("_post_transaction_rewind")
         def _post_transaction_rewind
