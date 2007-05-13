@@ -1,3 +1,5 @@
+# A dump of the database for this example can be found in ./data/tattle.dump
+
 require "rubygems"
 require "ruport"
 require "active_record"
