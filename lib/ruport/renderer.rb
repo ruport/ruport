@@ -10,8 +10,6 @@
 # for different kinds of tasks.  See Renderer::Table for a tabular data
 # renderer.  
 #
-# This class can easily be extended to build custom formatting systems, but if
-# you do not need that, it may not be relevant to study for your use of Ruport.
 class Ruport::Renderer
   
   class RequiredOptionNotSet < RuntimeError #:nodoc:
