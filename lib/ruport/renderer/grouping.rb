@@ -1,3 +1,13 @@
+# Ruport : Extensible Reporting System                                
+#
+# renderer/grouping.rb : Group data renderer for Ruby Reports
+#
+# Written by Michael Milner, 2007.
+# Copyright (C) 2007, All Rights Reserved
+#
+# This is free software distributed under the same terms as Ruby 1.8
+# See LICENSE and COPYING for details.
+#
 module Ruport
   
   # This class implements the basic renderer for a single group of data.
