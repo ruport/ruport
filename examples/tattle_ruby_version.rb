@@ -1,16 +1,13 @@
 # A dump of the database for this example can be found in ./data/tattle.dump
 
-require "rubygems"
-require "ruport"
 require "active_record"
-require "ruport/acts_as_reportable"
+require "ruport"
 
 # Update with your connection parameters
 ActiveRecord::Base.establish_connection(
     :adapter  => 'mysql',
     :host     => 'localhost',
-    :username => 'mike',
-    :password => 'password',
+    :username => 'root',
     :database => 'tattle')
 
 class Report < ActiveRecord::Base

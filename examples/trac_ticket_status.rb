@@ -1,4 +1,4 @@
- %w[rubygems ruport hpricot open-uri].each { |lib| require lib }
+ %w[ruport hpricot open-uri].each { |lib| require lib }
 
 class TracSummaryReport
   
