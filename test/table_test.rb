@@ -11,7 +11,6 @@ class Person < Ruport::Data::Record
 
 end      
 
-
 class DuckRecord < Ruport::Data::Record; end
 
 class TestTable < Test::Unit::TestCase
