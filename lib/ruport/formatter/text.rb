@@ -18,13 +18,13 @@ module Ruport
   # edge of the screen in the console, proper column alignment, and pretty
   # output that looks something like this:
   #
-  #   +-----------------------------+
-  #   | apple | banana | strawberry |
-  #   +-----------------------------+
-  #   | yes   | no     | yes        |
-  #   | yes   | yes    | god yes    |
-  #   | what  | the    | f?         |
-  #   +-----------------------------+ 
+  #   +------------------------------+
+  #   | apple | banana | strawberry  |
+  #   +------------------------------+
+  #   | yes   | no     | yes         |
+  #   | yes   | yes    | red snapper |
+  #   | what  | the    | red snapper |
+  #   +------------------------------+ 
   #
   # === Supported Options 
   #
