@@ -11,9 +11,9 @@ rescue LoadError
   nil
 end
 
-require "ruport/acts_as_reportable"
-
 if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
+
+  require "ruport/acts_as_reportable"   
 
   class Team < ActiveRecord::Base
     acts_as_reportable :except => 'id', :include => :players
