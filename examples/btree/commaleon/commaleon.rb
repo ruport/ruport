@@ -34,7 +34,6 @@
 require "rubygems"
 require "camping"               
 require "camping/session"   
-gem "ruport", "=0.12.1"
 require "ruport" 
 require "ruport/extensions"     
    
