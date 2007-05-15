@@ -80,6 +80,21 @@ class TestRenderer < Test::Unit::TestCase
     assert_equal "", out.read
   end
 
+  def test_using_file
+    begin
+      require "mocha"
+      require "stubba"
+    rescue LoadError
+      $stderr.puts "Warning: Mocha not found -- skipping some Renderer tests"
+    end
+    if Object.const_defined?(:Mocha)
+      f = []
+      File.expects(:open).yields(f)
+      a = OldSchoolRenderer.render(:text, :file => "foo.text")
+      assert_equal "header\nbody\nfooter\n", f[0]
+    end
+  end
+
   def test_formats
     assert_equal( {}, Ruport::Renderer.formats )
     assert_equal( { :text => DummyText },OldSchoolRenderer.formats )

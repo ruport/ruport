@@ -371,6 +371,7 @@ class Ruport::Renderer
     #   * If the renderer has defined a run() method, call it, otherwise,
     #     include Renderer::AutoRunner. (you usually won't need a run() method )
     #   * call _run_ if it exists (This is provided by default, by AutoRunner)
+    #   * If the :file option is set to a file name, appends output to the file
     #   * return the results of formatter.output
     #
     # Note that the only time you will need a run() method is if you can't
@@ -389,7 +390,11 @@ class Ruport::Renderer
         include AutoRunner
       end
       rend._run_ if rend.respond_to? :_run_
-      return rend.formatter.output
+      if rend.options.file
+        File.open(rend.options.file,"w") { |f| f << rend.formatter.output }
+      else
+        return rend.formatter.output
+      end
     end
 
     # Allows you to set class_wide default options
