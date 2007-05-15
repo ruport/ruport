@@ -249,7 +249,8 @@ class TestTable < Test::Unit::TestCase
     assert_equal(2.73,t.sum(0))
   end
   
-  def test_ensure_serializable
+  def test_to_yaml
+    require "yaml"
     a = [].to_table
     assert_nothing_raised { a.to_yaml }
     a = Table(%w[first_name last_name],:record_class => Person) { |t| 
