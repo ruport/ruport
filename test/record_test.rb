@@ -1,63 +1,72 @@
-require "test/unit"
-require "ruport" 
-begin; require "rubygems"; rescue LoadError; nil; end
-require "spec-unit"
+require "test/helpers"
 
 class TestRecord < Test::Unit::TestCase
 
   include Ruport::Data
-  include SpecUnit     
   
   def setup
     @attributes = %w[a b c d]
     @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes 
-  end
-
-  def test_init
-    record = Ruport::Data::Record.new [1,2,3,4]
-    assert_equal 1, record[0]
-    assert_equal 2, record[1]
-    assert_equal 3, record[2]
-    assert_equal 4, record[3]
-
-    assert_equal 1, @record["a"]
-    assert_equal 4, @record["d"]
-    assert_equal 2, @record.b
-    assert_equal 3, @record.c
-    assert_raise(NoMethodError) { @record.f }
-  end
+  end   
   
-  def test_hash_constructor
-    record = Ruport::Data::Record.new({:a => 1, :b => 2, :c => 3},{})
-    assert_equal 1, record[:a]
-    assert_equal 2, record[:b]
-    assert_equal 3, record[:c]
-    assert_equal 3, record.c
-  end
-  
-  def test_hash_constructor_with_attributes
-    record = Record.new({:a => 1, :b => 2, :c => 3 }, :attributes => [:c,:b,:a])
-    assert_equal 1, record[:a]
-    assert_equal 2, record[:b]
-    assert_equal 3, record[:c]
-    assert_equal 3, record.c
+  context "when initializing with an array with attributes" do 
+    def specify_key_access_should_work
+      assert_equal 1, @record["a"]
+      assert_equal 4, @record["d"]
+      assert_equal 2, @record.b
+      assert_equal 3, @record.c
+      assert_raise(NoMethodError) { @record.f }        
+    end  
     
-    assert_equal 3, record[0]
-    assert_equal 2, record[1]
-    assert_equal 1, record[2]
+    def specify_ordinal_access_should_work
+      assert_equal 1, @record[0]
+      assert_equal 2, @record[1]
+      assert_equal 3, @record[2]
+      assert_equal 4, @record[3]
+    end
+  end  
+      
+  context "when initializing with an array without attributes" do
+    def specify_ordinal_access_should_work
+      record = Ruport::Data::Record.new [1,2,3,4]
+      assert_equal 1, record[0]
+      assert_equal 2, record[1]
+      assert_equal 3, record[2]
+      assert_equal 4, record[3]   
+    end 
+  end         
+  
+  context "when initializing with a hash without attributes" do    
+    def setup  
+      @record = Ruport::Data::Record.new({:a => 1, :b => 2, :c => 3},{})
+    end     
+     
+    def specify_key_access_should_work
+      assert_equal 1, @record[:a]
+      assert_equal 2, @record[:b]
+      assert_equal 3, @record[:c]
+      assert_equal 3, @record.c  
+    end  
   end
   
-  def test_brackets
-    assert_equal 1, @record[0]
-    assert_equal 2, @record[1]
-    assert_equal 3, @record[2]
-    assert_equal 4, @record[3]
-
-    assert_equal 1, @record["a"]
-    assert_equal 2, @record["b"]
-    assert_equal 3, @record["c"]
-    assert_equal 4, @record["d"]
-    assert_equal 4, @record.d
+  context "when initializing with a hash with attributes" do
+    def setup
+      @record = Record.new({:a => 1, :b => 2, :c => 3 }, 
+                           :attributes => [:c,:b,:a])
+    end   
+    
+    def specify_key_access_should_work
+      assert_equal 1, @record[:a]
+      assert_equal 2, @record[:b]
+      assert_equal 3, @record[:c]
+      assert_equal 3, @record.c   
+    end
+    
+    def specify_ordinal_access_should_work    
+      assert_equal 3, @record[0]
+      assert_equal 2, @record[1]           
+      assert_equal 1, @record[2]           
+    end
   end
   
   def test_bracket_equals

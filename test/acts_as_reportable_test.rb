@@ -1,9 +1,5 @@
-require "test/unit"      
-require "ruport"         
-
+require "test/helpers"
 begin
-  require "rubygems"  
-  gem "mocha", ">=0.4.0"
   require "mocha"
   require "stubba"
   require "active_record"

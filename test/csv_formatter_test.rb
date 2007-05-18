@@ -1,11 +1,4 @@
-require "test/unit"
-require "ruport"
-
-begin
-  require "rubygems"
-rescue LoadError
-  nil
-end    
+require "test/helpers"
 
 class TestRenderCSVRow < Test::Unit::TestCase
   def test_render_csv_row

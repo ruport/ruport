@@ -1,13 +1,4 @@
-require "test/unit"
-require "ruport"
-
-begin
-  require "rubygems"
-rescue LoadError
-  nil
-end                        
-
-#require "pdf/writer"    
+require "test/helpers"
 
 class TestRenderPDFTable < Test::Unit::TestCase
 

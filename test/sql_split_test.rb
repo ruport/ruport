@@ -1,5 +1,4 @@
-require "test/unit"
-require "ruport"
+require "test/helpers"
 class TestSqlSplit < Test::Unit::TestCase
 	include Ruport
  	
