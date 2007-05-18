@@ -1,17 +1,17 @@
 require "test/unit"
-require "ruport"
-                      
-module RecordTestSetup
-  def setup
-    @attributes = %w[a b c d]
-    @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes 
-  end
-end
+require "ruport" 
+begin; require "rubygems"; rescue LoadError; nil; end
+require "spec-unit"
 
 class TestRecord < Test::Unit::TestCase
 
   include Ruport::Data
-  include RecordTestSetup 
+  include SpecUnit     
+  
+  def setup
+    @attributes = %w[a b c d]
+    @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes 
+  end
 
   def test_init
     record = Ruport::Data::Record.new [1,2,3,4]
@@ -275,40 +275,43 @@ class TestRecord < Test::Unit::TestCase
     assert_equal "1,2,3\n", a.to_csv
   end
     
-end 
+  context "when rendering records" do   
     
+    def specify_record_as_should_work
+      rendered_row = @record.as(:text)
+      assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
+    end
 
-class TestRecordRenderering < Test::Unit::TestCase
-  
-  include RecordTestSetup
-  include Ruport::Data
-
-  def test_record_as
-    rendered_row = @record.as(:text)
-    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
-  end
-
-  def test_to_hack
-    rendered_row = @record.to_text
-    assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)  
+    def specify_record_to_format_should_work_without_options
+      rendered_row = @record.to_text
+      assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)    
+    end             
+         
+    def specify_record_to_format_should_work_with_options
+      rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
+      assert_equal("1\t2\t3\t4\n",rendered_row)     
+    end                                      
     
-    rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
-    assert_equal("1\t2\t3\t4\n",rendered_row)
-  end             
+    context "when given bad format names" do
+      def setup 
+        @a = Record.new({ "a" => 1, "b" => 2 }) 
+      end
 
-  def test_as_throws_proper_errors
-    a = Record.new({ "a" => 1, "b" => 2 })
-    assert_nothing_raised { a.as(:csv) }
-    assert_nothing_raised { a.to_csv }
-    assert_raises(Ruport::Renderer::UnknownFormatError) { a.as(:nothing) }
-    assert_raises(Ruport::Renderer::UnknownFormatError) { a.to_nothing }
-  end  
+      def specify_as_should_throw_proper_errors
+        assert_raises(Ruport::Renderer::UnknownFormatError) { @a.as(:nothing) } 
+      end 
+    
+      def specify_to_format_should_throw_proper_errors
+        assert_raises(Ruport::Renderer::UnknownFormatError) { @a.to_nothing }
+      end  
+    end   
   
-  ## -- BUG TRAPS --------------------
+    ## -- BUG TRAPS --------------------
   
-  def test_ensure_attributes_not_broken_by_to_hack
-    record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
-    assert_equal 2, record.to_something
+    def specify_attributes_should_not_be_broken_by_to_hack
+      record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
+      assert_equal 2, record.to_something
+    end                              
   end
 
 end
