@@ -62,7 +62,7 @@ module Commaleon::Helpers
      option :key, :mcsv, :ccsv  
       
      # This setup() idiom has become the default way of doing some 
-     # manipulations on the data and optionsbefore handing off the 
+     # manipulations on the data and options before handing off the 
      # rendering task to the formatters.
      #   
      # We're using grouping mainly for the renderer support,
