@@ -168,8 +168,7 @@ class Ruport::Renderer
       end
       self.class.renderer.render(format,
        self.class.rendering_options.merge(options)) do |rend|
-         rend.data = 
-           begin; send(:renderable_data); rescue NoMethodError; self; end
+         rend.data = respond_to?(:renderable_data) ? renderable_data : self
          yield(rend) if block_given?  
       end
     end  
