@@ -467,3 +467,61 @@ class TestSetupOrdering < Test::Unit::TestCase
   end
   
 end
+
+class TestRendererHooks < Test::Unit::TestCase
+
+  context "when renderable_data omitted" do
+
+    require "mocha"
+
+    class DummyObject 
+      include Ruport::Renderer::Hooks
+      renders_as_table
+    end
+
+    def specify_should_return_self
+      a = DummyObject.new
+      rend = mock("renderer")
+      rend.expects(:data=).with(a)
+      Ruport::Renderer::Table.expects(:render).with(:csv,{}).yields(rend)
+      a.as(:csv)
+    end
+
+  end
+
+  context "when using renderable_data" do
+
+    class DummyObject2
+      include Ruport::Renderer::Hooks
+      renders_as_table
+
+      def renderable_data
+        1
+      end
+    end
+
+    def specify_should_return_results_of_renderable_data
+      a = DummyObject2.new
+      rend = mock("renderer")
+      rend.expects(:data=).with(1)
+      Ruport::Renderer::Table.expects(:render).with(:csv,{}).yields(rend)
+      a.as(:csv)
+    end
+
+    class DummyObject3
+      include Ruport::Renderer::Hooks
+      renders_as_table
+      
+      def renderable_data
+        raise ArgumentError
+      end
+    end
+
+    def specify_should_not_mask_errors
+      assert_raises(ArgumentError) { DummyObject3.new.as(:csv) }
+    end
+
+
+  end
+
+end

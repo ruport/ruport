@@ -41,7 +41,7 @@ bench_suite do
     small_table << [1,2,3] 
   }                              
   
-  small_hash = small_table[0].to_h
+  small_hash = small_table[0].to_hash
   bench_case("Table#<< - small hash",SMALL_N) {
     small_table << small_hash 
   }       
@@ -56,7 +56,7 @@ bench_suite do
     wide_table << wide_data[0] 
   }      
   
-  large_hash = wide_table[0].to_h
+  large_hash = wide_table[0].to_hash
   bench_case("Table#<< - large hash",WIDE_N) {
     wide_table << large_hash 
   }       
