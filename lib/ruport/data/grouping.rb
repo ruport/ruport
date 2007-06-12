@@ -118,6 +118,7 @@ module Ruport::Data
       columns = column_names.dup
       columns.delete(group_column)
       group_names.each do |name|
+        # FIXME - this doesn't seem to reduce the data set
         group_data = sub_table(columns) {|r|
           r.send(group_column) == name
         }

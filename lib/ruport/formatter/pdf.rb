@@ -428,7 +428,10 @@ module Ruport
       data.each do |name,group|
         group_column = { data.grouped_by => "<b>#{name}</b>\n" }
         group.each_with_index do |rec,i|
-          i == 0 ? table << group_column.merge(rec.to_hash) : table << rec
+          # FIXME - Find the source of the bug requiring to_a
+          i == 0 ?
+            table << group_column.merge(rec.to_hash) :
+            table << rec.to_a.unshift(nil)
         end
         table << Array.new(grouping_columns.length,' ') if style == :separated
       end
@@ -439,7 +442,8 @@ module Ruport
       table = table_with_grouped_by_column
       data.each do |name,group|
         table << ["<b>#{name}</b>\n",nil,nil]
-        group.each {|r| table << r }
+        # FIXME - Find the source of the bug requiring to_a
+        group.each {|r| table << r.to_a.unshift(nil) }
       end
       render_table table, options.to_hash.merge(:formatter => pdf_writer)
     end
