@@ -10,7 +10,7 @@
 # See LICENSE and COPYING for details.   
 #
 require "ruport"
-quiet { require "active_record" }
+Ruport.quiet { require "active_record" }
 
 module Ruport
   

@@ -90,7 +90,7 @@ module Ruport
                 :paper_orientation
 
     def initialize
-      quiet do   
+      Ruport.quiet do   
         require "pdf/writer"
         require "pdf/simpletable"
       end

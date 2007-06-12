@@ -82,11 +82,6 @@ module Ruport #:nodoc:#
 
   end
 
-
-end
-
-module Kernel
-  
   # quiets warnings for block
   def quiet #:nodoc:
     warnings = $VERBOSE
@@ -95,6 +90,8 @@ module Kernel
     $VERBOSE = warnings
     return result
   end
+
+  module_function :quiet
 
 end
 
