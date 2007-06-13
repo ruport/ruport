@@ -144,7 +144,7 @@ module Ruport::Data
                r.attributes.all? { |a| a.kind_of?(Numeric) }
               r.to_a
             else
-              r.to_hash  
+              r.to_hash.values_at(*@column_names)  
             end
           }
         end 
