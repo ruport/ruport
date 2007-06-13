@@ -82,6 +82,14 @@ class TestTable < Test::Unit::TestCase
                 table.sub_table(2..-1)   
                   
   end
+  
+  def test_subtable_records_have_correct_data
+    table = [ [1,2,3,4],[5,6,7,9],
+              [10,11,12,13],[14,15,16,17] ].to_table(%w[a b c d])
+    sub = table.sub_table(%w[b c d]) {|r| r.a == 1 }
+    assert_equal({"b"=>2, "c"=>3, "d"=>4}, sub[0].data)
+    assert_equal(["b", "c", "d"], sub[0].attributes)
+  end
 
   def test_reduce
     table = [ [1,2,3,4],[5,6,7,9],
