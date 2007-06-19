@@ -148,16 +148,7 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
         :include => { :players => { :only => 'name' } })
       expected = [["Testers", "Player 1"],
         ["Testers", "Player 2"],
-        ["Others", nil]].to_table(%w[name player.name])
-      assert_equal expected, actual
-    end
-    
-    def test_preserve_namespace_option
-      actual = Player.report_table(:all, :only => 'name',
-        :include => :personal_trainer, :preserve_namespace => true)
-      expected = [["Player 1", "Trainer 1"],
-        ["Player 2", "Trainer 2"]].to_table(%w[name
-        some_module/personal_trainer.name])
+        ["Others", nil]].to_table(%w[name players.name])
       assert_equal expected, actual
     end
     
@@ -195,10 +186,10 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
         { :players => { :only => 'name' } })
       expected = [{ 'name' => "Testers",
                     'league' => "My League",
-                    'player.name' => "Player 1" },
+                    'players.name' => "Player 1" },
                     { 'name' => "Testers",
                     'league' => "My League",
-                    'player.name' => "Player 2" }]
+                    'players.name' => "Player 2" }]
       assert_equal expected, actual
     end
     
@@ -206,7 +197,7 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
       actual = @players[0].send(:add_includes,
         [{ 'name' => "Player 1" }], :personal_trainer)
       expected = [{ 'name' => "Player 1",
-                    'some_module/personal_trainer.name' => "Trainer 1" }]
+                    'personal_trainer.name' => "Trainer 1" }]
       assert_equal expected, actual
     end
     
@@ -237,8 +228,8 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
       assert_equal expected, actual
     
       actual = @players[0].send(:get_attributes_with_options,
-        { :only => 'name', :qualify_attribute_names => true })
-      expected = { 'player.name' => "Player 1" }
+        { :only => 'name', :qualify_attribute_names => :players })
+      expected = { 'players.name' => "Player 1" }
       assert_equal expected, actual
     end
   end

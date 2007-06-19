@@ -138,19 +138,13 @@ module Ruport
       # an html version of the table with all columns from books and authors.
       #
       # Note: column names for attributes of included models will be qualified
-      # with the model's underscored class name, e.g. 'author.name'
-      # By default, this will not preserve the entire namespace, but you
-      # can get the fully qualified namespace by using the
-      # :preserve_namespace => true option to report_table.  So if the
-      # Author model was enclosed in a module called MyModule, you'd
-      # get 'my_module/author.name' as the column name. 
+      # with the name of the association. 
       #
       def report_table(number = :all, options = {})
         only = options.delete(:only)
         except = options.delete(:except)
         methods = options.delete(:methods)
         includes = options.delete(:include)
-        preserve_namespace = options.delete(:preserve_namespace)
         record_class = options.delete(:record_class) || Ruport::Data::Record
         self.aar_columns = []
 
@@ -165,7 +159,6 @@ module Ruport
         table = Ruport::Data::Table.new(:data => data,
                                         :column_names => aar_columns,
                                         :record_class => record_class)
-        normalize_column_names(table) unless preserve_namespace
         table
       end
       
@@ -203,13 +196,6 @@ module Ruport
         includes = report_option.blank? ? aar_options[:include] : report_option
         includes.is_a?(Hash) ? includes.keys : includes
       end
-      
-      def normalize_column_names(table)
-        renamed = table.column_names.inject({}) do |s,c|
-           s.merge(c => c.sub(/.*\//,""))
-        end                              
-        table.rename_columns(renamed)
-     end
     end
     
     # === Overview
@@ -290,10 +276,10 @@ module Ruport
           data_records = []
           
           if include_has_options
-            assoc_options =
-              includes[association].merge({ :qualify_attribute_names => true })
+            assoc_options = includes[association].merge({
+              :qualify_attribute_names => association })
           else
-            assoc_options = { :qualify_attribute_names => true }
+            assoc_options = { :qualify_attribute_names => association }
           end
           
           association_objects = [send(association)].flatten.compact
@@ -336,9 +322,8 @@ module Ruport
             { :only => options[:only], :except => options[:except] }
           end
         attrs = attributes(only_or_except)
-        namespace = self.class.to_s.underscore
         attrs = attrs.inject({}) {|h,(k,v)|
-                  h["#{namespace}.#{k}"] = v; h
+                  h["#{options[:qualify_attribute_names]}.#{k}"] = v; h
                 } if options[:qualify_attribute_names]
         attrs
       end
