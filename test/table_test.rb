@@ -155,6 +155,11 @@ class TestTable < Test::Unit::TestCase
        assert_equal Table(%w[a b c]) << [1,nil,3] << [9,3,4] << [6,1,8], t
     end
     
+    def specify_in_place_sort_should_allow_order_by
+       @table.sort_rows_by!("a", :order => :descending )
+       assert_equal Table(%w[a b c]) << [9,1,4] << [6,1,8] << [1,2,3], @table
+    end
+    
     def specify_sort_rows_by
       table = Ruport::Data::Table.new :column_names => %w[a b c]
       table << [1,2,3] << [6,1,8] << [9,1,4]    

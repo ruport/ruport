@@ -650,8 +650,8 @@ module Ruport::Data
     # Same as Table#sort_rows_by, but self modifying.
     # See <tt>sort_rows_by</tt> for documentation.
     #
-    def sort_rows_by!(col_names=nil,&block)
-      table = sort_rows_by(col_names,&block) 
+    def sort_rows_by!(col_names=nil,options={},&block)
+      table = sort_rows_by(col_names,options,&block) 
       @data = table.data
     end
     
