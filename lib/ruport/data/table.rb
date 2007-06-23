@@ -615,20 +615,30 @@ module Ruport::Data
     #   # returns a new table sorted by col1, then col2
     #   table.sort_rows_by ["col1", "col2"]
     #
-    def sort_rows_by(col_names=nil, &block)
+    def sort_rows_by(col_names=nil, options={}, &block)                          
       # stabilizer is needed because of 
       # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/170565
-      stabilizer = 0
+      stabilizer = 0   
+      
+      nil_rows = []
+      each do |r|
+        if Array(col_names).any? { |c| r[c].nil? }
+          nil_rows << r
+        end
+      end
 
       data_array =
         if col_names
-          sort_by do |r| 
+          (data - nil_rows).sort_by do |r| 
             stabilizer += 1
             [Array(col_names).map {|col| r[col]}, stabilizer] 
           end
         else
-          sort_by(&block)
-        end
+          (data - nil_rows).sort_by(&block)
+        end                 
+                                                               
+      data_array += nil_rows
+      data_array.reverse! if options[:order] == :descending    
 
       table = self.class.new( :data => data_array, 
                               :column_names => @column_names,

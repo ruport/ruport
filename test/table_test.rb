@@ -126,59 +126,88 @@ class TestTable < Test::Unit::TestCase
       assert_equal b.column_names.object_id,
                    r.instance_eval{@attributes}.object_id
     }
-  end
+  end     
   
-  def test_sort_rows_by
-    table = Ruport::Data::Table.new :column_names => %w[a b c]
-    table << [1,2,3] << [6,1,8] << [9,1,4]    
+  context "when sorting rows" do 
     
-    table2 = Ruport::Data::Table.new :column_names => [:a, :b, :c]
-    table2 << [1,2,3] << [6,1,8] << [9,1,4]
+    def setup
+      @table = Table(%w[a b c]) << [1,2,3] << [6,1,8] << [9,1,4] 
+      @table_with_nils = Table(%w[a b c]) << [1,nil,3] << [9,3,4] << [6,1,8]
+    end
+    
+    def specify_should_sort_in_reverse_order_on_descending
+       t = @table.sort_rows_by("a", :order => :descending ) 
+       assert_equal Table(%w[a b c]) << [9,1,4] << [6,1,8] << [1,2,3], t   
+       
+       t = @table.sort_rows_by("c", :order => :descending ) 
+       assert_equal Table(%w[a b c]) << [6,1,8] << [9,1,4] << [1,2,3], t               
+    end  
+    
+    def specify_show_put_rows_with_nil_columns_after_sorted_rows    
+       # should not effect when using columns that are all populated
+       t = @table_with_nils.sort_rows_by("a") 
+       assert_equal Table(%w[a b c]) << [1,nil,3] << [6,1,8] << [9,3,4], t 
+       
+       t = @table_with_nils.sort_rows_by("b")
+       assert_equal Table(%w[a b c]) << [6,1,8] << [9,3,4] << [1,nil,3], t    
+       
+       t = @table_with_nils.sort_rows_by("b", :order => :descending)
+       assert_equal Table(%w[a b c]) << [1,nil,3] << [9,3,4] << [6,1,8], t
+    end
+    
+    def specify_sort_rows_by
+      table = Ruport::Data::Table.new :column_names => %w[a b c]
+      table << [1,2,3] << [6,1,8] << [9,1,4]    
+    
+      table2 = Ruport::Data::Table.new :column_names => [:a, :b, :c]
+      table2 << [1,2,3] << [6,1,8] << [9,1,4]
 
-    sorted_table_a = Ruport::Data::Table.new :column_names => %w[a b c]
-    sorted_table_a << [1,2,3] << [6,1,8] << [9,1,4]
+      sorted_table_a = Ruport::Data::Table.new :column_names => %w[a b c]
+      sorted_table_a << [1,2,3] << [6,1,8] << [9,1,4]
 
-    sorted_table_b = Ruport::Data::Table.new :column_names => %w[a b c]
-    sorted_table_b << [6,1,8] << [9,1,4] << [1,2,3]
+      sorted_table_b = Ruport::Data::Table.new :column_names => %w[a b c]
+      sorted_table_b << [6,1,8] << [9,1,4] << [1,2,3]
     
-    sorted_table_bc = Ruport::Data::Table.new :column_names => %w[a b c]
-    sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3] 
+      sorted_table_bc = Ruport::Data::Table.new :column_names => %w[a b c]
+      sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3] 
     
-    sorted_table_bs = Ruport::Data::Table.new :column_names => [:a, :b, :c]
-    sorted_table_bs << [6,1,8] << [9,1,4] << [1,2,3]
+      sorted_table_bs = Ruport::Data::Table.new :column_names => [:a, :b, :c]
+      sorted_table_bs << [6,1,8] << [9,1,4] << [1,2,3]
   
-    assert_equal sorted_table_a,  table.sort_rows_by {|r| r['a']}
-    assert_equal sorted_table_b,  table.sort_rows_by(['b'])
-    assert_equal sorted_table_bc, table.sort_rows_by(['b', 'c'])
-    assert_equal sorted_table_bs, table2.sort_rows_by(:b)
-  end              
-  
-  def test_sort_rows_by!
-    table = Ruport::Data::Table.new :column_names => %w[a b c]
-    table << [1,2,3] << [6,1,8] << [9,1,4]
+      assert_equal sorted_table_a,  table.sort_rows_by {|r| r['a']}
+      assert_equal sorted_table_b,  table.sort_rows_by(['b'])
+      assert_equal sorted_table_bc, table.sort_rows_by(['b', 'c'])
+      assert_equal sorted_table_bs, table2.sort_rows_by(:b)
+    end              
+       
+    def specify_sort_rows_by!
+      table = Ruport::Data::Table.new :column_names => %w[a b c]
+      table << [1,2,3] << [6,1,8] << [9,1,4]
 
-    sorted_table_a = Ruport::Data::Table.new :column_names => %w[a b c]
-    sorted_table_a << [1,2,3] << [6,1,8] << [9,1,4]
+      sorted_table_a = Ruport::Data::Table.new :column_names => %w[a b c]
+      sorted_table_a << [1,2,3] << [6,1,8] << [9,1,4]
 
-    sorted_table_b = Ruport::Data::Table.new :column_names => %w[a b c]
-    sorted_table_b << [6,1,8] << [9,1,4] << [1,2,3]
+      sorted_table_b = Ruport::Data::Table.new :column_names => %w[a b c]
+      sorted_table_b << [6,1,8] << [9,1,4] << [1,2,3]
     
-    sorted_table_bc = Ruport::Data::Table.new :column_names => %w[a b c]
-    sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3]
+      sorted_table_bc = Ruport::Data::Table.new :column_names => %w[a b c]
+      sorted_table_bc << [9,1,4] << [6,1,8] << [1,2,3]
     
-    table_a = table.dup
-    table_a.sort_rows_by! { |r| r['a'] }       
+      table_a = table.dup
+      table_a.sort_rows_by! { |r| r['a'] }       
     
-    table_b = table.dup
-    table_b.sort_rows_by!("b")
+      table_b = table.dup
+      table_b.sort_rows_by!("b")
     
-    table_bc = table.dup
-    table_bc.sort_rows_by!(['b', 'c'])             
+      table_bc = table.dup
+      table_bc.sort_rows_by!(['b', 'c'])             
   
-    assert_equal sorted_table_a,  table_a
-    assert_equal sorted_table_b,  table_b
-    assert_equal sorted_table_bc, table_bc
-  end
+      assert_equal sorted_table_a,  table_a
+      assert_equal sorted_table_b,  table_b
+      assert_equal sorted_table_bc, table_bc
+    end
+    
+  end  
 
   def test_array_hack
     t = [[1,2],[3,4],[5,6]].to_table 

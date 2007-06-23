@@ -32,7 +32,7 @@ class TracSummaryReport
     table = Table([:title, :date], :record_class => TicketStatus) do |table|
       (feed/"item").each do |r|
          title = (r/"title").innerHTML
-         next unless title =~ /Ticket.*(created|closed|reopene)/
+         next unless title =~ /Ticket.*(created|closed|reopened)/
          table <<  { :title => title,
                      :date  => Date.parse((r/"pubdate").innerHTML) }
        end
