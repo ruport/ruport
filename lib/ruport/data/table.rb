@@ -620,21 +620,18 @@ module Ruport::Data
       # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/170565
       stabilizer = 0   
       
-      nil_rows = []
-      each do |r|
-        if Array(col_names).any? { |c| r[c].nil? }
-          nil_rows << r
-        end
+      nil_rows, sortable = partition do |r| 
+        Array(col_names).any? { |c| r[c].nil? } 
       end
 
       data_array =
         if col_names
-          (data - nil_rows).sort_by do |r| 
+          sortable.sort_by do |r| 
             stabilizer += 1
             [Array(col_names).map {|col| r[col]}, stabilizer] 
           end
         else
-          (data - nil_rows).sort_by(&block)
+          sortable.sort_by(&block)
         end                 
                                                                
       data_array += nil_rows
