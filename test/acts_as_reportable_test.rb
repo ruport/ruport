@@ -167,8 +167,15 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
       assert_equal :players, Team.send(:get_include_for_find, nil)
       assert_equal nil, Player.send(:get_include_for_find, nil)
       assert_equal :team, Player.send(:get_include_for_find, :team)
-      assert_equal [:team],
+      expected = {:team => {}}
+      assert_equal expected,
         Player.send(:get_include_for_find, {:team => {:except => 'id'}})
+      expected = {:team => {:a => {}, :b => {}},
+        :c => {:d => {:e => {}, :f => {}}},
+        :g => {}}
+      assert_equal expected,
+        Player.send(:get_include_for_find, {:team => {:include => [:a,:b]},
+        :c => {:include => {:d => {:include => [:e,:f]}}}, :g => {}})
     end  
   end
     
