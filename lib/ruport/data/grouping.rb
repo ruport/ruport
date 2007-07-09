@@ -159,10 +159,12 @@ module Ruport::Data
     #
     def initialize(data={},options={})
       if data.kind_of?(Hash)
-        @grouped_by = data[:by] 
+        @grouped_by = data[:by]
+        @order = data[:order] 
         @data = {}
       else
-        @grouped_by = options[:by] 
+        @grouped_by = options[:by]    
+        @order = options[:order]
         cols = Array(options[:by]).dup
         @data = data.to_group.send(:grouped_data, cols.shift)
         cols.each do |col|
@@ -192,9 +194,25 @@ module Ruport::Data
     
     # Iterates through the Grouping, yielding each group name and Group object
     #
-    def each
-      @data.each { |name,group| yield(name,group) }
-    end 
+    def each 
+      if @order.respond_to?(:call) 
+        @data.sort_by { |n,g| @order[g] }.each { |n,g| yield(n,g) }
+      elsif @order == :name
+        @data.sort_by { |n,g| n }.each { |name,group| yield(name,group) } 
+      else
+        @data.each { |name,group| yield(name,group) }
+      end
+    end  
+    
+    def sort_grouping_by(type=nil,&block)
+      a = Grouping.new(:by => @grouped_by, :order => type || block)
+      each { |n,g| a << g }
+      return a
+    end
+    
+    def sort_grouping_by!(type=nil,&block)
+      @order = type || block
+    end  
     
     # Used to add extra data to the Grouping. <tt>group</tt> should be a Group.
     #

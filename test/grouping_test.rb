@@ -254,8 +254,67 @@ class TestGrouping < Test::Unit::TestCase
       :opened => lambda { |g| g.sigma(:opened) },
       :closed => lambda { |g| g.sigma(:closed) }
       
-    assert_equal [], expected.column_names - actual.column_names
-  end   
+    assert_equal [], expected.column_names - actual.column_names       
+  end                                                              
+  
+  context "when sorting groupings" do
+    
+    def setup
+      @table = Table(%w[a b c]) << ["dog",1,2] << ["cat",3,5] << 
+                                   ["banana",8,1] << ["dog",5,6]
+    end
+    
+    def specify_can_set_by_group_name_order_in_constructor
+      a = Grouping(@table, :by => "a", :order => :name)    
+      names = %w[banana cat dog]           
+      data = [ [[8,1]], [[3,5]], [[1,2],[5,6]] ]
+      a.each do |name,group|
+        assert_equal names.shift, name
+        assert_equal data.shift, group.map { |r| r.to_a } 
+      end
+    end
+    
+    def specify_can_set_by_proc_ordering_in_constructor
+      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } ) 
+      names = %w[dog banana cat]      
+      data = [ [[1,2],[5,6]], [[8,1]], [[3,5]] ]
+      a.each do |name,group|
+        assert_equal names.shift, name
+        assert_equal data.shift, group.map { |r| r.to_a } 
+      end
+    end  
+    
+    def specify_can_override_sorting
+      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )  
+      a.sort_grouping_by!(:name)
+      names = %w[banana cat dog]           
+      data = [ [[8,1]], [[3,5]], [[1,2],[5,6]] ]
+      a.each do |name,group|
+        assert_equal names.shift, name
+        assert_equal data.shift, group.map { |r| r.to_a } 
+      end
+    end 
+    
+    def specify_can_get_a_new_sorted_grouping
+      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )  
+      b = a.sort_grouping_by(:name)     
+      
+      names = %w[banana cat dog]           
+      data = [ [[8,1]], [[3,5]], [[1,2],[5,6]] ]
+      b.each do |name,group|
+        assert_equal names.shift, name
+        assert_equal data.shift, group.map { |r| r.to_a } 
+      end
+      
+      # assert original retained
+      names = %w[dog banana cat]      
+      data = [ [[1,2],[5,6]], [[8,1]], [[3,5]] ]
+      a.each do |name,group|
+        assert_equal names.shift, name
+        assert_equal data.shift, group.map { |r| r.to_a } 
+      end   
+    end
+  end
  
   class MyRecord < Ruport::Data::Record; end
   
