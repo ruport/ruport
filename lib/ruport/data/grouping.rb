@@ -295,6 +295,37 @@ module Ruport::Data
       as(:text)
     end
     
+    # Calculates sums. If a column name or index is given, it will try to
+    # convert each element of that column to an integer or float 
+    # and add them together.  The sum is calculated across all groups in
+    # the grouping.
+    #
+    # If a block is given, it yields each Record in each Group so that you can
+    # do your own calculation.
+    #
+    # Example:
+    #
+    #   table = [[1,2,3],[3,4,5],[5,6,7]].to_table(%w[col1 col2 col3])
+    #   grouping = Grouping(table, :by => "col1")
+    #   grouping.sigma("col2") #=> 12
+    #   grouping.sigma(0)      #=> 12
+    #   grouping.sigma { |r| r.col2 + r.col3 } #=> 27
+    #   grouping.sigma { |r| r.col2 + 1 } #=> 15
+    #
+    def sigma(column=nil)
+      inject(0) do |s, (group_name, group)|
+        if column
+          s + group.sigma(column)
+        else
+          s + group.sigma do |r|
+            yield(r)
+          end
+        end
+      end
+    end
+
+    alias_method :sum, :sigma
+
     include Ruport::Renderer::Hooks
     renders_as_grouping
 

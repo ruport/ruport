@@ -257,6 +257,31 @@ class TestGrouping < Test::Unit::TestCase
     assert_equal [], expected.column_names - actual.column_names       
   end                                                              
   
+  def test_grouping_sigma
+    assert_respond_to @grouping, :sigma
+    assert_respond_to @grouping, :sum
+    
+    expected = {}
+    @grouping.data[@grouping.data.keys.first].column_names.each do |col|
+      expected[col] = @grouping.inject(0) do |s, (group_name, group)|
+        s + group.sigma(col)
+      end
+    end
+    expected.keys.each do |col|
+      assert_equal expected[col], @grouping.sigma(col)
+    end
+
+    expected = {}
+    @grouping.data[@grouping.data.keys.first].column_names.each do |col|
+      expected[col] = @grouping.inject(0) do |s, (group_name, group)|
+        s + group.sigma {|r| r[col] + 2 }
+      end
+    end
+    expected.keys.each do |col|
+      assert_equal expected[col], @grouping.sigma {|r| r[col] + 2 }
+    end
+  end
+
   context "when sorting groupings" do
     
     def setup
