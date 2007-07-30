@@ -54,6 +54,6 @@ end
 
 timeline = "http://stonecode.svnrepository.com/ruport/trac.cgi/timeline"
 
-report = TracSummaryReport.new(:timeline_uri => timeline, :days => 14)  
+report = TracSummaryReport.new(:timeline_uri => timeline, :days => 30)  
 puts report.as(:text)
 

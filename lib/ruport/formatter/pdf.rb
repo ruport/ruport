@@ -391,29 +391,42 @@ module Ruport
 
     include DrawingHelpers
     
-    private   
+    private
     
     def apply_pdf_table_column_opts(table,table_data,format_opts)
-      column_opts = format_opts.delete(:column_options)           
-      if column_opts 
+      column_opts = format_opts.delete(:column_options)
+      heading_opts = column_opts.delete(:heading)
+      if column_opts
         specific = get_specific_column_options(table_data.column_names,
-                                               column_opts)                                           
-        columns = table_data.column_names.inject({}) { |s,c| 
-          s.merge( c => ::PDF::SimpleTable::Column.new(c) { |col|  
-            column_opts.each { |k,v| col.send("#{k}=",v) }    
-            # use the specific column names now     
+                                               column_opts)
+        columns = table_data.column_names.inject({}) { |s,c|
+          s.merge( c => ::PDF::SimpleTable::Column.new(c) { |col|
+            col.heading = create_heading(heading_opts) 
+            column_opts.each { |k,v| col.send("#{k}=",v) }
+            # use the specific column names now
             specific[c].each { |k,v| col.send("#{k}=",v) }
           })
-        }                     
+        }
         table.columns = columns
-      end    
-    end 
+      end
+    end
 
     def get_specific_column_options(column_names,column_opts)
-       column_names.inject({}) do |s,c|
-         s.merge(c => (column_opts.delete(c) || {})) 
-       end
-    end     
+      column_names.inject({}) do |s,c|
+        opts = column_opts.delete(c) || {}
+        if opts[:heading]
+          opts = opts.merge(:heading => create_heading(opts[:heading]))
+        end
+        s.merge(c => opts)
+      end
+    end
+    
+    def create_heading(heading_opts)
+      heading_opts ||= {}
+      ::PDF::SimpleTable::Column::Heading.new {|head|
+        heading_opts.each {|k,v| head.send("#{k}=",v) }
+      }
+    end
     
     def grouping_columns
       data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
