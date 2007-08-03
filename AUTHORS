@@ -43,3 +43,6 @@ Stefan Mahlitz:
 
 Chris Carter
  - Table#remove_columns (r440)
+
+Dave Nelson
+ - Grouping#sigma (r1131)
