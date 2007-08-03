@@ -150,6 +150,9 @@ module Ruport::Data
         end 
         options[:data].each { |e| self << e }  
       end
+      if options[:filters]
+        reduce { |r| options[:filters].all? { |f| f[r] } }
+      end
     end
 
     # This Table's column names

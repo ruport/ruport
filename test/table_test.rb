@@ -35,6 +35,22 @@ class TestTable < Test::Unit::TestCase
     end
   end    
 
+  context "when filtering data" do
+
+    def setup
+      @data = [[1,2,3],[4,5,6],[7,8,9]]
+    end
+
+    def specify_filters_should_discard_unmatched_rows
+      table = Ruport::Data::Table.new(:column_names => %w[a b c],
+                                      :data => [[1,2,3],[4,5,6],[7,8,9]],
+                                      :filters => [ lambda { |r| r.a % 2 == 1 } ] )
+      assert_equal Table(%w[a b c]) << [1,2,3] << [7,8,9], table
+    end
+
+
+  end
+
   def test_to_group
     a =[[1,2,3],[4,5,6]].to_table(%w[a b c]).to_group("Packrats")
     b = Ruport::Data::Group.new( :data => [[1,2,3],[4,5,6]],
