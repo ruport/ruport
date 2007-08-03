@@ -395,7 +395,7 @@ module Ruport
     
     def apply_pdf_table_column_opts(table,table_data,format_opts)
       column_opts = format_opts.delete(:column_options)
-      heading_opts = column_opts.delete(:heading)
+      heading_opts = column_opts.delete(:heading) rescue nil
       if column_opts
         specific = get_specific_column_options(table_data.column_names,
                                                column_opts)

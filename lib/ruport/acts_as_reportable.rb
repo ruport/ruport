@@ -145,6 +145,7 @@ module Ruport
         except = options.delete(:except)
         methods = options.delete(:methods)
         includes = options.delete(:include)
+        #filters = options.delete(:filters) || [ lambda { true } ]
         record_class = options.delete(:record_class) || Ruport::Data::Record
         self.aar_columns = []
 
@@ -155,6 +156,7 @@ module Ruport
                                :only => only,
                                :except => except,
                                :methods => methods) }.flatten
+        #data.select! { |r| filters.all? { |f| f[r] } }
 
         table = Ruport::Data::Table.new(:data => data,
                                         :column_names => aar_columns,
