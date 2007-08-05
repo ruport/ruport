@@ -390,11 +390,8 @@ class Ruport::Renderer
         include AutoRunner
       end
       rend._run_ if rend.respond_to? :_run_
-      if rend.options.file
-        File.open(rend.options.file,"w") { |f| f << rend.formatter.output }
-      else
-        return rend.formatter.output
-      end
+      rend.formatter.save_output(rend.options.file) if rend.options.file
+      return rend.formatter.output
     end
 
     # Allows you to set class-wide default options.

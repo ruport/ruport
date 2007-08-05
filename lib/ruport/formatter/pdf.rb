@@ -327,6 +327,11 @@ module Ruport
       pdf_writer.font_size = old
     end
     
+    # Save the output to a file
+    def save_output(filename)
+      File.open(filename,"wb") {|f| f << output }
+    end
+    
     # This module provides tools to simplify some common drawing operations
     # it is included by default in the PDF formatter
     #

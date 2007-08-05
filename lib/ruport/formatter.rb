@@ -186,7 +186,12 @@ module Ruport
     # Clears output.
     def clear_output
       @output.replace("")
-    end   
+    end
+    
+    # Save the output to a file
+    def save_output(filename)
+      File.open(filename,"w") {|f| f << output }
+    end
     
     # Evaluates the string using ERB and returns the results.
     #
