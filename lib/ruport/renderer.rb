@@ -50,12 +50,12 @@ class Ruport::Renderer
   end
    
   # This module provides hooks into Ruport's formatting system.
-  # It is used to implement the as() method for all of Ruport's datastructures,
-  # as well as the renders_with and renders_as_* helpers.
+  # It is used to implement the as() method for all of Ruport's data
+  # structures, as well as the renders_with and renders_as_* helpers.
   #
   # You can actually use this with any data structure, it will look for a
-  # renderable_data method to pass to the <tt>renderer</tt> you specify, 
-  # but if that is not defined, it will pass <tt>self</tt> 
+  # renderable_data(format) method to pass to the <tt>renderer</tt> you 
+  # specify, but if that is not defined, it will pass <tt>self</tt>.
   #
   # Examples:
   #
@@ -73,10 +73,10 @@ class Ruport::Renderer
   #      include Ruport::Renderer::Hooks
   #      renders_as_row
   #      attr_accessor :column_order
-  #      def renderable_data
-  #         column_order.map { |c| self[c] }
+  #      def renderable_data(format)
+  #        column_order.map { |c| self[c] }
   #      end
-  #   end       
+  #   end
   #
   #   # >> a = { :a => 1, :b => 2, :c => 3 }
   #   # >> a.column_order = [:b,:a,:c]
@@ -87,7 +87,7 @@ class Ruport::Renderer
       
       # Tells the class which renderer as() will forward to.
       #
-      # usage:
+      # Usage:
       #
       #   class MyStructure
       #     include Renderer::Hooks
@@ -95,11 +95,11 @@ class Ruport::Renderer
       #   end
       #   
       # You can also specify default rendering options, which will be used
-      # if they are not overriden by the options passed to as()
+      # if they are not overriden by the options passed to as().
       #
       #   class MyStructure
-      #      include Renderer::Hooks
-      #      renders_with CustomRenderer, :font_size => 14
+      #     include Renderer::Hooks
+      #     renders_with CustomRenderer, :font_size => 14
       #   end
       def renders_with(renderer,opts={})
         @renderer = renderer.name
@@ -137,7 +137,7 @@ class Ruport::Renderer
       
       # The class of the renderer object for the base class.
       #
-      # Example
+      # Example:
       # 
       #   >> Ruport::Data::Table.renderer
       #   => Ruport::Renderer::Table
@@ -152,11 +152,11 @@ class Ruport::Renderer
     end      
     
     # Uses the Renderer specified by renders_with to generate formatted
-    # output.  Passes the return value of the <tt>renderable_data</tt> method if
-    # the method is defined, otherwise passes <tt>self</tt> as :data
+    # output.  Passes the return value of the <tt>renderable_data(format)</tt>
+    # method if the method is defined, otherwise passes <tt>self</tt> as :data
     #
     # The remaining options are converted to a Renderer::Options object and
-    # accessible in both the renderer and formatter.
+    # are accessible in both the renderer and formatter.
     #
     #  Example:
     #
@@ -167,14 +167,15 @@ class Ruport::Renderer
         raise UnknownFormatError
       end
       self.class.renderer.render(format,
-       self.class.rendering_options.merge(options)) do |rend|
-         rend.data = respond_to?(:renderable_data) ? renderable_data : self
-         yield(rend) if block_given?  
+        self.class.rendering_options.merge(options)) do |rend|
+          rend.data =
+            respond_to?(:renderable_data) ? renderable_data(format) : self
+          yield(rend) if block_given?  
       end
     end  
   end
-
-                          
+  
+  
   module AutoRunner  #:nodoc:
     # called automagically when the report is rendered. Uses the
     # data collected from the earlier methods.
@@ -198,7 +199,6 @@ class Ruport::Renderer
       end
 
       finalize self.class.final_stage if self.class.final_stage
-
     end  
     
     def execute_stages
@@ -308,7 +308,7 @@ class Ruport::Renderer
     end
      
     # Defines attribute writers for the Renderer::Options object shared
-    # between Renderer and Formatter
+    # between Renderer and Formatter.
     #
     # usage:
     #   
@@ -397,7 +397,7 @@ class Ruport::Renderer
       end
     end
 
-    # Allows you to set class_wide default options
+    # Allows you to set class-wide default options.
     # 
     # Example:
     #  
@@ -438,7 +438,7 @@ class Ruport::Renderer
     
     # Allows you to register a format with the renderer.
     #
-    # example:
+    # Example:
     #
     #   class MyFormatter < Ruport::Formatter
     #     # formatter code ...
@@ -451,10 +451,10 @@ class Ruport::Renderer
     
   end
   
-  # The name of format being used
+  # The name of format being used.
   attr_accessor :format  
   
-  # The formatter object being used
+  # The formatter object being used.
   attr_writer :formatter  
   
   # The +data+ that has been passed to the active formatter.

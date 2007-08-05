@@ -495,7 +495,7 @@ class TestRendererHooks < Test::Unit::TestCase
       include Ruport::Renderer::Hooks
       renders_as_table
 
-      def renderable_data
+      def renderable_data(format)
         1
       end
     end
@@ -521,6 +521,27 @@ class TestRendererHooks < Test::Unit::TestCase
       assert_raises(ArgumentError) { DummyObject3.new.as(:csv) }
     end
 
+    class DummyObject4
+      include Ruport::Renderer::Hooks
+      renders_as_table
+
+      def renderable_data(format)
+        case format
+        when :html
+          1
+        when :csv
+          2
+        end
+      end
+    end
+
+    def specify_should_return_results_of_renderable_data_using_format
+      a = DummyObject4.new
+      rend = mock("renderer")
+      rend.expects(:data=).with(2)
+      Ruport::Renderer::Table.expects(:render).with(:csv,{}).yields(rend)
+      a.as(:csv)
+    end
 
   end
 
