@@ -146,4 +146,15 @@ class TestPDFFormatterHelpers < Test::Unit::TestCase
     
     assert_equal 80, a.cursor        
   end
+  
+  def test_draw_text_retains_cursor
+    a = Ruport::Formatter::PDF.new
+    a.move_cursor_to(100)
+    
+    a.draw_text "foo", :left => a.left_boundary
+    assert_equal 100, a.cursor
+    
+    a.draw_text "foo", :left => a.left_boundary + 50, :y => 500
+    assert_equal 100, a.cursor
+  end
 end

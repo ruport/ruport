@@ -386,10 +386,12 @@ module Ruport
       # 
       # All usual options to add_text are also supported
       def draw_text(text,text_opts)
+        y = cursor
         move_cursor_to(text_opts[:y]) if text_opts[:y]
         add_text(text,
           text_opts.merge(:absolute_left => text_opts[:x1] || text_opts[:left],
           :absolute_right => text_opts[:x2] || text_opts[:right]))
+        move_cursor_to(y)
       end
       
     end   
