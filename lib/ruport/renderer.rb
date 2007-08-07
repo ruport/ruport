@@ -192,7 +192,7 @@ class Ruport::Renderer
 
       prepare self.class.first_stage if self.class.first_stage
                 
-      if formatter.respond_to?(:layout)
+      if formatter.respond_to?(:layout)  && options.layout != false
         formatter.layout do execute_stages end
       else
         execute_stages
@@ -383,7 +383,7 @@ class Ruport::Renderer
       rend = build(*args) { |r|        
           yield(r) if block_given?   
         r.setup if r.respond_to? :setup
-      }
+      }  
       if rend.respond_to? :run
         rend.run
       else

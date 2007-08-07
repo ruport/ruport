@@ -162,6 +162,11 @@ class TestFormatterWithLayout < Test::Unit::TestCase
      assert_equal "---\nheader\nbody\nfooter\n---\n", 
                   VanillaRenderer.render_text_with_layout
   end
+  
+  def test_layout_disabled
+     assert_equal "header\nbody\nfooter\n",
+                  VanillaRenderer.render_text_with_layout(:layout => false)
+  end
 
 end
 

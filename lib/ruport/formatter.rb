@@ -122,7 +122,9 @@ module Ruport
       private
 
       def render_helper(rend_klass, source_data,options={},&block)
-        options = {:data => source_data, :io => output}.merge(options)
+        options = {:data => source_data, 
+                   :io => output,
+                   :layout => false }.merge(options)
         rend_klass.render(format,options) do |rend|
           block[rend] if block
         end
