@@ -40,7 +40,7 @@ module Ruport::Data
       #   table = Table.load('mydata.csv',:has_names => false)
       #
       #   # pass in FasterCSV options, such as column separators
-      #   table = Table.load('mydata.csv',:csv_opts => { :col_sep => "\t" })
+      #   table = Table.load('mydata.csv',:csv_options => { :col_sep => "\t" })
       #
       def load(csv_file, options={},&block)
         get_table_from_csv(:foreach, csv_file, options,&block)
