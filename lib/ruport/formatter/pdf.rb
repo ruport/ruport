@@ -386,14 +386,31 @@ module Ruport
       # 
       # All usual options to add_text are also supported
       def draw_text(text,text_opts)
-        y = cursor
+        ypos = cursor
         move_cursor_to(text_opts[:y]) if text_opts[:y]
         add_text(text,
           text_opts.merge(:absolute_left => text_opts[:x1] || text_opts[:left],
           :absolute_right => text_opts[:x2] || text_opts[:right]))
-        move_cursor_to(y)
+        move_cursor_to(ypos)
       end
       
+      # Draws text at an absolute location, defined by
+      # :y, :x1|:left
+      #
+      # x position defaults to the left margin and
+      # y position defaults to the current cursor location
+      # 
+      # Uses PDF::Writer#add_text, so it will ignore any options not supported
+      # by that method
+      def draw_text!(text,text_opts)
+        ypos = cursor
+        pdf_writer.add_text(text_opts[:x1] || text_opts[:left] || left_boundary,
+          text_opts[:y] || ypos,
+          text,
+          text_opts[:font_size],
+          text_opts[:angle] || 0)
+        move_cursor_to(ypos)
+      end
     end   
 
     include DrawingHelpers
