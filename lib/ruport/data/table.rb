@@ -138,21 +138,24 @@ module Ruport::Data
                       options[:record_class].name || "Ruport::Data::Record"
       @data         = []
       if options[:data]
-        if options[:data].all? { |r| r.kind_of? Record }    
-          options[:data] = options[:data].map { |r| 
-            if @column_names.empty? or 
-               r.attributes.all? { |a| a.kind_of?(Numeric) }
-              r.to_a
+        options[:data].each do |e|
+          if e.kind_of?(Record)
+            e = if @column_names.empty? or 
+                   e.attributes.all? { |a| a.kind_of?(Numeric) }
+              e.to_a
             else
-              r.to_hash.values_at(*@column_names)  
+              e.to_hash.values_at(*@column_names)  
             end
-          }
-        end 
-        options[:data].each { |e| self << e }  
-      end
-      if options[:filters]
-        reduce { |r| options[:filters].all? { |f| f[r] } }
-      end
+          end
+          r = recordize(e)        
+          
+          if options[:filters]
+            next unless options[:filters].all? { |f| f[r] } 
+          end
+                                                     
+          @data << r
+        end  
+      end      
     end
 
     # This Table's column names
@@ -224,17 +227,8 @@ module Ruport::Data
     #   data << Record.new [5,6], :attributes => %w[a b]
     #
     def <<(row)
-      case row
-      when Array
-        append_array(row)
-      when Hash
-        append_hash(row)            
-      when record_class     
-        append_record(row)
-      else
-        append_hash(row) rescue append_array(row)
-      end    
-      return self
+      @data << recordize(row)
+      return self   
     end    
     
     # Returns the record class constant being used by the table.
@@ -733,22 +727,48 @@ module Ruport::Data
     
     # Appends an array as a record in the Table.
     def append_array(array)
-      attributes = @column_names.empty? ? nil : @column_names
-      @data << record_class.new(array.to_ary, :attributes => attributes)  
+      @data << normalize_array(array)  
     end      
     
     # Appends a hash as a record in the Table.
-    def append_hash(hash_obj) 
-      hash_obj = hash_obj.to_hash 
-      raise ArgumentError unless @column_names
-      @data << record_class.new(hash_obj, :attributes => @column_names)
+    def append_hash(hash_obj)  
+      @data << normalize_hash(hash_obj) 
     end
     
     # Appends a record to the Table.
     def append_record(record)        
-      self << record.send(column_names.empty? ? :to_a : :to_hash)
-    end
-  
+      self << normalize_record(record)
+    end 
+    
+    private    
+    
+    def recordize(row)
+      case row
+      when Array
+        normalize_array(row)
+      when Hash
+        normalize_hash(row)            
+      when record_class     
+        recordize(normalize_record(row))
+      else
+        normalize_hash(row) rescue normalize_array(row)
+      end    
+    end  
+    
+    def normalize_hash(hash_obj)
+      hash_obj = hash_obj.to_hash 
+      raise ArgumentError unless @column_names
+      record_class.new(hash_obj, :attributes => @column_names)
+    end 
+    
+    def normalize_record(record)
+      record.send(column_names.empty? ? :to_a : :to_hash)
+    end  
+    
+    def normalize_array(array)
+      attributes = @column_names.empty? ? nil : @column_names 
+      record_class.new(array.to_ary, :attributes => attributes)                             
+    end                                            
   end
 end
 
