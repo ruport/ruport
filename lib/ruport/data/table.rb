@@ -76,13 +76,20 @@ module Ruport::Data
             first_line = false
             next if options[:has_names] 
           end
-
+               
           if block
             handle_csv_row_proc(loaded_data,row,options,block)
-          else
-            loaded_data << row
-          end
+          else           
+            record = loaded_data.send(:recordize, row)        
 
+            if options[:filters]
+              next unless options[:filters].all? { |f| f[record] }
+            end
+
+            Array(options[:transforms]).each { |t| t[record] }
+      
+            loaded_data << record    
+          end                                       
         end
 
         return loaded_data

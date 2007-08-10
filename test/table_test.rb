@@ -46,9 +46,14 @@ class TestTable < Test::Unit::TestCase
                                       :data => [[1,2,3],[4,5,6],[7,8,9]],
                                       :filters => [ lambda { |r| r.a % 2 == 1 } ] )
       assert_equal Table(%w[a b c]) << [1,2,3] << [7,8,9], table
+    end     
+    
+    def specify_filters_should_work_on_csvs        
+      only_ids_less_than_3 = lambda { |r| r["id"].to_i < 3 }
+      table = Table("test/samples/addressbook.csv", 
+                    :filters => [only_ids_less_than_3])
+      assert_equal ["1","2"], table.map { |r| r["id"] }
     end
-
-
   end  
   
   context "when transforming data" do
@@ -76,6 +81,13 @@ class TestTable < Test::Unit::TestCase
      assert_equal Table(%w[a b c]) << [3,4,"3"] << [6,7,"6"] << [9,10,"9"],
                   table
       
+    end 
+    
+    def specify_transforms_should_work_on_csvs  
+      ids_to_i = lambda { |r| r["id"] = r["id"].to_i }
+      table = Table("test/samples/addressbook.csv", 
+                    :filters => [ids_to_i])  
+      assert_equal [1,2,3,4,5], table.map { |r| r["id"] }          
     end
   end
 
