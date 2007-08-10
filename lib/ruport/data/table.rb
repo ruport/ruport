@@ -152,6 +152,8 @@ module Ruport::Data
           if options[:filters]
             next unless options[:filters].all? { |f| f[r] } 
           end
+          
+          Array(options[:transforms]).each { |t| t[r] }
                                                      
           @data << r
         end  

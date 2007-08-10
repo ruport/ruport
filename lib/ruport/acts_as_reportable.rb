@@ -145,7 +145,8 @@ module Ruport
         except = options.delete(:except)
         methods = options.delete(:methods)
         includes = options.delete(:include)
-        filters = options.delete(:filters)
+        filters = options.delete(:filters) 
+        transforms = options.delete(:transforms)
         record_class = options.delete(:record_class) || Ruport::Data::Record
         self.aar_columns = []
 
@@ -161,7 +162,8 @@ module Ruport
         table = Ruport::Data::Table.new(:data => data,
                                         :column_names => aar_columns,
                                         :record_class => record_class,
-                                        :filters => filters )
+                                        :filters => filters,
+                                        :transforms => transforms )
       end
       
       # Creates a Ruport::Data::Table from an ActiveRecord find_by_sql.

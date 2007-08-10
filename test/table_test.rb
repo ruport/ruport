@@ -49,6 +49,34 @@ class TestTable < Test::Unit::TestCase
     end
 
 
+  end  
+  
+  context "when transforming data" do
+    
+    def setup
+      @data = [[1,2,3],[4,5,6],[7,8,9]] 
+    end
+    
+    def specify_transforms_should_modify_table_data
+     
+     stringify_c = lambda { |r| r.c = r.c.to_s } 
+     add_two_to_all_int_cols = lambda { |r|
+      r.each_with_index do |c,i|
+        if Fixnum === c
+          r[i] += 2
+        end
+      end
+        
+     }                                                           
+     
+     table = Ruport::Data::Table.new(:column_names => %w[a b c],
+                                     :data => @data,
+                                     :transforms => [stringify_c,
+                                                     add_two_to_all_int_cols])
+     assert_equal Table(%w[a b c]) << [3,4,"3"] << [6,7,"6"] << [9,10,"9"],
+                  table
+      
+    end
   end
 
   def test_to_group
