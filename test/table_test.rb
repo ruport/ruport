@@ -774,7 +774,7 @@ class TestTableFromCSV < Test::Unit::TestCase
     assert_equal [%w[a b],%w[a b],%w[1 2], %w[1 2],
                   %w[3 4],%w[3 4]].to_table, t
     x = Ruport::Data::Table.load("test/samples/data.csv") { |s,r|
-      assert_kind_of Ruport::Data::Table, s
+      assert_kind_of Ruport::Data::Feeder, s
       assert_kind_of Array, r
       s << r
       s << r
@@ -808,7 +808,7 @@ class TestTableKernelHack < Test::Unit::TestCase
                  Table('test/samples/addressbook.csv', :has_names => false) 
     Table("a","b","c") do |t|
       t << [1,2,3]
-      assert_equal([[1,2,3]].to_table(%w[a b c]), t)
+      assert_equal([[1,2,3]].to_table(%w[a b c]), t.data)
     end
 
     assert_equal Table("a"), Table(%w[a])
@@ -819,14 +819,14 @@ class TestTableKernelHack < Test::Unit::TestCase
 
     Table("test/samples/addressbook.csv") do |s,r|
       assert_kind_of(Array,r)
-      assert_kind_of(Ruport::Data::Table,s)
+      assert_kind_of(Ruport::Data::Feeder,s)
     end
 
     n = 0
 
     Table(:string => "a,b,c\n1,2,3\n4,5,6\n") do |s,r|
       assert_kind_of(Array,r)
-      assert_kind_of(Ruport::Data::Table,s)
+      assert_kind_of(Ruport::Data::Feeder,s)
       n += 1
     end
 

@@ -235,7 +235,7 @@ module Ruport::Data
       @data.merge!({ group.name => group })
     end
 
-    alias_method :append, :<<
+    alias_method :append, :<< 
 
     # Provides access to the subgroups of a particular group in the Grouping.
     # Supply the name of a group and it returns a Grouping created from the
@@ -277,7 +277,7 @@ module Ruport::Data
             s.merge(r[0] => r[1].call(group))
           end 
         end
-        t.reorder(cols)     
+        t.data.reorder(cols)     
       }   
     end
 

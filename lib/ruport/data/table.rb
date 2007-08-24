@@ -66,42 +66,33 @@ module Ruport::Data
         # if people want to use FCSV's header support, let them           
         adjust_options_for_fcsv_headers(options)
 
-        loaded_data = self.new(options)
-
-        first_line = true
-        FasterCSV.send(msg,param,options[:csv_options]) do |row|
-
-          if first_line
-            adjust_for_headers(loaded_data,row,options)          
-            first_line = false
-            next if options[:has_names] 
-          end
-               
-          if block
-            handle_csv_row_proc(loaded_data,row,options,block)
-          else           
-            record = loaded_data.send(:recordize, row)        
-
-            if options[:filters]
-              next unless options[:filters].all? { |f| f[record] }
+        table = self.new(options) do |feeder|
+          first_line = true
+          FasterCSV.send(msg,param,options[:csv_options]) do |row|    
+            if first_line
+              adjust_for_headers(feeder.data,row,options)          
+              first_line = false
+              next if options[:has_names] 
             end
-
-            Array(options[:transforms]).each { |t| t[record] }
-      
-            loaded_data << record    
-          end                                       
-        end
-
-        return loaded_data
-      end
-
-      def handle_csv_row_proc(data,row,options,block)
-        if options[:records]
-          rc = options[:record_class] || Record
-          row = rc.new(row, :attributes => data.column_names)
+               
+            if block
+              handle_csv_row_proc(feeder,row,options,block)
+            else           
+              feeder << row    
+            end  
+          end
         end
         
-        block[data,row]
+        return table
+      end
+
+      def handle_csv_row_proc(feeder,row,options,block)
+        if options[:records]
+          rc = options[:record_class] || Record
+          row = rc.new(row, :attributes => feeder.data.column_names)
+        end
+        
+        block[feeder,row]
       end
        
       def adjust_options_for_fcsv_headers(options)
@@ -143,7 +134,12 @@ module Ruport::Data
       @column_names = options[:column_names] ? options[:column_names].dup : []
       @record_class = options[:record_class] &&
                       options[:record_class].name || "Ruport::Data::Record"
-      @data         = []
+      @data         = []  
+      
+      feeder = Feeder.new(self)
+      Array(options[:filters]).each { |f| feeder.filter &f }
+      Array(options[:transforms]).each { |t| feeder.transform &t }
+      
       if options[:data]
         options[:data].each do |e|
           if e.kind_of?(Record)
@@ -155,16 +151,12 @@ module Ruport::Data
             end
           end
           r = recordize(e)        
-          
-          if options[:filters]
-            next unless options[:filters].all? { |f| f[r] } 
-          end
-          
-          Array(options[:transforms]).each { |t| t[r] }
                                                      
-          @data << r
+          feeder << r
         end  
-      end      
+      end    
+      
+      yield(feeder) if block_given?  
     end
 
     # This Table's column names
@@ -749,6 +741,10 @@ module Ruport::Data
       self << normalize_record(record)
     end 
     
+    def feed_element(row)
+       recordize(row)
+    end
+    
     private    
     
     def recordize(row)
@@ -804,7 +800,7 @@ module Kernel
     case(args[0])
     when Array
       opts = args[1] || {}
-      Ruport::Data::Table.new(f={:column_names => args[0]}.merge(opts))
+      Ruport::Data::Table.new(f={:column_names => args[0]}.merge(opts),&block)
     when /\.csv/
       return Ruport::Data::Table.load(*args,&block)
     when Hash
@@ -813,13 +809,12 @@ module Kernel
       elsif string = args[0].delete(:string)
         return Ruport::Data::Table.parse(string,args[0],&block)
       else
-        return Ruport::Data::Table.new(args[0])
+        return Ruport::Data::Table.new(args[0],&block)
       end
     else
-       Ruport::Data::Table.new(:data => [], :column_names => args)
+       Ruport::Data::Table.new(:data => [], :column_names => args,&block)
     end             
     
-    block[table] if block
     return table
   end
 end  
@@ -832,8 +827,8 @@ class Array
   # Example:
   #   [[1,2],[3,4]].to_table(%w[a b])
   #
-  def to_table(column_names=nil)
-    Ruport::Data::Table.new({:data => self, :column_names => column_names})
+  def to_table(column_names=nil,&b)
+    Ruport::Data::Table.new({:data => self, :column_names => column_names},&b)
   end
 
 end
