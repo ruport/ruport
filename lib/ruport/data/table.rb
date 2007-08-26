@@ -726,21 +726,6 @@ module Ruport::Data
      super
     end
     
-    # Appends an array as a record in the Table.
-    def append_array(array)
-      @data << normalize_array(array)  
-    end      
-    
-    # Appends a hash as a record in the Table.
-    def append_hash(hash_obj)  
-      @data << normalize_hash(hash_obj) 
-    end
-    
-    # Appends a record to the Table.
-    def append_record(record)        
-      self << normalize_record(record)
-    end 
-    
     def feed_element(row)
        recordize(row)
     end

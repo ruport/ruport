@@ -177,7 +177,7 @@ class Ruport::Renderer
   
   
   module AutoRunner  #:nodoc:
-    # called automagically when the report is rendered. Uses the
+    # called automatically when the report is rendered. Uses the
     # data collected from the earlier methods.
     def _run_
 
@@ -205,7 +205,7 @@ class Ruport::Renderer
       # call each stage to build the report
       unless self.class.stages.nil?
         self.class.stages.each do |stage|
-          self.send(:build,stage)
+          maybe("build_#{stage}")
         end
       end
     end
@@ -479,22 +479,11 @@ class Ruport::Renderer
     options.io=obj    
   end
 
-  # When no block is given, returns active formatter.
+  # Returns the active formatter.
   #
-  # When a block is given with a block variable, sets the block variable to the
-  # formatter.  
-  #
-  # When a block is given without block variables, instance_evals the block
-  # within the context of the formatter.
-  #
+  # If a block is given, it is evaluated in the context of the formatter
   def formatter(&block)
-    if block.nil?
-      return @formatter
-    elsif block.arity > 0
-      yield(@formatter)
-    else
-      @formatter.instance_eval(&block)
-    end
+    @formatter.instance_eval(&block) if block   
     return @formatter
   end
 
@@ -513,11 +502,6 @@ class Ruport::Renderer
 
   def prepare(name)
     maybe "prepare_#{name}"
-  end
-
-  def build(names,prefix=nil)
-    return maybe("build_#{names}") if prefix.nil?
-    names.each { |n| maybe "build_#{prefix}_#{n}" }
   end
 
   def finalize(name)
