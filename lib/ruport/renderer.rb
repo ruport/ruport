@@ -190,6 +190,10 @@ class Ruport::Renderer
         end
       end
 
+      if formatter.respond_to?(:apply_template) && options.template
+        formatter.apply_template  
+      end       
+
       prepare self.class.first_stage if self.class.first_stage
                 
       if formatter.respond_to?(:layout)  && options.layout != false
