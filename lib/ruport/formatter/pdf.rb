@@ -82,8 +82,7 @@ module Ruport
     
     attr_writer :pdf_writer
 
-    opt_reader  :show_table_headers,
-                :style,
+    opt_reader  :style,
                 :table_format,
                 :text_format,
                 :paper_size,
@@ -93,6 +92,45 @@ module Ruport
       Ruport.quiet do   
         require "pdf/writer"
         require "pdf/simpletable"
+      end
+    end
+    
+    # Hook for setting available options using a template.
+    def apply_template
+      if t = template.page_format
+        options.paper_size = t[:size] if t[:size]
+        options.paper_orientation = t[:layout] if t[:layout]
+      end
+      
+      if template.text_format
+        options.text_format = template.text_format
+      end
+      
+      if template.table_format
+        options.table_format = template.table_format.dup
+      end
+      
+      if t = template.column_format
+        column_opts = {}
+        column_opts.merge!(:justification => t[:alignment]) if t[:alignment]
+        column_opts.merge!(:width => t[:width]) if t[:width]
+        column_opts.merge!(:heading => t[:heading]) if t[:heading]
+        unless column_opts.empty?
+          if options.table_format
+            if options.table_format[:column_options]
+              options.table_format[:column_options] =
+                column_opts.merge(options.table_format[:column_options])
+            else
+              options.table_format.merge!(:column_options => column_opts)
+            end
+          else
+            options.table_format = { :column_options => column_opts }
+          end
+        end
+      end
+      
+      if t = template.grouping_format
+        options.style = t[:style] if t[:style]
       end
     end
 
@@ -419,8 +457,18 @@ module Ruport
     
     def apply_pdf_table_column_opts(table,table_data,format_opts)
       column_opts = format_opts.delete(:column_options)
-      heading_opts = column_opts.delete(:heading) rescue nil
+
       if column_opts
+        heading_opts = column_opts.delete(:heading)
+        if column_opts[:justification]
+          if heading_opts
+            heading_opts = {
+              :justification => column_opts[:justification]
+            }.merge(heading_opts)
+          else
+            heading_opts = { :justification => column_opts[:justification] }
+          end
+        end
         specific = get_specific_column_options(table_data.column_names,
                                                column_opts)
         columns = table_data.column_names.inject({}) { |s,c|

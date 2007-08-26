@@ -30,6 +30,20 @@ module Ruport
 
     opt_reader :show_table_headers, :show_group_headers, :style
     
+    # Hook for setting available options using a template.
+    def apply_template
+      if t = template.table_format
+        options.show_table_headers = t[:show_headings] unless
+          t[:show_headings].nil?
+      end
+
+      if t = template.grouping_format
+        options.style = t[:style] if t[:style]
+        options.show_group_headers = t[:show_headings] unless
+          t[:show_headings].nil?
+      end
+    end
+
     # Generates table headers based on the column names of your Data::Table.  
     #
     # This method does not do anything if options.show_table_headers is false or

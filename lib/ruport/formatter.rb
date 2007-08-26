@@ -172,6 +172,11 @@ module Ruport
     # Gives a list of formats registered for this formatter.
     def self.formats
       @formats ||= []
+    end   
+    
+    # Returns the template currently set for this formatter.
+    def template
+      Template[options.template]
     end
 
     # Stores a string used for outputting formatted data.
@@ -223,9 +228,10 @@ module Ruport
       end
     end
   end
-end   
+end                                
 
+require "ruport/formatter/template"
 require "ruport/formatter/csv"
 require "ruport/formatter/html"
 require "ruport/formatter/text"
-require "ruport/formatter/pdf"
+require "ruport/formatter/pdf"  

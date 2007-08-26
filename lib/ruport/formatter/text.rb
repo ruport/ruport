@@ -51,6 +51,27 @@ module Ruport
                :show_table_headers, :show_group_headers,
                :ignore_table_width
     
+    # Hook for setting available options using a template.
+    def apply_template
+      if t = template.table_format
+        options.show_table_headers = t[:show_headings] unless
+          t[:show_headings].nil?
+        options.table_width = t[:width] if t[:width]
+        options.ignore_table_width = t[:ignore_width] unless
+          t[:ignore_width].nil?
+      end
+
+      if t = template.column_format
+        options.max_col_width = t[:maximum_width] if t[:maximum_width]
+        options.alignment = t[:alignment] if t[:alignment]
+      end
+
+      if t = template.grouping_format
+        options.show_group_headers = t[:show_headings] unless
+          t[:show_headings].nil?
+      end
+    end
+
     # Checks to ensure the table is not empty and then calls
     # calculate_max_col_widths
     #
