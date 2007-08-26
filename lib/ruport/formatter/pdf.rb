@@ -97,41 +97,11 @@ module Ruport
     
     # Hook for setting available options using a template.
     def apply_template
-      if t = template.page_format
-        options.paper_size = t[:size] if t[:size]
-        options.paper_orientation = t[:layout] if t[:layout]
-      end
-      
-      if template.text_format
-        options.text_format = template.text_format
-      end
-      
-      if template.table_format
-        options.table_format = template.table_format.dup
-      end
-      
-      if t = template.column_format
-        column_opts = {}
-        column_opts.merge!(:justification => t[:alignment]) if t[:alignment]
-        column_opts.merge!(:width => t[:width]) if t[:width]
-        column_opts.merge!(:heading => t[:heading]) if t[:heading]
-        unless column_opts.empty?
-          if options.table_format
-            if options.table_format[:column_options]
-              options.table_format[:column_options] =
-                column_opts.merge(options.table_format[:column_options])
-            else
-              options.table_format.merge!(:column_options => column_opts)
-            end
-          else
-            options.table_format = { :column_options => column_opts }
-          end
-        end
-      end
-      
-      if t = template.grouping_format
-        options.style = t[:style] if t[:style]
-      end
+      apply_page_format_template(template.page_format)
+      apply_text_format_template(template.text_format)
+      apply_table_format_template(template.table_format)
+      apply_column_format_template(template.column_format)
+      apply_grouping_format_template(template.grouping_format)
     end
 
     # Returns the current PDF::Writer object or creates a new one if it has not
@@ -582,5 +552,43 @@ module Ruport
         :justification => :center, :font_size => font_size)
     end
     
+    def apply_page_format_template(t)
+      t = t || {}
+      options.paper_size = t[:size] if t[:size]
+      options.paper_orientation = t[:layout] if t[:layout]
+    end
+    
+    def apply_text_format_template(t)
+      options.text_format = template.text_format if t
+    end
+
+    def apply_table_format_template(t)
+      options.table_format = template.table_format.dup if t
+    end
+    
+    def apply_column_format_template(t)
+      t = t || {}
+      column_opts = {}
+      column_opts.merge!(:justification => t[:alignment]) if t[:alignment]
+      column_opts.merge!(:width => t[:width]) if t[:width]
+      column_opts.merge!(:heading => t[:heading]) if t[:heading]
+      unless column_opts.empty?
+        if options.table_format
+          if options.table_format[:column_options]
+            options.table_format[:column_options] =
+              column_opts.merge(options.table_format[:column_options])
+          else
+            options.table_format.merge!(:column_options => column_opts)
+          end
+        else
+          options.table_format = { :column_options => column_opts }
+        end
+      end
+    end
+    
+    def apply_grouping_format_template(t)
+      t = t || {}
+      options.style = t[:style] if t[:style]
+    end
   end
 end

@@ -53,23 +53,9 @@ module Ruport
     
     # Hook for setting available options using a template.
     def apply_template
-      if t = template.table_format
-        options.show_table_headers = t[:show_headings] unless
-          t[:show_headings].nil?
-        options.table_width = t[:width] if t[:width]
-        options.ignore_table_width = t[:ignore_width] unless
-          t[:ignore_width].nil?
-      end
-
-      if t = template.column_format
-        options.max_col_width = t[:maximum_width] if t[:maximum_width]
-        options.alignment = t[:alignment] if t[:alignment]
-      end
-
-      if t = template.grouping_format
-        options.show_group_headers = t[:show_headings] unless
-          t[:show_headings].nil?
-      end
+      apply_table_format_template(template.table_format)
+      apply_column_format_template(template.column_format)
+      apply_grouping_format_template(template.grouping_format)
     end
 
     # Checks to ensure the table is not empty and then calls
@@ -225,6 +211,29 @@ module Ruport
           max_col_width[i] = f.to_s.length
         end
       end
+    end
+    
+    private
+    
+    def apply_table_format_template(t)
+      t = t || {}
+      options.show_table_headers = t[:show_headings] unless
+        t[:show_headings].nil?
+      options.table_width = t[:width] if t[:width]
+      options.ignore_table_width = t[:ignore_width] unless
+        t[:ignore_width].nil?
+    end
+    
+    def apply_column_format_template(t)
+      t = t || {}
+      options.max_col_width = t[:maximum_width] if t[:maximum_width]
+      options.alignment = t[:alignment] if t[:alignment]
+    end
+    
+    def apply_grouping_format_template(t)
+      t = t || {}
+      options.show_group_headers = t[:show_headings] unless
+        t[:show_headings].nil?
     end
 
   end

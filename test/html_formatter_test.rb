@@ -30,7 +30,29 @@ class TestRenderHTMLTable < Test::Unit::TestCase
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
       "\t</tr>\n\t</table>",actual)   
     
-  end   
+  end
+  
+  def test_render_with_template
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.table_format = {
+        :show_headings  => false
+      }
+      t.grouping_format = {
+        :style          => :justified,
+        :show_headings  => false
+      }
+    end
+
+    formatter = Ruport::Formatter::HTML.new
+    formatter.options = Ruport::Renderer::Options.new
+    formatter.options.template = :simple
+    formatter.apply_template
+    
+    assert_equal false, formatter.options.show_table_headers
+
+    assert_equal :justified, formatter.options.style
+    assert_equal false, formatter.options.show_group_headers
+  end
 end
    
 

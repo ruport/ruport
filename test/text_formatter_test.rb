@@ -60,6 +60,37 @@ class TestRenderTextTable < Test::Unit::TestCase
                "+-----------+\n"
     assert_equal expected, a
   end
+  
+  def test_render_with_template
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.table_format = {
+        :show_headings  => false,
+        :width          => 50,
+        :ignore_width   => true
+      }
+      t.column_format = {
+        :maximum_width  => 5,
+        :alignment => :center
+      }
+      t.grouping_format = {
+        :show_headings  => false
+      }
+    end
+
+    formatter = Ruport::Formatter::Text.new
+    formatter.options = Ruport::Renderer::Options.new
+    formatter.options.template = :simple
+    formatter.apply_template
+    
+    assert_equal false, formatter.options.show_table_headers
+    assert_equal 50, formatter.options.table_width
+    assert_equal true, formatter.options.ignore_table_width
+
+    assert_equal 5, formatter.options.max_col_width
+    assert_equal :center, formatter.options.alignment
+
+    assert_equal false, formatter.options.show_group_headers
+  end
                                              
   # -- BUG TRAPS ------------------------------
 

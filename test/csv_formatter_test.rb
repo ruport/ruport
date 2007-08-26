@@ -34,6 +34,30 @@ class TestRenderCSVTable < Test::Unit::TestCase
     assert_equal("1,2,3\n4,5,6\n",actual)
   end
      
+  def test_render_with_template
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.table_format = {
+        :show_headings  => false
+      }
+      t.grouping_format = {
+        :style          => :justified,
+        :show_headings  => false
+      }
+      t.format_options = { :col_sep => ":" }
+    end
+
+    formatter = Ruport::Formatter::CSV.new
+    formatter.options = Ruport::Renderer::Options.new
+    formatter.options.template = :simple
+    formatter.apply_template
+    
+    assert_equal false, formatter.options.show_table_headers
+
+    assert_equal :justified, formatter.options.style
+    assert_equal false, formatter.options.show_group_headers
+    
+    assert_equal ":", formatter.options.format_options[:col_sep]
+  end
 end     
 
 class TestRenderCSVGroup < Test::Unit::TestCase

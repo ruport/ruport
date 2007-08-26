@@ -32,6 +32,50 @@ class TestRenderPDFTable < Test::Unit::TestCase
     end
   end
   
+  def test_render_with_template
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.page_format = {
+        :size   => "LETTER",
+        :layout => :landscape
+      }
+      t.text_format = {
+        :font_size => 16
+      }
+      t.table_format = {
+        :show_headings  => false
+      }
+      t.column_format = {
+        :alignment  => :center,
+        :width      => 50,
+        :heading    => { :justification => :right }
+      }
+      t.grouping_format = {
+        :style => :separated
+      }
+    end
+
+    formatter = Ruport::Formatter::PDF.new
+    formatter.options = Ruport::Renderer::Options.new
+    formatter.options.template = :simple
+    formatter.apply_template
+    
+    assert_equal "LETTER", formatter.options.paper_size
+    assert_equal :landscape, formatter.options.paper_orientation
+
+    assert_equal 16, formatter.options.text_format[:font_size]
+
+    assert_equal false, formatter.options.table_format[:show_headings]
+
+    assert_equal :center,
+      formatter.options.table_format[:column_options][:justification]
+    assert_equal 50,
+      formatter.options.table_format[:column_options][:width]
+    assert_equal :right,
+      formatter.options.table_format[:column_options][:heading][:justification]
+
+    assert_equal :separated, formatter.options.style
+  end
+
   #--------BUG TRAPS--------#
   
   # PDF::SimpleTable does not handle symbols as column names

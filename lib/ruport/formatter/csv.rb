@@ -39,16 +39,8 @@ module Ruport
 
     # Hook for setting available options using a template.
     def apply_template
-      if t = template.table_format
-        options.show_table_headers = t[:show_headings] unless
-          t[:show_headings].nil?
-      end
-
-      if t = template.grouping_format
-        options.style = t[:style] if t[:style]
-        options.show_group_headers = t[:show_headings] unless
-          t[:show_headings].nil?
-      end
+      apply_table_format_template(template.table_format)
+      apply_grouping_format_template(template.grouping_format)
 
       options.format_options = template.format_options if
         template.format_options
@@ -127,5 +119,19 @@ module Ruport
         output << "\n"
       end
     end
+    
+    def apply_table_format_template(t)
+      t = t || {}
+      options.show_table_headers = t[:show_headings] unless
+        t[:show_headings].nil?
+    end
+    
+    def apply_grouping_format_template(t)
+      t = t || {}
+      options.style = t[:style] if t[:style]
+      options.show_group_headers = t[:show_headings] unless
+        t[:show_headings].nil?
+    end
+    
   end
 end
