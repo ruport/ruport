@@ -31,6 +31,6 @@ class TemplateTest < Test::Unit::TestCase
       Ruport::Formatter::Template[:bar].page_format[:layout]
     assert_equal :letter,
       Ruport::Formatter::Template[:bar].page_format[:paper_size]     
-  end
+  end 
   
 end

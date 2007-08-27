@@ -68,6 +68,15 @@ class TestRenderer < Test::Unit::TestCase
   def test_trivial
     actual = OldSchoolRenderer.render(:text)
     assert_equal "header\nbody\nfooter\n", actual
+  end    
+  
+  context "when using templates" do
+     def specify_apply_template_should_be_called
+       Ruport::Formatter::Template.create(:stub)
+       Table(%w[a b c]).to_csv(:template => :stub) do |r| 
+         r.formatter.expects(:apply_template)
+       end  
+     end
   end
 
   def test_using_io
@@ -548,6 +557,6 @@ class TestRendererHooks < Test::Unit::TestCase
       a.as(:csv)
     end
 
-  end
+  end    
 
 end
