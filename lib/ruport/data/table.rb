@@ -22,7 +22,7 @@ module Ruport::Data
   # Once your data is in a Table object, it can be manipulated
   # to suit your needs, then used to build a report.
   #
-  class Table 
+  class Table
 
     # === Overview
     #
@@ -51,7 +51,7 @@ module Ruport::Data
       #
       #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
       #
-      def parse(string, options={},&block) 
+      def parse(string, options={},&block)
         get_table_from_csv(:parse,string,options,&block)
       end
 
@@ -68,17 +68,17 @@ module Ruport::Data
 
         table = self.new(options) do |feeder|
           first_line = true
-          FasterCSV.send(msg,param,options[:csv_options]) do |row|    
+          FasterCSV.send(msg,param,options[:csv_options]) do |row|
             if first_line
-              adjust_for_headers(feeder.data,row,options)          
+              adjust_for_headers(feeder.data,row,options)
               first_line = false
-              next if options[:has_names] 
+              next if options[:has_names]
             end
                
             if block
               handle_csv_row_proc(feeder,row,options,block)
-            else           
-              feeder << row    
+            else
+              feeder << row
             end  
           end
         end
@@ -136,7 +136,7 @@ module Ruport::Data
                       options[:record_class].name || "Ruport::Data::Record"
       @data         = []  
       
-      feeder = Feeder.new(self)      
+      feeder = Feeder.new(self)
      
       Array(options[:filters]).each { |f| feeder.filter(&f) }
       Array(options[:transforms]).each { |t| feeder.transform(&t) }
@@ -151,7 +151,7 @@ module Ruport::Data
               e.to_hash.values_at(*@column_names)  
             end
           end
-          r = recordize(e)        
+          r = recordize(e)
                                                      
           feeder << r
         end  
@@ -322,7 +322,7 @@ module Ruport::Data
     #   # new column built via a block, added at the end of the table
     #   data.add_column("new_col4") { |r| r.a + r.b }
     #   
-    def add_column(name,options={})  
+    def add_column(name,options={})
       if pos = options[:position]
         column_names.insert(pos,name)   
       elsif pos = options[:after]
@@ -351,7 +351,7 @@ module Ruport::Data
     #
     def add_columns(names,options={})     
       raise "Greg isn't smart enough to figure this out.\n"+
-            "Send ideas in at http://list.rubyreports.org" if block_given?           
+            "Send ideas in at http://list.rubyreports.org" if block_given?
       need_reverse = !!(options[:after] || options[:position])
       names = names.reverse if need_reverse
       names.each { |n| add_column(n,options) } 
@@ -365,8 +365,8 @@ module Ruport::Data
     #    table.remove_column(0) #=> removes the first column
     #    table.remove_column("apple") #=> removes column named apple
     #
-    def remove_column(col)        
-      col = column_names[col] if col.kind_of? Fixnum           
+    def remove_column(col)
+      col = column_names[col] if col.kind_of? Fixnum
       column_names.delete(col)
       each { |r| r.send(:delete,col) }
     end
@@ -521,12 +521,12 @@ module Ruport::Data
     #     sub_table = table.sub_table { |r| r.c > 10 }
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
-    def sub_table(cor=column_names,range=nil,&block)      
-      if range                                        
+    def sub_table(cor=column_names,range=nil,&block)
+      if range
         self.class.new(:column_names => cor,:data => data[range])
-      elsif cor.kind_of?(Range)   
-        self.class.new(:column_names => column_names,:data => data[cor])    
-      elsif block        
+      elsif cor.kind_of?(Range)
+        self.class.new(:column_names => column_names,:data => data[cor])
+      elsif block
         self.class.new( :column_names => cor, :data => data.select(&block))
       else
         self.class.new( :column_names => cor, :data => data)  
@@ -589,7 +589,7 @@ module Ruport::Data
             r.get(column) =~ /\./ ? r.get(column).to_f : r.get(column).to_i
           end
         else
-          s + yield(r)    
+          s + yield(r)
         end
       }      
     end
@@ -625,10 +625,10 @@ module Ruport::Data
     #   # returns a new table sorted by col1, then col2, in descending order
     #   table.sort_rows_by(["col1", "col2"], :order => descending)
     #
-    def sort_rows_by(col_names=nil, options={}, &block)                          
+    def sort_rows_by(col_names=nil, options={}, &block)
       # stabilizer is needed because of 
       # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/170565
-      stabilizer = 0   
+      stabilizer = 0
       
       nil_rows, sortable = partition do |r| 
         Array(col_names).any? { |c| r[c].nil? } 
@@ -682,7 +682,7 @@ module Ruport::Data
         end
       }
     end
-                                                                                
+
     # Create a copy of the Table. Records will be copied as well.
     #
     # Example:
