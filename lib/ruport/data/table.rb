@@ -597,9 +597,11 @@ module Ruport::Data
     alias_method :sum, :sigma
 
     # Returns a sorted table. If col_names is specified, 
-    # the block is ignored and the table is sorted by the named columns. All
-    # options are used in constructing the new Table (see Array#to_table
-    # for details).
+    # the block is ignored and the table is sorted by the named columns.
+    #
+    # The second argument specifies sorting options. Currently only
+    # :order is supported. Default order is ascending, to sort decending
+    # use :order => :descending
     #
     # Example:
     #
@@ -608,11 +610,20 @@ module Ruport::Data
     #   # returns a new table sorted by col1
     #   table.sort_rows_by {|r| r["col1"]}
     #
+    #   # returns a new table sorted by col1, in descending order
+    #   table.sort_rows_by(nil, :order => :descending) {|r| r["col1"]}
+    #
     #   # returns a new table sorted by col2
-    #   table.sort_rows_by ["col2"]
+    #   table.sort_rows_by(["col2"])
+    #
+    #   # returns a new table sorted by col2, descending order
+    #   table.sort_rows_by("col2", :order => :descending)
     #
     #   # returns a new table sorted by col1, then col2
-    #   table.sort_rows_by ["col1", "col2"]
+    #   table.sort_rows_by(["col1", "col2"])
+    #
+    #   # returns a new table sorted by col1, then col2, in descending order
+    #   table.sort_rows_by(["col1", "col2"], :order => descending)
     #
     def sort_rows_by(col_names=nil, options={}, &block)                          
       # stabilizer is needed because of 
