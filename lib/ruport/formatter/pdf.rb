@@ -101,6 +101,7 @@ module Ruport
       apply_text_format_template(template.text_format)
       apply_table_format_template(template.table_format)
       apply_column_format_template(template.column_format)
+      apply_heading_format_template(template.heading_format)
       apply_grouping_format_template(template.grouping_format)
     end
 
@@ -431,13 +432,10 @@ module Ruport
       if column_opts
         heading_opts = column_opts.delete(:heading)
         if column_opts[:justification]
-          if heading_opts
-            heading_opts = {
-              :justification => column_opts[:justification]
-            }.merge(heading_opts)
-          else
-            heading_opts = { :justification => column_opts[:justification] }
-          end
+          heading_opts ||= {}
+          heading_opts = {
+            :justification => column_opts[:justification]
+          }.merge(heading_opts)
         end
         specific = get_specific_column_options(table_data.column_names,
                                                column_opts)
@@ -571,7 +569,6 @@ module Ruport
       column_opts = {}
       column_opts.merge!(:justification => t[:alignment]) if t[:alignment]
       column_opts.merge!(:width => t[:width]) if t[:width]
-      column_opts.merge!(:heading => t[:heading]) if t[:heading]
       unless column_opts.empty?
         if options.table_format
           if options.table_format[:column_options]
@@ -582,6 +579,38 @@ module Ruport
           end
         else
           options.table_format = { :column_options => column_opts }
+        end
+      end
+    end
+    
+    def apply_heading_format_template(t)
+      t = t || {}
+      heading_opts = {}
+      heading_opts.merge!(:justification => t[:alignment]) if t[:alignment]
+      heading_opts.merge!(:bold => t[:bold]) unless t[:bold].nil?
+      heading_opts.merge!(:title => t[:title]) if t[:title]
+      unless heading_opts.empty?
+        if options.table_format
+          if options.table_format[:column_options]
+            if options.table_format[:column_options][:heading]
+              options.table_format[:column_options][:heading] =
+                heading_opts.merge(
+                  options.table_format[:column_options][:heading]
+                )
+            else
+              options.table_format[:column_options].merge!(
+                :heading => heading_opts
+              )
+            end
+          else
+            options.table_format.merge!(
+              :column_options => { :heading => heading_opts }
+            )
+          end
+        else
+          options.table_format = {
+            :column_options => { :heading => heading_opts }
+          }
         end
       end
     end

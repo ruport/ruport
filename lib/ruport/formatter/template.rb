@@ -38,6 +38,95 @@
 #   puts g.to_pdf(:template => :simple) #=> uses the template
 #   puts g.to_pdf                       #=> doesn't use the template
 #
+# The built-in formatters all have <tt>apply_template</tt> methods defined that
+# accept a standard set of options. Each option can be set by supplying a hash
+# with the keys/values listed in the tables below.
+#
+# Example:
+#
+#   Ruport::Formatter::Template.create(:simple) do |t|
+#     t.page_format = {
+#       :size   => "LETTER",
+#       :layout => :landscape
+#     }
+#   end
+#
+# ==== PDF Formatter Options
+#
+#   Option          Key                 Value
+# 
+#   page_format     :size               Any size supported by the :paper
+#                                       option to PDF::Writer.new
+# 
+#                   :layout             :portrait, :landscape
+# 
+#   text_format     Any available to    Corresponding values
+#                   PDF::Writer#text
+# 
+#   table_format    All attributes of   Corresponding values
+#                   PDF::SimpleTable
+# 
+#                   :column_options     - All attributes of
+#                                         PDF::SimpleTable::Column
+#                                         except :heading
+#                                       - Hash keyed by a column name, whose
+#                                         value is a hash containing any of
+#                                         the other:column_options (sets values
+#                                         for specific columns)
+#                                       - :heading => { All attributes of
+#                                         PDF::SimpleTable::Column::Heading }
+# 
+#   column_format   :alignment          :left, :right, :center, :full
+# 
+#                   :width              column width
+# 
+#   heading_format  :alignment          :left, :right, :center, :full
+# 
+#                   :bold               true or false
+# 
+#                   :title              heading title (if not set,
+#                                       defaults to column name)
+# 
+#   grouping_format :style              :inline, :justified, :separated, :offset
+#
+#
+# ==== Text Formatter Options
+# 
+#   Option          Key                 Value
+# 
+#   table_format    :show_headings      true or false
+#                   :width              Table width
+#                   :ignore_width       true or false
+# 
+#   column_format   :alignment          :center
+#                   :maximum_width      Max column width
+# 
+#   grouping_format :show_headings      true or false
+#
+#
+# ==== HTML Formatter Options
+# 
+#   Option          Key                 Value
+# 
+#   table_format    :show_headings      true or false
+# 
+#   grouping_format :style              :inline, :justified
+#                   :show_headings      true or false
+#
+#
+# ==== CSV Formatter Options
+# 
+#   Option          Key                 Value
+# 
+#   table_format    :show_headings      true or false
+# 
+#   grouping_format :style              :inline, :justified, :raw
+#                   :show_headings      true or false
+# 
+#   format_options  All options         Corresponding values
+#                   available to
+#                   FasterCSV.new
+#
 class Ruport::Formatter::Template < Ruport::Renderer::Options
   
   # Returns all existing templates in a hash keyed by the template names.

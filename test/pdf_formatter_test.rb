@@ -48,8 +48,12 @@ class TestRenderPDFTable < Test::Unit::TestCase
       }
       t.column_format = {
         :alignment  => :center,
-        :width      => 50,
-        :heading    => { :justification => :right }
+        :width      => 50
+      }
+      t.heading_format = {
+        :alignment  => :right,
+        :bold       => false,
+        :title      => "Test"
       }
       t.grouping_format = {
         :style => :separated
@@ -72,12 +76,17 @@ class TestRenderPDFTable < Test::Unit::TestCase
       formatter.options.table_format[:column_options][:justification]
     assert_equal 50,
       formatter.options.table_format[:column_options][:width]
+      
     assert_equal :right,
       formatter.options.table_format[:column_options][:heading][:justification]
+    assert_equal false,
+      formatter.options.table_format[:column_options][:heading][:bold]
+    assert_equal "Test",
+      formatter.options.table_format[:column_options][:heading][:title]
 
     assert_equal :separated, formatter.options.style
   end
-
+  
   #--------BUG TRAPS--------#
   
   # PDF::SimpleTable does not handle symbols as column names
