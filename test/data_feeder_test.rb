@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby -w   
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")    
 
 class DataFeederTest < Test::Unit::TestCase

@@ -1,4 +1,5 @@
- require "test/helpers"
+#!/usr/bin/env ruby -w 
+require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
  
  begin
    require 'mocha'
@@ -141,7 +142,7 @@
    end
    
    def test_each_without_block
-     assert_raise (LocalJumpError) { @query[:plain].each }
+     assert_raise(LocalJumpError) { @query[:plain].each }
    end
    
    def test_select_source

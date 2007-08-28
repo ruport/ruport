@@ -1,4 +1,6 @@
-require "test/helpers"
+#!/usr/bin/env ruby -w 
+require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
+TEST_SAMPLES = File.join(File.expand_path(File.dirname(__FILE__)), "samples")
 
 class Person < Ruport::Data::Record
   
@@ -50,7 +52,7 @@ class TestTable < Test::Unit::TestCase
     
     def specify_filters_should_work_on_csvs        
       only_ids_less_than_3 = lambda { |r| r["id"].to_i < 3 }
-      table = Table("test/samples/addressbook.csv", 
+      table = Table(File.join(TEST_SAMPLES,"addressbook.csv"), 
                     :filters => [only_ids_less_than_3])
       assert_equal ["1","2"], table.map { |r| r["id"] }
     end
@@ -85,7 +87,7 @@ class TestTable < Test::Unit::TestCase
     
     def specify_transforms_should_work_on_csvs  
       ids_to_i = lambda { |r| r["id"] = r["id"].to_i }
-      table = Table("test/samples/addressbook.csv", 
+      table = Table(File.join(TEST_SAMPLES,"addressbook.csv"), 
                     :filters => [ids_to_i])  
       assert_equal [1,2,3,4,5], table.map { |r| r["id"] }          
     end
@@ -162,8 +164,8 @@ class TestTable < Test::Unit::TestCase
   end
 
   def test_reorder
-    table = Ruport::Data::Table.load("test/samples/data.csv")
-    table.reorder *%w[col1 col3]
+    table = Ruport::Data::Table.load(File.join(TEST_SAMPLES,"data.csv"))
+    table.reorder(*%w[col1 col3])
     assert_equal %w[col1 col3], table.column_names
     rows = [%w[a c], %w[d e]]
     table.each { |r| assert_equal rows.shift, r.to_a
@@ -691,7 +693,7 @@ end
 class TestTableFromCSV < Test::Unit::TestCase
   
   def test_csv_load
-    table = Ruport::Data::Table.load("test/samples/data.csv")
+    table = Ruport::Data::Table.load(File.join(TEST_SAMPLES,"data.csv"))
     assert_equal %w[col1 col2 col3], table.column_names
     rows = [%w[a b c],["d",nil,"e"]]
     table.each { |r| assert_equal rows.shift, r.to_a
@@ -699,14 +701,14 @@ class TestTableFromCSV < Test::Unit::TestCase
     expected = [%w[1 2 3],%w[4 5 6]].to_table(%w[a b c])
     
     # ticket:94
-    table = Ruport::Data::Table.load( "test/samples/data.tsv", 
+    table = Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.tsv"), 
                                       :csv_options => { :col_sep => "\t" } )
     assert_equal expected, table 
 
 
    expected = ['c','e']
    
-   table = Ruport::Data::Table.load( "test/samples/data.csv", :csv_options => 
+   table = Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"), :csv_options => 
     { :headers => true, :header_converters => :symbol } ) do |s,r|
     assert_equal expected.shift, r[:col3]
    end
@@ -716,13 +718,13 @@ class TestTableFromCSV < Test::Unit::TestCase
    
    expected = ['c','e']
    
-   Ruport::Data::Table.load( "test/samples/data.csv", 
+   Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"), 
                              :records => true ) do |s,r|
       assert_equal expected.shift, r.col3
       assert_kind_of Ruport::Data::Record, r
    end
      
-   table = Ruport::Data::Table.load( "test/samples/data.csv", 
+   table = Ruport::Data::Table.load( File.join(TEST_SAMPLES, "data.csv"), 
                                      :has_names => false )
    assert_equal([],table.column_names)
    assert_equal([%w[col1 col2 col3],%w[a b c],["d",nil,"e"]].to_table, table)
@@ -773,7 +775,7 @@ class TestTableFromCSV < Test::Unit::TestCase
     }
     assert_equal [%w[a b],%w[a b],%w[1 2], %w[1 2],
                   %w[3 4],%w[3 4]].to_table, t
-    x = Ruport::Data::Table.load("test/samples/data.csv") { |s,r|
+    x = Ruport::Data::Table.load(File.join(TEST_SAMPLES,"data.csv")) { |s,r|
       assert_kind_of Ruport::Data::Feeder, s
       assert_kind_of Array, r
       s << r
@@ -783,13 +785,14 @@ class TestTableFromCSV < Test::Unit::TestCase
   end  
   
   def test_ensure_csv_loading_accepts_table_options
-     a = Table("test/samples/addressbook.csv",:record_class => DuckRecord)
+     a = Table(File.join(TEST_SAMPLES,"addressbook.csv"), 
+                 :record_class => DuckRecord)
      a.each { |r| assert_kind_of(DuckRecord,r) }
   end    
   
   def test_ensure_table_from_csv_accepts_record_class_in_block_usage
-    a = Table("test/samples/addressbook.csv",:record_class => DuckRecord,
-                                             :records => true) do |s,r|
+    a = Table(File.join(TEST_SAMPLES,"addressbook.csv"),
+                :record_class => DuckRecord, :records => true) do |s,r|
        assert_kind_of(DuckRecord,r) 
     end
   end
@@ -801,11 +804,12 @@ class TestTableKernelHack < Test::Unit::TestCase
   def test_simple
     assert_equal [].to_table(%w[a b c]), Table(%w[a b c]) 
     assert_equal [].to_table(%w[a b c]), Table("a","b","c")
-    assert_equal Ruport::Data::Table.load("test/samples/addressbook.csv"),
-                 Table("test/samples/addressbook.csv")
     assert_equal Ruport::Data::Table.load(
-                   "test/samples/addressbook.csv", :has_names => false),
-                 Table('test/samples/addressbook.csv', :has_names => false) 
+                 File.join(TEST_SAMPLES,"addressbook.csv")),
+                 Table(File.join(TEST_SAMPLES,"addressbook.csv"))
+    assert_equal Ruport::Data::Table.load(
+                   File.join(TEST_SAMPLES,"addressbook.csv"), :has_names => false),
+                 Table(File.join(TEST_SAMPLES,"addressbook.csv"), :has_names => false) 
     Table("a","b","c") do |t|
       t << [1,2,3]
       assert_equal([[1,2,3]].to_table(%w[a b c]), t.data)
@@ -817,7 +821,7 @@ class TestTableKernelHack < Test::Unit::TestCase
 
   def test_iterators
 
-    Table("test/samples/addressbook.csv") do |s,r|
+    Table(File.join(TEST_SAMPLES,"addressbook.csv")) do |s,r|
       assert_kind_of(Array,r)
       assert_kind_of(Ruport::Data::Feeder,s)
     end
@@ -835,8 +839,8 @@ class TestTableKernelHack < Test::Unit::TestCase
   end
   
   def test_with_file_arg
-    assert_equal Table("test/samples/addressbook.csv"),
-                 Table(:file => "test/samples/addressbook.csv")
+    assert_equal Table(File.join(TEST_SAMPLES,"addressbook.csv")),
+                 Table(:file => File.join(TEST_SAMPLES,"addressbook.csv"))
   end
    
   def test_with_string_arg

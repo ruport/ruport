@@ -1,4 +1,5 @@
-require "test/helpers"
+#!/usr/bin/env ruby -w   
+require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 class TestSqlSplit < Test::Unit::TestCase
 	include Ruport
  	
@@ -10,7 +11,8 @@ class TestSqlSplit < Test::Unit::TestCase
 	end  
 	
 	def test_sql_split_complex
-		sql = File.read 'test/samples/ruport_test.sql'
+		sql = File.read File.join(File.expand_path(File.dirname(__FILE__)),
+		                          *%w[samples ruport_test.sql])
 		split = Query::SqlSplit.new sql
 		assert_equal( 'SELECT * FROM ruport_test', split.last )
 	end

@@ -196,7 +196,7 @@ module Ruport
             row = row.to_a
             row = Data::Record.new(row, :attributes => names) unless @raw_data
             yield row if block_given?
-            data << row if !block_given? || @cache_enabled
+            data << row if !block_given?
           end
         end
       end

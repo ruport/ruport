@@ -90,16 +90,16 @@ module Ruport #:nodoc:#
 
   # quiets warnings for block
   def quiet #:nodoc:
-    warnings = $VERBOSE
+    warns = $VERBOSE
     $VERBOSE = nil
     result = yield
-    $VERBOSE = warnings
+    $VERBOSE = warns
     return result
   end
 
   module_function :quiet
 
-end
+end  
 
 require "enumerator"
 require "ruport/renderer" 

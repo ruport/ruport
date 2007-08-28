@@ -1,4 +1,5 @@
-require "test/helpers"
+#!/usr/bin/env ruby -w   
+require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestGroup < Test::Unit::TestCase
 
@@ -232,7 +233,8 @@ class TestGrouping < Test::Unit::TestCase
   end
   
   def test_grouping_summary
-    source = Table("test/samples/ticket_count.csv",
+    source = Table(File.join(File.expand_path(File.dirname(__FILE__)), 
+                   *%w[samples ticket_count.csv]),
                      :record_class => TicketStatus)
     grouping = Grouping(source,:by => "date")
     

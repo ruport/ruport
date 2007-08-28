@@ -136,9 +136,10 @@ module Ruport::Data
                       options[:record_class].name || "Ruport::Data::Record"
       @data         = []  
       
-      feeder = Feeder.new(self)
-      Array(options[:filters]).each { |f| feeder.filter &f }
-      Array(options[:transforms]).each { |t| feeder.transform &t }
+      feeder = Feeder.new(self)      
+     
+      Array(options[:filters]).each { |f| feeder.filter(&f) }
+      Array(options[:transforms]).each { |t| feeder.transform(&t) }
       
       if options[:data]
         options[:data].each do |e|

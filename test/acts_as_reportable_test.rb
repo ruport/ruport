@@ -1,8 +1,10 @@
-require "test/helpers"
+#!/usr/bin/env ruby -w
+require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
+
 begin
   require "mocha"
-  require "stubba"
-  require "active_record"
+  require "stubba"      
+  require "active_record" 
 rescue LoadError
   nil
 end

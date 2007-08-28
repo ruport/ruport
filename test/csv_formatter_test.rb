@@ -1,4 +1,5 @@
-require "test/helpers"
+#!/usr/bin/env ruby -w   
+require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderCSVRow < Test::Unit::TestCase
   def test_render_csv_row
