@@ -12,7 +12,7 @@
 
 module Ruport #:nodoc:#
   
-  VERSION = "1.1.9999"   
+  VERSION = "1.3.0"   
   
   class FormatterError < RuntimeError #:nodoc:
   end
