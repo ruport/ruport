@@ -1,4 +1,4 @@
-# ------------------------------------------------------------------------
+# -----------------------------------------------------------------
 # Contents:
 # 
 #  + What Ruport Is
@@ -27,6 +27,11 @@
 # functions that will let you build complex reports while maintaining a DRY and
 # consistent interface.
 #
+# To get a quick feel for what you can accomplish with Ruport, take a look at
+# a few simple examples provided on our web site.
+#
+# http://rubyreports.org/examples.html
+#
 # Since Ruport's core support is intentionally minimalistic, you may be looking
 # for some higher level support for specific needs such as graphing, invoices,
 # report mailing support, etc.  For this, you may wish to take a look at the
@@ -50,12 +55,13 @@
 #  -- formatting
 #
 # Ruport relies on PDF::Writer and FasterCSV for its formatting support.
-# If you want to make use of textile helpers, you'll also need RedCloth
+# If you want to make use of textile helpers, you'll also need RedCloth.
 #
 #  -- database interaction
 #
 # If you wish to use Ruport to report against a rails project, 
-# a camping project, or do standalone AAR reports, you'll need ActiveRecord.
+# a camping project, or do standalone acts_as_reportable reports, you'll need
+# ActiveRecord.
 #
 # If you want to use Ruport::Query for raw SQL support, you'll need to 
 # install RubyDBI and whatever database drivers you might need.
@@ -72,8 +78,8 @@
 #  -  The latest stable API documentation is available at:
 #     http://api.rubyreports.org
 #
-#  -  Our Trac is at: http://code.stonecode.org
-#     You may use the username ruport and password blinky to file tickets
+#  -  Our Trac is at: http://code.rubyreports.org/ruport
+#     You may use the username ruport and password blinky to file tickets.
 #
 # = Hacking
 #
