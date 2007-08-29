@@ -124,7 +124,9 @@ module Ruport
       def render_helper(rend_klass, source_data,options={},&block)
         options = {:data => source_data, 
                    :io => output,
-                   :layout => false }.merge(options)
+                   :layout => false }.merge(options)       
+                   
+        options[:io] = "" if self.class.kind_of?(Ruport::Formatter::PDF)
         rend_klass.render(format,options) do |rend|
           block[rend] if block
         end
