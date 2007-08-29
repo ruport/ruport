@@ -51,16 +51,7 @@ module Ruport::Data
       base.renders_as_group
     end
 
-    # Create a copy of the Group. Records will be copied as well.
-    #
-    # Example:
-    #
-    #   one = Group.new :name => 'test',
-    #                   :data => [[1,2], [3,4]],
-    #                   :column_names => %w[a b]
-    #   two = one.dup
-    #
-    def initialize_copy(from)
+    def initialize_copy(from) #:nodoc:
       super
       @name = from.name
       @subgroups = from.subgroups.inject({}) { |h,d|
@@ -149,14 +140,26 @@ module Ruport::Data
     #
     # Valid options:
     # <b><tt>:by</tt></b>::  A column name or array of column names that the
-    #                        data will be grouped on.
+    #                        data will be grouped on. 
+    # <b><tt>:order</tt></b>:: Determines the iteration and presentation order
+    #                          of a Grouping object.  Set to :name to order by 
+    #                          Group names.  You can also provide a lambda which
+    #                          will be passed Group objects, and use semantics
+    #                          similar to Enumerable#group_by    
     #
-    # Example:
+    # Examples:
     #
-    #   table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
-    #
+    #   table = [[1,2,3],[4,5,6],[1,1,2]].to_table(%w[a b c])
+    #   
+    #   # unordered 
     #   grouping = Grouping.new(table, :by => "a")
+    #               
+    #   # ordered by group name
+    #   grouping = Grouping.new(table, :by => "a", :order => :name)
     #
+    #   # ordered by group size
+    #   grouping = Grouping.new(table, :by => "a", 
+    #                                  :order => lambda { |g| g.size } )
     def initialize(data={},options={})
       if data.kind_of?(Hash)
         @grouped_by = data[:by]
@@ -202,14 +205,24 @@ module Ruport::Data
       else
         @data.each { |name,group| yield(name,group) }
       end
-    end  
+    end                                                                       
     
+    
+    # Returns a new grouping with the specified sort order.
+    # You can sort by Group name or an arbitrary block
+    #
+    #   by_name = grouping.sort_grouping_by(:name) 
+    #   by_size = grouping.sort_grouping_by { |g| g.size }
     def sort_grouping_by(type=nil,&block)
       a = Grouping.new(:by => @grouped_by, :order => type || block)
       each { |n,g| a << g }
       return a
     end
-    
+                                                          
+    # Applies the specified sort order to an existing Grouping object.
+    #
+    #   grouping.sort_grouping_by!(:name)
+    #   grouping.sort_grouping_by! { |g| g.size }
     def sort_grouping_by!(type=nil,&block)
       @order = type || block
     end  
@@ -342,7 +355,7 @@ module Ruport::Data
     #
     #   two = one.dup
     #
-    def initialize_copy(from)
+    def initialize_copy(from)  #:nodoc:
       @grouped_by = from.grouped_by
       @data = from.data.inject({}) { |h,d| h.merge!({ d[0] => d[1].dup }) }
     end

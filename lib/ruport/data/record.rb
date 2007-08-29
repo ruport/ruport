@@ -252,7 +252,7 @@ module Ruport::Data
     #   one = Record.new([1,2,3,4],:attributes => %w[a b c d])
     #   two = one.dup
     #
-    def initialize_copy(from)
+    def initialize_copy(from) #:nodoc:
        @data = from.data.dup
        @attributes = from.attributes.dup
     end
