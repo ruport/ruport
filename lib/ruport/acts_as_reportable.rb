@@ -150,7 +150,9 @@ module Ruport
         record_class = options.delete(:record_class) || Ruport::Data::Record
         self.aar_columns = []
 
-        options[:include] = get_include_for_find(includes)
+        unless options.delete(:eager_loading) == false
+          options[:include] = get_include_for_find(includes)
+        end
         
         data = [find(number, options)].flatten
         data = data.map {|r| r.reportable_data(:include => includes,
