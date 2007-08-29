@@ -93,23 +93,32 @@ module Ruport
       #
       # Additional options include:
       #
-      # <b><tt>:only</tt></b>::     an attribute name or array of attribute
+      # <b><tt>:only</tt></b>::     An attribute name or array of attribute
       #                             names to include in the results, other
       #                             attributes will be excuded.
-      # <b><tt>:except</tt></b>::   an attribute name or array of attribute
+      # <b><tt>:except</tt></b>::   An attribute name or array of attribute
       #                             names to exclude from the results.
-      # <b><tt>:methods</tt></b>::  a method name or array of method names
+      # <b><tt>:methods</tt></b>::  A method name or array of method names
       #                             whose result(s) will be included in the
       #                             table.
-      # <b><tt>:include</tt></b>::  an associated model or array of associated
+      # <b><tt>:include</tt></b>::  An associated model or array of associated
       #                             models to include in the results.
-      # <b><tt>:record_class</tt></b>::  specify the class of the table's
+      # <b><tt>:filters</tt></b>::  A proc or array of procs that set up
+      #                             conditions to filter the data being added
+      #                             to the table.
+      # <b><tt>:transforms</tt></b>::  A proc or array of procs that perform
+      #                                transformations on the data being added
+      #                                to the table.
+      # <b><tt>:record_class</tt></b>::  Specify the class of the table's
       #                                  records.
+      # <b><tt>:eager_loading</tt></b>::  Set to false if you don't want to
+      #                                   eager load included associations.
       #
-      # The same set of options may be passed to the :include option in order to
-      # specify the output for any associated models. In this case, the
-      # :include option must be a hash, where the keys are the names of the
-      # associations and the values are hashes of options.
+      # The :only, :except, :methods, and :include options may also be passed
+      # to the :include option in order to specify the output for any
+      # associated models. In this case, the :include option must be a hash,
+      # where the keys are the names of the associations and the values
+      # are hashes of options.
       #
       # Any options passed to report_table will disable the options set by
       # the acts_as_reportable class method.
@@ -172,7 +181,13 @@ module Ruport
       #
       # Additional options include:
       #
-      # <b><tt>:record_class</tt></b>::  specify the class of the table's
+      # <b><tt>:filters</tt></b>::  A proc or array of procs that set up
+      #                             conditions to filter the data being added
+      #                             to the table.
+      # <b><tt>:transforms</tt></b>::  A proc or array of procs that perform
+      #                                transformations on the data being added
+      #                                to the table.
+      # <b><tt>:record_class</tt></b>::  Specify the class of the table's
       #                                  records.
       #
       # Example:
@@ -186,6 +201,8 @@ module Ruport
       #
       def report_table_by_sql(sql, options = {})
         record_class = options.delete(:record_class) || Ruport::Data::Record
+        filters = options.delete(:filters) 
+        transforms = options.delete(:transforms)
         self.aar_columns = []
 
         data = find_by_sql(sql)
@@ -193,7 +210,9 @@ module Ruport
 
         table = Ruport::Data::Table.new(:data => data,
                                         :column_names => aar_columns,
-                                        :record_class => record_class)
+                                        :record_class => record_class,
+                                        :filters => filters,
+                                        :transforms => transforms)
       end
 
       private
@@ -335,8 +354,8 @@ module Ruport
       # 
       # Use the :only or :except options to limit the attributes returned.
       #
-      # Use the :qualify_attribute_names option to append the underscored
-      # model name to the attribute name as model.attribute
+      # Use the :qualify_attribute_names option to append the association
+      # name to the attribute name as association.attribute
       #
       def get_attributes_with_options(options = {})
         only_or_except =

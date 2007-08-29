@@ -14,8 +14,8 @@
 module Ruport
 
   # This formatter implements the CSV format for Ruport's Row, Table, Group
-  # and Grouping renderers.  It is a light wrapper around James Edward Gray II's
-  # FasterCSV.
+  # and Grouping renderers.  It is a light wrapper around
+  # James Edward Gray II's FasterCSV.
   #
   # === Rendering Options
   #                                                     
@@ -37,7 +37,8 @@ module Ruport
                :show_group_headers,
                :style
 
-    # Hook for setting available options using a template.
+    # Hook for setting available options using a template. See the template 
+    # documentation for the available options and their format.
     def apply_template
       apply_table_format_template(template.table_format)
       apply_grouping_format_template(template.grouping_format)
@@ -91,7 +92,7 @@ module Ruport
       end
     end
    
-    # determines the proper style to use and renders the Grouping.
+    # Determines the proper style to use and renders the Grouping.
     def build_grouping_body
       case style
       when :inline

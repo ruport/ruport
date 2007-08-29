@@ -10,9 +10,10 @@
 #
 # This is free software distributed under the same terms as Ruby 1.8
 # See LICENSE and COPYING for details.
-module Ruport           
-  # This class provides text output for Ruport's Row,Table,Group, and Grouping
-  # renderers
+module Ruport
+  
+  # This class provides text output for Ruport's Row, Table, Group, and
+  # Grouping renderers
   #
   # It handles things like automatically truncating tables that go off the
   # edge of the screen in the console, proper column alignment, and pretty
@@ -29,19 +30,19 @@ module Ruport
   # === Supported Options 
   #
   # <tt>:max_col_width:</tt> Ordinal array of column widths.  Set automatically
-  # but can be overridden       
+  # but can be overridden.
   #
-  # <tt>:alignment:</tt> Defaults to left justify text and right justify numbers.
-  # centers all fields when set to :center
+  # <tt>:alignment:</tt> Defaults to left justify text and right justify
+  # numbers. Centers all fields when set to :center.
   #
-  # <tt>:table_width:</tt> Will truncate rows at this limit. 
+  # <tt>:table_width:</tt> Will truncate rows at this limit.
   #
   # <tt>:show_table_headers:</tt> Defaults to true
   #
   # <tt>:show_group_headers:</tt> Defaults to true  
   #
   # <tt>:ignore_table_width:</tt> When set to true, outputs full table without
-  # truncating it.  Useful for file output
+  # truncating it.  Useful for file output.
   class Formatter::Text < Formatter
    
     renders :text, :for => [ Renderer::Row, Renderer::Table,
@@ -51,7 +52,8 @@ module Ruport
                :show_table_headers, :show_group_headers,
                :ignore_table_width
     
-    # Hook for setting available options using a template.
+    # Hook for setting available options using a template. See the template 
+    # documentation for the available options and their format.
     def apply_template
       apply_table_format_template(template.table_format)
       apply_column_format_template(template.column_format)
@@ -59,7 +61,7 @@ module Ruport
     end
 
     # Checks to ensure the table is not empty and then calls
-    # calculate_max_col_widths
+    # calculate_max_col_widths.
     #
     def prepare_table
       raise Ruport::FormatterError, "Can't output table without " +
@@ -70,7 +72,7 @@ module Ruport
     # Uses the column names from the given Data::Table to generate a table
     # header.
     #
-    # Calls fit_to_width to truncate table heading if necessary.
+    # Calls fit_to_width to truncate the table heading if necessary.
     #
     def build_table_header
       return unless should_render_column_names?
@@ -88,7 +90,7 @@ module Ruport
     # left justified.  Can be changed to support centering of output by
     # setting options.alignment to :center
     #
-    # Uses fit_to_width to truncate table if necessary.
+    # Uses fit_to_width to truncate the table if necessary.
     #
     def build_table_body
       output << fit_to_width(hr)
@@ -114,7 +116,7 @@ module Ruport
     # left justified.  Can be changed to support centering of output by
     # setting options.alignment to :center
     #
-    # Uses fit_to_width to truncate table if necessary.
+    # Uses fit_to_width to truncate the row if necessary.
     #
     def build_row
       max_col_widths_for_row(data) unless max_col_width
@@ -186,7 +188,7 @@ module Ruport
       }.join("\n") + "\n"
     end
 
-    # determines the text widths for each column.
+    # Determines the text widths for each column.
     def calculate_max_col_widths
       # allow override
       return if max_col_width
@@ -202,7 +204,7 @@ module Ruport
       data.each { |r| max_col_widths_for_row(r) } 
     end
     
-    # used to calculate the <tt>max_col_widths</tt> array.
+    # Used to calculate the <tt>max_col_widths</tt> array.
     # Override this to tweak the automatic column size adjustments.
     def max_col_widths_for_row(row)
       options.max_col_width ||= []

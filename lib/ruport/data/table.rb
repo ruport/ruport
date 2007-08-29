@@ -125,6 +125,15 @@ module Ruport::Data
     #                                   records in this Table.
     # <b><tt>:column_names</tt></b>::   An Array containing the column names 
     #                                   for this Table.
+    # <b><tt>:filters</tt></b>::        A proc or array of procs that set up
+    #                                   conditions to filter the data being
+    #                                   added to the table.
+    # <b><tt>:transforms</tt></b>::     A proc or array of procs that perform
+    #                                   transformations on the data being added
+    #                                   to the table.
+    # <b><tt>:record_class</tt></b>::   Specify the class of the table's
+    #                                   records.
+    #
     # Example:
     #
     #   table = Table.new :data => [[1,2,3], [3,4,5]], 

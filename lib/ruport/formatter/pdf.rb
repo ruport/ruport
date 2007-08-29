@@ -54,9 +54,9 @@ module Ruport
          #p "this actually gets called"
          max_width = PDF::Writer::OHash.new(-1)
 
-           # Find the maximum cell widths based on the data and the headings.
-           # Passing through the data multiple times is unavoidable as we must do
-           # some analysis first.
+         # Find the maximum cell widths based on the data and the headings.
+         # Passing through the data multiple times is unavoidable as we must
+         # do some analysis first.
          @data.each do |row|
            @cols.each do |name, column|
              w = pdf.text_width(row[name].to_s, @font_size)
@@ -95,7 +95,8 @@ module Ruport
       end
     end
     
-    # Hook for setting available options using a template.
+    # Hook for setting available options using a template. See the template 
+    # documentation for the available options and their format.
     def apply_template
       apply_page_format_template(template.page_format)
       apply_text_format_template(template.text_format)
@@ -128,18 +129,18 @@ module Ruport
       render_pdf unless options.skip_finalize_table
     end
     
-    # Generates a header with the group name for Renderer::Group
+    # Generates a header with the group name for Renderer::Group.
     def build_group_header
       pad(10) { add_text data.name.to_s, :justification => :center }
     end
     
-    # Renders the group as a table for Renderer::Group
+    # Renders the group as a table for Renderer::Group.
     def build_group_body
       render_table data, options.to_hash.merge(:formatter => pdf_writer)
     end
                      
     # Determines which style to use and renders the main body for
-    # Renderer::Grouping
+    # Renderer::Grouping.
     def build_grouping_body 
       case style
       when :inline
@@ -154,13 +155,13 @@ module Ruport
       end
     end
    
-    # calls <tt>render_pdf</tt> 
+    # Calls <tt>render_pdf</tt>.
     def finalize_grouping
       render_pdf
     end
 
-    # Call PDF::Writer#text with the given arguments, using <tt>text_format</tt>
-    # defaults, if they are defined.                                       
+    # Call PDF::Writer#text with the given arguments, using
+    # <tt>text_format</tt> defaults, if they are defined.                                       
     #
     # Example:
     #
@@ -173,7 +174,7 @@ module Ruport
       pdf_writer.text(text, format_opts)
     end
 
-    # Calls PDF::Writer#render and appends to <tt>output</tt>
+    # Calls PDF::Writer#render and appends to <tt>output</tt>.
     def render_pdf
       output << pdf_writer.render
     end
@@ -205,7 +206,7 @@ module Ruport
       pdf_writer.add_image_from_file(path, x, y, img_width, img_height) 
     end
 
-    # Draws some text on the canvas, surrounded by a box with rounded corner
+    # Draws some text on the canvas, surrounded by a box with rounded corners.
     #
     # Yields an OpenStruct which options can be defined on.
     # 
@@ -263,22 +264,22 @@ module Ruport
       end
     end
     
-    # adds n to pdf_writer.y, moving the vertical drawing position in the
-    # document 
+    # Adds n to pdf_writer.y, moving the vertical drawing position in the
+    # document.
     def move_cursor(n) 
       pdf_writer.y += n
     end
     
-    # moves the cursor to a specific y coordinate in the document
+    # Moves the cursor to a specific y coordinate in the document.
     def move_cursor_to(n)
       pdf_writer.y = n
     end
     
-    # puts a specified amount of whitespace above and below the code
+    # Adds a specified amount of whitespace above and below the code
     # in your block.  For example, if you want to surround the top and
     # bottom of a line of text with 5 pixels of whitespace:
     #
-    #    pad(5) { add_text "This will be padded" }
+    #    pad(5) { add_text "This will be padded top and bottom" }
     def pad(y,&block)
       move_cursor(-y)
       block.call
@@ -299,13 +300,13 @@ module Ruport
     # For example, if you want to add a 10 pixel buffer to the bottom of a
     # line of text:
     #
-    #    pad_bottom(10) { add_text "This will be padded on top" }
+    #    pad_bottom(10) { add_text "This will be padded on bottom" }
     def pad_bottom(y,&block)
       block.call
       move_cursor(-y)
     end
     
-    # Draws a PDF::SimpleTable using the given data (usually a Data::Table)
+    # Draws a PDF::SimpleTable using the given data (usually a Data::Table).
     # Takes all the options you can set on a PDF::SimpleTable object,
     # see the PDF::Writer API docs for details, or check our quick reference
     # at: 
@@ -336,30 +337,30 @@ module Ruport
       pdf_writer.font_size = old
     end
     
-    # Save the output to a file
+    # Save the output to a file.
     def save_output(filename)
       File.open(filename,"wb") {|f| f << output }
     end
     
-    # This module provides tools to simplify some common drawing operations
-    # it is included by default in the PDF formatter
+    # This module provides tools to simplify some common drawing operations.
+    # It is included by default in the PDF formatter.
     #
     module DrawingHelpers
       
-      # draws a horizontal line from x1 to x2
+      # Draws a horizontal line from x1 to x2
       def horizontal_line(x1,x2)
         pdf_writer.line(x1,cursor,x2,cursor)
         pdf_writer.stroke
       end 
       
-      # draws a horizontal line from left_boundary to right_boundary
+      # Draws a horizontal line from left_boundary to right_boundary
       def horizontal_rule
         horizontal_line(left_boundary,right_boundary)                                            
       end                                            
       
       alias_method :hr, :horizontal_rule
                     
-      # draws a vertical line at x from y1 to y2
+      # Draws a vertical line at x from y1 to y2
       def vertical_line_at(x,y1,y2)
         pdf_writer.line(x,y1,x,y2)
         pdf_writer.stroke 
@@ -391,9 +392,9 @@ module Ruport
       end
       
       # Draws text at an absolute location, defined by
-      # :y, :x1|:left, :x2|:right 
+      # :y, :x1|:left, :x2|:right
       # 
-      # All usual options to add_text are also supported
+      # All options to add_text are also supported.
       def draw_text(text,text_opts)
         ypos = cursor
         move_cursor_to(text_opts[:y]) if text_opts[:y]
@@ -406,11 +407,11 @@ module Ruport
       # Draws text at an absolute location, defined by
       # :y, :x1|:left
       #
-      # x position defaults to the left margin and
-      # y position defaults to the current cursor location
+      # The x position defaults to the left margin and the
+      # y position defaults to the current cursor location.
       # 
       # Uses PDF::Writer#add_text, so it will ignore any options not supported
-      # by that method
+      # by that method.
       def draw_text!(text,text_opts)
         ypos = cursor
         pdf_writer.add_text(text_opts[:x1] || text_opts[:left] || left_boundary,

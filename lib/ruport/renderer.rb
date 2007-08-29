@@ -26,11 +26,11 @@ class Ruport::Renderer
   # Structure for holding renderer options.  
   # Simplified version of HashWithIndifferentAccess
   class Options < OpenStruct  
-    # returns a Hash object.  Use this if you need methods other than []
+    # Returns a Hash object.  Use this if you need methods other than []
     def to_hash
       @table
     end            
-    # indifferent lookup of an attribute, e.g.
+    # Indifferent lookup of an attribute, e.g.
     #
     #  options[:foo] == options["foo"]
     def [](key)
@@ -177,7 +177,7 @@ class Ruport::Renderer
   
   
   module AutoRunner  #:nodoc:
-    # called automatically when the report is rendered. Uses the
+    # Called automatically when the report is rendered. Uses the
     # data collected from the earlier methods.
     def _run_
 
@@ -370,13 +370,13 @@ class Ruport::Renderer
     # sets the data and options, and then does the following process:
     #
     #   * If the renderer contains a module Helpers, mix it in to the instance.
-    #   * If a block is given, yield the Renderer instance  
-    #   * If a setup() method is defined on the Renderer, call it
-    #   * If the renderer has defined a run() method, call it, otherwise,
-    #     include Renderer::AutoRunner. (you usually won't need a run() method )
-    #   * call _run_ if it exists (This is provided by default, by AutoRunner)
-    #   * If the :file option is set to a file name, appends output to the file
-    #   * return the results of formatter.output
+    #   * If a block is given, yield the Renderer instance.
+    #   * If a setup() method is defined on the Renderer, call it.
+    #   * If the renderer has defined a run() method, call it. Otherwise,
+    #     include Renderer::AutoRunner (you usually won't need a run() method).
+    #   * Call _run_ if it exists (this is provided by default, by AutoRunner).
+    #   * If the :file option is set to a file name, appends output to the file.
+    #   * Return the results of formatter.output
     #
     # Note that the only time you will need a run() method is if you can't
     # do what you need to via a helpers module or via setup()
@@ -485,7 +485,7 @@ class Ruport::Renderer
 
   # Returns the active formatter.
   #
-  # If a block is given, it is evaluated in the context of the formatter
+  # If a block is given, it is evaluated in the context of the formatter.
   def formatter(&block)
     @formatter.instance_eval(&block) if block   
     return @formatter
@@ -520,7 +520,7 @@ class Ruport::Renderer
     formatter.options = o
   end
   
-  # selects a formatter for use by format name
+  # Selects a formatter for use by format name
   def use_formatter(format)
     self.formatter = self.class.formats[format].new
     self.formatter.format = format

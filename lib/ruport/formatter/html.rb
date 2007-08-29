@@ -11,9 +11,9 @@
 # See LICENSE and COPYING for details.   
 #
 module Ruport
-  # This class produces HTML output for Ruport's Row,Table,Group, and Grouping
-  # renderers.  It can be used as a subclass, as it has some helper methods
-  # that might be useful for custom output
+  # This class produces HTML output for Ruport's Row, Table, Group, and
+  # Grouping renderers.  It can be subclassed, as it has some helper methods
+  # that might be useful for custom output.
   #
   # === Rendering Options
   #
@@ -30,7 +30,8 @@ module Ruport
 
     opt_reader :show_table_headers, :show_group_headers, :style
     
-    # Hook for setting available options using a template.
+    # Hook for setting available options using a template. See the template 
+    # documentation for the available options and their format.
     def apply_template
       apply_table_format_template(template.table_format)
       apply_grouping_format_template(template.grouping_format)
@@ -38,8 +39,8 @@ module Ruport
 
     # Generates table headers based on the column names of your Data::Table.  
     #
-    # This method does not do anything if options.show_table_headers is false or
-    # the Data::Table has no column names.
+    # This method does not do anything if options.show_table_headers is false
+    # or the Data::Table has no column names.
     def build_table_header
       output << "\t<table>\n"
       unless data.column_names.empty? || !show_table_headers
@@ -63,7 +64,7 @@ module Ruport
       output << "\t</table>"
     end
   
-    # Renders individual rows for the table
+    # Renders individual rows for the table.
     def build_row
       output <<
         "\t\t<tr>\n\t\t\t<td>" +

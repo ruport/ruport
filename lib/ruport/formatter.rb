@@ -66,7 +66,7 @@ module Ruport
     #
     module RenderingTools
       # Iterates through <tt>data</tt> and passes
-      # each row to render_row with the given options
+      # each row to render_row with the given options.
       def render_data_by_row(options={},&block)
         data.each do |r|
           render_row(r,options,&block)
@@ -140,11 +140,11 @@ module Ruport
     # Set automatically by Renderer#render(format) or Renderer#render_format
     attr_accessor :format                                                    
     
-    # Set automatically by Renderer#render as a Renderer::Options option built
+    # Set automatically by Renderer#render as a Renderer::Options object built
     # by the hash provided.
     attr_writer :options
 
-    # Registers the formatter with one or more Renderers
+    # Registers the formatter with one or more Renderers.
     #
     #   renders :pdf, :for => MyRenderer
     #   render :text, :for => [MyRenderer,YourRenderer]
@@ -185,17 +185,17 @@ module Ruport
       @output ||= ""
     end
 
-    # Provides a Renderer::Options object for storing formatting options
+    # Provides a Renderer::Options object for storing formatting options.
     def options
       @options ||= Renderer::Options.new
     end 
 
-    # Clears output.
+    # Clears the output.
     def clear_output
       @output.replace("")
     end
     
-    # Save the output to a file
+    # Saves the output to a file.
     def save_output(filename)
       File.open(filename,"w") {|f| f << output }
     end
@@ -213,7 +213,7 @@ module Ruport
       end
     end
 
-    # Provides a shortcut for per format handlers.
+    # Provides a shortcut for per-format handlers.
     #
     # Example:
     #
@@ -234,4 +234,4 @@ require "ruport/formatter/template"
 require "ruport/formatter/csv"
 require "ruport/formatter/html"
 require "ruport/formatter/text"
-require "ruport/formatter/pdf"  
+require "ruport/formatter/pdf"
