@@ -123,6 +123,14 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
       expected = [["Player 1"],["Player 2"]].to_table(%w[name])
       assert_equal expected, actual
     end
+    
+    def test_only_option_preserves_column_sort_order
+      column_order = %w[name personal_trainer_id team_id]
+      actual = Player.report_table(:all, :only => column_order)
+      expected = [["Player 1", 1, 1],
+        ["Player 2", 2, 1]].to_table(column_order)
+      assert_equal expected, actual
+    end
       
     def test_except_option
       actual = Player.report_table(:all, :except => 'personal_trainer_id')
@@ -142,6 +150,22 @@ if Object.const_defined?(:ActiveRecord) && Object.const_defined?(:Mocha)
         :include => :personal_trainer)
       expected = [["Player 1", "Trainer 1"],
         ["Player 2", "Trainer 2"]].to_table(%w[name personal_trainer.name])
+      assert_equal expected, actual
+    end
+    
+    def test_column_sorting_works_with_include_option
+      actual = Player.report_table(:all,
+        :only     => %w[name personal_trainer.name],
+        :include  => { :personal_trainer => { :only => %w[name] } })
+      expected = [["Player 1", "Trainer 1"],
+        ["Player 2", "Trainer 2"]].to_table(%w[name personal_trainer.name])
+      assert_equal expected, actual
+      
+      actual = Player.report_table(:all,
+        :only     => %w[personal_trainer.name name],
+        :include  => { :personal_trainer => { :only => %w[name] } })
+      expected = [["Trainer 1", "Player 1"],
+        ["Trainer 2", "Player 2"]].to_table(%w[personal_trainer.name name])
       assert_equal expected, actual
     end
       

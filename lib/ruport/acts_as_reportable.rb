@@ -297,6 +297,9 @@ module Ruport
           data_records.first[method.to_s] = send(method)
         end
         
+        # Reorder columns to match options[:only]
+        self.class.aar_columns = options[:only] if Array === options[:only]
+        
         self.class.aar_columns |= data_records.first.keys
         
         data_records =
