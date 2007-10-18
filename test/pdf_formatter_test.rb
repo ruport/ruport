@@ -94,8 +94,19 @@ class TestRenderPDFTable < Test::Unit::TestCase
   def test_tables_should_render_with_symbol_column_name
     data = [[1,2,3],[4,5,6]].to_table([:a,:b,:c])
     assert_nothing_raised { data.to_pdf }
-  end  
+  end   
   
+  # draw_table has destructive behavior on nested rendering options (#359)
+  def test_draw_table_should_not_destroy_nested_rendering_options
+     f = Ruport::Formatter::PDF.new   
+     f.options = Ruport::Renderer::Options.new 
+     f.options[:table_format] =  
+       { :column_options => { :heading => {:justification => :center }}}
+     f.draw_table [[1,2,3],[4,5,6]].to_table(%w[a b c])  
+     assert_equal({ :justification => :center }, 
+                  f.options[:table_format][:column_options][:heading])      
+  end
+    
 end    
 
 class TestRenderPDFGrouping < Test::Unit::TestCase                                  

@@ -317,8 +317,10 @@ module Ruport
       raise FormatterError, m if table_data.column_names.empty?
       
       table_data.rename_columns { |c| c.to_s } 
-      
-      format_opts = table_format.merge(format_opts) if table_format  
+            
+      if table_format
+        format_opts = Marshal.load(Marshal.dump(table_format.merge(format_opts))) 
+      end  
         
       old = pdf_writer.font_size
       
