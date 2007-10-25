@@ -3,6 +3,23 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderTextTable < Test::Unit::TestCase 
   
+  def setup
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.table_format = {
+        :show_headings  => false,
+        :width          => 50,
+        :ignore_width   => true
+      }
+      t.column_format = {
+        :maximum_width  => [5,5,7],
+        :alignment => :center
+      }
+      t.grouping_format = {
+        :show_headings  => false
+      }
+    end
+  end
+
   def test_basic
 
     tf = "+-------+\n"
@@ -63,21 +80,6 @@ class TestRenderTextTable < Test::Unit::TestCase
   end
   
   def test_render_with_template
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.table_format = {
-        :show_headings  => false,
-        :width          => 50,
-        :ignore_width   => true
-      }
-      t.column_format = {
-        :maximum_width  => 5,
-        :alignment => :center
-      }
-      t.grouping_format = {
-        :show_headings  => false
-      }
-    end
-
     formatter = Ruport::Formatter::Text.new
     formatter.options = Ruport::Renderer::Options.new
     formatter.options.template = :simple
@@ -87,10 +89,66 @@ class TestRenderTextTable < Test::Unit::TestCase
     assert_equal 50, formatter.options.table_width
     assert_equal true, formatter.options.ignore_table_width
 
-    assert_equal 5, formatter.options.max_col_width
+    assert_equal [5,5,7], formatter.options.max_col_width
     assert_equal :center, formatter.options.alignment
 
     assert_equal false, formatter.options.show_group_headers
+  end
+  
+  def test_options_hashes_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_text(
+      :template => :simple,
+      :table_format => {
+        :show_headings  => true,
+        :width          => 25,
+        :ignore_width   => false
+      },
+      :column_format => {
+        :maximum_width  => [10,10,10],
+        :alignment => :left
+      },
+      :grouping_format => {
+        :show_headings  => true
+      }
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal true, opts.show_table_headers
+    assert_equal 25, opts.table_width
+    assert_equal false, opts.ignore_table_width
+
+    assert_equal [10,10,10], opts.max_col_width
+    assert_equal :left, opts.alignment
+
+    assert_equal true, opts.show_group_headers
+  end
+
+  def test_individual_options_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_text(
+      :template => :simple,
+      :show_table_headers => true,
+      :table_width => 75,
+      :ignore_table_width => false,
+      :max_col_width => [4,4,4],
+      :alignment => :left,
+      :show_group_headers => true
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal true, opts.show_table_headers
+    assert_equal 75, opts.table_width
+    assert_equal false, opts.ignore_table_width
+
+    assert_equal [4,4,4], opts.max_col_width
+    assert_equal :left, opts.alignment
+
+    assert_equal true, opts.show_group_headers
   end
                                              
   # -- BUG TRAPS ------------------------------

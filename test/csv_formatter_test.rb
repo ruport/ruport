@@ -9,6 +9,19 @@ class TestRenderCSVRow < Test::Unit::TestCase
 end
 
 class TestRenderCSVTable < Test::Unit::TestCase
+  
+  def setup
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.table_format = {
+        :show_headings  => false
+      }
+      t.grouping_format = {
+        :style          => :justified,
+        :show_headings  => false
+      }
+      t.format_options = { :col_sep => ":" }
+    end
+  end
 
   def test_render_csv_table
     actual = Ruport::Renderer::Table.render_csv do |r| 
@@ -36,17 +49,6 @@ class TestRenderCSVTable < Test::Unit::TestCase
   end
      
   def test_render_with_template
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.table_format = {
-        :show_headings  => false
-      }
-      t.grouping_format = {
-        :style          => :justified,
-        :show_headings  => false
-      }
-      t.format_options = { :col_sep => ":" }
-    end
-
     formatter = Ruport::Formatter::CSV.new
     formatter.options = Ruport::Renderer::Options.new
     formatter.options.template = :simple
@@ -58,6 +60,49 @@ class TestRenderCSVTable < Test::Unit::TestCase
     assert_equal false, formatter.options.show_group_headers
     
     assert_equal ":", formatter.options.format_options[:col_sep]
+  end
+
+  def test_options_hashes_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_csv(
+      :template => :simple,
+      :table_format => {
+        :show_headings  => true
+      },
+      :grouping_format => {
+        :style => :raw,
+        :show_headings  => true
+      }
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal true, opts.show_table_headers
+
+    assert_equal :raw, opts.style
+    assert_equal true, opts.show_group_headers
+  end
+
+  def test_individual_options_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_csv(
+      :template => :simple,
+      :show_table_headers => true,
+      :style => :raw,
+      :show_group_headers => true,
+      :format_options => { :col_sep => ";" }
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal true, opts.show_table_headers
+
+    assert_equal :raw, opts.style
+    assert_equal true, opts.show_group_headers
+    
+    assert_equal ";", opts.format_options[:col_sep]
   end
 end     
 

@@ -3,6 +3,18 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderHTMLTable < Test::Unit::TestCase
   
+  def setup
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.table_format = {
+        :show_headings  => false
+      }
+      t.grouping_format = {
+        :style          => :justified,
+        :show_headings  => false
+      }
+    end
+  end
+  
   def test_html_table
     a = Ruport::Formatter::HTML.new
 
@@ -34,16 +46,6 @@ class TestRenderHTMLTable < Test::Unit::TestCase
   end
   
   def test_render_with_template
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.table_format = {
-        :show_headings  => false
-      }
-      t.grouping_format = {
-        :style          => :justified,
-        :show_headings  => false
-      }
-    end
-
     formatter = Ruport::Formatter::HTML.new
     formatter.options = Ruport::Renderer::Options.new
     formatter.options.template = :simple
@@ -53,6 +55,46 @@ class TestRenderHTMLTable < Test::Unit::TestCase
 
     assert_equal :justified, formatter.options.style
     assert_equal false, formatter.options.show_group_headers
+  end
+
+  def test_options_hashes_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_html(
+      :template => :simple,
+      :table_format => {
+        :show_headings  => true
+      },
+      :grouping_format => {
+        :style => :inline,
+        :show_headings  => true
+      }
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal true, opts.show_table_headers
+
+    assert_equal :inline, opts.style
+    assert_equal true, opts.show_group_headers
+  end
+
+  def test_individual_options_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_html(
+      :template => :simple,
+      :show_table_headers => true,
+      :style => :inline,
+      :show_group_headers => true
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal true, opts.show_table_headers
+
+    assert_equal :inline, opts.style
+    assert_equal true, opts.show_group_headers
   end
 end
    

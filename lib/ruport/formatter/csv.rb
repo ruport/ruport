@@ -43,8 +43,7 @@ module Ruport
       apply_table_format_template(template.table_format)
       apply_grouping_format_template(template.grouping_format)
 
-      options.format_options = template.format_options if
-        template.format_options
+      options.format_options ||= template.format_options
     end
 
     # Generates table header by turning column_names into a CSV row.
@@ -122,16 +121,16 @@ module Ruport
     end
     
     def apply_table_format_template(t)
-      t = t || {}
-      options.show_table_headers = t[:show_headings] unless
-        t[:show_headings].nil?
+      t = (t || {}).merge(options.table_format || {})
+      options.show_table_headers = t[:show_headings] if
+        options.show_table_headers.nil?
     end
     
     def apply_grouping_format_template(t)
-      t = t || {}
-      options.style = t[:style] if t[:style]
-      options.show_group_headers = t[:show_headings] unless
-        t[:show_headings].nil?
+      t = (t || {}).merge(options.grouping_format || {})
+      options.style ||= t[:style]
+      options.show_group_headers = t[:show_headings] if
+        options.show_group_headers.nil?
     end
     
   end

@@ -2,6 +2,33 @@
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderPDFTable < Test::Unit::TestCase
+  
+  def setup
+    Ruport::Formatter::Template.create(:simple) do |t|
+      t.page_format = {
+        :size   => "LETTER",
+        :layout => :landscape
+      }
+      t.text_format = {
+        :font_size => 16
+      }
+      t.table_format = {
+        :show_headings  => false
+      }
+      t.column_format = {
+        :alignment  => :center,
+        :width      => 50
+      }
+      t.heading_format = {
+        :alignment  => :right,
+        :bold       => false,
+        :title      => "Test"
+      }
+      t.grouping_format = {
+        :style => :separated
+      }
+    end
+  end
 
   def test_render_pdf_basic  
     # can't render without column names
@@ -35,31 +62,6 @@ class TestRenderPDFTable < Test::Unit::TestCase
   end
   
   def test_render_with_template
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.page_format = {
-        :size   => "LETTER",
-        :layout => :landscape
-      }
-      t.text_format = {
-        :font_size => 16
-      }
-      t.table_format = {
-        :show_headings  => false
-      }
-      t.column_format = {
-        :alignment  => :center,
-        :width      => 50
-      }
-      t.heading_format = {
-        :alignment  => :right,
-        :bold       => false,
-        :title      => "Test"
-      }
-      t.grouping_format = {
-        :style => :separated
-      }
-    end
-
     formatter = Ruport::Formatter::PDF.new
     formatter.options = Ruport::Renderer::Options.new
     formatter.options.template = :simple
@@ -87,6 +89,98 @@ class TestRenderPDFTable < Test::Unit::TestCase
     assert_equal :separated, formatter.options.style
   end
   
+  def test_options_hashes_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_pdf(
+      :template => :simple,
+      :page_format => {
+        :size  => "LEGAL",
+        :layout => :portrait
+      },
+      :text_format => {
+        :font_size  => 20
+      },
+      :table_format => {
+        :show_headings  => true
+      },
+      :column_format => {
+        :alignment => :left,
+        :width => 25
+      },
+      :heading_format => {
+        :alignment => :left,
+        :bold => true,
+        :title => "Replace"
+      },
+      :grouping_format => {
+        :style  => :inline
+      }
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal "LEGAL", opts.paper_size
+    assert_equal :portrait, opts.paper_orientation
+
+    assert_equal 20, opts.text_format[:font_size]
+
+    assert_equal true, opts.table_format[:show_headings]
+
+    assert_equal :left, opts.table_format[:column_options][:justification]
+    assert_equal 25, opts.table_format[:column_options][:width]
+      
+    assert_equal :left,
+      opts.table_format[:column_options][:heading][:justification]
+    assert_equal true, opts.table_format[:column_options][:heading][:bold]
+    assert_equal "Replace", opts.table_format[:column_options][:heading][:title]
+
+    assert_equal :inline, opts.style
+  end
+
+  def test_individual_options_override_template
+    opts = nil
+    table = Table(%w[a b c])
+    table.to_pdf(
+      :template => :simple,
+      :paper_size => "LEGAL",
+      :paper_orientation => :portrait,
+      :text_format => { :font_size  => 20 },
+      :table_format => {
+        :show_headings  => true,
+        :column_options => {
+          :justification => :left,
+          :width => 25,
+          :heading => {
+            :justification => :left,
+            :bold => true,
+            :title => "Replace"
+          }
+        }
+      },
+      :style => :inline
+    ) do |r|
+      opts = r.options
+    end
+    
+    assert_equal "LEGAL", opts.paper_size
+    assert_equal :portrait, opts.paper_orientation
+
+    assert_equal 20, opts.text_format[:font_size]
+
+    assert_equal true, opts.table_format[:show_headings]
+
+    assert_equal :left, opts.table_format[:column_options][:justification]
+    assert_equal 25, opts.table_format[:column_options][:width]
+      
+    assert_equal :left,
+      opts.table_format[:column_options][:heading][:justification]
+    assert_equal true, opts.table_format[:column_options][:heading][:bold]
+    assert_equal "Replace", opts.table_format[:column_options][:heading][:title]
+
+    assert_equal :inline, opts.style
+  end
+
   #--------BUG TRAPS--------#
   
   # PDF::SimpleTable does not handle symbols as column names

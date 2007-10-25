@@ -218,24 +218,24 @@ module Ruport
     private
     
     def apply_table_format_template(t)
-      t = t || {}
-      options.show_table_headers = t[:show_headings] unless
-        t[:show_headings].nil?
-      options.table_width = t[:width] if t[:width]
-      options.ignore_table_width = t[:ignore_width] unless
-        t[:ignore_width].nil?
+      t = (t || {}).merge(options.table_format || {})
+      options.show_table_headers = t[:show_headings] if
+        options.show_table_headers.nil?
+      options.table_width ||= t[:width]
+      options.ignore_table_width = t[:ignore_width] if
+        options.ignore_table_width.nil?
     end
     
     def apply_column_format_template(t)
-      t = t || {}
-      options.max_col_width = t[:maximum_width] if t[:maximum_width]
-      options.alignment = t[:alignment] if t[:alignment]
+      t = (t || {}).merge(options.column_format || {})
+      options.max_col_width ||= t[:maximum_width]
+      options.alignment ||= t[:alignment]
     end
     
     def apply_grouping_format_template(t)
-      t = t || {}
-      options.show_group_headers = t[:show_headings] unless
-        t[:show_headings].nil?
+      t = (t || {}).merge(options.grouping_format || {})
+      options.show_group_headers = t[:show_headings] if
+        options.show_group_headers.nil?
     end
 
   end

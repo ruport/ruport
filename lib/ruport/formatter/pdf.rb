@@ -554,21 +554,23 @@ module Ruport
     end
     
     def apply_page_format_template(t)
-      t = t || {}
-      options.paper_size = t[:size] if t[:size]
-      options.paper_orientation = t[:layout] if t[:layout]
+      t = (t || {}).merge(options.page_format || {})
+      options.paper_size ||= t[:size]
+      options.paper_orientation ||= t[:layout]
     end
     
     def apply_text_format_template(t)
-      options.text_format = template.text_format if t
+      t = (t || {}).merge(options.text_format || {})
+      options.text_format = t unless t.empty?
     end
 
     def apply_table_format_template(t)
-      options.table_format = template.table_format.dup if t
+      t = (t || {}).merge(options.table_format || {})
+      options.table_format = t unless t.empty?
     end
     
     def apply_column_format_template(t)
-      t = t || {}
+      t = (t || {}).merge(options.column_format || {})
       column_opts = {}
       column_opts.merge!(:justification => t[:alignment]) if t[:alignment]
       column_opts.merge!(:width => t[:width]) if t[:width]
@@ -587,7 +589,7 @@ module Ruport
     end
     
     def apply_heading_format_template(t)
-      t = t || {}
+      t = (t || {}).merge(options.heading_format || {})
       heading_opts = {}
       heading_opts.merge!(:justification => t[:alignment]) if t[:alignment]
       heading_opts.merge!(:bold => t[:bold]) unless t[:bold].nil?
@@ -619,8 +621,8 @@ module Ruport
     end
     
     def apply_grouping_format_template(t)
-      t = t || {}
-      options.style = t[:style] if t[:style]
+      t = (t || {}).merge(options.grouping_format || {})
+      options.style ||= t[:style]
     end
   end
 end
