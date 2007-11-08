@@ -39,15 +39,7 @@ module Ruport
   #     Grouping:
   #       * style (:inline,:justified,:separated,:offset)
   #
-  class Formatter::PDF < Formatter          
-    
-    module PDFWriterMemoryPatch #:nodoc:
-      unless self.class.instance_methods.include?("_post_transaction_rewind")
-        def _post_transaction_rewind
-          @objects.each { |e| e.instance_variable_set(:@parent,self) }
-        end
-      end
-    end   
+  class Formatter::PDF < Formatter         
     
     renders :pdf, :for => [ Renderer::Row, Renderer::Table,
                             Renderer::Group, Renderer::Grouping ]
@@ -85,7 +77,6 @@ module Ruport
       @pdf_writer ||= options.formatter ||
         ::PDF::Writer.new( :paper => paper_size || "LETTER",
               :orientation => paper_orientation || :portrait)
-      @pdf_writer.extend(PDFWriterMemoryPatch)
     end
 
     # Calls the draw_table method.
