@@ -47,35 +47,7 @@ module Ruport
           @objects.each { |e| e.instance_variable_set(:@parent,self) }
         end
       end
-    end    
-    
-    module PDFSimpleTableOrderingPatch #:nodoc:
-      def __find_table_max_width__(pdf)      
-         #p "this actually gets called"
-         max_width = PDF::Writer::OHash.new(-1)
-
-         # Find the maximum cell widths based on the data and the headings.
-         # Passing through the data multiple times is unavoidable as we must
-         # do some analysis first.
-         @data.each do |row|
-           @cols.each do |name, column|
-             w = pdf.text_width(row[name].to_s, @font_size)
-             w *= PDF::SimpleTable::WIDTH_FACTOR
-
-             max_width[name] = w if w > max_width[name]
-           end
-         end
-
-         @cols.each do |name, column|
-           title = column.heading.title if column.heading
-           title ||= column.name
-           w = pdf.text_width(title, @heading_font_size)
-           w *= PDF::SimpleTable::WIDTH_FACTOR  
-           max_width[name] = w if w > max_width[name]
-         end
-         max_width
-      end
-    end
+    end   
     
     renders :pdf, :for => [ Renderer::Row, Renderer::Table,
                             Renderer::Group, Renderer::Grouping ]
@@ -324,8 +296,7 @@ module Ruport
         
       old = pdf_writer.font_size
       
-      ::PDF::SimpleTable.new do |table| 
-        table.extend(PDFSimpleTableOrderingPatch)             
+      ::PDF::SimpleTable.new do |table|          
         table.maximum_width = 500
         table.column_order  = table_data.column_names
         table.data = table_data
