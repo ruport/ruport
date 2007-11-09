@@ -77,6 +77,12 @@ class TestRenderer < Test::Unit::TestCase
        Table(%w[a b c]).to_csv(:template => :stub) do |r| 
          r.formatter.expects(:apply_template)
        end  
+     end 
+     
+     def specify_undefined_template_should_throw_sensible_error
+        assert_raises(Ruport::Formatter::TemplateNotDefined) do
+          Table(%w[a b c]).to_csv(:template => :sub)
+        end 
      end
   end
 

@@ -7,6 +7,8 @@
 # This is free software. Please see the LICENSE and COPYING files for details.
 
 
+class Ruport::Formatter::TemplateNotDefined < StandardError; end       
+
 # This class provides templating functionality for Ruport.
 # New templates are created using the Template.create method.
 #
@@ -162,6 +164,6 @@ class Ruport::Formatter::Template < Ruport::Renderer::Options
   
   # Returns an existing template with the provided name (label).
   def self.[](label) 
-    templates[label]
+    templates[label] or raise Ruport::Formatter::TemplateNotDefined
   end
-end
+end   
