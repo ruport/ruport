@@ -54,7 +54,6 @@ end
 
 formats = [:html, :pdf]
 formats.each do  |format|
-  File.open("roadmap.#{format}","w") do |f|
-    f << RoadmapRenderer.render(format, :image_file => "roadmap.png")
-  end
+  RoadmapRenderer.render(format, :image_file => "roadmap.png", 
+                                 :file => "roadmap.#{format}")
 end

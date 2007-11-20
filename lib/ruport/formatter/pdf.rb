@@ -157,7 +157,7 @@ module Ruport
       y = image_opts[:y]
       width = image_opts[:width]
       height = image_opts[:height]
-      info = ::PDF::Writer::Graphics::ImageInfo.new(File.read(path))
+      info = ::PDF::Writer::Graphics::ImageInfo.new(File.open(path, "rb"))
 
       # reduce the size of the image until it fits into the requested box
       img_width, img_height =
