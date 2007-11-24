@@ -105,7 +105,6 @@ require "enumerator"
 require "ruport/renderer" 
 require "ruport/data" 
 require "ruport/formatter" 
-require "ruport/query" 
 
 if Object.const_defined? :ActiveRecord
   require "ruport/acts_as_reportable"
