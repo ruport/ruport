@@ -20,7 +20,7 @@ class TestGroup < Test::Unit::TestCase
   end
 
   def test_should_copy_group
-    @group.create_subgroups("a")
+    @group.send(:create_subgroups, "a")
     copy = @group.dup
     assert_equal 'test', copy.name
     assert_equal Ruport::Data::Record.new([1,2,3],:attributes => %w[a b c]),
@@ -47,7 +47,7 @@ class TestGroup < Test::Unit::TestCase
   
   def test_create_subgroups
     group = @group << [4,5,6]
-    group.create_subgroups("a")
+    group.send(:create_subgroups, "a")
     b = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
                                         :column_names => %w[b c],
                                         :name => 1 ),
@@ -56,7 +56,7 @@ class TestGroup < Test::Unit::TestCase
                                         :name => 4 ) }
     assert_equal b, group.subgroups
     
-    group.create_subgroups("b")
+    group.send(:create_subgroups, "b")
     c = { 2 => Ruport::Data::Group.new( :data => [[3]],
                                         :column_names => %w[c],
                                         :name => 2 ) }

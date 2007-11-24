@@ -79,6 +79,12 @@ module Ruport::Data
 
     alias_method :==, :eql?
 
+    protected
+
+    attr_writer :name, :subgroups #:nodoc:
+    
+    private
+    
     # Creates subgroups for the group based on the supplied column name.  Each
     # subgroup is a hash whose keys are the unique values in the column.
     #
@@ -93,16 +99,12 @@ module Ruport::Data
       if @subgroups.empty?
         @subgroups = grouped_data(group_column)
       else
-        @subgroups.each {|name,group| group.create_subgroups(group_column) }
+        @subgroups.each {|name,group|
+          group.send(:create_subgroups, group_column)
+        }
       end
     end
 
-    protected
-
-    attr_writer :name, :subgroups #:nodoc:
-    
-    private
-    
     def grouped_data(group_column) #:nodoc:
       data = {}
       group_names = column(group_column).uniq
@@ -172,7 +174,7 @@ module Ruport::Data
         @data = data.to_group.send(:grouped_data, cols.shift)
         cols.each do |col|
           @data.each do |name,group|
-            group.create_subgroups(col)
+            group.send(:create_subgroups, col)
           end
         end    
       end
