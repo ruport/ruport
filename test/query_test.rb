@@ -215,7 +215,6 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
    def setup_mock_dbi(count, options={})
      sql = options[:sql] || @sql[0]
      source = options[:source] || :default
-     returns = options[:returns] || Proc.new { @datasets.shift }
      resultless = options[:resultless]
      params = options[:params] || []
      
@@ -233,9 +232,13 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
      @dbh.stubs(:sth__).returns(@sth)
      @sth.expects(:finish).with().times(count)
      unless resultless
-       @sth.stubs(:fetchable?).returns(true)
-       @sth.stubs(:column_names).returns(@columns)
-       @sth.expects(:data__).returns(returns).times(count)
+       @sth.stubs(:fetchable?).returns(true) 
+       @sth.stubs(:column_names).returns(@columns) 
+       if options[:returns]   
+         @sth.expects(:data__).returns(options[:returns]).times(count) 
+       else
+         @sth.expects(:data__).returns(*@datasets).times(count)
+       end
      else
        @sth.stubs(:fetchable?).returns(false)
        @sth.stubs(:column_names).returns([])
