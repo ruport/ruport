@@ -63,6 +63,11 @@ class DummyText < Ruport::Formatter
   end
 end   
 
+class VanillaBinary < Ruport::Formatter
+  renders :bin, :for => VanillaRenderer
+  save_as_binary_file
+end
+
 
 class TestRenderer < Test::Unit::TestCase
 
@@ -107,6 +112,10 @@ class TestRenderer < Test::Unit::TestCase
       File.expects(:open).yields(f)
       a = OldSchoolRenderer.render(:text, :file => "foo.text")
       assert_equal "header\nbody\nfooter\n", f[0]
+      
+      f = []
+      File.expects(:open).with("blah","wb").yields(f)
+      VanillaRenderer.render(:bin, :file => "blah")
     end
   end
 

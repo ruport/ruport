@@ -202,6 +202,13 @@ module Ruport
       File.open(filename,"w") {|f| f << output }
     end
     
+    # Use to define that your formatter should save in binary format
+    def self.save_as_binary_file
+      define_method :save_output do |filename|
+        File.open(filename,"wb") {|f| f << output }
+      end
+    end
+    
     # Evaluates the string using ERB and returns the results.
     #
     # If <tt>:binding</tt> is specified, it will evaluate the template
