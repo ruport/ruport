@@ -21,21 +21,19 @@ class TestRenderTextTable < Test::Unit::TestCase
   end
 
   def test_basic
-
     tf = "+-------+\n"
     
-    a = [[1,2],[3,4]].to_table.to_text
+    a = Table([], :data => [[1,2],[3,4]]).to_text
     assert_equal("#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}",a)
 
-    a = [[1,2],[3,4]].to_table(%w[a b]).to_text
+    a = Table(%w[a b], :data => [[1,2],[3,4]]).to_text
     assert_equal("#{tf}| a | b |\n#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}", a)
-    
   end
   
   def test_centering
     tf = "+---------+\n" 
 
-    a = [[1,2],[300,4]].to_table
+    a = Table([], :data => [[1,2],[300,4]])
     assert_equal( "#{tf}|  1  | 2 |\n| 300 | 4 |\n#{tf}",
                   a.to_text(:alignment => :center) )
 
@@ -47,7 +45,7 @@ class TestRenderTextTable < Test::Unit::TestCase
 
   def test_justified
     tf = "+----------+\n"
-    a = [[1,'Z'],[300,'BB']].to_table
+    a = Table([], :data => [[1,'Z'],[300,'BB']])
     
     # justified alignment can be set explicitly
     assert_equal "#{tf}|   1 | Z  |\n| 300 | BB |\n#{tf}", 
@@ -58,18 +56,18 @@ class TestRenderTextTable < Test::Unit::TestCase
   end
 
   def test_wrapping  
-    a = [[1,2],[300,4]].to_table.to_text(:table_width => 10)
+    a = Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10)
     assert_equal("+------->>\n|   1 | >>\n| 300 | >>\n+------->>\n",a)
   end  
   
   def test_ignore_wrapping
-    a = [[1,2],[300,4]].to_table.to_text(:table_width => 10, 
+    a = Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10, 
                                          :ignore_table_width => true )
     assert_equal("+---------+\n|   1 | 2 |\n| 300 | 4 |\n+---------+\n",a)
   end 
   
   def test_render_empty_table
-    assert_raise(Ruport::FormatterError) { [].to_table.to_text }
+    assert_raise(Ruport::FormatterError) { Table([]).to_text }
     assert_nothing_raised { Table(%w[a b c]).to_text }
 
     a = Table(%w[a b c]).to_text
@@ -154,7 +152,7 @@ class TestRenderTextTable < Test::Unit::TestCase
   # -- BUG TRAPS ------------------------------
 
   def test_should_render_without_column_names
-    a = [[1,2,3]].to_table.to_text
+    a = Table([], :data => [[1,2,3]]).to_text
     expected = "+-----------+\n"+
                "| 1 | 2 | 3 |\n"+
                "+-----------+\n"

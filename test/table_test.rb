@@ -14,7 +14,6 @@ class DuckRecord < Ruport::Data::Record; end
 
 class TestTable < Test::Unit::TestCase
   def test_constructors
-
     table  = Ruport::Data::Table.new
 
     table2 = Ruport::Data::Table.new :column_names => %w[a b c]
@@ -26,8 +25,8 @@ class TestTable < Test::Unit::TestCase
     tables.zip([[],%w[a b c], [], %w[col1 col2 col3]]).each do |t,n|
       assert_equal n, t.column_names
 
-    t = [[1,2,3],[4,5,6]].to_table(%w[a b c])
-    table_from_records = t.data.to_table(t.column_names)
+      t = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
+      table_from_records = Table(t.column_names, :data => t.data)
     end
     
     a = Ruport::Data::Record.new [1,2,3]
@@ -94,7 +93,7 @@ class TestTable < Test::Unit::TestCase
   end
 
   def test_to_group
-    a =[[1,2,3],[4,5,6]].to_table(%w[a b c]).to_group("Packrats")
+    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]]).to_group("Packrats")
     b = Ruport::Data::Group.new( :data => [[1,2,3],[4,5,6]],
                                  :column_names => %w[a b c],
                                  :name => "Packrats" )
@@ -102,7 +101,7 @@ class TestTable < Test::Unit::TestCase
   end
  
   def test_rows_with
-    table = [[1,2,3],[1,3,4],[7,8,9]].to_table(%w[a b c])
+    table = Table(%w[a b c], :data => [[1,2,3],[1,3,4],[7,8,9]])
     
     assert_equal([table[0],table[1]],table.rows_with("a" => 1))
     assert_equal([table[1]],table.rows_with("a" => 1, "b" => 3))
@@ -112,7 +111,7 @@ class TestTable < Test::Unit::TestCase
   end
   
   def test_sigma
-    table = [[1,2],[3,4],[5,6]].to_table(%w[col1 col2])
+    table = Table(%w[col1 col2], :data => [[1,2],[3,4],[5,6]])
     assert table.respond_to?(:sigma)
     assert table.respond_to?(:sum)
     assert_equal(9,table.sigma(0))
@@ -121,46 +120,46 @@ class TestTable < Test::Unit::TestCase
   end
   
   def test_sub_table
-    table = [ [1,2,3,4],[5,6,7,9],
-              [10,11,12,13],[14,15,16,17] ].to_table(%w[a b c d])
+    table = Table(%w[a b c d], 
+      :data => [ [1,2,3,4],[5,6,7,9],[10,11,12,13],[14,15,16,17] ])
    
-    assert_equal [[6,7],[11,12]].to_table(%w[b c]), 
+    assert_equal Table(%w[b c], :data => [[6,7],[11,12]]), 
                  table.sub_table(%w[b c],1..-2) 
                  
-    assert_equal [[3,4,1],[7,9,5]].to_table(%w[c d a]),  
+    assert_equal Table(%w[c d a], :data => [[3,4,1],[7,9,5]]),  
                  table.sub_table(%w[c d a]) { |r| r.a < 10 }    
                  
-    assert_equal [[1,3],[5,7],[10,12],[14,16]].to_table(%w[a c]),  
+    assert_equal Table(%w[a c], :data => [[1,3],[5,7],[10,12],[14,16]]),  
                  table.sub_table(%w[a c])
      
-    assert_equal [[10,11,12,13],[14,15,16,17]].to_table(%w[a b c d]),      
+    assert_equal Table(%w[a b c d], :data => [[10,11,12,13],[14,15,16,17]]),      
                  table.sub_table { |r| r.c > 10 }      
                  
-    assert_equal [[10,11,12,13],[14,15,16,17]].to_table(%w[a b c d]),      
+    assert_equal Table(%w[a b c d], :data => [[10,11,12,13],[14,15,16,17]]),      
                 table.sub_table(2..-1)   
                   
   end
   
   def test_subtable_records_have_correct_data
-    table = [ [1,2,3,4],[5,6,7,9],
-              [10,11,12,13],[14,15,16,17] ].to_table(%w[a b c d])
+    table = Table(%w[a b c d],
+      :data => [ [1,2,3,4],[5,6,7,9],[10,11,12,13],[14,15,16,17] ])
     sub = table.sub_table(%w[b c d]) {|r| r.a == 1 }
     assert_equal({"b"=>2, "c"=>3, "d"=>4}, sub[0].data)
     assert_equal(["b", "c", "d"], sub[0].attributes)
   end
 
   def test_reduce
-    table = [ [1,2,3,4],[5,6,7,9],
-              [10,11,12,13],[14,15,16,17] ].to_table(%w[a b c d])
+    table = Table(%w[a b c d],
+      :data => [ [1,2,3,4],[5,6,7,9],[10,11,12,13],[14,15,16,17] ])
 
     table.reduce(%w[b c],1..-2)
-    assert_equal [[6,7],[11,12]].to_table(%w[b c]), table
+    assert_equal Table(%w[b c], :data => [[6,7],[11,12]]), table
 
-    table = [ [1,2,3,4],[5,6,7,9],
-              [10,11,12,13],[14,15,16,17] ].to_table(%w[a b c d])
+    table = Table(%w[a b c d],
+      :data => [ [1,2,3,4],[5,6,7,9],[10,11,12,13],[14,15,16,17] ])
     table.reduce(%w[c d a]) { |r| r.a < 10 }
 
-    assert_equal [[3,4,1],[7,9,5]].to_table(%w[c d a]), table
+    assert_equal Table(%w[c d a], :data => [[3,4,1],[7,9,5]]), table
   end
 
   def test_reorder
@@ -170,13 +169,13 @@ class TestTable < Test::Unit::TestCase
     rows = [%w[a c], %w[d e]]
     table.each { |r| assert_equal rows.shift, r.to_a
                      assert_equal %w[col1 col3], r.attributes }
-    a = [[1,2,3],[4,5,6]].to_table(%w[a b c]).reorder 2,0
+    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]]).reorder 2,0
     rows = [[3,1],[6,4]]
     a.each { |r| assert_equal rows.shift, r.to_a 
                  assert_equal %w[c a], r.attributes }
     assert_equal %w[c a], a.column_names
 
-    b = [[1,2,3],[4,5,6]].to_table(%w[a b c]).reorder(%w[a c])
+    b = Table(%w[a b c], :data => [[1,2,3],[4,5,6]]).reorder(%w[a c])
     rows = [[1,3],[4,6]]
     b.each { |r| 
       assert_equal rows.shift, r.to_a
@@ -272,52 +271,37 @@ class TestTable < Test::Unit::TestCase
     
   end  
 
-  def test_array_hack
-    t = [[1,2],[3,4],[5,6]].to_table 
-    assert_instance_of Ruport::Data::Table, t
-    assert_equal [], t.column_names
-    table = Ruport::Data::Table.new :column_names => %w[a b], 
-                                    :data => [[1,2],[3,4],[5,6]]
-    
-    table2 = [[1,2],[3,4],[5,6]].to_table %w[a b]
-  
-    assert_equal table, table2
-
-  end    
-
   def test_record_class
     a = Ruport::Data::Table.new( :column_names => %w[first_name last_name c], 
                                  :data =>[['joe','loop',3],['jim','blue',6]],
                                  :record_class => Person )
-    assert_equal a, [
-      ['joe','loop',3],['jim','blue',6]
-    ].to_table(%w[first_name last_name c])
+    assert_equal a, Table(%w[first_name last_name c],
+      :data => [ ['joe','loop',3],['jim','blue',6] ])
     assert_kind_of Person, a[0]
     assert_equal 'joe loop', a[0].name
     assert_equal 'jim blue', a[1].name
 
-    b = Table(%w[first_name last_name], :record_class => Person ) do |t|
+    b = Table(%w[first_name last_name], :record_class => Person) do |t|
       t << { 'first_name' => 'joe', 'last_name' => 'frasier' }
       t << { 'first_name' => 'brian', 'last_name' => 'black' }
     end
 
     b.each { |r| assert_kind_of Person, r }
 
-    assert_equal ['joe frasier', 'brian black'],
-                 b.map { |r| r.name }
-
+    assert_equal ['joe frasier', 'brian black'], b.map { |r| r.name }
   end 
 
   ## BUG Traps -------------------------------------------------
   
   def test_ensure_table_creation_allows_record_coercion
-    table = [[1,2,3],[4,5,6],[7,8,9]].to_table
-    table_with_names = [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c])
+    table = Table([], :data => [[1,2,3],[4,5,6],[7,8,9]])
+    table_with_names = Table(%w[a b c], :data => [[1,2,3],[4,5,6],[7,8,9]])
    
     a,b,c = nil
-    assert_nothing_raised { a = table.to_a.to_table(%w[a b c]) }
-    assert_nothing_raised { b = table.to_a.to_table(%w[d e f]) }
-    assert_nothing_raised { c = table_with_names.to_a.to_table }
+    assert_nothing_raised { a = Table(%w[a b c], :data => table.to_a) }
+    assert_nothing_raised { b = Table(%w[d e f], :data => table.to_a) }
+    assert_nothing_raised { c = Table(table_with_names.column_names,
+      :data => table_with_names.to_a) }
 
     [a,b,c].each { |t| assert_equal(3,t.length) }
     assert_equal %w[a b c], a.column_names
@@ -339,8 +323,8 @@ class TestTable < Test::Unit::TestCase
   end   
   
   def test_ensure_coerce_sum
-    s = [["1"],["3"],["5"] ].to_table
-    t = [["1.23"],["1.5"]].to_table
+    s = Table([], :data => [["1"],["3"],["5"]])
+    t = Table([], :data => [["1.23"],["1.5"]])
     
     assert_equal(9,s.sum(0))
     assert_equal(2.73,t.sum(0))
@@ -348,7 +332,7 @@ class TestTable < Test::Unit::TestCase
   
   def test_to_yaml
     require "yaml"
-    a = [].to_table
+    a = Table([])
     assert_nothing_raised { a.to_yaml }
     a = Table(%w[first_name last_name],:record_class => Person) { |t| 
       t << %w[joe loop] 
@@ -358,15 +342,15 @@ class TestTable < Test::Unit::TestCase
   end  
   
   def test_ensure_subtable_works_with_unnamed_tables
-     a = [[1,2,3],[4,5,6]].to_table
+     a = Table([], :data => [[1,2,3],[4,5,6]])
      b = a.sub_table { |r| (r[0] % 2).zero? } 
-     assert_equal [[4,5,6]].to_table, b
+     assert_equal Table([], :data => [[4,5,6]]), b
   end  
   
   def test_ensure_appending_records_works_with_unnamed_tables
-     a = [[1,2,3],[4,5,6]].to_table
+     a = Table([], :data => [[1,2,3],[4,5,6]])
      a << Ruport::Data::Record.new([7,8,9])
-     assert_equal [[1,2,3],[4,5,6],[7,8,9]].to_table,a
+     assert_equal Table([], :data => [[1,2,3],[4,5,6],[7,8,9]]),a
   end
 
   def test_ensure_propagate_record_class
@@ -406,10 +390,10 @@ class TestTableAppendOperations < Test::Unit::TestCase
   end
   
   def test_append_hash
-    table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    table = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     table << { "a" => 7, "c" => 9, "b" => 8 }
     
-    assert_equal [[1,2,3],[4,5,6],[7,8,9]].to_table(%w[a b c]), table
+    assert_equal Table(%w[a b c], :data => [[1,2,3],[4,5,6],[7,8,9]]), table
   end
 
   def test_append_table
@@ -459,7 +443,7 @@ class TestTableFormattingHooks < Test::Unit::TestCase
   end
 
   def test_as_throws_proper_errors
-    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     assert_nothing_raised { a.as(:csv) }
     assert_nothing_raised { a.to_csv }
     assert_raises(Ruport::Renderer::UnknownFormatError) { a.as(:nothing) }
@@ -471,19 +455,19 @@ end
 class TestTableColumnOperations < Test::Unit::TestCase
   
   def test_column
-    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     assert_equal [3,6], a.column(2)
     assert_equal [2,5], a.column("b") 
     
     assert_raise(ArgumentError) { a.column("d") }  
     assert_raise(ArgumentError) { a.column(42) }
     
-    a = [[1],[2],[3],[4]].to_table
+    a = Table([], :data => [[1],[2],[3],[4]])
     assert_equal [1,2,3,4], a.column(0)  
   end
     
   def test_set_column_names
-    a = [[1,2,3],[4,5,6]].to_table
+    a = Table([], :data => [[1,2,3],[4,5,6]])
     
     assert_equal([],a.column_names)
     assert_equal([[1,2,3],[4,5,6]],a.map { |r| r.to_a } )
@@ -500,87 +484,78 @@ class TestTableColumnOperations < Test::Unit::TestCase
   end   
   
   def test_add_column
-
-     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+     a = Table(%w[a b], :data => [[1,2],[3,4],[5,6]])
      a.add_column("c")
-     assert_equal [[1,2,nil],[3,4,nil],[5,6,nil]].to_table(%w[a b c]), a
+     assert_equal Table(%w[a b c], :data => [[1,2,nil],[3,4,nil],[5,6,nil]]), a
 
-     a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+     a = Table(%w[a b], :data => [[1,2],[3,4],[5,6]])
      a.add_column("c",:default => "x")
-     assert_equal [[1,2,'x'],[3,4,'x'],[5,6,'x']].to_table(%w[a b c]), a    
+     assert_equal Table(%w[a b c], :data => [[1,2,'x'],[3,4,'x'],[5,6,'x']]), a    
 
      b = a.dup
      b.add_column("x",:before => "b")
-     assert_equal [[1,nil,2,'x'],
-                   [3,nil,4,'x'],
-                   [5,nil,6,'x']].to_table(%w[a x b c]), b 
+     assert_equal Table(%w[a x b c],
+      :data => [[1,nil,2,'x'],[3,nil,4,'x'],[5,nil,6,'x']]), b 
 
      b = a.dup
      b.add_column("x",:after => "b")
-     assert_equal [[1,2,nil,'x'],
-                   [3,4,nil,'x'],
-                   [5,6,nil,'x']].to_table(%w[a b x c]), b  
+     assert_equal Table(%w[a b x c],
+      :data => [[1,2,nil,'x'],[3,4,nil,'x'],[5,6,nil,'x']]), b  
 
 
      a.add_column("d") { |r| r[0]+r[1] }
-     assert_equal( 
-     [ [1,2,'x',3],
-       [3,4,'x',7],
-       [5,6,'x',11] ].to_table(%w[a b c d]), a)
+     assert_equal Table(%w[a b c d],
+      :data => [ [1,2,'x',3],[3,4,'x',7],[5,6,'x',11] ]), a
 
      a.add_column("x",:position => 1)
-     assert_equal(
-     [ [1,nil,2,'x',3],
-       [3,nil,4,'x',7],
-       [5,nil,6,'x',11] ].to_table(%w[a x b c d]), a)          
+     assert_equal Table(%w[a x b c d],
+      :data => [ [1,nil,2,'x',3],[3,nil,4,'x',7],[5,nil,6,'x',11] ]), a
+  end
 
-  end        
-
-  def test_add_columns 
-    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+  def test_add_columns
+    a = Table(%w[a b], :data => [[1,2],[3,4],[5,6]])
     a.add_columns(%w[c d])
-    expected = [ [1,2,nil,nil],
-                 [3,4,nil,nil],
-                 [5,6,nil,nil] ].to_table(%w[a b c d])
+    expected = Table(%w[a b c d],
+      :data => [ [1,2,nil,nil],[3,4,nil,nil],[5,6,nil,nil] ])
 
     assert_equal expected, a                  
 
-    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    a = Table(%w[a b], :data => [[1,2],[3,4],[5,6]])
 
     a.add_columns(%w[c d],:after => "a")
 
-    expected = [ [1,nil,nil,2],
-                 [3,nil,nil,4],
-                 [5,nil,nil,6], ].to_table(%w[a c d b])                        
+    expected = Table(%w[a c d b],
+      :data => [ [1,nil,nil,2],[3,nil,nil,4],[5,nil,nil,6], ])                        
 
     assert_equal expected, a                                   
 
     a.add_columns(%w[x f],:before => "a")
 
-    expected = [ [nil,nil,1,nil,nil,2],
+    expected = Table(%w[x f a c d b],
+      :data => [ [nil,nil,1,nil,nil,2],
                  [nil,nil,3,nil,nil,4],
-                 [nil,nil,5,nil,nil,6] ].to_table(%w[x f a c d b])
+                 [nil,nil,5,nil,nil,6] ])
 
     assert_equal expected, a       
 
-    a = [[1,2,0],[3,4,0],[5,6,0]].to_table(%w[a b c])  
+    a = Table(%w[a b c], :data => [[1,2,0],[3,4,0],[5,6,0]])  
 
     a.add_columns(%w[x y],:default => 9, :position => 1)
 
-    expected = [[1,9,9,2,0],[3,9,9,4,0],[5,9,9,6,0]].to_table(%w[a x y b c])  
+    expected = Table(%w[a x y b c],
+      :data => [[1,9,9,2,0],[3,9,9,4,0],[5,9,9,6,0]])  
 
     assert_equal expected, a
 
-    a = [[1,2],[3,4],[5,6]].to_table(%w[a b])
+    a = Table(%w[a b], :data => [[1,2],[3,4],[5,6]])
     a.add_columns(%w[f x],:default => 0)
 
-    expected = [[1,2,0,0],[3,4,0,0],[5,6,0,0]].to_table(%w[a b f x])
+    expected = Table(%w[a b f x], :data => [[1,2,0,0],[3,4,0,0],[5,6,0,0]])
     assert_equal expected, a
 
     assert_raises(RuntimeError) do 
      a.add_columns(%w[a b]) { } 
-    end                                        
-
+    end
   end
 
   def test_remove_column
@@ -664,19 +639,19 @@ class TestTableColumnOperations < Test::Unit::TestCase
   end   
   
   def test_ensure_setting_column_names_later_does_not_break_replace_column
-    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     a.replace_column("b","q") { |r| r.a + r.c }
     a.column_names = %w[d e f]
-    assert_equal [[1,4,3],[4,10,6]].to_table(%w[d e f]), a
+    assert_equal Table(%w[d e f], :data => [[1,4,3],[4,10,6]]), a
 
-    a = [[1,2,3],[4,5,6]].to_table
+    a = Table([], :data => [[1,2,3],[4,5,6]])
 
     a.replace_column(1) { |r| r[0] + r[2] }
 
     a.column_names = %w[d e f]
-    assert_equal [[1,4,3],[4,10,6]].to_table(%w[d e f]), a
+    assert_equal Table(%w[d e f], :data => [[1,4,3],[4,10,6]]), a
 
-    a = [[1,2,3],[4,5,6]].to_table
+    a = Table([], :data => [[1,2,3],[4,5,6]])
 
     a.replace_column(2) { |r| r[0] + 5 }
 
@@ -685,7 +660,7 @@ class TestTableColumnOperations < Test::Unit::TestCase
     a.replace_column("b") { |r| r.a + 4 }
     a.replace_column("b","foo") { |r| r.b + 1 }
 
-    assert_equal [[1,6,6],[4,9,9]].to_table(%w[a foo c]), a
+    assert_equal Table(%w[a foo c], :data => [[1,6,6],[4,9,9]]), a
   end 
 
 end  
@@ -698,48 +673,46 @@ class TestTableFromCSV < Test::Unit::TestCase
     rows = [%w[a b c],["d",nil,"e"]]
     table.each { |r| assert_equal rows.shift, r.to_a
                      assert_equal %w[col1 col2 col3], r.attributes }
-    expected = [%w[1 2 3],%w[4 5 6]].to_table(%w[a b c])
+    expected = Table(%w[a b c], :data => [%w[1 2 3],%w[4 5 6]])
     
     # ticket:94
     table = Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.tsv"), 
                                       :csv_options => { :col_sep => "\t" } )
     assert_equal expected, table 
 
-
-   expected = ['c','e']
+    expected = ['c','e']
    
-   table = Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"), :csv_options => 
-    { :headers => true, :header_converters => :symbol } ) do |s,r|
-    assert_equal expected.shift, r[:col3]
-   end
+    table = Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"),
+      :csv_options => { :headers => true, :header_converters => :symbol }
+      ) do |s,r|
+        assert_equal expected.shift, r[:col3]
+      end
 
-   assert_equal [:col1,:col2,:col3], table.column_names
+    assert_equal [:col1,:col2,:col3], table.column_names
 
+    expected = ['c','e']
    
-   expected = ['c','e']
-   
-   Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"), 
-                             :records => true ) do |s,r|
+    Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"), 
+                              :records => true ) do |s,r|
       assert_equal expected.shift, r.col3
       assert_kind_of Ruport::Data::Record, r
-   end
+    end
      
-   table = Ruport::Data::Table.load( File.join(TEST_SAMPLES, "data.csv"), 
+    table = Ruport::Data::Table.load( File.join(TEST_SAMPLES, "data.csv"), 
                                      :has_names => false )
-   assert_equal([],table.column_names)
-   assert_equal([%w[col1 col2 col3],%w[a b c],["d",nil,"e"]].to_table, table)
-    
+    assert_equal([],table.column_names)
+    assert_equal(Table([],
+      :data => [%w[col1 col2 col3],%w[a b c],["d",nil,"e"]]), table)
   end
 
   # ticket:76
   def test_parse
-    
     assert_nothing_raised { 
       Ruport::Data::Table.parse("a,b,c\n1,2,3\n") 
     }
     
     table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n")
-    expected = [%w[1 2 3],%w[4 5 6]].to_table(%w[a b c])
+    expected = Table(%w[a b c], :data => [%w[1 2 3],%w[4 5 6]])
     
     table = Ruport::Data::Table.parse( "a\tb\tc\n1\t2\t3\n4\t5\t6\n", 
                                       :csv_options => { :col_sep => "\t" } )
@@ -748,9 +721,7 @@ class TestTableFromCSV < Test::Unit::TestCase
     table = Ruport::Data::Table.parse( "a,b,c\n1,2,3\n4,5,6\n", 
                                        :has_names => false)
     assert_equal([],table.column_names)
-    assert_equal([%w[a b c],%w[1 2 3], %w[4 5 6]].to_table, table) 
-
-    
+    assert_equal(Table([], :data => [%w[a b c],%w[1 2 3],%w[4 5 6]]), table)
   end
   
   def test_csv_block_form
@@ -761,7 +732,7 @@ class TestTableFromCSV < Test::Unit::TestCase
       assert_equal expected.shift, r
       s << r    
     end
-    assert_equal [%w[a b],%w[1 2],%w[3 4]].to_table, t
+    assert_equal Table([], :data => [%w[a b],%w[1 2],%w[3 4]]), t
   end         
   
   # - BUG TRAPS --------------------
@@ -773,8 +744,8 @@ class TestTableFromCSV < Test::Unit::TestCase
       s << r    
       s << r
     }
-    assert_equal [%w[a b],%w[a b],%w[1 2], %w[1 2],
-                  %w[3 4],%w[3 4]].to_table, t
+    assert_equal Table([],
+      :data => [%w[a b],%w[a b],%w[1 2], %w[1 2],%w[3 4],%w[3 4]]), t
     x = Ruport::Data::Table.load(File.join(TEST_SAMPLES,"data.csv")) { |s,r|
       assert_kind_of Ruport::Data::Feeder, s
       assert_kind_of Array, r
@@ -802,8 +773,10 @@ end
 class TestTableKernelHack < Test::Unit::TestCase
   
   def test_simple
-    assert_equal [].to_table(%w[a b c]), Table(%w[a b c]) 
-    assert_equal [].to_table(%w[a b c]), Table("a","b","c")
+    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),
+      Table(%w[a b c])
+    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),
+      Table("a","b","c")
     assert_equal Ruport::Data::Table.load(
                  File.join(TEST_SAMPLES,"addressbook.csv")),
                  Table(File.join(TEST_SAMPLES,"addressbook.csv"))
@@ -812,7 +785,10 @@ class TestTableKernelHack < Test::Unit::TestCase
                  Table(File.join(TEST_SAMPLES,"addressbook.csv"), :has_names => false) 
     Table("a","b","c") do |t|
       t << [1,2,3]
-      assert_equal([[1,2,3]].to_table(%w[a b c]), t.data)
+      assert_equal(
+        Ruport::Data::Table.new(:column_names => %w[a b c], :data => [[1,2,3]]),
+        t.data
+      )
     end
 
     assert_equal Table("a"), Table(%w[a])
@@ -820,7 +796,6 @@ class TestTableKernelHack < Test::Unit::TestCase
   end
 
   def test_iterators
-
     Table(File.join(TEST_SAMPLES,"addressbook.csv")) do |s,r|
       assert_kind_of(Array,r)
       assert_kind_of(Ruport::Data::Feeder,s)
@@ -835,7 +810,6 @@ class TestTableKernelHack < Test::Unit::TestCase
     end
 
     assert_equal 2, n
-    
   end
   
   def test_with_file_arg

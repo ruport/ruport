@@ -34,7 +34,7 @@ class TestGroup < Test::Unit::TestCase
   end
 
   def test_eql
-    table = [[1,2,3]].to_table(%w[a b c])
+    table = Table(%w[a b c], :data => [[1,2,3]])
 
     group2 = Ruport::Data::Group.new(:name => 'test',
                                      :data => [[1,2,3]],
@@ -114,12 +114,12 @@ end
 class TestGrouping < Test::Unit::TestCase
   
   def setup
-    table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    table = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     @grouping = Ruport::Data::Grouping.new(table, :by => "a")
   end
   
   def test_grouping_constructor
-    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     b = Ruport::Data::Grouping.new(a, :by => "a")
     c = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
                                         :column_names => %w[b c],
@@ -174,7 +174,7 @@ class TestGrouping < Test::Unit::TestCase
   end
 
   def test_append
-   a =[[1,2,3],[4,5,6]].to_table(%w[a b c])
+   a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
    @grouping << a.to_group("red snapper")
    assert_equal @grouping["red snapper"], a.to_group("red snapper")
    
@@ -186,7 +186,7 @@ class TestGrouping < Test::Unit::TestCase
   end
 
   def test_grouping_on_multiple_columns
-    a = [[1,2,3,4],[4,5,6,7]].to_table(%w[a b c d])
+    a = Table(%w[a b c d], :data => [[1,2,3,4],[4,5,6,7]])
     b = Ruport::Data::Grouping.new(a, :by => %w[a b c])
     c = { 1 => Ruport::Data::Group.new( :data => [[2,3,4]],
                                         :column_names => %w[b c d],
@@ -366,7 +366,7 @@ end
 class TestGroupingRendering < Test::Unit::TestCase
 
   def setup
-    table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    table = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     @grouping = Ruport::Data::Grouping.new(table, :by => "a")
   end
   
@@ -397,7 +397,7 @@ class TestGroupingKernelHacks < Test::Unit::TestCase
   end
 
   def test_grouping_kernel_hack
-    table = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    table = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     grouping = Ruport::Data::Grouping.new(table, :by => "a")
     a = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
                                         :column_names => %w[b c],

@@ -25,18 +25,18 @@ class TestRenderCSVTable < Test::Unit::TestCase
 
   def test_render_csv_table
     actual = Ruport::Renderer::Table.render_csv do |r| 
-      r.data = [[1,2,3],[4,5,6]].to_table 
+      r.data = Table([], :data => [[1,2,3],[4,5,6]])
     end
     assert_equal("1,2,3\n4,5,6\n",actual)
 
     actual = Ruport::Renderer::Table.render_csv do |r|
-      r.data = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+      r.data = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     end
     assert_equal("a,b,c\n1,2,3\n4,5,6\n",actual)
   end   
   
   def test_format_options
-    a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     assert_equal "a\tb\tc\n1\t2\t3\n4\t5\t6\n", 
       a.as(:csv,:format_options => { :col_sep => "\t" })
   end
@@ -44,7 +44,7 @@ class TestRenderCSVTable < Test::Unit::TestCase
   def test_table_headers
     actual = Ruport::Renderer::Table.
              render_csv(:show_table_headers => false, 
-                        :data => [[1,2,3],[4,5,6]].to_table(%w[a b c]))
+                        :data => Table(%w[a b c], :data => [[1,2,3],[4,5,6]]))
     assert_equal("1,2,3\n4,5,6\n",actual)
   end
      

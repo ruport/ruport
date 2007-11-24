@@ -25,7 +25,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
   def test_render_html_basic
     
     actual = Ruport::Renderer::Table.render_html { |r|
-      r.data = [[1,2,3],[4,5,6]].to_table
+      r.data = Table([], :data => [[1,2,3],[4,5,6]])
     }          
     
     assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
@@ -34,7 +34,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
                  "\t</tr>\n\t</table>",actual)
 
     actual = Ruport::Renderer::Table.render_html { |r| 
-      r.data = [ [1,2,3],[4,5,6]].to_table(%w[a b c]) 
+      r.data = Table(%w[a b c], :data => [ [1,2,3],[4,5,6]]) 
     }
     
     assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+

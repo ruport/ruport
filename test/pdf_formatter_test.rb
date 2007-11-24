@@ -32,7 +32,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
 
   def test_render_pdf_basic  
     # can't render without column names
-    data = [[1,2],[3,4]].to_table
+    data = Table([], :data => [[1,2],[3,4]])
     assert_raise(Ruport::FormatterError) do
       data.to_pdf 
     end      
@@ -54,7 +54,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
   # this is just to make sure that the column_opts code is being called.
   # FIXME: add mocks to be sure
   def test_table_with_options
-    data = [[1,2],[3,4]].to_table(%w[a b])
+    data = Table(%w[a b], :data => [[1,2],[3,4]])
     assert_nothing_raised do
       data.to_pdf(:table_format => { 
             :column_options => { :justification => :center } } ) 
@@ -186,7 +186,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
   # PDF::SimpleTable does not handle symbols as column names
   # Ruport should smartly fix this surprising behaviour (#283) 
   def test_tables_should_render_with_symbol_column_name
-    data = [[1,2,3],[4,5,6]].to_table([:a,:b,:c])
+    data = Table([:a,:b,:c], :data => [[1,2,3],[4,5,6]])
     assert_nothing_raised { data.to_pdf }
   end   
   
@@ -196,7 +196,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
      f.options = Ruport::Renderer::Options.new 
      f.options[:table_format] =  
        { :column_options => { :heading => {:justification => :center }}}
-     f.draw_table [[1,2,3],[4,5,6]].to_table(%w[a b c])  
+     f.draw_table Table(%w[a b c], :data => [[1,2,3],[4,5,6]])  
      assert_equal({ :justification => :center }, 
                   f.options[:table_format][:column_options][:heading])      
   end
@@ -210,7 +210,7 @@ class TestRenderPDFGrouping < Test::Unit::TestCase
   # As of Ruport 0.10.0, PDF's justified group output was throwing
   # UnknownFormatError  (#288)
   def test_group_styles_should_not_throw_error
-     table = [[1,2,3],[4,5,6],[1,7,9]].to_table(%w[a b c]) 
+     table = Table(%w[a b c], :data => [[1,2,3],[4,5,6],[1,7,9]]) 
      grouping = Grouping(table,:by => "a")
      assert_nothing_raised { grouping.to_pdf } 
      assert_nothing_raised { grouping.to_pdf(:style => :inline) }

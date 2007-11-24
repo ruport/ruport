@@ -824,17 +824,3 @@ module Kernel
     return table
   end
 end  
-
-class Array
-
-  # Converts an array to a Ruport::Data::Table object, ready to
-  # use in your reports.
-  #
-  # Example:
-  #   [[1,2],[3,4]].to_table(%w[a b])
-  #
-  def to_table(column_names=nil,&b)
-    Ruport::Data::Table.new({:data => self, :column_names => column_names},&b)
-  end
-
-end
