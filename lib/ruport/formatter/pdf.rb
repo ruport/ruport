@@ -210,25 +210,6 @@ module Ruport
       move_cursor_to(opts.y - opts.height)
     end
 
-    # Adds an image to every page. The color and size won't be modified,
-    # but it will be centered.
-    #
-    def watermark(imgpath)
-      x = pdf_writer.absolute_left_margin
-      y = pdf_writer.absolute_bottom_margin
-      width = pdf_writer.absolute_right_margin - x
-      height = pdf_writer.absolute_top_margin - y
-
-      pdf_writer.open_object do |wm|
-        pdf_writer.save_state
-        center_image_in_box(imgpath, :x => x, :y => y,
-          :width => width, :height => height)
-        pdf_writer.restore_state
-        pdf_writer.close_object
-        pdf_writer.add_object(wm, :all_pages)
-      end
-    end
-    
     # Adds n to pdf_writer.y, moving the vertical drawing position in the
     # document.
     def move_cursor(n) 
