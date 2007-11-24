@@ -16,7 +16,9 @@ module Ruport::Data
   # as Array-like, Hash-like, or Struct-like objects.  They are used as the 
   # base element for Data::Table
   #
-  class Record
+  class Record   
+    
+    private :id
 
     include Enumerable  
     

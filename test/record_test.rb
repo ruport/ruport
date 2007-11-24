@@ -86,6 +86,11 @@ class TestRecord < Test::Unit::TestCase
     assert_equal @record.b, @record["b"]
     assert_equal @record.c, @record["c"]
     assert_equal @record.d, @record["d"]
+  end            
+  
+  def test_can_has_id
+     record = Ruport::Data::Record.new(:id => 12345) 
+     assert_equal 12345, record.id
   end
 
   def test_nonexistent_accessor
