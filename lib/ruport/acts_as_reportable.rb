@@ -294,7 +294,12 @@ module Ruport
         
         data_records = [get_attributes_with_options(options)]
         Array(options[:methods]).each do |method|
-          data_records.first[method.to_s] = send(method)
+          if options[:qualify_attribute_names]
+            m = "#{options[:qualify_attribute_names]}.#{method}"
+          else
+            m = "#{method}"
+          end
+          data_records.first[m] = send(method)
         end
         
         # Reorder columns to match options[:only]
