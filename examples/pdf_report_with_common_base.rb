@@ -19,7 +19,6 @@ class ClientRenderer < Ruport::Renderer
   prepare :standard_report
   stage :company_header, :client_header, :client_body, :client_footer
   finalize :standard_report
-  option :example
 
   def setup
     data.rename_columns { |c| c.to_s.titleize }

@@ -18,7 +18,6 @@ module Ruport
   # * build_row
   #
   class Renderer::Row < Renderer
-    option :format_options
     stage :row
   end
 
@@ -44,9 +43,6 @@ module Ruport
   # * finalize_table
   #
   class Renderer::Table < Renderer
-
-    option :show_table_headers, :format_options
-
     options { |o| o.show_table_headers = true }
 
     prepare :table

@@ -1,9 +1,7 @@
 # A dump of the database for this example can be found in ./data/tattle.dump
 
-
 require "active_record"
 require "ruport"
-
 
 # Update with your connection parameters
 ActiveRecord::Base.establish_connection(
@@ -37,4 +35,3 @@ sorted_table = rubygems_versions.sort_rows_by("count", :order => :descending)
 sorted_table.reduce { |r| r["platform"] !~ /darwin/i }
 g = Grouping(sorted_table, :by => "platform", :order => "name")
 puts g.to_pdf 
-

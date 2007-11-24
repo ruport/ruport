@@ -312,28 +312,6 @@ class Ruport::Renderer
     end
      
     # Defines attribute writers for the Renderer::Options object shared
-    # between Renderer and Formatter.
-    #
-    # usage:
-    #   
-    #   class MyRenderer < Ruport::Renderer
-    #      option :font_size, :font_style
-    #      # other details omitted
-    #   end
-    def option(*opts)       
-      opts.each do |opt|                                  
-        o = opt 
-        unless instance_methods(false).include?(o.to_s)   
-          define_method(o) {
-             options.send(o.to_s) 
-          }     
-        end
-        opt = "#{opt}="
-        define_method(opt) {|t| options.send(opt, t) }
-      end
-    end
-    
-    # Defines attribute writers for the Renderer::Options object shared
     # between Renderer and Formatter. Will throw an error if the user does
     # not provide values for these options upon rendering.
     #
@@ -347,10 +325,15 @@ class Ruport::Renderer
       self.required_options ||= []
       opts.each do |opt|
         self.required_options << opt 
-        option opt
+
+        o = opt
+        unless instance_methods(false).include?(o.to_s)
+          define_method(o) { options.send(o.to_s) }
+        end
+        opt = "#{opt}="
+        define_method(opt) {|t| options.send(opt, t) }
       end
     end
-    
 
     # Lists the formatters that are currently registered on a renderer,
     # as a hash keyed by format name.

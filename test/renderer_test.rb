@@ -199,12 +199,9 @@ end
 class TestRendererWithManyHooks < Test::Unit::TestCase
   # This provides a way to check several hooks that Renderer supports
   class RendererWithManyHooks < Ruport::Renderer
-
     add_format DummyText, :text
 
     prepare :document
-
-    option :subtitle, :subsubtitle
 
     stage :header
     stage :body
@@ -271,13 +268,6 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
 
    actual = RendererWithManyHooks.render_text
    assert_equal "pheader\nbody\nfooter\nf", actual
-  end
-
-  def test_option_helper
-   RendererWithManyHooks.render_text do |r|
-     r.subtitle = "Test Report"
-     assert_equal "Test Report", r.options.subtitle
-   end
   end
 
   def test_required_option_helper
@@ -437,14 +427,14 @@ end
 class TestOptionReaders < Test::Unit::TestCase
   
   class RendererForCheckingOptionReaders < Ruport::Renderer
-    option :foo  
+    required_option :foo  
   end 
   
   class RendererForCheckingPassivity < Ruport::Renderer
     def foo
       "apples"
     end
-    option :foo    
+    required_option :foo    
   end
 
    def setup 
@@ -472,11 +462,10 @@ end
 class TestSetupOrdering < Test::Unit::TestCase
    
   class RendererWithSetup < Ruport::Renderer
-     option :foo
-     stage :bar
-     def setup
-        foo.capitalize!
-     end        
+    stage :bar
+    def setup
+      options.foo.capitalize!
+    end        
   end           
   
   class BasicFormatter < Ruport::Formatter 
@@ -488,12 +477,12 @@ class TestSetupOrdering < Test::Unit::TestCase
   end
   
   def test_render_hash_options_should_be_called_before_setup
-     assert_equal "Hello", RendererWithSetup.render_text(:foo => "hello")
+    assert_equal "Hello", RendererWithSetup.render_text(:foo => "hello")
   end       
   
   def test_render_block_should_be_called_before_setup
-     assert_equal "Hello", 
-                   RendererWithSetup.render_text { |r| r.foo = "hello" }
+    assert_equal "Hello", 
+      RendererWithSetup.render_text { |r| r.options.foo = "hello" }
   end
   
 end

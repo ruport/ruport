@@ -30,9 +30,6 @@ module Ruport
   # * build_group_footer
   #
   class Renderer::Group < Renderer
-
-    option :show_table_headers
-
     options { |o| o.show_table_headers = true }
 
     stage :group_header, :group_body, :group_footer
@@ -61,9 +58,6 @@ module Ruport
   # * finalize_grouping
   #
   class Renderer::Grouping < Renderer
-
-    option :show_group_headers, :style
-
     options do |o| 
       o.show_group_headers = true 
       o.style = :inline

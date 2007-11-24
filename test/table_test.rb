@@ -426,13 +426,12 @@ class TestTableFormattingHooks < Test::Unit::TestCase
                  a.to_csv(:show_table_headers => false)
     
     assert_equal "would,you,like\none,red,cat\n",
-                 a.to_csv { |r| r.show_table_headers = false }    
+                 a.to_csv { |r| r.options.show_table_headers = false }    
                  
     assert_equal "would\tyou\tlike\none\tred\tcat\n",
                  a.to_csv(:show_table_headers => false) { |r|
-                   r.format_options = { :col_sep => "\t" }
+                   r.options.format_options = { :col_sep => "\t" }
                  }
-      
   end     
   
   def test_to_hack

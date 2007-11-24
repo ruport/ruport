@@ -8,12 +8,8 @@ require "ruport"
 #
 class Document < Ruport::Renderer
   
-  # will throw an error if these options are not set at rendering time
+  # Will throw an error if these options are not set at rendering time
   required_option :text, :author                                      
-  
-  # allows this option to be set directly on a renderer instance,
-  # and creates a reader for it if a header() method does not already exist
-  option :heading
   
   # The renderer will look for a build_document_body() method on the formatter,
   # but silently skip this stage if it is missing

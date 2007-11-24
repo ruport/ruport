@@ -2,9 +2,6 @@ require "rubygems"
 require "ruport"
 
 class RoadmapRenderer < Ruport::Renderer
-
-  option :image_file
-
   stage :roadmap_image, :roadmap_text_body
   finalize :roadmap
 end
