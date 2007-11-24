@@ -26,6 +26,10 @@ class Ruport::Renderer
   # Structure for holding renderer options.  
   # Simplified version of HashWithIndifferentAccess
   class Options < OpenStruct  
+    ["type", "table", "hash", "send", "class", "id", "method","taint"].each do |m|
+       private m
+     end
+    
     # Returns a Hash object.  Use this if you need methods other than []
     def to_hash
       @table
