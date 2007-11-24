@@ -106,6 +106,10 @@ require "ruport/renderer"
 require "ruport/data" 
 require "ruport/formatter" 
 
-if Object.const_defined? :ActiveRecord
-  require "ruport/acts_as_reportable"
+begin
+  if Object.const_defined? :ActiveRecord
+    require "ruport/acts_as_reportable"   
+  end                                     
+rescue LoadError
+  nil
 end
