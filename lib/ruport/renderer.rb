@@ -394,6 +394,8 @@ class Ruport::Renderer
       return @options
     end
 
+    private
+    
     # Creates a new instance of the renderer and sets it to use the specified
     # formatter (by name).  If a block is given, the renderer instance is
     # yielded.  
@@ -417,8 +419,6 @@ class Ruport::Renderer
       yield(rend) if block_given?
       return rend
     end
-    
-    private
     
     # Allows you to register a format with the renderer.
     #
