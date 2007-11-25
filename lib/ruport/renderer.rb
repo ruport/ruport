@@ -179,45 +179,6 @@ class Ruport::Renderer
   end
   
   
-  module AutoRunner  #:nodoc:
-    # Called automatically when the report is rendered. Uses the
-    # data collected from the earlier methods.
-    def _run_
-
-      # ensure all the required options have been set
-      unless self.class.required_options.nil?
-        self.class.required_options.each do |opt|
-          if options.__send__(opt).nil?
-            raise RequiredOptionNotSet, "Required option #{opt} not set"
-          end
-        end
-      end
-
-      if formatter.respond_to?(:apply_template) && options.template
-        formatter.apply_template  
-      end       
-
-      prepare self.class.first_stage if self.class.first_stage
-                
-      if formatter.respond_to?(:layout)  && options.layout != false
-        formatter.layout do execute_stages end
-      else
-        execute_stages
-      end
-
-      finalize self.class.final_stage if self.class.final_stage
-    end  
-    
-    def execute_stages
-      # call each stage to build the report
-      unless self.class.stages.nil?
-        self.class.stages.each do |stage|
-          maybe("build_#{stage}")
-        end
-      end
-    end
-  end
-  
   class << self
     
     attr_accessor :first_stage,:final_stage,:required_options,:stages #:nodoc: 
@@ -358,14 +319,9 @@ class Ruport::Renderer
     #   * If the renderer contains a module Helpers, mix it in to the instance.
     #   * If a block is given, yield the Renderer instance.
     #   * If a setup() method is defined on the Renderer, call it.
-    #   * If the renderer has defined a run() method, call it. Otherwise,
-    #     include Renderer::AutoRunner (you usually won't need a run() method).
-    #   * Call _run_ if it exists (this is provided by default, by AutoRunner).
+    #   * Call the run() method.
     #   * If the :file option is set to a file name, appends output to the file.
     #   * Return the results of formatter.output
-    #
-    # Note that the only time you will need a run() method is if you can't
-    # do what you need to via a helpers module or via setup()
     #
     # Please see the examples/ directory for custom renderer examples, because
     # this is not nearly as complicated as it sounds in most cases.
@@ -374,12 +330,7 @@ class Ruport::Renderer
           yield(r) if block_given?   
         r.setup if r.respond_to? :setup
       }  
-      if rend.respond_to? :run
-        rend.run
-      else
-        include AutoRunner
-      end
-      rend._run_ if rend.respond_to? :_run_
+      rend.run
       rend.formatter.save_output(rend.options.file) if rend.options.file
       return rend.formatter.output
     end
@@ -460,6 +411,10 @@ class Ruport::Renderer
     formatter.options
   end
   
+  def run
+    _run_
+  end
+  
   # If an IO object is given, Formatter#output will use it instead of 
   # the default String.  For Ruport's core renderers, we technically
   # can use any object that supports the << method, but it's meant
@@ -489,6 +444,42 @@ class Ruport::Renderer
   end
   
   private  
+
+  # Called automatically when the report is rendered. Uses the
+  # data collected from the earlier methods.
+  def _run_
+    # ensure all the required options have been set
+    unless self.class.required_options.nil?
+      self.class.required_options.each do |opt|
+        if options.__send__(opt).nil?
+          raise RequiredOptionNotSet, "Required option #{opt} not set"
+        end
+      end
+    end
+
+    if formatter.respond_to?(:apply_template) && options.template
+      formatter.apply_template  
+    end       
+
+    prepare self.class.first_stage if self.class.first_stage
+              
+    if formatter.respond_to?(:layout)  && options.layout != false
+      formatter.layout do execute_stages end
+    else
+      execute_stages
+    end
+
+    finalize self.class.final_stage if self.class.final_stage
+  end  
+  
+  def execute_stages
+    # call each stage to build the report
+    unless self.class.stages.nil?
+      self.class.stages.each do |stage|
+        maybe("build_#{stage}")
+      end
+    end
+  end
 
   def prepare(name)
     maybe "prepare_#{name}"

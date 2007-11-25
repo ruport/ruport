@@ -294,9 +294,6 @@ end
 class TestRendererWithRunHook < Test::Unit::TestCase
 
   class RendererWithRunHook < Ruport::Renderer
-    
-    include AutoRunner
-
     add_format DummyText, :text
 
     required_option :foo,:bar
@@ -306,6 +303,7 @@ class TestRendererWithRunHook < Test::Unit::TestCase
 
     def run
       formatter.output << "|"
+      super
     end
 
   end
