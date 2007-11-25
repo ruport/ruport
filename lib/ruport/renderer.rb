@@ -411,6 +411,8 @@ class Ruport::Renderer
     formatter.options
   end
   
+  # Call the _run_ method.  You can override this method in your custom
+  # renderer if you need to define other actions.
   def run
     _run_
   end
