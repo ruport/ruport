@@ -111,7 +111,6 @@ module Ruport::Data
       columns = column_names.dup
       columns.delete(group_column)
       group_names.each do |name|
-        # FIXME - this doesn't seem to reduce the data set
         group_data = sub_table(columns) {|r|
           r.send(group_column) == name
         }
@@ -380,7 +379,7 @@ module Kernel
   #
   # Example:
   #
-  #   a = [[1,2,3],[4,5,6]].to_table(%w[a b c])
+  #   a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
   #   b = Grouping(a, :by => "a")   #=> creates a new grouping on column "a"
   #
   def Grouping(*args)

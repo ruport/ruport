@@ -422,14 +422,14 @@ module Ruport
     def render_justified_or_separated_grouping
       table = table_with_grouped_by_column
       data.each do |name,group|
-        group_column = { data.grouped_by => "<b>#{name}</b>\n" }
-        group.each_with_index do |rec,i|
-          # FIXME - Find the source of the bug requiring to_a
-          i == 0 ?
-            table << group_column.merge(rec.to_hash) :
-            table << rec.to_a.unshift(nil)
+        group.each_with_index do |r,i|
+          if i == 0
+            table << { data.grouped_by => "<b>#{name}</b>" }.merge(r.to_hash)
+          else
+            table << r
+          end
         end
-        table << Array.new(grouping_columns.length,' ') if style == :separated
+        table << [" "] if style == :separated
       end
       render_table table, options.to_hash.merge(:formatter => pdf_writer)
     end
@@ -437,9 +437,8 @@ module Ruport
     def render_offset_grouping
       table = table_with_grouped_by_column
       data.each do |name,group|
-        table << ["<b>#{name}</b>\n",nil,nil]
-        # FIXME - Find the source of the bug requiring to_a
-        group.each {|r| table << r.to_a.unshift(nil) }
+        table << ["<b>#{name}</b>"]
+        group.each {|r| table << r }
       end
       render_table table, options.to_hash.merge(:formatter => pdf_writer)
     end
