@@ -26,7 +26,6 @@ module Ruport
   #
   #   class ReverseRenderer < Ruport::Renderer
   #      stage :reversed_header, :reversed_body 
-  #      option :header_text
   #   end
   #                                            
   #   class ReversedText < Ruport::Formatter 
