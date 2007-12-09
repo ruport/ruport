@@ -169,6 +169,36 @@ class TestRenderer < Test::Unit::TestCase
 end
 
 
+class TestFormatterUsingBuild < Test::Unit::TestCase
+  # This formatter uses the build syntax
+  class UsesBuild < Ruport::Formatter
+     renders :text_using_build, :for => VanillaRenderer 
+     
+     build :header do
+       output << "header\n"
+     end
+
+     build :body do
+       output << "body\n"
+     end
+
+     build :footer do
+       output << "footer\n"
+     end     
+  end
+
+  def test_should_render_using_build_syntax
+    assert_equal "header\nbody\nfooter\n",
+      VanillaRenderer.render_text_using_build
+    VanillaRenderer.render_text_using_build do |rend|
+      assert rend.formatter.respond_to?(:build_header)
+      assert rend.formatter.respond_to?(:build_body)
+      assert rend.formatter.respond_to?(:build_footer)
+    end
+  end
+end
+
+
 class TestFormatterWithLayout < Test::Unit::TestCase
   # This formatter is meant to check out a special case in Ruport's renderer,
   # in which a layout method is called and yielded to when defined

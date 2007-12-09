@@ -158,7 +158,27 @@ module Ruport
           formats << format unless formats.include?(format)
         end    
       end
-    end   
+    end
+    
+    # Allows you to implement stages in your formatter using the
+    # following syntax:
+    #
+    #   class ReversedText < Ruport::Formatter 
+    #      renders :txt, :for => ReverseRenderer
+    #      
+    #      build :reversed_header do
+    #         output << "#{options.header_text}\n"
+    #         output << "The reversed text will follow\n"
+    #      end
+    # 
+    #      build :reversed_body do
+    #         output << data.reverse << "\n"
+    #      end
+    #   end
+    #
+    def self.build(stage,&block)
+      define_method "build_#{stage}", &block
+    end
     
     # Allows the options specified to be accessed directly.
     # 
