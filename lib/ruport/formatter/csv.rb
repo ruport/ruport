@@ -32,11 +32,6 @@ module Ruport
     renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
                             Renderer::Group, Renderer::Grouping ]
 
-    opt_reader :show_table_headers, 
-               :format_options, 
-               :show_group_headers,
-               :style
-
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
     def apply_template
@@ -52,22 +47,22 @@ module Ruport
     # This method does not do anything if options.show_table_headers is false
     # or the Data::Table has no column names.
     def build_table_header
-      unless data.column_names.empty? || !show_table_headers
-        render_row data.column_names, :format_options => format_options 
+      unless data.column_names.empty? || !options.show_table_headers
+        render_row data.column_names, :format_options => options.format_options 
       end
     end
 
     # Calls the row renderer for each row in the Data::Table
     def build_table_body
       render_data_by_row { |r| 
-        r.options.format_options = format_options
+        r.options.format_options = options.format_options
       }
     end
 
     # Produces CSV output for a data row.
     def build_row
       require "fastercsv"
-      output << FCSV.generate_line(data,format_options || {})
+      output << FCSV.generate_line(data,options.format_options || {})
     end
     
     # Renders the header for a group using the group name.
@@ -86,14 +81,14 @@ module Ruport
     # column names.
     #
     def build_grouping_header
-      unless style == :inline
+      unless options.style == :inline
         output << "#{data.grouped_by}," << grouping_columns
       end
     end
    
     # Determines the proper style to use and renders the Grouping.
     def build_grouping_body
-      case style
+      case options.style
       when :inline
         render_inline_grouping(options)
       when :justified, :raw
@@ -112,9 +107,9 @@ module Ruport
     
     def render_justified_or_raw_grouping
       data.each do |_,group|
-        output << "#{group.name}" if style == :justified
+        output << "#{group.name}" if options.style == :justified
         group.each do |row|
-          output << "#{group.name if style == :raw}," << row.to_csv
+          output << "#{group.name if options.style == :raw}," << row.to_csv
         end
         output << "\n"
       end

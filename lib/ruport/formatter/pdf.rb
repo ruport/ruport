@@ -46,12 +46,6 @@ module Ruport
     
     attr_writer :pdf_writer
 
-    opt_reader  :style,
-                :table_format,
-                :text_format,
-                :paper_size,
-                :paper_orientation
-    
     save_as_binary_file
 
     def initialize
@@ -77,8 +71,8 @@ module Ruport
     #    
     def pdf_writer
       @pdf_writer ||= options.formatter ||
-        ::PDF::Writer.new( :paper => paper_size || "LETTER",
-              :orientation => paper_orientation || :portrait)
+        ::PDF::Writer.new( :paper => options.paper_size || "LETTER",
+              :orientation => options.paper_orientation || :portrait)
     end
 
     # Calls the draw_table method.
@@ -107,7 +101,7 @@ module Ruport
     # Determines which style to use and renders the main body for
     # Renderer::Grouping.
     def build_grouping_body 
-      case style
+      case options.style
       when :inline
         render_inline_grouping(options.to_hash.merge(:formatter => pdf_writer,
             :skip_finalize_table => true))
@@ -135,7 +129,7 @@ module Ruport
     #   add_text("Hello Joe") #renders at 14pt
     #   add_text("Hello Mike",:font_size => 16) # renders at 16pt
     def add_text(text, format_opts={})
-      format_opts = text_format.merge(format_opts) if text_format
+      format_opts = options.text_format.merge(format_opts) if options.text_format
       pdf_writer.text(text, format_opts)
     end
 
@@ -264,8 +258,9 @@ module Ruport
       
       table_data.rename_columns { |c| c.to_s } 
             
-      if table_format
-        format_opts = Marshal.load(Marshal.dump(table_format.merge(format_opts))) 
+      if options.table_format
+        format_opts =
+          Marshal.load(Marshal.dump(options.table_format.merge(format_opts))) 
       end  
         
       old = pdf_writer.font_size
@@ -429,7 +424,7 @@ module Ruport
             table << r
           end
         end
-        table << [" "] if style == :separated
+        table << [" "] if options.style == :separated
       end
       render_table table, options.to_hash.merge(:formatter => pdf_writer)
     end

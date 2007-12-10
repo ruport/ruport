@@ -9,7 +9,6 @@ end
 class HTMLRoadmap < Ruport::Formatter
 
   renders :html, :for => RoadmapRenderer
-  opt_reader :image_file
 
   def layout
      output << "<html><body>\n"
@@ -18,7 +17,7 @@ class HTMLRoadmap < Ruport::Formatter
   end
 
   def build_roadmap_image
-    output << "<img src='#{image_file}'/>"
+    output << "<img src='#{options.image_file}'/>"
   end
                                   
   def build_roadmap_text_body
@@ -30,10 +29,9 @@ end
 class PDFRoadmap < Ruport::Formatter::PDF
 
   renders :pdf, :for => RoadmapRenderer
-  opt_reader :image_file
 
   def build_roadmap_image
-    center_image_in_box image_file, :x => 0, :y => 200, 
+    center_image_in_box options.image_file, :x => 0, :y => 200, 
                                    :width => 624, :height => 432
     move_cursor_to 80
   end

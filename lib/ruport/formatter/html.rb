@@ -28,8 +28,6 @@ module Ruport
     renders :html, :for => [ Renderer::Row, Renderer::Table,
                              Renderer::Group, Renderer::Grouping ]
 
-    opt_reader :show_table_headers, :show_group_headers, :style
-    
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
     def apply_template
@@ -43,7 +41,7 @@ module Ruport
     # or the Data::Table has no column names.
     def build_table_header
       output << "\t<table>\n"
-      unless data.column_names.empty? || !show_table_headers
+      unless data.column_names.empty? || !options.show_table_headers
         output << "\t\t<tr>\n\t\t\t<th>" + 
           data.column_names.join("</th>\n\t\t\t<th>") + 
           "</th>\n\t\t</tr>\n"
@@ -89,7 +87,7 @@ module Ruport
     # renders them using the group renderer.
     #
     def build_grouping_body
-      case style
+      case options.style
       when :inline
         render_inline_grouping(options)
       when :justified

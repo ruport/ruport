@@ -180,16 +180,6 @@ module Ruport
       define_method "build_#{stage}", &block
     end
     
-    # Allows the options specified to be accessed directly.
-    # 
-    #   opt_reader :something
-    #   something == options.something #=> true
-    def self.opt_reader(*opts) 
-      require "forwardable"
-      extend Forwardable
-      opts.each { |o| def_delegator :@options, o }
-    end
-    
     # Gives a list of formats registered for this formatter.
     def self.formats
       @formats ||= []

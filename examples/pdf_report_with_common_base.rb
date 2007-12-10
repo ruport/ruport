@@ -22,8 +22,6 @@ class ClientRenderer < Ruport::Renderer
 
   def setup
     data.rename_columns { |c| c.to_s.titleize }
-    # this lets us omit the options prefix in the formatter
-    formatter.class.opt_reader(:example)
   end 
 end
 
@@ -57,7 +55,7 @@ class ClientPDF < CompanyPDFBase
 
   def build_client_header
    pad(10) do
-    add_text "Specific Report Header with example=#{example}",
+    add_text "Specific Report Header with example=#{options.example}",
              :justification => :center, :font_size => 12
    end
   end
