@@ -187,7 +187,7 @@ module Ruport
     
     # Returns the template currently set for this formatter.
     def template
-      Template[options.template]
+      Template[options.template] rescue nil || Template[:default]
     end
 
     # Stores a string used for outputting formatted data.

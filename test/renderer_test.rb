@@ -71,24 +71,54 @@ end
 
 class TestRenderer < Test::Unit::TestCase
 
+  def teardown
+    Ruport::Formatter::Template.instance_variable_set(:@templates, nil)
+  end
+
   def test_trivial
     actual = OldSchoolRenderer.render(:text)
     assert_equal "header\nbody\nfooter\n", actual
   end    
   
   context "when using templates" do
-     def specify_apply_template_should_be_called
-       Ruport::Formatter::Template.create(:stub)
-       Table(%w[a b c]).to_csv(:template => :stub) do |r| 
-         r.formatter.expects(:apply_template)
-       end  
-     end 
-     
-     def specify_undefined_template_should_throw_sensible_error
-        assert_raises(Ruport::Formatter::TemplateNotDefined) do
-          Table(%w[a b c]).to_csv(:template => :sub)
-        end 
-     end
+    def specify_apply_template_should_be_called
+      Ruport::Formatter::Template.create(:stub)
+      Table(%w[a b c]).to_csv(:template => :stub) do |r| 
+       r.formatter.expects(:apply_template)
+      end  
+    end 
+
+    def specify_undefined_template_should_throw_sensible_error
+      assert_raises(Ruport::Formatter::TemplateNotDefined) do
+        Table(%w[a b c]).to_csv(:template => :sub)
+      end 
+    end
+  end
+
+  context "when using default templates" do
+    def specify_default_template_should_be_called
+      Ruport::Formatter::Template.create(:default)
+      Table(%w[a b c]).to_csv do |r| 
+        r.formatter.expects(:apply_template)
+        assert r.formatter.template == Ruport::Formatter::Template[:default]
+      end  
+    end
+
+    def specify_specific_should_override_default
+      Ruport::Formatter::Template.create(:default)
+      Ruport::Formatter::Template.create(:stub)
+      Table(%w[a b c]).to_csv(:template => :stub) do |r| 
+        r.formatter.expects(:apply_template)
+        assert r.formatter.template == Ruport::Formatter::Template[:stub]
+      end  
+    end
+
+    def specify_should_be_able_to_disable_templates
+      Ruport::Formatter::Template.create(:default)
+      Table(%w[a b c]).to_csv(:template => false) do |r| 
+        r.formatter.expects(:apply_template).never
+      end  
+    end
   end
 
   def test_using_io

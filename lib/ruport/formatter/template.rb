@@ -166,4 +166,9 @@ class Ruport::Formatter::Template < Ruport::Renderer::Options
   def self.[](label) 
     templates[label] or raise Ruport::Formatter::TemplateNotDefined
   end
+  
+  # Returns the default template.
+  def self.default
+    templates[:default]
+  end
 end   

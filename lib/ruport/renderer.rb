@@ -459,9 +459,10 @@ class Ruport::Renderer
       end
     end
 
-    if formatter.respond_to?(:apply_template) && options.template
-      formatter.apply_template  
-    end       
+    if formatter.respond_to?(:apply_template) && options.template != false
+      formatter.apply_template if options.template ||
+        Ruport::Formatter::Template.default
+    end
 
     prepare self.class.first_stage if self.class.first_stage
               

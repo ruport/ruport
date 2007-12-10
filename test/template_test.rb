@@ -6,6 +6,10 @@ class TemplateTest < Test::Unit::TestCase
   def setup
     @template_class = Ruport::Formatter::Template.dup
   end
+  
+  def teardown
+    Ruport::Formatter::Template.instance_variable_set(:@templates, nil)
+  end
    
   def test_template_should_exist
     @template_class.create(:foo)
@@ -32,6 +36,13 @@ class TemplateTest < Test::Unit::TestCase
       Ruport::Formatter::Template[:bar].page_format[:layout]
     assert_equal :letter,
       Ruport::Formatter::Template[:bar].page_format[:paper_size]     
-  end 
+  end
+  
+  def test_default_template
+    assert_nil Ruport::Formatter::Template.default
+    Ruport::Formatter::Template.create(:default)
+    assert_equal Ruport::Formatter::Template[:default],
+      Ruport::Formatter::Template.default
+  end
   
 end
