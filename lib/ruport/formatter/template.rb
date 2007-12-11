@@ -46,26 +46,39 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 #
 # Example:
 #
-#   Ruport::Formatter::Template.create(:simple) do |t|
-#     t.page_format = {
+#   Ruport::Formatter::Template.create(:simple) do |format|
+#     format.page = {
 #       :size   => "LETTER",
 #       :layout => :landscape
 #     }
 #   end
 #
+# If you define a template with the name :default, then it will be used by
+# all formatters unless they either specify a template or explicitly turn off
+# the templating functionality by using :template => false.
+#
+# Example:
+#
+#   Ruport::Formatter::Template.create(:simple)
+#   Ruport::Formatter::Template.create(:default)
+#
+#   puts g.to_pdf                       #=> uses the :default template
+#   puts g.to_pdf(:template => :simple) #=> uses the :simple template
+#   puts g.to_pdf(:template => false)   #=> doesn't use a template
+#
 # ==== PDF Formatter Options
 #
 #   Option          Key                 Value
 # 
-#   page_format     :size               Any size supported by the :paper
+#   page            :size               Any size supported by the :paper
 #                                       option to PDF::Writer.new
 # 
 #                   :layout             :portrait, :landscape
 # 
-#   text_format     Any available to    Corresponding values
+#   text            Any available to    Corresponding values
 #                   PDF::Writer#text
 # 
-#   table_format    All attributes of   Corresponding values
+#   table           All attributes of   Corresponding values
 #                   PDF::SimpleTable
 # 
 #                   :column_options     - All attributes of
@@ -78,41 +91,41 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 #                                       - :heading => { All attributes of
 #                                         PDF::SimpleTable::Column::Heading }
 # 
-#   column_format   :alignment          :left, :right, :center, :full
+#   column          :alignment          :left, :right, :center, :full
 # 
 #                   :width              column width
 # 
-#   heading_format  :alignment          :left, :right, :center, :full
+#   heading         :alignment          :left, :right, :center, :full
 # 
 #                   :bold               true or false
 # 
 #                   :title              heading title (if not set,
 #                                       defaults to column name)
 # 
-#   grouping_format :style              :inline, :justified, :separated, :offset
+#   grouping        :style              :inline, :justified, :separated, :offset
 #
 #
 # ==== Text Formatter Options
 # 
 #   Option          Key                 Value
 # 
-#   table_format    :show_headings      true or false
+#   table           :show_headings      true or false
 #                   :width              Table width
 #                   :ignore_width       true or false
 # 
-#   column_format   :alignment          :center
+#   column          :alignment          :center
 #                   :maximum_width      Max column width
 # 
-#   grouping_format :show_headings      true or false
+#   grouping        :show_headings      true or false
 #
 #
 # ==== HTML Formatter Options
 # 
 #   Option          Key                 Value
 # 
-#   table_format    :show_headings      true or false
+#   table           :show_headings      true or false
 # 
-#   grouping_format :style              :inline, :justified
+#   grouping        :style              :inline, :justified
 #                   :show_headings      true or false
 #
 #
@@ -120,9 +133,9 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 # 
 #   Option          Key                 Value
 # 
-#   table_format    :show_headings      true or false
+#   table           :show_headings      true or false
 # 
-#   grouping_format :style              :inline, :justified, :raw
+#   grouping        :style              :inline, :justified, :raw
 #                   :show_headings      true or false
 # 
 #   format_options  All options         Corresponding values

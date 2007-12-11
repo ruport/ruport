@@ -1,24 +1,24 @@
 require "ruport"
 
-Ruport::Formatter::Template.create(:simple) do |t|
-  t.page_format = {
+Ruport::Formatter::Template.create(:simple) do |format|
+  format.page = {
     :size   => "LETTER",
     :layout => :landscape
   }
-  t.text_format = {
+  format.text = {
     :font_size => 16
   }
-  t.table_format = {
+  format.table = {
     :font_size      => 16,
     :show_headings  => false
   }
-  t.column_format = {
+  format.column = {
     :alignment => :center,
   }                       
-  t.heading_format = {
+  format.heading = {
     :alignment => :right
   }
-  t.grouping_format = {
+  format.grouping = {
     :style => :separated
   }
 end

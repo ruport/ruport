@@ -35,8 +35,8 @@ module Ruport
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
     def apply_template
-      apply_table_format_template(template.table_format)
-      apply_grouping_format_template(template.grouping_format)
+      apply_table_format_template(template.table)
+      apply_grouping_format_template(template.grouping)
 
       options.format_options ||= template.format_options
     end

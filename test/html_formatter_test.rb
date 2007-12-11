@@ -4,11 +4,11 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 class TestRenderHTMLTable < Test::Unit::TestCase
   
   def setup
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.table_format = {
+    Ruport::Formatter::Template.create(:simple) do |format|
+      format.table = {
         :show_headings  => false
       }
-      t.grouping_format = {
+      format.grouping = {
         :style          => :justified,
         :show_headings  => false
       }

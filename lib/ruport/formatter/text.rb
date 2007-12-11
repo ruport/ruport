@@ -51,9 +51,9 @@ module Ruport
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
     def apply_template
-      apply_table_format_template(template.table_format)
-      apply_column_format_template(template.column_format)
-      apply_grouping_format_template(template.grouping_format)
+      apply_table_format_template(template.table)
+      apply_column_format_template(template.column)
+      apply_grouping_format_template(template.grouping)
     end
 
     # Checks to ensure the table is not empty and then calls

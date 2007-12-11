@@ -4,27 +4,27 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 class TestRenderPDFTable < Test::Unit::TestCase
   
   def setup
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.page_format = {
+    Ruport::Formatter::Template.create(:simple) do |format|
+      format.page = {
         :size   => "LETTER",
         :layout => :landscape
       }
-      t.text_format = {
+      format.text = {
         :font_size => 16
       }
-      t.table_format = {
+      format.table = {
         :show_headings  => false
       }
-      t.column_format = {
+      format.column = {
         :alignment  => :center,
         :width      => 50
       }
-      t.heading_format = {
+      format.heading = {
         :alignment  => :right,
         :bold       => false,
         :title      => "Test"
       }
-      t.grouping_format = {
+      format.grouping = {
         :style => :separated
       }
     end

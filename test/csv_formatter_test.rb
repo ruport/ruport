@@ -11,15 +11,15 @@ end
 class TestRenderCSVTable < Test::Unit::TestCase
   
   def setup
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.table_format = {
+    Ruport::Formatter::Template.create(:simple) do |format|
+      format.table = {
         :show_headings  => false
       }
-      t.grouping_format = {
+      format.grouping = {
         :style          => :justified,
         :show_headings  => false
       }
-      t.format_options = { :col_sep => ":" }
+      format.format_options = { :col_sep => ":" }
     end
   end
 

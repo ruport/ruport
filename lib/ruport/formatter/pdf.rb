@@ -58,12 +58,12 @@ module Ruport
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
     def apply_template
-      apply_page_format_template(template.page_format)
-      apply_text_format_template(template.text_format)
-      apply_table_format_template(template.table_format)
-      apply_column_format_template(template.column_format)
-      apply_heading_format_template(template.heading_format)
-      apply_grouping_format_template(template.grouping_format)
+      apply_page_format_template(template.page)
+      apply_text_format_template(template.text)
+      apply_table_format_template(template.table)
+      apply_column_format_template(template.column)
+      apply_heading_format_template(template.heading)
+      apply_grouping_format_template(template.grouping)
     end
 
     # Returns the current PDF::Writer object or creates a new one if it has not

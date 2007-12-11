@@ -4,17 +4,17 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 class TestRenderTextTable < Test::Unit::TestCase 
   
   def setup
-    Ruport::Formatter::Template.create(:simple) do |t|
-      t.table_format = {
+    Ruport::Formatter::Template.create(:simple) do |format|
+      format.table = {
         :show_headings  => false,
         :width          => 50,
         :ignore_width   => true
       }
-      t.column_format = {
+      format.column = {
         :maximum_width  => [5,5,7],
         :alignment => :center
       }
-      t.grouping_format = {
+      format.grouping = {
         :show_headings  => false
       }
     end
