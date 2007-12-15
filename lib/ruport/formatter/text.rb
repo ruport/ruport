@@ -45,8 +45,8 @@ module Ruport
   # truncating it.  Useful for file output.
   class Formatter::Text < Formatter
    
-    renders :text, :for => [ Renderer::Row, Renderer::Table,
-                             Renderer::Group, Renderer::Grouping ]
+    renders [:txt, :text], :for => [ Renderer::Row, Renderer::Table,
+                                     Renderer::Group, Renderer::Grouping ]
 
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.

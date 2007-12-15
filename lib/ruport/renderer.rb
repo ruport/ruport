@@ -180,7 +180,6 @@ class Ruport::Renderer
     def save_as(file,options={})
       file =~ /.*\.(.*)/    
       format = $1
-      format = "text" if format == "txt"
       as(format.to_sym, options.merge(:file => file))        
     end
   end
