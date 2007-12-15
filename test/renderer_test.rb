@@ -131,23 +131,23 @@ class TestRenderer < Test::Unit::TestCase
   end
 
   def test_using_file
-    begin
-      require "mocha"
-      require "stubba"
-    rescue LoadError
-      $stderr.puts "Warning: Mocha not found -- skipping some Renderer tests"
-    end
-    if Object.const_defined?(:Mocha)
-      f = []
-      File.expects(:open).yields(f)
-      a = OldSchoolRenderer.render(:text, :file => "foo.text")
-      assert_equal "header\nbody\nfooter\n", f[0]
-      
-      f = []
-      File.expects(:open).with("blah","wb").yields(f)
-      VanillaRenderer.render(:bin, :file => "blah")
-    end
+    f = []
+    File.expects(:open).yields(f)
+    a = OldSchoolRenderer.render(:text, :file => "foo.text")
+    assert_equal "header\nbody\nfooter\n", f[0]
+    
+    f = []
+    File.expects(:open).with("blah","wb").yields(f)
+    VanillaRenderer.render(:bin, :file => "blah")        
+  end       
+  
+  def test_using_file_via_rendering_tools     
+    f = []
+    File.expects(:open).yields(f)  
+    Table(%w[a b c], :data => [[1,2,3],[4,5,6]]).save_as("foo.csv")      
+    assert_equal "a,b,c\n1,2,3\n4,5,6\n", f[0]  
   end
+    
 
   def test_formats
     assert_equal( {}, Ruport::Renderer.formats )

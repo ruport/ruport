@@ -175,7 +175,14 @@ class Ruport::Renderer
             respond_to?(:renderable_data) ? renderable_data(format) : self
           yield(rend) if block_given?  
       end
-    end  
+    end      
+    
+    def save_as(file,options={})
+      file =~ /.*\.(.*)/    
+      format = $1
+      format = "text" if format == "txt"
+      as(format.to_sym, options.merge(:file => file))        
+    end
   end
   
   
