@@ -224,7 +224,7 @@ module Ruport
     # in that context.
     def erb(string,options={})      
       require "erb"
-      if string =~ /\.r\w+$/
+      if string =~ /(\.r\w+)|(\.erb)$/
         ERB.new(File.read(string)).result(options[:binding]||binding)
       else
         ERB.new(string).result(options[:binding]||binding)
