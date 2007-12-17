@@ -2,7 +2,7 @@ require "rake/rdoctask"
 require "rake/testtask"
 require "rake/gempackagetask"
 
-RUPORT_VERSION = "1.3.1229"
+RUPORT_VERSION = "1.3.1231"
 
 begin
   require "rubygems"
@@ -32,7 +32,6 @@ spec = Gem::Specification.new do |spec|
   spec.extra_rdoc_files = %w{README LICENSE AUTHORS}
   spec.rdoc_options << '--title' << 'Ruport Documentation' <<
                        '--main'  << 'README' << '-q'
-  spec.add_dependency('transaction-simple', "=1.4.0")
   spec.add_dependency('fastercsv', '>= 1.1.0')
   spec.add_dependency('pdf-writer', '= 1.1.7')
   spec.author = "Gregory Brown"
