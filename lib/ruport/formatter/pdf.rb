@@ -40,11 +40,27 @@ module Ruport
   #       * style (:inline,:justified,:separated,:offset)
   #
   class Formatter::PDF < Formatter         
+
+    module PDFWriterProxy #:nodoc:
+      def method_missing(id,*args)
+        super(id,*args)
+      rescue
+        pdf_writer.send(id,*args)
+      end
+    end
     
     renders :pdf, :for => [ Renderer::Row, Renderer::Table,
                             Renderer::Group, Renderer::Grouping ]
     
     attr_writer :pdf_writer
+
+
+    # If you use this macro in your formatter, Ruport will automatically forward
+    # calls to the underlying PDF::Writer, for any methods that are not wrapped
+    # or redefined.
+    def self.proxy_to_pdf_writer
+      include PDFWriterProxy
+    end
 
     save_as_binary_file
 
@@ -213,6 +229,15 @@ module Ruport
     # Moves the cursor to a specific y coordinate in the document.
     def move_cursor_to(n)
       pdf_writer.y = n
+    end
+
+    # Moves the vertical drawing position in the document upwards by n.
+    def move_up(n)
+      pdf_writer.y += n
+    end
+
+    def move_down(n)
+      pdf_writer.y -= n
     end
     
     # Adds a specified amount of whitespace above and below the code

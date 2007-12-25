@@ -510,6 +510,8 @@ class Ruport::Renderer
   def use_formatter(format)
     self.formatter = self.class.formats[format].new
     self.formatter.format = format
+  rescue NoMethodError
+    raise UnknownFormatError
   end
 
 end

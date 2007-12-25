@@ -622,4 +622,17 @@ class TestRendererHooks < Test::Unit::TestCase
 
   end    
 
+  context "when attempting to render a format that doesn't exist" do
+
+    def specify_an_unknown_format_error_should_be_raised
+
+      assert_raises(Ruport::Renderer::UnknownFormatError) do
+        Ruport::Renderer.render_foo
+      end
+
+    end
+  end
+
+
+
 end

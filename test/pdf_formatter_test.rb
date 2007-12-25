@@ -271,6 +271,15 @@ class TestPDFFormatterHelpers < Test::Unit::TestCase
      a.move_cursor(50)
      assert_equal(525,a.cursor)
   end           
+
+  def test_move_up
+    a = Ruport::Formatter::PDF.new
+    a.move_cursor_to(500)
+    a.move_up(50)
+    assert_equal(550,a.cursor)
+    a.move_down(100)
+    assert_equal(450,a.cursor)
+  end
   
   def test_padding
     a = Ruport::Formatter::PDF.new
