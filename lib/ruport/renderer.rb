@@ -456,7 +456,6 @@ class Ruport::Renderer
   # Called automatically when the report is rendered. Uses the
   # data collected from the earlier methods.
   def _run_
-    # ensure all the required options have been set
     unless self.class.required_options.nil?
       self.class.required_options.each do |opt|
         if options.__send__(opt).nil?
@@ -482,7 +481,6 @@ class Ruport::Renderer
   end  
   
   def execute_stages
-    # call each stage to build the report
     unless self.class.stages.nil?
       self.class.stages.each do |stage|
         maybe("build_#{stage}")

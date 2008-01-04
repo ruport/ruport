@@ -62,8 +62,7 @@ module Ruport::Data
 
         options = {:has_names => true,
                    :csv_options => {} }.merge(options)
-        
-        # if people want to use FCSV's header support, let them           
+              
         adjust_options_for_fcsv_headers(options)
 
         table = self.new(options) do |feeder|
