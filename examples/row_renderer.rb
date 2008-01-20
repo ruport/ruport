@@ -1,12 +1,12 @@
 require "ruport"
 
 class CSV2Something < Ruport::Renderer
-  required_option :file
+  required_option :csv_file
   stage :table_body
 
   module Helpers
     def table_feeder
-      Table(options.file,:has_names => false) { |t,r| yield(r) }
+      Table(options.csv_file,:has_names => false) { |t,r| yield(r) }
     end
   end
 
@@ -36,4 +36,4 @@ class Text < Ruport::Formatter::Text
  
 end
 
-CSV2Something.render_html(:file => "example.csv",:io => STDOUT)
+CSV2Something.render_html(:csv_file => "example.csv",:io => STDOUT)
