@@ -28,15 +28,17 @@ you should do:
 2) Post and introduce yourself, letting us know what you'd like to work on OR
    Find sandal or mikem836 on #ruport
 
-3) If you plan on implementing new features, please take a look at our
-   project roadmap:
+3) Please read the MakingChangeRequests, ReportingDefects, and
+   SubmittingPatches Trac wiki pages, as appropriate.
 
-   http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/ProjectRoadmap
+   - http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/MakingChangeRequests
 
-4) Also, please read the SubmittingChangeRequests, ReportingDefects, and
-   SubmittingPatches Trac wiki pages, where appropriate.
+   - http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/ReportingDefects
 
-5) Please pull the latest code from SVN. (ruport/trunk)
+   - http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/SubmittingPatches
+
+4) Please pull the latest code from SVN trunk:
+   http://stonecode.svnrepository.com/svn/ruport/ruport/trunk
 
 
 This should hopefully be enough to get you on the right track.  We welcome your
