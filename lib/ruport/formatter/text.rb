@@ -170,7 +170,7 @@ module Ruport
     #
     # Otherwise, uses SystemExtensions to determine terminal width.
     def width
-      options.table_width || SystemExtensions.terminal_width
+      options.table_width ||= SystemExtensions.terminal_width
     end
 
     # Truncates a string so that it does not exceed Text#width
