@@ -70,10 +70,8 @@ module Ruport
 
     # Calls the row renderer for each row in the Data::Table
     def build_table_body
-      render_data_by_row { |r| 
-        r.options.format_options = options.format_options
-        r.options.formatter = csv_writer
-      }
+      fcsv = csv_writer
+      data.each { |row| fcsv << row }
     end
 
     # Produces CSV output for a data row.
