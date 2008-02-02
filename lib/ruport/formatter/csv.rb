@@ -23,6 +23,8 @@ module Ruport
   #
   # <tt>:format_options</tt> A hash of FasterCSV options  
   #
+  # <tt>:formatter</tt> An existing FasterCSV object to write to
+  #
   # <tt>:show_table_headers</tt> True by default
   #
   # <tt>:show_group_headers</tt> True by default
@@ -31,6 +33,8 @@ module Ruport
     
     renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
                             Renderer::Group, Renderer::Grouping ]
+
+    attr_writer :csv_writer
 
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
@@ -41,6 +45,17 @@ module Ruport
       options.format_options ||= template.format_options
     end
 
+    # Returns the current FCSV object or creates a new one if it has not
+    # been set yet. Note that FCSV(sig) has a cache and returns the *same*
+    # FCSV object if writing to the same underlying output with the same
+    # options.
+    #
+    def csv_writer
+      require 'fastercsv'
+      @csv_writer ||= options.formatter ||
+        FCSV(output, options.format_options || {})
+    end
+
     # Generates table header by turning column_names into a CSV row.
     # Uses the row renderer to generate the actual formatted output
     #
@@ -48,7 +63,8 @@ module Ruport
     # or the Data::Table has no column names.
     def build_table_header
       unless data.column_names.empty? || !options.show_table_headers
-        render_row data.column_names, :format_options => options.format_options 
+        render_row data.column_names, :format_options => options.format_options,
+                                      :formatter => csv_writer
       end
     end
 
@@ -56,19 +72,19 @@ module Ruport
     def build_table_body
       render_data_by_row { |r| 
         r.options.format_options = options.format_options
+        r.options.formatter = csv_writer
       }
     end
 
     # Produces CSV output for a data row.
     def build_row
-      require "fastercsv"
-      output << FCSV.generate_line(data,options.format_options || {})
+      csv_writer << data
     end
     
     # Renders the header for a group using the group name.
     # 
     def build_group_header
-      output << data.name.to_s << "\n\n"
+      csv_writer << [data.name.to_s] << []
     end
     
     # Renders the group body - uses the table renderer to generate the output.
@@ -82,7 +98,7 @@ module Ruport
     #
     def build_grouping_header
       unless options.style == :inline
-        output << "#{data.grouped_by}," << grouping_columns
+        csv_writer << [data.grouped_by] + grouping_columns
       end
     end
    
@@ -101,17 +117,17 @@ module Ruport
     private
     
     def grouping_columns
-      require "fastercsv"
-      data.data.to_a[0][1].column_names.to_csv
+      data.data.to_a[0][1].column_names
     end
     
     def render_justified_or_raw_grouping
       data.each do |_,group|
-        output << "#{group.name}" if options.style == :justified
+        prefix = [group.name.to_s]
         group.each do |row|
-          output << "#{group.name if options.style == :raw}," << row.to_csv
+          csv_writer << prefix + row.to_a
+          prefix = [nil] if options.style == :justified
         end
-        output << "\n"
+        csv_writer << []
       end
     end
     
