@@ -330,8 +330,8 @@ class Ruport::Renderer
     #
     # Please see the examples/ directory for custom renderer examples, because
     # this is not nearly as complicated as it sounds in most cases.
-    def render(*args)
-      rend = build(*args) { |r|        
+    def render(format, add_options=nil)
+      rend = build(format, add_options) { |r|
           yield(r) if block_given?   
         r.setup if r.respond_to? :setup
       }  
@@ -361,18 +361,18 @@ class Ruport::Renderer
     #
     # Returns the renderer instance.
     #
-    def build(*args)
+    def build(format, add_options=nil)
       rend = self.new
 
-      rend.send(:use_formatter,args[0])
+      rend.send(:use_formatter, format)
       rend.send(:options=, options.dup)
       if rend.class.const_defined? :Helpers
         rend.formatter.extend(rend.class.const_get(:Helpers))
       end
-      if args[1].kind_of?(Hash)
-        d = args[1].delete(:data)
+      if add_options.kind_of?(Hash)
+        d = add_options.delete(:data)
         rend.data = d if d
-        args[1].each {|k,v| rend.options.send("#{k}=",v) }
+        add_options.each {|k,v| rend.options.send("#{k}=",v) }
       end
 
       yield(rend) if block_given?
