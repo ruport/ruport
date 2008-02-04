@@ -36,6 +36,10 @@ module Ruport
 
     attr_writer :csv_writer
 
+    def initialize
+      require 'fastercsv'
+    end
+
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
     def apply_template
@@ -51,7 +55,6 @@ module Ruport
     # options.
     #
     def csv_writer
-      require 'fastercsv'
       @csv_writer ||= options.formatter ||
         FCSV(output, options.format_options || {})
     end
