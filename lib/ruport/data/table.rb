@@ -24,6 +24,130 @@ module Ruport::Data
   #
   class Table
 
+    class Pivot #:nodoc:
+
+      def initialize(table, group_col, pivot_col, summary_col, options = {})
+        @table = table
+        @group_column = group_col
+        @pivot_column = pivot_col
+        @summary_column = summary_col
+        @pivot_order = options[:pivot_order]
+      end
+
+      def convert_row_order_to_group_order(row_order_spec)
+        case row_order_spec
+        when Array
+          proc {|group|
+            row_order_spec.map {|e| group[0][e].to_s }
+          }
+        when Proc
+          proc {|group|
+            if row_order_spec.arity == 2
+              row_order_spec.call(group[0], group.name)
+            else
+              row_order_spec.call(group[0])
+            end
+          }
+        when NilClass
+          nil
+        else
+          proc {|group| group[0][row_order_spec].to_s }
+        end
+      end
+
+      def columns_from_pivot
+        ordering = convert_row_order_to_group_order(@pivot_order)
+        pivot_column_grouping = Grouping(@table, :by => @pivot_column)
+        pivot_column_grouping.each {|n,g| g.add_column(n) { n }}
+        pivot_column_grouping.sort_grouping_by!(ordering) if ordering
+        result = []
+        pivot_column_grouping.each {|name,_| result << name }
+        result
+      end
+
+      def group_column_entries
+        @table.map {|row| row[@group_column]}.uniq
+      end
+
+      def to_table
+        result = Table()
+        result.add_column(@group_column)
+        pivoted_columns = columns_from_pivot
+        pivoted_columns.each { |name| result.add_column(name) }
+        outer_grouping = Grouping(@table, :by => @group_column)
+        group_column_entries.each {|outer_group_name|
+          outer_group = outer_grouping[outer_group_name]
+          pivot_values = pivoted_columns.inject({}) do |hsh, e|
+            matching_rows = outer_group.rows_with(@pivot_column => e)
+            hsh[e] = matching_rows.first && matching_rows.first[@summary_column]
+            hsh
+          end
+          result << [outer_group_name] + pivoted_columns.map {|e| 
+            pivot_values[e]
+          }
+        }
+        result
+      end
+
+    end
+
+    # Creates a new table with values from the specified pivot column
+    # transformed into columns.
+    #
+    # Required options:
+    # <b><tt>:group_by</tt></b>::       The name of a column whose unique
+    #                                   values should become rows in the new
+    #                                   table.
+    #
+    # <b><tt>:values</tt></b>::         The name of a column that should supply
+    #                                   the values for the pivoted columns.
+    #
+    # Optional:
+    # <b><tt>:pivot_order</tt></b>::    An ordering specification for the
+    #                                   pivoted columns, in terms of the source
+    #                                   rows. If this is a Proc there is an
+    #                                   optional second argument that receives
+    #                                   the name of the pivot column, which due
+    #                                   to implementation oddity currently is
+    #                                   removed from the row provided in the
+    #                                   first argument. This wart will likely
+    #                                   be fixed in a future version.
+    #
+    # Example:
+    #
+    # Given a table <em>my_table</em>:
+    #    +-------------------------+
+    #    | Group | Segment | Value |
+    #    +-------------------------+
+    #    |   A   |    1    |   0   |
+    #    |   A   |    2    |   1   |
+    #    |   B   |    1    |   2   |
+    #    |   B   |    2    |   3   |
+    #    +-------------------------+
+    #
+    # Pivoting the table on the Segment column:
+    #
+    #    my_table.pivot('Segment', :group_by => 'Group', :values => 'Value',
+    #      :pivot_order => proc {|row, name| name})
+    #
+    # Yields a new table like this:
+    #    +---------------+
+    #    | Group | 1 | 2 |
+    #    +---------------+
+    #    |   A   | 0 | 1 |
+    #    |   B   | 2 | 3 |
+    #    +---------------+
+    #
+    def pivot(pivot_column, options = {})
+      group_column = options[:group_by] || 
+        raise(ArgumentError, ":group_by option required")
+      value_column = options[:values]   || 
+        raise(ArgumentError, ":values option required")
+      Pivot.new(
+        self, group_column, pivot_column, value_column, options
+      ).to_table
+    end
+
     # === Overview
     #
     # This module provides facilities for creating tables from csv data.
