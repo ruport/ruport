@@ -105,7 +105,7 @@ class Ruport::Renderer
       #     renders_with CustomRenderer, :font_size => 14
       #   end
       def renders_with(renderer,opts={})
-        @renderer = renderer.name
+        @renderer = renderer
         @rendering_options=opts
       end  
       
@@ -145,8 +145,7 @@ class Ruport::Renderer
       #   >> Ruport::Data::Table.renderer
       #   => Ruport::Renderer::Table
       def renderer
-        return unless @renderer
-        @renderer.split("::").inject(Class) { |c,el| c.const_get(el) }
+        @renderer
       end
     end
 
