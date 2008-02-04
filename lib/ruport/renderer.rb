@@ -407,7 +407,7 @@ class Ruport::Renderer
 
   # Sets +data+ attribute on the active formatter.
   def data=(val)
-    formatter.data = val.dup 
+    formatter.data = val
   end
 
   # Renderer::Options object which is shared with the current formatter.

@@ -63,6 +63,24 @@ class DummyText < Ruport::Formatter
   end
 end   
 
+# This formatter modifies the (String) data object passed to it
+class Destructive < Ruport::Formatter
+
+  def prepare_document; end
+
+  def build_header; end
+
+  def build_body
+    output << "You sent #{data}"
+    data.replace("RUBBISH")
+  end
+
+  def build_footer; end
+
+  def finalize_document; end
+end
+
+
 class VanillaBinary < Ruport::Formatter
   renders :bin, :for => VanillaRenderer
   save_as_binary_file
@@ -260,6 +278,7 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
   # This provides a way to check several hooks that Renderer supports
   class RendererWithManyHooks < Ruport::Renderer
     add_format DummyText, :text
+    add_format Destructive, :destructive
 
     prepare :document
 
@@ -296,6 +315,13 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
      assert_equal %w[a b f], r.data
      assert_equal :red, r.options.snapper
    }
+  end
+
+  def test_formatter_data_dup
+    source = "some text"
+    result = RendererWithManyHooks.render(:destructive, :data => source)
+    assert_equal("You sent some text", result)
+    assert_equal("some text", source)
   end
 
   def test_stage_helper

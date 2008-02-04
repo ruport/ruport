@@ -136,7 +136,7 @@ module Ruport
     include RenderingTools
    
     # Set by the <tt>:data</tt> attribute from Renderer#render
-    attr_accessor :data              
+    attr_reader :data              
     
     # Set automatically by Renderer#render(format) or Renderer#render_format
     attr_accessor :format                                                    
@@ -200,6 +200,13 @@ module Ruport
     def options
       @options ||= Renderer::Options.new
     end 
+
+    # Sets the data object, making a local copy using #dup. This may have
+    # a significant overhead for large tables, so formatters which don't
+    # modify the data object may wish to override this.
+    def data=(val)
+      @data = val.dup
+    end
 
     # Clears the output.
     def clear_output
