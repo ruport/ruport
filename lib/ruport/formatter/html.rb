@@ -59,7 +59,7 @@ module Ruport
 
     # Simply closes the table tag. 
     def build_table_footer
-      output << "\t</table>"
+      output << "\t</table>\n"
     end
   
     # Renders individual rows for the table.
