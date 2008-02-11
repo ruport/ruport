@@ -138,7 +138,7 @@ module Ruport
             "</td>\n\t\t</tr>\n"
         end
       end
-      output << "\t</table>"
+      output << "\t</table>\n"
     end
     
     def grouping_columns

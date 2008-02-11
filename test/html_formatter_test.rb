@@ -31,7 +31,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
     assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
                  "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t"+
                  "\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
-                 "\t</tr>\n\t</table>",actual)
+                 "\t</tr>\n\t</table>\n",actual)
 
     actual = Ruport::Renderer::Table.render_html { |r| 
       r.data = Table(%w[a b c], :data => [ [1,2,3],[4,5,6]]) 
@@ -41,7 +41,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
       "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
-      "\t</tr>\n\t</table>",actual)   
+      "\t</tr>\n\t</table>\n",actual)   
     
   end
   
@@ -121,7 +121,7 @@ class TestRenderHTMLGroup < Test::Unit::TestCase
       "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
-      "\t</tr>\n\t</table>", actual
+      "\t</tr>\n\t</table>\n", actual
   end
 
   def test_render_html_group_without_headers
@@ -133,7 +133,7 @@ class TestRenderHTMLGroup < Test::Unit::TestCase
     assert_equal "\t<p>test</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
-      "\t</tr>\n\t</table>", actual
+      "\t</tr>\n\t</table>\n", actual
   end                                           
 end
 
@@ -148,8 +148,8 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
 
     assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>2</td>\n"+
     "\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t"+
-    "<td>3</td>\n\t\t</tr>\n\t</table>\n\t<p>2</p>\n\t<table>\n\t\t<tr>"+
-    "\n\t\t\t<td>7</td>\n\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
+    "<td>3</td>\n\t\t</tr>\n\t</table>\n\n\t<p>2</p>\n\t<table>\n\t\t<tr>"+
+    "\n\t\t\t<td>7</td>\n\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n\n", actual
   end
 
   def test_render_html_grouping_with_table_headers
@@ -160,10 +160,10 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
     assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<th>b</th>\n"+
                  "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>"+
                  "2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t"+
-                 "\t<td>1</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t</table>\n"+
+                 "\t<td>1</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t</table>\n\n"+
                  "\t<p>2</p>\n\t<table>\n\t\t<tr>\n\t\t\t<th>b</th>\n\t\t"+
                  "\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>7</td>\n"+
-                 "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
+                 "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n\n", actual
   end
 
   def test_render_justified_html_grouping
@@ -179,7 +179,7 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
                  "<td>&nbsp;</td>\n\t\t\t<td>1</td>\n\t\t\t<td>3</td>"+
                  "\n\t\t</tr>\n\t\t<tr>\n\t\t\t"+
                  "<td class=\"groupName\">2</td>\n\t\t\t<td>7</td>\n"+
-                 "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>", actual
+                 "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
   end
 end  
      
