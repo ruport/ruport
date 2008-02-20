@@ -64,14 +64,6 @@ module Ruport
     # capabilities within your custom formatters   
     #
     module RenderingTools
-      # Iterates through <tt>data</tt> and passes
-      # each row to render_row with the given options.
-      def render_data_by_row(options={},&block)
-        data.each do |r|
-          render_row(r,options,&block)
-        end
-      end
-
       # Uses Renderer::Row to render the Row object with the
       # given options.
       #

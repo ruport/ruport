@@ -51,9 +51,8 @@ module Ruport
     # Uses the Row renderer to build up the table body.
     # Replaces nil and empty strings with "&nbsp;" 
     def build_table_body
-      render_data_by_row do |rend|
-        r = rend.data
-        rend.data = r.map { |e| e.to_s.empty? ? "&nbsp;" : e }
+      data.each do |row|
+        build_row(row.map { |e| e.to_s.empty? ? "&nbsp;" : e })
       end
     end
 
@@ -63,7 +62,7 @@ module Ruport
     end
   
     # Renders individual rows for the table.
-    def build_row
+    def build_row(data = self.data)
       output <<
         "\t\t<tr>\n\t\t\t<td>" +
         data.to_a.join("</td>\n\t\t\t<td>") +

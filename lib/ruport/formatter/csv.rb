@@ -78,7 +78,7 @@ module Ruport
     end
 
     # Produces CSV output for a data row.
-    def build_row
+    def build_row(data = self.data)
       csv_writer << data
     end
     

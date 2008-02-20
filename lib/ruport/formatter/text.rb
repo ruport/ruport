@@ -94,14 +94,7 @@ module Ruport
 
       calculate_max_col_widths unless options.max_col_width
 
-      render_data_by_row do |rend|
-        rend.options do |o|
-          o.max_col_width = options.max_col_width
-          o.alignment     = options.alignment
-          o.table_width   = options.table_width   
-          o.ignore_table_width = options.ignore_table_width
-        end
-      end
+      data.each { |row| build_row(row) }
 
       output << fit_to_width(hr)
     end
@@ -114,7 +107,7 @@ module Ruport
     #
     # Uses fit_to_width to truncate the row if necessary.
     #
-    def build_row
+    def build_row(data = self.data)
       max_col_widths_for_row(data) unless options.max_col_width
 
       data.enum_for(:each_with_index).inject(line=[]) { |s,e|
