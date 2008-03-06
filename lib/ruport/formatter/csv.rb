@@ -33,8 +33,10 @@ module Ruport
                        
     if RUBY_VERSION > "1.9"     
       require "csv"
-      FCSV = CSV
-      alias_method :FCSV, :CSV   
+      unless defined? FCSV 
+        FCSV = CSV  
+        alias_method :FCSV, :CSV    
+      end
     end
     
     renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
