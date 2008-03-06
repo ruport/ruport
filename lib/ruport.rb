@@ -9,11 +9,23 @@
 #
 # See LICENSE and COPYING for details
 #
+ 
+
+if RUBY_VERSION > "1.9"     
+  require "csv"   
+  unless defined? FCSV
+    class Object   
+      FCSV = CSV  
+      alias_method :FCSV, :CSV 
+    end   
+  end
+end
+
 
 module Ruport #:nodoc:#
   
-  VERSION = "1.5.0"   
-  
+  VERSION = "1.5.0"     
+ 
   class FormatterError < RuntimeError #:nodoc:
   end
   

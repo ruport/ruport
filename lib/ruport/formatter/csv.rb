@@ -30,14 +30,6 @@ module Ruport
   # <tt>:show_group_headers</tt> True by default
   #
   class Formatter::CSV < Formatter
-                       
-    if RUBY_VERSION > "1.9"     
-      require "csv"
-      unless defined? FCSV 
-        FCSV = CSV  
-        alias_method :FCSV, :CSV    
-      end
-    end
     
     renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
                             Renderer::Group, Renderer::Grouping ]
