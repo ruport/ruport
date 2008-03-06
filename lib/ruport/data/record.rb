@@ -18,7 +18,9 @@ module Ruport::Data
   #
   class Record   
     
-    private :id
+    if RUBY_VERSION < "1.9"
+      private :id     
+    end
 
     include Enumerable  
     

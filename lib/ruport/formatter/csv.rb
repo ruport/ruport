@@ -30,15 +30,21 @@ module Ruport
   # <tt>:show_group_headers</tt> True by default
   #
   class Formatter::CSV < Formatter
+                       
+    if RUBY_VERSION > "1.9"     
+      require "csv"
+      FCSV = CSV
+      alias_method :FCSV, :CSV   
+    end
     
     renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
                             Renderer::Group, Renderer::Grouping ]
+    
+    def initialize
+      require "fastercsv" unless RUBY_VERSION > "1.9"   
+    end
 
     attr_writer :csv_writer
-
-    def initialize
-      require 'fastercsv'
-    end
 
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.

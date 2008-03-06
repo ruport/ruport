@@ -26,8 +26,10 @@ class Ruport::Renderer
   # Structure for holding renderer options.  
   # Simplified version of HashWithIndifferentAccess
   class Options < OpenStruct 
-    
-    private :id
+           
+    if RUBY_VERSION < "1.9"
+      private :id   
+    end
     
     # Returns a Hash object.  Use this if you need methods other than []
     def to_hash
