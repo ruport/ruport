@@ -114,7 +114,7 @@ module Ruport #:nodoc:#
 end  
 
 require "enumerator"
-require "ruport/renderer" 
+require "ruport/controller" 
 require "ruport/data" 
 require "ruport/formatter" 
 

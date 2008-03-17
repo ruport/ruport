@@ -515,5 +515,5 @@ class Ruport::Controller
 
 end
 
-require "ruport/renderer/table"
-require "ruport/renderer/grouping"         
+require "ruport/controller/table"
+require "ruport/controller/grouping"         
