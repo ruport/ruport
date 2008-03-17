@@ -8,14 +8,14 @@
                          
 require "ruport" 
 
-# only used for the titleize call in ClientRenderer#setup  
+# only used for the titleize call in ClientController#setup  
 # tweak as needed if you don't want to install AS.
 require "active_support" 
 
 # This looks a little more messy than usual, but it addresses the
 # concern of wanting to have a standard template for reports.
 #
-class ClientRenderer < Ruport::Renderer
+class ClientController < Ruport::Controller
   prepare :standard_report
   stage :company_header, :client_header, :client_body, :client_footer
   finalize :standard_report
@@ -51,7 +51,7 @@ end
 #  Notice the footer is not implemented and it doesn't complain.   
 #
 class ClientPDF < CompanyPDFBase
-  renders :pdf, :for => ClientRenderer
+  renders :pdf, :for => ClientController
 
   def build_client_header
    pad(10) do
@@ -68,5 +68,5 @@ end
 table = Table([:a,:b,:c]) << [1,2,3] << [4,5,6]
 
 File.open("example.pdf","w") do |f|
-  f << ClientRenderer.render_pdf(:data => table,:example => "apple")
+  f << ClientController.render_pdf(:data => table,:example => "apple")
 end

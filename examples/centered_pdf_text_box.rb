@@ -1,21 +1,21 @@
 require "ruport"                             
  
-# Renderers can be though of as control classes or interface builders.
+# Controllers can be though of as control classes or interface builders.
 # Essentially, they define the options that formatters should implement
 # and the stages of rendering they should handle.  Ruport's formatting
-# system is very forgiving, and the renderers do not force their
+# system is very forgiving, and the controllers do not force their
 # specs onto formatters that are attached to them. 
 #
-class Document < Ruport::Renderer
+class Document < Ruport::Controller
   
   # Will throw an error if these options are not set at rendering time
   required_option :text, :author                                      
   
-  # The renderer will look for a build_document_body() method on the formatter,
+  # The controller will look for a build_document_body() method on the formatter,
   # but silently skip this stage if it is missing
   stage :document_body
   
-  # The renderer will look for a finalize_document() method on the formatter,
+  # The controller will look for a finalize_document() method on the formatter,
   # but silently skip this stage if it is missing
   finalize :document                            
 end
@@ -59,11 +59,11 @@ class CenteredPDFTextBox < Ruport::Formatter::PDF
   end
 end
 
-# All options passed to a renderer will be written onto the options object.
+# All options passed to a controller will be written onto the options object.
 # In the block form, you may use explicit accessors 
 # (i.e. r.text instead of r.options.text ) for only things that have
 # either been defined with option / required_option methods, 
-# or have explicit accessors in the Renderer.
+# or have explicit accessors in the Controller.
 #
 a = Document.render_pdf( :heading => "a good quote", 
                          :author => "Ralph Waldo Emerson") do |r|

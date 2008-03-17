@@ -2,7 +2,7 @@ require "ruport"
 
 # draws pretty little lines all over the place on a PDF
 
-class SimpleLines < Ruport::Renderer
+class SimpleLines < Ruport::Controller
   stage :horizontal_lines
 end
 

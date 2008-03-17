@@ -2,7 +2,7 @@
 
 class TracSummaryReport
   
-  include Ruport::Renderer::Hooks
+  include Ruport::Controller::Hooks
   
   renders_as_table
   

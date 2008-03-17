@@ -1,6 +1,6 @@
 require "ruport"
 
-class LinePlotter < Ruport::Renderer
+class LinePlotter < Ruport::Controller
 
    options do |o|
     o.line_color   = "green"
