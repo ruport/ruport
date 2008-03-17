@@ -1,11 +1,11 @@
-# renderer/table.rb : Tabular data renderer for Ruby Reports
+# controller/table.rb : Tabular data controller for Ruby Reports
 #
 # Written by Gregory Brown, December 2006.  Copyright 2006, All Rights Reserved
 # This is Free Software, please see LICENSE and COPYING for details.
 
 module Ruport
 
-  # This class implements the basic renderer for table rows.
+  # This class implements the basic controller for table rows.
   #
   # == Supported Formatters 
   #  
@@ -17,11 +17,11 @@ module Ruport
   #  
   # * build_row
   #
-  class Renderer::Row < Renderer
+  class Controller::Row < Controller
     stage :row
   end
 
-  # This class implements the basic tabular data renderer for Ruport.
+  # This class implements the basic tabular data controller for Ruport.
   #
   # == Supported Formatters 
   #  
@@ -42,7 +42,7 @@ module Ruport
   # * build_table_footer
   # * finalize_table
   #
-  class Renderer::Table < Renderer
+  class Controller::Table < Controller
     options { |o| o.show_table_headers = true }
 
     prepare :table

@@ -13,7 +13,7 @@
 module Ruport
   
   # This class provides text output for Ruport's Row, Table, Group, and
-  # Grouping renderers
+  # Grouping controllers
   #
   # It handles things like automatically truncating tables that go off the
   # edge of the screen in the console, proper column alignment, and pretty
@@ -45,8 +45,8 @@ module Ruport
   # truncating it.  Useful for file output.
   class Formatter::Text < Formatter
    
-    renders [:txt, :text], :for => [ Renderer::Row, Renderer::Table,
-                                     Renderer::Group, Renderer::Grouping ]
+    renders [:txt, :text], :for => [ Controller::Row, Controller::Table,
+                                     Controller::Group, Controller::Grouping ]
 
     # Hook for setting available options using a template. See the template 
     # documentation for the available options and their format.
@@ -129,14 +129,14 @@ module Ruport
     end
     
     # Creates the group body. Since group data is a table, just uses the
-    # Table renderer.
+    # Table controller.
     #
     def build_group_body
       render_table data, options
     end
 
     # Generates the body for a grouping. Iterates through the groups and
-    # renders them using the group renderer.
+    # renders them using the group controller.
     #
     def build_grouping_body
       render_inline_grouping(options)

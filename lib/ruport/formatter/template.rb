@@ -142,7 +142,7 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 #                   available to
 #                   FasterCSV.new
 #
-class Ruport::Formatter::Template < Ruport::Renderer::Options
+class Ruport::Formatter::Template < Ruport::Controller::Options
   
   # Returns all existing templates in a hash keyed by the template names.
   def self.templates

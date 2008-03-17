@@ -14,7 +14,7 @@
 module Ruport
 
   # This formatter implements the CSV format for Ruport's Row, Table, Group
-  # and Grouping renderers.  It is a light wrapper around
+  # and Grouping controllers.  It is a light wrapper around
   # James Edward Gray II's FasterCSV.
   #
   # === Rendering Options
@@ -31,8 +31,8 @@ module Ruport
   #
   class Formatter::CSV < Formatter
     
-    renders :csv, :for => [ Renderer::Row,   Renderer::Table, 
-                            Renderer::Group, Renderer::Grouping ]
+    renders :csv, :for => [ Controller::Row,   Controller::Table, 
+                            Controller::Group, Controller::Grouping ]
     
     def initialize
       require "fastercsv" unless RUBY_VERSION > "1.9"   
@@ -60,7 +60,7 @@ module Ruport
     end
 
     # Generates table header by turning column_names into a CSV row.
-    # Uses the row renderer to generate the actual formatted output
+    # Uses the row controller to generate the actual formatted output
     #
     # This method does not do anything if options.show_table_headers is false
     # or the Data::Table has no column names.
@@ -71,7 +71,7 @@ module Ruport
       end
     end
 
-    # Calls the row renderer for each row in the Data::Table
+    # Calls the row controller for each row in the Data::Table
     def build_table_body
       fcsv = csv_writer
       data.each { |row| fcsv << row }
@@ -88,7 +88,7 @@ module Ruport
       csv_writer << [data.name.to_s] << []
     end
     
-    # Renders the group body - uses the table renderer to generate the output.
+    # Renders the group body - uses the table controller to generate the output.
     #
     def build_group_body
       render_table data, options.to_hash
