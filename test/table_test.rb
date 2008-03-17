@@ -438,15 +438,15 @@ class TestTableFormattingHooks < Test::Unit::TestCase
     table = Ruport::Data::Table.new :column_names => %w[a b], 
                                     :data => [[1,2],[3,4],[5,6]]
     assert_equal("a,b\n1,2\n3,4\n5,6\n",table.to_csv)
-    assert_raises(Ruport::Renderer::UnknownFormatError) { table.to_nothing }
+    assert_raises(Ruport::Controller::UnknownFormatError) { table.to_nothing }
   end
 
   def test_as_throws_proper_errors
     a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     assert_nothing_raised { a.as(:csv) }
     assert_nothing_raised { a.to_csv }
-    assert_raises(Ruport::Renderer::UnknownFormatError) { a.as(:nothing) }
-    assert_raises(Ruport::Renderer::UnknownFormatError) { a.to_nothing }
+    assert_raises(Ruport::Controller::UnknownFormatError) { a.as(:nothing) }
+    assert_raises(Ruport::Controller::UnknownFormatError) { a.to_nothing }
   end
     
 end

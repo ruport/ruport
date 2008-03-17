@@ -63,7 +63,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
   
   def test_render_with_template
     formatter = Ruport::Formatter::PDF.new
-    formatter.options = Ruport::Renderer::Options.new
+    formatter.options = Ruport::Controller::Options.new
     formatter.options.template = :simple
     formatter.apply_template
     
@@ -193,7 +193,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
   # draw_table has destructive behavior on nested rendering options (#359)
   def test_draw_table_should_not_destroy_nested_rendering_options
      f = Ruport::Formatter::PDF.new   
-     f.options = Ruport::Renderer::Options.new 
+     f.options = Ruport::Controller::Options.new 
      f.options[:table_format] =  
        { :column_options => { :heading => {:justification => :center }}}
      f.draw_table Table(%w[a b c], :data => [[1,2,3],[4,5,6]])  

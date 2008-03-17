@@ -3,7 +3,7 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderCSVRow < Test::Unit::TestCase
   def test_render_csv_row
-    actual = Ruport::Renderer::Row.render_csv(:data => [1,2,3])
+    actual = Ruport::Controller::Row.render_csv(:data => [1,2,3])
     assert_equal("1,2,3\n", actual)
   end
 end
@@ -24,12 +24,12 @@ class TestRenderCSVTable < Test::Unit::TestCase
   end
 
   def test_render_csv_table
-    actual = Ruport::Renderer::Table.render_csv do |r| 
+    actual = Ruport::Controller::Table.render_csv do |r| 
       r.data = Table([], :data => [[1,2,3],[4,5,6]])
     end
     assert_equal("1,2,3\n4,5,6\n",actual)
 
-    actual = Ruport::Renderer::Table.render_csv do |r|
+    actual = Ruport::Controller::Table.render_csv do |r|
       r.data = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     end
     assert_equal("a,b,c\n1,2,3\n4,5,6\n",actual)
@@ -42,7 +42,7 @@ class TestRenderCSVTable < Test::Unit::TestCase
   end
 
   def test_table_headers
-    actual = Ruport::Renderer::Table.
+    actual = Ruport::Controller::Table.
              render_csv(:show_table_headers => false, 
                         :data => Table(%w[a b c], :data => [[1,2,3],[4,5,6]]))
     assert_equal("1,2,3\n4,5,6\n",actual)
@@ -50,7 +50,7 @@ class TestRenderCSVTable < Test::Unit::TestCase
      
   def test_render_with_template
     formatter = Ruport::Formatter::CSV.new
-    formatter.options = Ruport::Renderer::Options.new
+    formatter.options = Ruport::Controller::Options.new
     formatter.options.template = :simple
     formatter.apply_template
     
@@ -112,7 +112,7 @@ class TestRenderCSVGroup < Test::Unit::TestCase
     group = Ruport::Data::Group.new(:name => 'test',
                                     :data => [[1,2,3],[4,5,6]],
                                     :column_names => %w[a b c])
-    actual = Ruport::Renderer::Group.
+    actual = Ruport::Controller::Group.
              render_csv(:data => group, :show_table_headers => false )
     assert_equal("test\n\n1,2,3\n4,5,6\n",actual)
   end 

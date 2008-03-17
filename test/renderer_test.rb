@@ -14,11 +14,11 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 #============================================================================
 # These two renderers represent the two styles that can be used when defining
-# renderers in Ruport.  The OldSchoolRenderer approach has largely been
+# renderers in Ruport.  The OldSchoolController approach has largely been
 # deprecated, but still has uses in edge cases that we need to support.
 #============================================================================
 
-class OldSchoolRenderer < Ruport::Renderer
+class OldSchoolController < Ruport::Controller
 
   def run
     formatter do
@@ -30,7 +30,7 @@ class OldSchoolRenderer < Ruport::Renderer
 
 end               
 
-class VanillaRenderer < Ruport::Renderer
+class VanillaController < Ruport::Controller
   stage :header,:body,:footer
 end
 
@@ -40,7 +40,7 @@ end
 # be replaced by mock objects in the future.
 class DummyText < Ruport::Formatter
   
-  renders :text, :for => OldSchoolRenderer
+  renders :text, :for => OldSchoolController
   
   def prepare_document
     output << "p"
@@ -82,19 +82,19 @@ end
 
 
 class VanillaBinary < Ruport::Formatter
-  renders :bin, :for => VanillaRenderer
+  renders :bin, :for => VanillaController
   save_as_binary_file
 end
 
 
-class TestRenderer < Test::Unit::TestCase
+class TestController < Test::Unit::TestCase
 
   def teardown
     Ruport::Formatter::Template.instance_variable_set(:@templates, nil)
   end
 
   def test_trivial
-    actual = OldSchoolRenderer.render(:text)
+    actual = OldSchoolController.render(:text)
     assert_equal "header\nbody\nfooter\n", actual
   end    
   
@@ -142,7 +142,7 @@ class TestRenderer < Test::Unit::TestCase
   def test_using_io
     require "stringio"
     out = StringIO.new
-    a = OldSchoolRenderer.render(:text) { |r| r.io = out }
+    a = OldSchoolController.render(:text) { |r| r.io = out }
     out.rewind
     assert_equal "header\nbody\nfooter\n", out.read
     assert_equal "", out.read
@@ -151,12 +151,12 @@ class TestRenderer < Test::Unit::TestCase
   def test_using_file
     f = []
     File.expects(:open).yields(f)
-    a = OldSchoolRenderer.render(:text, :file => "foo.text")
+    a = OldSchoolController.render(:text, :file => "foo.text")
     assert_equal "header\nbody\nfooter\n", f[0]
     
     f = []
     File.expects(:open).with("blah","wb").yields(f)
-    VanillaRenderer.render(:bin, :file => "blah")        
+    VanillaController.render(:bin, :file => "blah")        
   end       
   
   def test_using_file_via_rendering_tools     
@@ -168,25 +168,25 @@ class TestRenderer < Test::Unit::TestCase
     
 
   def test_formats
-    assert_equal( {}, Ruport::Renderer.formats )
-    assert_equal( { :text => DummyText },OldSchoolRenderer.formats )
+    assert_equal( {}, Ruport::Controller.formats )
+    assert_equal( { :text => DummyText },OldSchoolController.formats )
   end
 
   def test_method_missing
-    actual = OldSchoolRenderer.render_text
+    actual = OldSchoolController.render_text
     assert_equal "header\nbody\nfooter\n", actual
   end
 
   def test_formatter
     # normal instance mode
-    rend = OldSchoolRenderer.new
+    rend = OldSchoolController.new
     rend.send(:use_formatter,:text)
 
     assert_kind_of Ruport::Formatter, rend.formatter
     assert_kind_of DummyText, rend.formatter
 
     # render mode
-    OldSchoolRenderer.render_text do |r|
+    OldSchoolController.render_text do |r|
       assert_kind_of Ruport::Formatter, r.formatter
       assert_kind_of DummyText, r.formatter
     end
@@ -198,7 +198,7 @@ class TestRenderer < Test::Unit::TestCase
   end  
   
   def test_options_act_like_indifferent_hash
-     opts = Ruport::Renderer::Options.new
+     opts = Ruport::Controller::Options.new
      opts.foo = "bar"
      assert_equal "bar", opts[:foo]
      assert_equal "bar", opts["foo"]    
@@ -220,7 +220,7 @@ end
 class TestFormatterUsingBuild < Test::Unit::TestCase
   # This formatter uses the build syntax
   class UsesBuild < Ruport::Formatter
-     renders :text_using_build, :for => VanillaRenderer 
+     renders :text_using_build, :for => VanillaController 
      
      build :header do
        output << "header\n"
@@ -237,8 +237,8 @@ class TestFormatterUsingBuild < Test::Unit::TestCase
 
   def test_should_render_using_build_syntax
     assert_equal "header\nbody\nfooter\n",
-      VanillaRenderer.render_text_using_build
-    VanillaRenderer.render_text_using_build do |rend|
+      VanillaController.render_text_using_build
+    VanillaController.render_text_using_build do |rend|
       assert rend.formatter.respond_to?(:build_header)
       assert rend.formatter.respond_to?(:build_body)
       assert rend.formatter.respond_to?(:build_footer)
@@ -251,7 +251,7 @@ class TestFormatterWithLayout < Test::Unit::TestCase
   # This formatter is meant to check out a special case in Ruport's renderer,
   # in which a layout method is called and yielded to when defined
   class WithLayout < DummyText
-     renders :text_with_layout, :for => VanillaRenderer 
+     renders :text_with_layout, :for => VanillaController 
      
      def layout     
        output << "---\n"
@@ -263,20 +263,20 @@ class TestFormatterWithLayout < Test::Unit::TestCase
 
   def test_layout
      assert_equal "---\nheader\nbody\nfooter\n---\n", 
-                  VanillaRenderer.render_text_with_layout
+                  VanillaController.render_text_with_layout
   end
   
   def test_layout_disabled
      assert_equal "header\nbody\nfooter\n",
-                  VanillaRenderer.render_text_with_layout(:layout => false)
+                  VanillaController.render_text_with_layout(:layout => false)
   end
 
 end
 
 
-class TestRendererWithManyHooks < Test::Unit::TestCase
-  # This provides a way to check several hooks that Renderer supports
-  class RendererWithManyHooks < Ruport::Renderer
+class TestControllerWithManyHooks < Test::Unit::TestCase
+  # This provides a way to check several hooks that controllers supports
+  class ControllerWithManyHooks < Ruport::Controller
     add_format DummyText, :text
     add_format Destructive, :destructive
 
@@ -295,7 +295,7 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
   end
 
   def test_hash_options_setters
-    a = RendererWithManyHooks.render(:text, :subtitle => "foo",
+    a = ControllerWithManyHooks.render(:text, :subtitle => "foo",
                                        :subsubtitle => "bar") { |r|
       assert_equal "foo", r.options.subtitle
       assert_equal "bar", r.options.subsubtitle
@@ -303,15 +303,15 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
   end
 
   def test_data_accessors
-   a = RendererWithManyHooks.render(:text, :data => [1,2,4]) { |r|
+   a = ControllerWithManyHooks.render(:text, :data => [1,2,4]) { |r|
      assert_equal [1,2,4], r.data
    }
   
-   b = RendererWithManyHooks.render_text(%w[a b c]) { |r|
+   b = ControllerWithManyHooks.render_text(%w[a b c]) { |r|
      assert_equal %w[a b c], r.data
    }
   
-   c = RendererWithManyHooks.render_text(%w[a b f],:snapper => :red) { |r|
+   c = ControllerWithManyHooks.render_text(%w[a b f],:snapper => :red) { |r|
      assert_equal %w[a b f], r.data
      assert_equal :red, r.options.snapper
    }
@@ -319,45 +319,45 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
 
   def test_formatter_data_dup
     source = "some text"
-    result = RendererWithManyHooks.render(:destructive, :data => source)
+    result = ControllerWithManyHooks.render(:destructive, :data => source)
     assert_equal("You sent some text", result)
     assert_equal("some text", source)
   end
 
   def test_stage_helper
-    assert RendererWithManyHooks.stages.include?('body')
+    assert ControllerWithManyHooks.stages.include?('body')
   end
  
   def test_finalize_helper
-    assert_equal :document, RendererWithManyHooks.final_stage
+    assert_equal :document, ControllerWithManyHooks.final_stage
   end
 
   def test_prepare_helper
-   assert_equal :document, RendererWithManyHooks.first_stage
+   assert_equal :document, ControllerWithManyHooks.first_stage
   end
 
   def test_finalize_again
-   assert_raise(Ruport::Renderer::StageAlreadyDefinedError) { 
-     RendererWithManyHooks.finalize :report 
+   assert_raise(Ruport::Controller::StageAlreadyDefinedError) { 
+     ControllerWithManyHooks.finalize :report 
    }
   end
 
   def test_prepare_again
-   assert_raise(Ruport::Renderer::StageAlreadyDefinedError) { 
-     RendererWithManyHooks.prepare :foo 
+   assert_raise(Ruport::Controller::StageAlreadyDefinedError) { 
+     ControllerWithManyHooks.prepare :foo 
    }
   end
 
   def test_renderer_using_helpers
-   actual = RendererWithManyHooks.render(:text)
+   actual = ControllerWithManyHooks.render(:text)
    assert_equal "pheader\nbody\nfooter\nf", actual
 
-   actual = RendererWithManyHooks.render_text
+   actual = ControllerWithManyHooks.render_text
    assert_equal "pheader\nbody\nfooter\nf", actual
   end
 
   def test_required_option_helper
-   a = RendererWithManyHooks.dup
+   a = ControllerWithManyHooks.dup
    a.required_option :title
 
    a.render_text do |r|
@@ -368,18 +368,18 @@ class TestRendererWithManyHooks < Test::Unit::TestCase
   end
 
   def test_without_required_option
-   a = RendererWithManyHooks.dup
+   a = ControllerWithManyHooks.dup
    a.required_option :title
 
-   assert_raise(Ruport::Renderer::RequiredOptionNotSet) { a.render(:text) }
+   assert_raise(Ruport::Controller::RequiredOptionNotSet) { a.render(:text) }
   end
  
 end
 
 
-class TestRendererWithRunHook < Test::Unit::TestCase
+class TestControllerWithRunHook < Test::Unit::TestCase
 
-  class RendererWithRunHook < Ruport::Renderer
+  class ControllerWithRunHook < Ruport::Controller
     add_format DummyText, :text
 
     required_option :foo,:bar
@@ -396,15 +396,15 @@ class TestRendererWithRunHook < Test::Unit::TestCase
 
   def test_renderer_with_run_hooks
     assert_equal "|header\nbody\nfooter\n", 
-       RendererWithRunHook.render_text(:foo => "bar",:bar => "baz")
+       ControllerWithRunHook.render_text(:foo => "bar",:bar => "baz")
   end
 
 end
 
 
-class TestRendererWithHelperModule < Test::Unit::TestCase
+class TestControllerWithHelperModule < Test::Unit::TestCase
 
-  class RendererWithHelperModule < VanillaRenderer
+  class ControllerWithHelperModule < VanillaController
 
     add_format DummyText, :stub
 
@@ -416,7 +416,7 @@ class TestRendererWithHelperModule < Test::Unit::TestCase
   end   
 
   def test_renderer_helper_module
-    RendererWithHelperModule.render_stub do |r|
+    ControllerWithHelperModule.render_stub do |r|
       assert_equal "Hello Dolly", r.formatter.say_hello
     end
   end
@@ -424,10 +424,10 @@ end
 
 
 class TestMultiPurposeFormatter < Test::Unit::TestCase
-  # This provides a way to check the multi-format hooks for the Renderer
+  # This provides a way to check the multi-format hooks for the Controller
   class MultiPurposeFormatter < Ruport::Formatter 
 
-     renders [:html,:text], :for => VanillaRenderer
+     renders [:html,:text], :for => VanillaController
 
      def build_header
        a = 10
@@ -445,9 +445,9 @@ class TestMultiPurposeFormatter < Test::Unit::TestCase
   end   
 
   def test_multi_purpose
-    text = VanillaRenderer.render_text(:body_text => "foo")
+    text = VanillaController.render_text(:body_text => "foo")
     assert_equal "Foo: 10\nfoo", text
-    html = VanillaRenderer.render_html(:body_text => "bar")
+    html = VanillaController.render_html(:body_text => "bar")
     assert_equal "<b>Foo: 10</b>\n<pre>\nbar\n</pre>\n",html
   end
 
@@ -478,7 +478,7 @@ end
 class TestFormatterErbHelper < Test::Unit::TestCase
   class ErbFormatter < Ruport::Formatter
      
-    renders :terb, :for  => VanillaRenderer
+    renders :terb, :for  => VanillaController
     
     def build_body    
        # demonstrate local binding
@@ -496,25 +496,25 @@ class TestFormatterErbHelper < Test::Unit::TestCase
    #FIXME: need to test file
 
    def test_self_bound
-     assert_equal "Default Binding: bar", VanillaRenderer.render_terb
+     assert_equal "Default Binding: bar", VanillaController.render_terb
    end
    
    def test_custom_bound
      a = [1,2,3]
      arr_binding = a.instance_eval { binding }
      assert_equal "Binding Override: 321", 
-                   VanillaRenderer.render_terb(:binding => arr_binding)
+                   VanillaController.render_terb(:binding => arr_binding)
    end
 end    
 
 
 class TestOptionReaders < Test::Unit::TestCase
   
-  class RendererForCheckingOptionReaders < Ruport::Renderer
+  class ControllerForCheckingOptionReaders < Ruport::Controller
     required_option :foo  
   end 
   
-  class RendererForCheckingPassivity < Ruport::Renderer
+  class ControllerForCheckingPassivity < Ruport::Controller
     def foo
       "apples"
     end
@@ -522,10 +522,10 @@ class TestOptionReaders < Test::Unit::TestCase
   end
 
    def setup 
-     @renderer = RendererForCheckingOptionReaders.new 
+     @renderer = ControllerForCheckingOptionReaders.new 
      @renderer.formatter = Ruport::Formatter.new 
      
-     @passive = RendererForCheckingPassivity.new
+     @passive = ControllerForCheckingPassivity.new
      @passive.formatter = Ruport::Formatter.new
    end
    
@@ -545,7 +545,7 @@ end
      
 class TestSetupOrdering < Test::Unit::TestCase
    
-  class RendererWithSetup < Ruport::Renderer
+  class ControllerWithSetup < Ruport::Controller
     stage :bar
     def setup
       options.foo.capitalize!
@@ -553,7 +553,7 @@ class TestSetupOrdering < Test::Unit::TestCase
   end           
   
   class BasicFormatter < Ruport::Formatter 
-    renders :text, :for => RendererWithSetup
+    renders :text, :for => ControllerWithSetup
     
     def build_bar
       output << options.foo
@@ -561,24 +561,24 @@ class TestSetupOrdering < Test::Unit::TestCase
   end
   
   def test_render_hash_options_should_be_called_before_setup
-    assert_equal "Hello", RendererWithSetup.render_text(:foo => "hello")
+    assert_equal "Hello", ControllerWithSetup.render_text(:foo => "hello")
   end       
   
   def test_render_block_should_be_called_before_setup
     assert_equal "Hello", 
-      RendererWithSetup.render_text { |r| r.options.foo = "hello" }
+      ControllerWithSetup.render_text { |r| r.options.foo = "hello" }
   end
   
 end
 
-class TestRendererHooks < Test::Unit::TestCase
+class TestControllerHooks < Test::Unit::TestCase
 
   context "when renderable_data omitted" do
 
     require "mocha"
 
     class DummyObject 
-      include Ruport::Renderer::Hooks
+      include Ruport::Controller::Hooks
       renders_as_table
     end
 
@@ -586,7 +586,7 @@ class TestRendererHooks < Test::Unit::TestCase
       a = DummyObject.new
       rend = mock("renderer")
       rend.expects(:data=).with(a)
-      Ruport::Renderer::Table.expects(:render).with(:csv,{}).yields(rend)
+      Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
       a.as(:csv)
     end
 
@@ -595,7 +595,7 @@ class TestRendererHooks < Test::Unit::TestCase
   context "when using renderable_data" do
 
     class DummyObject2
-      include Ruport::Renderer::Hooks
+      include Ruport::Controller::Hooks
       renders_as_table
 
       def renderable_data(format)
@@ -607,12 +607,12 @@ class TestRendererHooks < Test::Unit::TestCase
       a = DummyObject2.new
       rend = mock("renderer")
       rend.expects(:data=).with(1)
-      Ruport::Renderer::Table.expects(:render).with(:csv,{}).yields(rend)
+      Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
       a.as(:csv)
     end
 
     class DummyObject3
-      include Ruport::Renderer::Hooks
+      include Ruport::Controller::Hooks
       renders_as_table
       
       def renderable_data
@@ -625,7 +625,7 @@ class TestRendererHooks < Test::Unit::TestCase
     end
 
     class DummyObject4
-      include Ruport::Renderer::Hooks
+      include Ruport::Controller::Hooks
       renders_as_table
 
       def renderable_data(format)
@@ -642,7 +642,7 @@ class TestRendererHooks < Test::Unit::TestCase
       a = DummyObject4.new
       rend = mock("renderer")
       rend.expects(:data=).with(2)
-      Ruport::Renderer::Table.expects(:render).with(:csv,{}).yields(rend)
+      Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
       a.as(:csv)
     end
 
@@ -652,8 +652,8 @@ class TestRendererHooks < Test::Unit::TestCase
 
     def specify_an_unknown_format_error_should_be_raised
 
-      assert_raises(Ruport::Renderer::UnknownFormatError) do
-        Ruport::Renderer.render_foo
+      assert_raises(Ruport::Controller::UnknownFormatError) do
+        Ruport::Controller.render_foo
       end
 
     end

@@ -24,7 +24,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
 
   def test_render_html_basic
     
-    actual = Ruport::Renderer::Table.render_html { |r|
+    actual = Ruport::Controller::Table.render_html { |r|
       r.data = Table([], :data => [[1,2,3],[4,5,6]])
     }          
     
@@ -33,7 +33,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
                  "\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
                  "\t</tr>\n\t</table>\n",actual)
 
-    actual = Ruport::Renderer::Table.render_html { |r| 
+    actual = Ruport::Controller::Table.render_html { |r| 
       r.data = Table(%w[a b c], :data => [ [1,2,3],[4,5,6]]) 
     }
     
@@ -47,7 +47,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
   
   def test_render_with_template
     formatter = Ruport::Formatter::HTML.new
-    formatter.options = Ruport::Renderer::Options.new
+    formatter.options = Ruport::Controller::Options.new
     formatter.options.template = :simple
     formatter.apply_template
     
@@ -102,7 +102,7 @@ end
 class TestRenderHTMLRow < Test::Unit::TestCase
   
   def test_render_html_row
-    actual = Ruport::Renderer::Row.render_html { |r| r.data = [1,2,3] }
+    actual = Ruport::Controller::Row.render_html { |r| r.data = [1,2,3] }
     assert_equal("\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
                  "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n",actual)
   end
@@ -115,7 +115,7 @@ class TestRenderHTMLGroup < Test::Unit::TestCase
     group = Ruport::Data::Group.new(:name => 'test',
                                     :data => [[1,2,3],[4,5,6]],
                                     :column_names => %w[a b c])
-    actual = Ruport::Renderer::Group.render(:html, :data => group)
+    actual = Ruport::Controller::Group.render(:html, :data => group)
     assert_equal "\t<p>test</p>\n"+
       "\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
       "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
@@ -128,7 +128,7 @@ class TestRenderHTMLGroup < Test::Unit::TestCase
     group = Ruport::Data::Group.new(:name => 'test',
                                     :data => [[1,2,3],[4,5,6]],
                                     :column_names => %w[a b c])
-    actual = Ruport::Renderer::Group.render(:html, :data => group,
+    actual = Ruport::Controller::Group.render(:html, :data => group,
       :show_table_headers => false)
     assert_equal "\t<p>test</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
@@ -143,7 +143,7 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
   def test_render_html_grouping
     table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
     g = Grouping(table,:by => "a")
-    actual = Ruport::Renderer::Grouping.render(:html, :data => g,
+    actual = Ruport::Controller::Grouping.render(:html, :data => g,
                                                :show_table_headers => false)
 
     assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<td>2</td>\n"+
@@ -155,7 +155,7 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
   def test_render_html_grouping_with_table_headers
     table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
     g = Grouping(table,:by => "a")
-    actual = Ruport::Renderer::Grouping.render(:html, :data => g)
+    actual = Ruport::Controller::Grouping.render(:html, :data => g)
 
     assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<th>b</th>\n"+
                  "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>"+
@@ -169,7 +169,7 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
   def test_render_justified_html_grouping
     table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
     g = Grouping(table,:by => "a")
-    actual = Ruport::Renderer::Grouping.render(:html, :data => g,
+    actual = Ruport::Controller::Grouping.render(:html, :data => g,
                                                :style => :justified)
 
     assert_equal "\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>\n"+

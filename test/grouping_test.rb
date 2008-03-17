@@ -97,9 +97,9 @@ class TestGroupRendering < Test::Unit::TestCase
   def test_as_throws_proper_errors
     assert_nothing_raised { @group.as(:csv) }
     assert_nothing_raised { @group.to_csv }
-    assert_raises(Ruport::Renderer::UnknownFormatError) {
+    assert_raises(Ruport::Controller::UnknownFormatError) {
       @group.as(:nothing) }
-    assert_raises(Ruport::Renderer::UnknownFormatError) {
+    assert_raises(Ruport::Controller::UnknownFormatError) {
       @group.to_nothing }
   end
 
@@ -379,9 +379,9 @@ class TestGroupingRendering < Test::Unit::TestCase
   def test_as_throws_proper_errors
     assert_nothing_raised { @grouping.as(:csv) }
     assert_nothing_raised { @grouping.to_csv }
-    assert_raises(Ruport::Renderer::UnknownFormatError) {
+    assert_raises(Ruport::Controller::UnknownFormatError) {
       @grouping.as(:nothing) }
-    assert_raises(Ruport::Renderer::UnknownFormatError) {
+    assert_raises(Ruport::Controller::UnknownFormatError) {
       @grouping.to_nothing }
   end
 end

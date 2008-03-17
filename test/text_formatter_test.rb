@@ -79,7 +79,7 @@ class TestRenderTextTable < Test::Unit::TestCase
   
   def test_render_with_template
     formatter = Ruport::Formatter::Text.new
-    formatter.options = Ruport::Renderer::Options.new
+    formatter.options = Ruport::Controller::Options.new
     formatter.options.template = :simple
     formatter.apply_template
     
@@ -165,7 +165,7 @@ end
 class TestRenderTextRow < Test::Unit::TestCase
 
   def test_row_basic
-    actual = Ruport::Renderer::Row.render_text(:data => [1,2,3])
+    actual = Ruport::Controller::Row.render_text(:data => [1,2,3])
     assert_equal("| 1 | 2 | 3 |\n", actual)
   end
 
@@ -180,7 +180,7 @@ class TestRenderTextGroup < Test::Unit::TestCase
                                                %w[interesting red snapper]],
                                     :column_names => %w[i hope so])
 
-    actual = Ruport::Renderer::Group.render_text(:data => group)
+    actual = Ruport::Controller::Group.render_text(:data => group)
     expected = "test:\n\n"+
                "+------------------------------+\n"+
                "|      i      | hope |   so    |\n"+
@@ -197,7 +197,7 @@ class TestRenderTextGroup < Test::Unit::TestCase
                                               %w[interesting red snapper]],
                                    :column_names => %w[i hope so])
    
-    actual = Ruport::Renderer::Group.render(:text, :data => group,
+    actual = Ruport::Controller::Group.render(:text, :data => group,
       :show_table_headers => false )
     expected = "test:\n\n"+
                "+------------------------------+\n"+
@@ -217,7 +217,7 @@ class TestRenderTextGrouping < Test::Unit::TestCase
                                     :column_names => %w[i hope so])
     grouping = Grouping(table, :by => "i")
 
-    actual = Ruport::Renderer::Grouping.render(:text, :data => grouping)
+    actual = Ruport::Controller::Grouping.render(:text, :data => grouping)
     expected = "interesting:\n\n"+
                "+----------------+\n"+
                "| hope |   so    |\n"+
@@ -242,7 +242,7 @@ class TestRenderTextGrouping < Test::Unit::TestCase
                                     :column_names => %w[i hope so])
     grouping = Grouping(table, :by => "i")
 
-    actual = Ruport::Renderer::Grouping.render(:text, :data => grouping,
+    actual = Ruport::Controller::Grouping.render(:text, :data => grouping,
       :show_table_headers => false)
     expected = "interesting:\n\n"+
                "+----------------+\n"+

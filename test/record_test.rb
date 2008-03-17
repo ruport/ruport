@@ -313,11 +313,11 @@ class TestRecord < Test::Unit::TestCase
       end
 
       def specify_as_should_throw_proper_errors
-        assert_raises(Ruport::Renderer::UnknownFormatError) { @a.as(:nothing) } 
+        assert_raises(Ruport::Controller::UnknownFormatError) { @a.as(:nothing) } 
       end 
     
       def specify_to_format_should_throw_proper_errors
-        assert_raises(Ruport::Renderer::UnknownFormatError) { @a.to_nothing }
+        assert_raises(Ruport::Controller::UnknownFormatError) { @a.to_nothing }
       end  
     end   
   
