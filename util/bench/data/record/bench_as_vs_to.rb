@@ -6,7 +6,7 @@ require "ruport/util/bench"
 include Ruport::Bench
 
 class MyFormat < Ruport::Formatter;
-  renders :nothing, :for => Ruport::Renderer::Row
+  renders :nothing, :for => Ruport::Controller::Row
 end
 
 record = Ruport::Data::Record.new [1,2,3]
