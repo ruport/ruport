@@ -382,6 +382,10 @@ module Ruport
           text_opts[:font_size],
           text_opts[:angle] || 0)
         move_cursor_to(ypos)
+      end   
+      
+      def finalize
+        render_pdf
       end
     end   
 

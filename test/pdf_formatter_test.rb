@@ -199,7 +199,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
      f.draw_table Table(%w[a b c], :data => [[1,2,3],[4,5,6]])  
      assert_equal({ :justification => :center }, 
                   f.options[:table_format][:column_options][:heading])      
-  end
+  end        
     
 end    
 
@@ -326,4 +326,29 @@ class TestPDFFormatterHelpers < Test::Unit::TestCase
     a.draw_text "foo", :left => a.left_boundary + 50, :y => 500
     assert_equal 100, a.cursor
   end
+end  
+  
+class SimpleController < Ruport::Controller
+  stage :foo
+  
+  class PDF < Ruport::Formatter::PDF
+    renders :pdf, :for => SimpleController
+    
+    build :foo do
+      add_text "Blah"
+    end
+  end
+end                                
+
+class TestPDFFinalize < Test::Unit::TestCase
+
+  context "When rendering a PDF" do    
+    def specify_finalize_should_be_called
+      SimpleController.render_pdf do |r|
+        r.formatter.expects(:render_pdf)
+      end 
+    end
+  end
+  
 end
+    

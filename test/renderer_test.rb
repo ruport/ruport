@@ -84,8 +84,15 @@ end
 class VanillaBinary < Ruport::Formatter
   renders :bin, :for => VanillaController
   save_as_binary_file
-end
+end 
 
+class SpecialFinalize < Ruport::Formatter
+  renders :with_finalize, :for => VanillaController
+  
+  def finalize
+    output << "I has been finalized"
+  end
+end
 
 class TestController < Test::Unit::TestCase
 
@@ -96,7 +103,14 @@ class TestController < Test::Unit::TestCase
   def test_trivial
     actual = OldSchoolController.render(:text)
     assert_equal "header\nbody\nfooter\n", actual
-  end    
+  end          
+  
+  context "when running a formatter with custom a finalize method" do
+    def specify_finalize_method_should_be_called
+      assert_equal "I has been finalized", 
+                   VanillaController.render_with_finalize
+    end                
+  end
   
   context "when using templates" do
     def specify_apply_template_should_be_called

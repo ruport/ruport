@@ -479,6 +479,7 @@ class Ruport::Controller
     end
 
     finalize self.class.final_stage if self.class.final_stage
+    maybe :finalize
   end  
   
   def execute_stages
