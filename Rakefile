@@ -33,7 +33,7 @@ spec = Gem::Specification.new do |spec|
   spec.rdoc_options << '--title' << 'Ruport Documentation' <<
                        '--main'  << 'README' << '-q'
   spec.add_dependency('fastercsv', '>= 1.1.0')
-  spec.add_dependency('pdf-writer', '= 1.1.7')
+  spec.add_dependency('pdf-writer', '= 1.1.8')
   spec.author = "Gregory Brown"
   spec.email = "  gregory.t.brown@gmail.com"
   spec.rubyforge_project = "ruport"

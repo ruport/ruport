@@ -526,7 +526,8 @@ module Ruport::Data
     #   table.column_names.include?("a") #=> false
     #
     def rename_column(old_name,new_name)
-      self.column_names[column_names.index(old_name)] = new_name
+      index = column_names.index(old_name) or return
+      self.column_names[index] = new_name
       each { |r| r.rename_attribute(old_name,new_name,false)} 
     end
 

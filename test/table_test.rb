@@ -662,6 +662,13 @@ class TestTableColumnOperations < Test::Unit::TestCase
     assert_equal Table(%w[a foo c], :data => [[1,6,6],[4,9,9]]), a
   end 
 
+  def test_ensure_renaming_a_missing_column_fails_silently
+    a = Table(%w[a b c])
+    assert_nothing_raised do
+      a.rename_column("d", "z")
+    end
+  end
+
 end  
 
 class TestTableFromCSV < Test::Unit::TestCase
