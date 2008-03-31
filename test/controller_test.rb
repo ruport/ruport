@@ -585,6 +585,71 @@ class TestSetupOrdering < Test::Unit::TestCase
   
 end
 
+class CustomFormatter < Ruport::Formatter
+  def custom_helper
+    output << "Custom!"
+  end
+end
+
+class ControllerWithAnonymousFormatters < Ruport::Controller
+
+  stage :report
+
+  formatter :html do
+    build :report do
+      output << textile("h1. Hi there")
+    end
+  end
+
+  formatter :csv do
+    build :report do
+      build_row([1,2,3])
+    end
+  end
+
+  formatter :pdf do
+    build :report do 
+      add_text "hello world"
+    end
+  end
+
+  formatter :text do
+    build :report do
+      output << "Hello world"
+    end
+  end
+
+  formatter :custom => CustomFormatter do
+
+    build :report do
+      output << "This is "
+      custom_helper
+    end
+
+  end
+
+end
+
+class TestAnonymousFormatter < Test::Unit::TestCase
+  context "When using built in Ruport formatters" do
+
+    def specify_text_formatter_shortcut_is_accessible
+      assert_equal "Hello world", ControllerWithAnonymousFormatters.render_text
+      assert_equal "1,2,3\n", ControllerWithAnonymousFormatters.render_csv
+      assert_equal "<h1>Hi there</h1>", ControllerWithAnonymousFormatters.render_html
+      assert_not_nil ControllerWithAnonymousFormatters.render_pdf
+    end
+    
+  end
+
+  context "When using custom formatters" do
+    def specify_custom_formatter_shortcut_is_accessible
+      assert_equal "This is Custom!", ControllerWithAnonymousFormatters.render_custom
+    end
+  end
+
+end
+
 class TestControllerHooks < Test::Unit::TestCase
 
   context "when renderable_data omitted" do

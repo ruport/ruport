@@ -184,9 +184,30 @@ class Ruport::Controller
       as(format.to_sym, options.merge(:file => file))        
     end
   end
+
   
   
   class << self
+
+    def built_in_formats
+     { :html => Ruport::Formatter::HTML,
+       :csv  => Ruport::Formatter::CSV,
+       :pdf  => Ruport::Formatter::PDF,
+       :text => Ruport::Formatter::Text }
+    end
+
+    def formatter(*a,&b)
+      case a[0]
+      when Symbol
+        klass = Class.new(built_in_formats[a[0]])
+        klass.renders a[0], :for => self
+      when Hash
+        k,v = a[0].to_a[0]
+        klass = Class.new(v)
+        klass.renders k, :for => self
+      end
+      klass.class_eval(&b)
+    end
     
     attr_accessor :first_stage,:final_stage,:required_options,:stages #:nodoc: 
     
