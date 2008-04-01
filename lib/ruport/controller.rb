@@ -189,6 +189,34 @@ class Ruport::Controller
   
   class << self
 
+    # Returns a hash that maps format names to their formatter classes, for use
+    # with the formatter shortcut.  Supported formats are :html, :csv, :pdf, and
+    # :text by default.
+    #
+    #
+    # Sample override:
+    #
+    #   class MyController < Ruport::Controller
+    # 
+    #     def built_in_formats
+    #       super.extend(:xml => MyXMLFormatter,
+    #                    :json => MyJSONFormatter)
+    #     end
+    #   end 
+    #
+    # This would allow for:
+    #
+    #   class ChildController < MyController
+    #
+    #     formatter :xml do
+    #       # ...
+    #     end
+    #
+    #     formatter :json do
+    #       # ...
+    #     end
+    #   end
+    #     
     def built_in_formats
      { :html => Ruport::Formatter::HTML,
        :csv  => Ruport::Formatter::CSV,
@@ -196,6 +224,53 @@ class Ruport::Controller
        :text => Ruport::Formatter::Text }
     end
 
+
+    # Generates an anonymous formatter class and ties it to the Controller.
+    # This method looks up the built in formats in the hash returned by 
+    # built_in_formats, but also explicitly specify a custom Formatter class to
+    # subclass from.
+    #
+    # Sample usage:
+    #
+    #   class ControllerWithAnonymousFormatters < Ruport::Controller
+    #   
+    #     stage :report
+    #   
+    #     formatter :html do
+    #       build :report do
+    #         output << textile("h1. Hi there")
+    #       end
+    #     end
+    #   
+    #     formatter :csv do
+    #       build :report do
+    #         build_row([1,2,3])
+    #       end
+    #     end
+    #   
+    #     formatter :pdf do
+    #       build :report do
+    #         add_text "hello world"
+    #       end
+    #     end
+    #   
+    #     formatter :text do
+    #       build :report do
+    #         output << "Hello world"
+    #       end
+    #     end
+    #   
+    #     formatter :custom => CustomFormatter do
+    #   
+    #       build :report do
+    #         output << "This is "
+    #         custom_helper
+    #       end
+    #   
+    #     end
+    #   
+    #   end
+    #
     def formatter(*a,&b)
       case a[0]
       when Symbol
