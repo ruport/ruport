@@ -2,7 +2,7 @@ require "rake/rdoctask"
 require "rake/testtask"
 require "rake/gempackagetask"
 
-RUPORT_VERSION = "1.6.0"
+RUPORT_VERSION = "1.6.1"
 
 begin
   require "rubygems"
