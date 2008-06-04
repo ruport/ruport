@@ -52,12 +52,12 @@
 #
 # Dependencies Details:
 #   
-#  -- formatting
+#  -- Formatting
 #
 # Ruport relies on PDF::Writer and FasterCSV for its formatting support.
 # If you want to make use of textile helpers, you'll also need RedCloth.
 #
-#  -- database interaction
+#  -- Database interaction
 #
 # If you wish to use Ruport to report against a rails project, 
 # a camping project, or do standalone acts_as_reportable reports, you'll need
