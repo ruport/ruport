@@ -32,7 +32,7 @@ spec = Gem::Specification.new do |spec|
   spec.extra_rdoc_files = %w{README LICENSE AUTHORS}
   spec.rdoc_options << '--title' << 'Ruport Documentation' <<
                        '--main'  << 'README' << '-q'
-  spec.add_dependency('fastercsv', '= 1.2.3')
+  spec.add_dependency('fastercsv')
   spec.add_dependency('pdf-writer','= 1.1.8')
   spec.author = "Gregory Brown"
   spec.email = "  gregory.t.brown@gmail.com"
