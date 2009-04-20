@@ -604,10 +604,10 @@ class Ruport::Controller
   
   # Selects a formatter for use by format name
   def use_formatter(format)
+    raise UnknownFormatError unless self.class.formats.include?(format) &&
+      self.class.formats[format].respond_to?(:new)
     self.formatter = self.class.formats[format].new
     self.formatter.format = format
-  rescue NoMethodError
-    raise UnknownFormatError
   end
 
 end
