@@ -16,31 +16,26 @@ Rake::TestTask.new do |test|
   test.verbose = true
 end
 
-spec = Gem::Specification.new do |spec|
-  spec.name = "ruport"
-  spec.version = RUPORT_VERSION
-  spec.platform = Gem::Platform::RUBY
-  spec.summary = "A generalized Ruby report generation and templating engine."
-  spec.files =  Dir.glob("{examples,lib,test,bin,util/bench}/**/**/*") +
-                      ["Rakefile"]
-  spec.require_path = "lib"
-  
-  spec.test_files = Dir[ "test/*_test.rb" ]
-  spec.has_rdoc = true
-  spec.extra_rdoc_files = %w{README LICENSE AUTHORS}
-  spec.rdoc_options << '--title' << 'Ruport Documentation' <<
-                       '--main'  << 'README' << '-q'
-  spec.add_dependency('fastercsv')
-  spec.add_dependency('pdf-writer','= 1.1.8')
-  spec.author = "Gregory Brown"
-  spec.email = "  gregory.t.brown@gmail.com"
-  spec.rubyforge_project = "ruport"
-  spec.homepage = "http://rubyreports.org"
-  spec.description = <<END_DESC
-  Ruby Reports is a software library that aims to make the task of reporting
-  less tedious and painful. It provides tools for data acquisition,
-  database interaction, formatting, and parsing/munging.
-END_DESC
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = 'ruport'
+    gemspec.version = Ruport::VERSION
+    gemspec.summary = 'A generalized Ruby report generation and templating engine.'
+    gemspec.description = <<-END_DESC
+      Ruby Reports is a software library that aims to make the task of reporting
+      less tedious and painful. It provides tools for data acquisition,
+      database interaction, formatting, and parsing/munging.
+    END_DESC
+    gemspec.email = 'gregory.t.brown@gmail.com'
+    gemspec.homepage = 'http://rubyreports.org'
+    gemspec.authors = ['Gregory Brown', 'Mike Milner', 'Andrew France']
+    gemspec.rdoc_options = ['--title Ruport Documentation', '--main README', '-q']
+    gemspec.add_dependency 'fastercsv'
+    gemspec.add_dependency 'pdf-writer', '= 1.1.8'
+  end
+rescue LoadError
+  puts "Jeweler gem not available."
 end
 
 Rake::RDocTask.new do |rdoc|
@@ -51,11 +46,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.main     = "README"
   rdoc.rdoc_dir = "doc/html"
   rdoc.title    = "Ruport Documentation"
-end
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.need_zip = true
-  pkg.need_tar = true
 end
 
 task :build_archives => [:package,:rcov,:rdoc] do
