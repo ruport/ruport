@@ -1,3 +1,3 @@
 module Ruport
-  VERSION = "1.7.0"
+  VERSION = "1.6.2"
 end
