@@ -650,6 +650,31 @@ class TestAnonymousFormatter < Test::Unit::TestCase
 
 end
 
+# Used to ensure that problems in controller code aren't mistakenly intercepted
+# by Ruport.
+class MisbehavingController < Ruport::Controller
+end
+
+class MisbehavingFormatter < Ruport::Formatter
+  renders :text, :for => MisbehavingController
+  def initialize
+    super
+    raise NoMethodError
+  end
+end
+
+class TestMisbehavingController < Test::Unit::TestCase
+
+  context "using a controller that throws NoMethodError" do
+    def specify_controller_errors_should_bubble_up
+      assert_raises(NoMethodError) do
+        MisbehavingController.render :text
+      end
+    end
+  end
+
+end
+
 class TestControllerHooks < Test::Unit::TestCase
 
   context "when renderable_data omitted" do
