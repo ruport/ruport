@@ -288,13 +288,13 @@ class TestGrouping < Test::Unit::TestCase
     
     def setup
       @table = Table(%w[a b c]) << ["dog",1,2] << ["cat",3,5] << 
-                                   ["banana",8,1] << ["dog",5,6]
+                                   ["banana",8,1] << ["dog",5,6] << ["dog",2,4] << ["banana",7,9]
     end
     
     def specify_can_set_by_group_name_order_in_constructor
       a = Grouping(@table, :by => "a", :order => :name)    
       names = %w[banana cat dog]           
-      data = [ [[8,1]], [[3,5]], [[1,2],[5,6]] ]
+      data = [ [[8,1],[7,9]], [[3,5]], [[1,2],[5,6],[2,4]] ]
       a.each do |name,group|
         assert_equal names.shift, name
         assert_equal data.shift, group.map { |r| r.to_a } 
@@ -304,7 +304,7 @@ class TestGrouping < Test::Unit::TestCase
     def specify_can_set_by_proc_ordering_in_constructor
       a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } ) 
       names = %w[dog banana cat]      
-      data = [ [[1,2],[5,6]], [[8,1]], [[3,5]] ]
+      data = [ [[1,2],[5,6],[2,4]], [[8,1],[7,9]], [[3,5]] ]
       a.each do |name,group|
         assert_equal names.shift, name
         assert_equal data.shift, group.map { |r| r.to_a } 
@@ -315,7 +315,7 @@ class TestGrouping < Test::Unit::TestCase
       a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )  
       a.sort_grouping_by!(:name)
       names = %w[banana cat dog]           
-      data = [ [[8,1]], [[3,5]], [[1,2],[5,6]] ]
+      data = [ [[8,1],[7,9]], [[3,5]], [[1,2],[5,6],[2,4]] ]
       a.each do |name,group|
         assert_equal names.shift, name
         assert_equal data.shift, group.map { |r| r.to_a } 
@@ -327,7 +327,7 @@ class TestGrouping < Test::Unit::TestCase
       b = a.sort_grouping_by(:name)     
       
       names = %w[banana cat dog]           
-      data = [ [[8,1]], [[3,5]], [[1,2],[5,6]] ]
+      data = [ [[8,1],[7,9]], [[3,5]], [[1,2],[5,6],[2,4]] ]
       b.each do |name,group|
         assert_equal names.shift, name
         assert_equal data.shift, group.map { |r| r.to_a } 
@@ -335,7 +335,7 @@ class TestGrouping < Test::Unit::TestCase
       
       # assert original retained
       names = %w[dog banana cat]      
-      data = [ [[1,2],[5,6]], [[8,1]], [[3,5]] ]
+      data = [ [[1,2],[5,6],[2,4]], [[8,1],[7,9]], [[3,5]] ]
       a.each do |name,group|
         assert_equal names.shift, name
         assert_equal data.shift, group.map { |r| r.to_a } 
