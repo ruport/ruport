@@ -23,9 +23,6 @@ end
 
 
 module Ruport #:nodoc:#
-  
-  VERSION = "1.7.0"     
- 
   class FormatterError < RuntimeError #:nodoc:
   end
   
@@ -113,6 +110,7 @@ module Ruport #:nodoc:#
 
 end  
 
+require "ruport/version"
 require "enumerator"
 require "ruport/controller" 
 require "ruport/data" 
