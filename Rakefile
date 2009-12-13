@@ -50,11 +50,11 @@ Rake::RDocTask.new do |rdoc|
 end
 
 task :build_archives => [:package,:rcov,:rdoc] do
-  mv "pkg/ruport-#{RUPORT_VERSION}.tgz", "pkg/ruport-#{RUPORT_VERSION}.tar.gz"
-  sh "tar cjvf pkg/ruport_coverage-#{RUPORT_VERSION}.tar.bz2 coverage"
-  sh "tar cjvf pkg/ruport_doc-#{RUPORT_VERSION}.tar.bz2 doc/html"
+  mv "pkg/ruport-#{Ruport::VERSION}.tgz", "pkg/ruport-#{Ruport::VERSION}.tar.gz"
+  sh "tar cjvf pkg/ruport_coverage-#{Ruport::VERSION}.tar.bz2 coverage"
+  sh "tar cjvf pkg/ruport_doc-#{Ruport::VERSION}.tar.bz2 doc/html"
   cd "pkg"
-  sh "tar cjvf ruport-#{RUPORT_VERSION}.tar.bz2 ruport-#{RUPORT_VERSION}"
+  sh "tar cjvf ruport-#{Ruport::VERSION}.tar.bz2 ruport-#{Ruport::VERSION}"
 end
 
 task :run_benchmarks do
