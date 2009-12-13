@@ -20,6 +20,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
     gemspec.name = 'ruport'
+    gemspec.rubyforge_project = 'ruport'
     gemspec.version = Ruport::VERSION
     gemspec.summary = 'A generalized Ruby report generation and templating engine.'
     gemspec.description = <<-END_DESC
@@ -30,7 +31,7 @@ begin
     gemspec.email = 'gregory.t.brown@gmail.com'
     gemspec.homepage = 'http://rubyreports.org'
     gemspec.authors = ['Gregory Brown', 'Mike Milner', 'Andrew France']
-    gemspec.rdoc_options = ['--title Ruport Documentation', '--main README', '-q']
+    gemspec.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README', '-q']
     gemspec.add_dependency 'fastercsv'
     gemspec.add_dependency 'pdf-writer', '= 1.1.8'
   end
