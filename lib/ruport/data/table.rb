@@ -79,7 +79,7 @@ module Ruport::Data
           outer_group = outer_grouping[outer_group_name]
           pivot_values = pivoted_columns.inject({}) do |hsh, e|
             matching_rows = outer_group.rows_with(@pivot_column => e)
-            hsh[e] = matching_rows.first && matching_rows.first[@summary_column]
+            hsh[e] = matching_rows && matching_rows.inject(0) { |sum,row| sum + row[@summary_column] }
             hsh
           end
           result << [outer_group_name] + pivoted_columns.map {|e| 

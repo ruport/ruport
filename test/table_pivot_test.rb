@@ -132,3 +132,20 @@ class PivotPreservesOrdering < Test::Unit::TestCase
   end
 
 end
+
+class TablePivotaggregationTest < Test::Unit::TestCase
+
+  def setup
+    table = Table('Region', 'Product', 'Units Sold')
+    table << ['North','Widget',5]
+    table << ['North','Widget',10]
+    table << ['South','Gadget',2]
+    table << ['South','Gadget',4]
+    @pivoted = table.pivot('Product', :group_by => 'Region', :values => 'Units Sold')
+  end
+
+  def test_produces_correct_full_table_with_sum
+    expected = Table("Region","Gadget","Widget") { |t| t << ["North",0,15] << ["South",6,0] }
+    assert_equal(expected, @pivoted)
+  end
+end
