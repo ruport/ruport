@@ -133,19 +133,36 @@ class PivotPreservesOrdering < Test::Unit::TestCase
 
 end
 
-class TablePivotaggregationTest < Test::Unit::TestCase
-
+class TablePivotOperationTest < Test::Unit::TestCase
   def setup
-    table = Table('Region', 'Product', 'Units Sold')
-    table << ['North','Widget',5]
-    table << ['North','Widget',10]
-    table << ['South','Gadget',2]
-    table << ['South','Gadget',4]
-    @pivoted = table.pivot('Product', :group_by => 'Region', :values => 'Units Sold')
+    @table = Table('Region', 'Product', 'Units Sold')
+    @table << ['North','Widget',5]
+    @table << ['North','Widget',10]
+    @table << ['South','Gadget',2]
+    @table << ['South','Gadget',4]
   end
 
-  def test_produces_correct_full_table_with_sum
+  def test_performs_operation_first
+    expected = Table("Region","Gadget","Widget") { |t| t << ["North",nil,5] << ["South",2,nil] }
+    pivoted = @table.pivot('Product', :group_by => 'Region', :values => 'Units Sold', :operation => :first)
+    assert_equal(expected, pivoted)
+  end
+  
+  def test_performs_operation_count
+    expected = Table("Region","Gadget","Widget") { |t| t << ["North",0,2] << ["South",2,0] }
+    pivoted = @table.pivot('Product', :group_by => 'Region', :values => 'Units Sold', :operation => :count)
+    assert_equal(expected, pivoted)    
+  end
+  
+  def test_performs_operation_sum
     expected = Table("Region","Gadget","Widget") { |t| t << ["North",0,15] << ["South",6,0] }
-    assert_equal(expected, @pivoted)
+    pivoted = @table.pivot('Product', :group_by => 'Region', :values => 'Units Sold', :operation => :sum)
+    assert_equal(expected, pivoted)
+  end
+  
+  def test_invalid_operation_causes_exception
+    assert_raise ArgumentError do
+      @table.pivot('Product', :group_by => 'Region', :values => 'Units Sold', :operation => :foo)
+    end
   end
 end
