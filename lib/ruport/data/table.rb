@@ -78,6 +78,13 @@ module Ruport::Data
           return rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
         when :count
           return rows && rows.length
+        when :mean
+          sum = rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
+          return sum / rows.length
+        when :min
+          return rows && (rows.collect { |r| r[@summary_column] }).min
+        when :max
+          return rows && (rows.collect { |r| r[@summary_column] }).max
         else
           raise ArgumentError, "Unknown pivot operation (#{@operation})"
         end
@@ -130,8 +137,10 @@ module Ruport::Data
     # <b><tt>:operation</tt></b>::      The operation to perform on 
     #                                   <tt>:values</tt> column. Supported 
     #                                   operations are <tt>:first</tt>, 
-    #                                   <tt>:sum</tt> and <tt>:count</tt>. If 
-    #                                   not specified, the default is <tt>:first</tt>.
+    #                                   <tt>:sum</tt>, <tt>:count</tt>, 
+    #                                   <tt>:mean</tt>, <tt>:min</tt>, and 
+    #                                   <tt>:max</tt>. If not specified, the 
+    #                                   default is <tt>:first</tt>.
     #
     # Example:
     #

@@ -178,6 +178,45 @@ class TablePivotOperationTest < Test::Unit::TestCase
     assert_equal(expected, pivoted)
   end
   
+  def test_performs_operation_mean
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 5, 6]
+    expected << ['South', 2, 6, 6]
+    expected << ['East',  3, 8, 3]
+    expected << ['West',  8, 3, 5]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region',
+                                      :values => 'Units Sold',
+                                      :operation => :mean)
+    assert_equal(expected, pivoted)
+  end
+
+  def test_performs_operation_min
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 2, 4]
+    expected << ['South', 2, 5, 6]
+    expected << ['East',  1, 8, 3]
+    expected << ['West',  8, 1, 4]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region',
+                                      :values => 'Units Sold',
+                                      :operation => :min)
+    assert_equal(expected, pivoted)
+  end
+
+  def test_performs_operation_max
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 8, 8]
+    expected << ['South', 3, 7, 6]
+    expected << ['East',  5, 8, 3]
+    expected << ['West',  8, 6, 6]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region',
+                                      :values => 'Units Sold',
+                                      :operation => :max)
+    assert_equal(expected, pivoted)
+  end
+  
   def test_invalid_operation_causes_exception
     assert_raise ArgumentError do
       @table.pivot('Product', :group_by => 'Region', :values => 'Units Sold', 
