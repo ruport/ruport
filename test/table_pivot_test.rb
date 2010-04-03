@@ -133,19 +133,94 @@ class PivotPreservesOrdering < Test::Unit::TestCase
 
 end
 
-class TablePivotaggregationTest < Test::Unit::TestCase
-
+class TablePivotOperationTest < Test::Unit::TestCase
   def setup
-    table = Table('Region', 'Product', 'Units Sold')
-    table << ['North','Widget',5]
-    table << ['North','Widget',10]
-    table << ['South','Gadget',2]
-    table << ['South','Gadget',4]
-    @pivoted = table.pivot('Product', :group_by => 'Region', :values => 'Units Sold')
+    @table = Table(File.join(TEST_SAMPLES, 'sales.csv'), 
+                   :csv_options => { :converters => :integer })
   end
 
-  def test_produces_correct_full_table_with_sum
-    expected = Table("Region","Gadget","Widget") { |t| t << ["North",0,15] << ["South",6,0] }
-    assert_equal(expected, @pivoted)
+  def test_performs_operation_sum
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 10, 12]
+    expected << ['South', 5, 12,  6]
+    expected << ['East', 10,  8,  3]
+    expected << ['West',  8,  7, 10]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region', 
+                                      :values => 'Units Sold', 
+                                      :operation => :sum)
+    assert_equal(expected, pivoted)
+  end
+  
+  def test_performs_operation_first
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 2, 8]
+    expected << ['South', 2, 5, 6]
+    expected << ['East',  5, 8, 3]
+    expected << ['West',  8, 1, 6]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region', 
+                                      :values => 'Units Sold', 
+                                      :operation => :first)
+    assert_equal(expected, pivoted)
+  end
+  
+  def test_performs_operation_count
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 2, 2]
+    expected << ['South', 2, 2, 1]
+    expected << ['East',  3, 1, 1]
+    expected << ['West',  1, 2, 2]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region', 
+                                      :values => 'Units Sold', 
+                                      :operation => :count)
+    assert_equal(expected, pivoted)
+  end
+  
+  def test_performs_operation_mean
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 5, 6]
+    expected << ['South', 2, 6, 6]
+    expected << ['East',  3, 8, 3]
+    expected << ['West',  8, 3, 5]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region',
+                                      :values => 'Units Sold',
+                                      :operation => :mean)
+    assert_equal(expected, pivoted)
+  end
+
+  def test_performs_operation_min
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 2, 4]
+    expected << ['South', 2, 5, 6]
+    expected << ['East',  1, 8, 3]
+    expected << ['West',  8, 1, 4]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region',
+                                      :values => 'Units Sold',
+                                      :operation => :min)
+    assert_equal(expected, pivoted)
+  end
+
+  def test_performs_operation_max
+    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
+    expected << ['North', 1, 8, 8]
+    expected << ['South', 3, 7, 6]
+    expected << ['East',  5, 8, 3]
+    expected << ['West',  8, 6, 6]
+    
+    pivoted = @table.pivot('Product', :group_by => 'Region',
+                                      :values => 'Units Sold',
+                                      :operation => :max)
+    assert_equal(expected, pivoted)
+  end
+  
+  def test_invalid_operation_causes_exception
+    assert_raise ArgumentError do
+      @table.pivot('Product', :group_by => 'Region', :values => 'Units Sold', 
+                              :operation => :foo)
+    end
   end
 end

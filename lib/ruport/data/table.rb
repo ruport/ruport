@@ -32,6 +32,7 @@ module Ruport::Data
         @pivot_column = pivot_col
         @summary_column = summary_col
         @pivot_order = options[:pivot_order]
+        @operation = options[:operation] || :first
       end
 
       def convert_row_order_to_group_order(row_order_spec)
@@ -69,6 +70,26 @@ module Ruport::Data
         @table.map {|row| row[@group_column]}.uniq
       end
 
+      def perform_operation(rows)
+        case @operation
+        when :first
+          return rows.first && rows.first[@summary_column]
+        when :sum
+          return rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
+        when :count
+          return rows && rows.length
+        when :mean
+          sum = rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
+          return sum / rows.length
+        when :min
+          return rows && (rows.collect { |r| r[@summary_column] }).min
+        when :max
+          return rows && (rows.collect { |r| r[@summary_column] }).max
+        else
+          raise ArgumentError, "Unknown pivot operation (#{@operation})"
+        end
+      end
+      
       def to_table
         result = Table()
         result.add_column(@group_column)
@@ -79,7 +100,7 @@ module Ruport::Data
           outer_group = outer_grouping[outer_group_name]
           pivot_values = pivoted_columns.inject({}) do |hsh, e|
             matching_rows = outer_group.rows_with(@pivot_column => e)
-            hsh[e] = matching_rows && matching_rows.inject(0) { |sum,row| sum + row[@summary_column] }
+            hsh[e] = perform_operation(matching_rows)
             hsh
           end
           result << [outer_group_name] + pivoted_columns.map {|e| 
@@ -112,6 +133,14 @@ module Ruport::Data
     #                                   removed from the row provided in the
     #                                   first argument. This wart will likely
     #                                   be fixed in a future version.
+    #
+    # <b><tt>:operation</tt></b>::      The operation to perform on 
+    #                                   <tt>:values</tt> column. Supported 
+    #                                   operations are <tt>:first</tt>, 
+    #                                   <tt>:sum</tt>, <tt>:count</tt>, 
+    #                                   <tt>:mean</tt>, <tt>:min</tt>, and 
+    #                                   <tt>:max</tt>. If not specified, the 
+    #                                   default is <tt>:first</tt>.
     #
     # Example:
     #
