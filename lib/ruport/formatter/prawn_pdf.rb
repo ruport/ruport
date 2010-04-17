@@ -16,7 +16,11 @@ module Ruport
     end
 
     def draw_table(table)
-      pdf.table(table_to_array(table))
+      table_array = [table.column_names]
+      table_array += table_to_array(table)
+      pdf.table(table_array) do
+        style row(0), :font_style => :bold
+      end
     end
 
     def table_to_array(tbl)
