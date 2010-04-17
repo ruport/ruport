@@ -31,7 +31,7 @@ begin
     gemspec.email = 'gregory.t.brown@gmail.com'
     gemspec.homepage = 'http://rubyreports.org'
     gemspec.authors = ['Gregory Brown', 'Mike Milner', 'Andrew France']
-    gemspec.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README', '-q']
+    gemspec.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README.rdoc', '-q']
     gemspec.add_dependency 'fastercsv'
     gemspec.add_dependency 'pdf-writer', '= 1.1.8'
   end
@@ -40,11 +40,11 @@ rescue LoadError
 end
 
 Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_files.include( "README",
+  rdoc.rdoc_files.include( "README.rdoc",
                            #"CHANGELOG",
                            "AUTHORS", "COPYING",
                            "LICENSE", "lib/" )
-  rdoc.main     = "README"
+  rdoc.main     = "README.rdoc"
   rdoc.rdoc_dir = "doc/html"
   rdoc.title    = "Ruport Documentation"
 end
