@@ -30,5 +30,9 @@ module Ruport
     def finalize
       output << pdf.render
     end
+
+    def build_table_body
+      draw_table(data)
+    end
   end
 end
