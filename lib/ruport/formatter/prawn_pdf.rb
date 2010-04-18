@@ -6,6 +6,10 @@ module Ruport
 
     attr_accessor :pdf
 
+    def method_missing(id,*args, &block)
+      pdf.send(id,*args, &block)
+    end
+
     def initialize
       require 'prawn'
       require 'prawn/layout'
