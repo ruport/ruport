@@ -39,5 +39,22 @@ module Ruport
     def build_table_body
       draw_table(data)
     end
+
+    def build_group_body
+      render_table data, options.to_hash.merge(:formatter => pdf)
+    end
+
+    def build_grouping_body
+      data.each do |name,group|
+
+        # Group heading
+        move_down(20)
+        text name, :style => :bold, :size => 15
+
+        # Table
+        move_down(10)
+        draw_table group
+      end
+    end
   end
 end
