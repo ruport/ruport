@@ -24,4 +24,5 @@ class DocumentFormatter < Ruport::Formatter::PrawnPDF
   end
 end
 
-Document.render(:prawn_pdf, :file => 'prawn_pdf.pdf')
+Document.render(:prawn_pdf, :file => 'pdf_table.pdf')
+
