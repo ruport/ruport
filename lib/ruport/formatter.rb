@@ -1,73 +1,73 @@
-# Ruport : Extensible Reporting System                                
+# Ruport : Extensible Reporting System
 #
 # formatter.rb provides a generalized base class for creating ruport formatters.
-#     
+#
 # Created By Gregory Brown
-# Copyright (C) December 2006, All Rights Reserved.   
+# Copyright (C) December 2006, All Rights Reserved.
 #
 # This is free software distributed under the same terms as Ruby 1.8
 # See LICENSE and COPYING for details.
-module Ruport    
+module Ruport
   # Formatter is the base class for Ruport's format implementations.
   #
   # Typically, a Formatter will implement one or more output types,
-  # and be registered with one or more Controller classes. 
+  # and be registered with one or more Controller classes.
   #
   # This class provides all the necessary base functionality to make
   # use of Ruport's rendering system, including option handling, data
   # access, and basic output wrapping.
   #
   # The following example should provide a general idea of how formatters
-  # work, but see the built in formatters for reference implementations. 
-  # 
+  # work, but see the built in formatters for reference implementations.
+  #
   # A simple Controller definition is included to help show the example in
   # context, but you can also build your own custom interface to formatter
   # if you wish.
   #
   #   class ReverseController < Ruport::Controller
-  #      stage :reversed_header, :reversed_body 
+  #      stage :reversed_header, :reversed_body
   #   end
-  #                                            
-  #   class ReversedText < Ruport::Formatter 
-  #      
+  #
+  #   class ReversedText < Ruport::Formatter
+  #
   #      # Hooks formatter up to controller
-  #      renders :txt, :for => ReverseController      
-  #      
+  #      renders :txt, :for => ReverseController
+  #
   #      # Implements ReverseController's :reversed_header hook
-  #      # but can be used by any controller   
-  #      def build_reversed_header   
+  #      # but can be used by any controller
+  #      def build_reversed_header
   #         output << "#{options.header_text}\n"
   #         output << "The reversed text will follow\n"
-  #      end  
-  # 
+  #      end
+  #
   #      # Implements ReverseController's :reversed_body hook
   #      # but can be used by any controller
   #      def build_reversed_body
   #         output << data.reverse << "\n"
-  #      end         
+  #      end
   #
-  #   end    
+  #   end
   #
   #   puts ReverseController.render_txt(:data => "apple",
   #                                   :header_text => "Hello Mike, Hello Joe!")
-  #   
+  #
   #   -----
-  #   OUTPUT: 
-  # 
+  #   OUTPUT:
+  #
   #   Hello Mike, Hello Joe!
   #   The reversed text will follow
   #   elppa
-  #   
+  #
   class Formatter
-     
+
     # Provides shortcuts so that you can use Ruport's default rendering
-    # capabilities within your custom formatters   
+    # capabilities within your custom formatters
     #
     module RenderingTools
       # Uses Controller::Row to render the Row object with the
       # given options.
       #
-      # Sets the <tt>:io</tt> attribute by default to the existing 
+      # Sets the <tt>:io</tt> attribute by default to the existing
       # formatter's <tt>output</tt> object.
       def render_row(row,options={},&block)
         render_helper(Controller::Row,row,options,&block)
