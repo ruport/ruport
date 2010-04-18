@@ -16,10 +16,11 @@ module Ruport
     end
 
     def pdf
-      @pdf ||= ::Prawn::Document.new()
+      @pdf ||= (options.formatter || ::Prawn::Document.new())
     end
 
     def draw_table(table)
+
       table_array = [table.column_names]
       table_array += table_to_array(table)
       pdf.table(table_array) do
