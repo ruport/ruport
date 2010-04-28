@@ -394,6 +394,27 @@ module Ruport::Data
       return self   
     end    
     
+    # Used to add a row to a certain location within the existing table.
+    # Split the rows into two seperate tables
+    # Add the row
+    # Merge sub tables back into large table
+    # 
+    def add_row(row,options={})
+      if pos = options[:position]
+        if pos == 0
+          sub1 = Table(self.column_names)
+        else
+          sub1 = self.sub_table(0..pos)           
+        end
+
+        sub1 << row 
+        sub2 = self.sub_table(pos..-1)
+
+        @data = sub1 + sub2
+        return self
+      end
+    end
+    
     # Returns the record class constant being used by the table.
     def record_class
       @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
