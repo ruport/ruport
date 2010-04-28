@@ -37,5 +37,10 @@ data.add_row(["Fix Car", "2000"], :position => 0)
 puts data
 
 
-puts data.row_search("Cur", :column => 0)
+puts 'Add Row after Sew Curtains'
+pos = data.row_search("Sew", :column => 0) # Search for Sew in column 0 and get position.
+pos += 1
+data.add_row(["Wash Car", "8"], :position => pos)
+puts data
+
 
