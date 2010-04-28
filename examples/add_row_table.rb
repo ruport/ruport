@@ -35,3 +35,7 @@ puts data
 puts 'Add row'
 data.add_row(["Fix Car", "2000"], :position => 0)
 puts data
+
+
+puts data.row_search("Cur", :column => 0)
+

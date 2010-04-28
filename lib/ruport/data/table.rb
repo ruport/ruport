@@ -866,6 +866,28 @@ module Ruport::Data
       }
     end
 
+    # Search row for a string and return the position
+    # 
+    # Example: 
+    #   
+    #   table = Table.new :data => [["Mow Lawn","50"], ["Sew","40"], ["Clean dishes","5"]], 
+    #                     :column_names => %w[task cost]
+    #   table.row_search("Sew", :column => 0)           #=> [[1,2,3], [1,4,6]]
+    #
+    def row_search(search, options={})
+      position = 0
+      
+      if column = options[:column]
+        self.each do |row|
+          if row[column] =~ /#{search}/       # Search for part of or whole search text.
+            return position
+          end
+          
+          position += 1
+        end
+      end
+    end
+    
     # Create a copy of the Table. Records will be copied as well.
     #
     # Example:
