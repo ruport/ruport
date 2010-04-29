@@ -877,13 +877,28 @@ module Ruport::Data
     #                     :column_names => %w[task cost]
     #   table.row_search("Sew", :column => 0)           #=> [[1,2,3], [1,4,6]]
     #
+    #   Search for a number in column 0 greater than 999.
+    #   result = table.row_search(999, :column => 0, :greater_than => true)
+    #
+    #    
     def row_search(search, options={})
       position = 0
       
       if column = options[:column]
         self.each do |row|
-          if row[column] =~ /#{search}/       # Search for part of or whole search text.
-            return position
+     
+          if gt=options[:greater_than]
+            return position if row[column] > search
+          end
+
+          if lt=options[:less_than]
+            return position if row[column] < search
+          end
+          
+          unless gt or lt
+            if row[column] =~ /#{search}/       # Search for part of or whole search text.
+              return position
+            end
           end
           
           position += 1
