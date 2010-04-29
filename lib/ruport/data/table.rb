@@ -406,12 +406,11 @@ module Ruport::Data
       if pos = options[:position]
         if pos == 0
           sub1 = Table(self.column_names)
-          sub2 = self.sub_table(pos..-1)
         else
           sub1 = self.sub_table(0..pos - 1)
-          sub2 = self.sub_table(pos -1 ..-1)
         end
 
+        sub2 = self.sub_table(pos..-1)
         sub1 << row
 
         @data = sub1 + sub2
