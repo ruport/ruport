@@ -399,6 +399,9 @@ module Ruport::Data
     # Add the row
     # Merge sub tables back into large table
     # 
+    # data.add_row([8,9], :position => 0)
+    #
+    #
     def add_row(row,options={})
       if pos = options[:position]
         if pos == 0
