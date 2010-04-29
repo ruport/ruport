@@ -1,19 +1,19 @@
-# Ruport : Extensible Reporting System                                
+# Ruport : Extensible Reporting System
 #
 # formatter/pdf.rb provides text formatting for Ruport.
-#     
-# Created by Gregory Brown, February 2006     
+#
+# Created by Gregory Brown, February 2006
 # Extended by James Healy, Fall 2006
-# Copyright (C) 2006-2007 Gregory Brown / James Healy, All Rights Reserved.  
+# Copyright (C) 2006-2007 Gregory Brown / James Healy, All Rights Reserved.
 #
 # Initially inspired by some ideas and code from Simon Claret,
 # with many improvements from James Healy and Michael Milner over time.
 #
 # This is free software distributed under the same terms as Ruby 1.8
-# See LICENSE and COPYING for details.   
+# See LICENSE and COPYING for details.
 #
 module Ruport
-   
+
   # This class provides PDF output for Ruport's Table, Group, and Grouping
   # controllers.  It wraps Austin Ziegler's PDF::Writer to provide a higher
   # level interface and provides a number of helpers designed to make
@@ -29,17 +29,17 @@ module Ruport
   #       * paper_orientation #=> :portrait
   #
   #     Text:
-  #       * text_format (sets options to be passed to add_text by default)  
-  #     
+  #       * text_format (sets options to be passed to add_text by default)
+  #
   #     Table:
   #       * table_format (a hash that can take any of the options available
   #           to PDF::SimpleTable)
-  #       * table_format[:maximum_width] #=> 500   
+  #       * table_format[:maximum_width] #=> 500
   #
   #     Grouping:
   #       * style (:inline,:justified,:separated,:offset)
   #
-  class Formatter::PDF < Formatter         
+  class Formatter::PDF < Formatter
 
     module PDFWriterProxy #:nodoc:
       def method_missing(id,*args)
@@ -48,12 +48,10 @@ module Ruport
         pdf_writer.send(id,*args)
       end
     end
-    
+
     renders :pdf, :for => [ Controller::Row, Controller::Table,
                             Controller::Group, Controller::Grouping ]
-    
     attr_writer :pdf_writer
-
 
     # If you use this macro in your formatter, Ruport will automatically forward
     # calls to the underlying PDF::Writer, for any methods that are not wrapped
@@ -70,8 +68,8 @@ module Ruport
         require "pdf/simpletable"
       end
     end
-    
-    # Hook for setting available options using a template. See the template 
+
+    # Hook for setting available options using a template. See the template
     # documentation for the available options and their format.
     def apply_template
       apply_page_format_template(template.page)
@@ -103,20 +101,20 @@ module Ruport
     def finalize_table
       render_pdf unless options.skip_finalize_table
     end
-    
+
     # Generates a header with the group name for Controller::Group.
     def build_group_header
       pad(10) { add_text data.name.to_s, :justification => :center }
     end
-    
+
     # Renders the group as a table for Controller::Group.
     def build_group_body
       render_table data, options.to_hash.merge(:formatter => pdf_writer)
     end
-                     
+
     # Determines which style to use and renders the main body for
     # Controller::Grouping.
-    def build_grouping_body 
+    def build_grouping_body
       case options.style
       when :inline
         render_inline_grouping(options.to_hash.merge(:formatter => pdf_writer,
@@ -129,14 +127,14 @@ module Ruport
         raise NotImplementedError, "Unknown style"
       end
     end
-   
+
     # Calls <tt>render_pdf</tt>.
     def finalize_grouping
       render_pdf
     end
 
     # Call PDF::Writer#text with the given arguments, using
-    # <tt>text_format</tt> defaults, if they are defined.                                       
+    # <tt>text_format</tt> defaults, if they are defined.
     #
     # Example:
     #
@@ -153,7 +151,7 @@ module Ruport
     def render_pdf
       output << pdf_writer.render
     end
-       
+
     # - If the image is bigger than the box, it will be scaled down until
     #   it fits.
     # - If the image is smaller than the box, it won't be resized.
@@ -164,7 +162,7 @@ module Ruport
     # - :width: width of box
     # - :height: height of box
     #
-    def center_image_in_box(path, image_opts={}) 
+    def center_image_in_box(path, image_opts={})
       x = image_opts[:x]
       y = image_opts[:y]
       width = image_opts[:width]
@@ -174,7 +172,7 @@ module Ruport
       # reduce the size of the image until it fits into the requested box
       img_width, img_height =
         fit_image_in_box(info.width,width,info.height,height)
-      
+
       # if the image is smaller than the box, calculate the white space buffer
       x, y = add_white_space(x,y,img_width,width,img_height,height)
 
@@ -184,7 +182,7 @@ module Ruport
     # Draws some text on the canvas, surrounded by a box with rounded corners.
     #
     # Yields an OpenStruct which options can be defined on.
-    # 
+    #
     # Example:
     #
     #    rounded_text_box(options.text) do |o|
@@ -201,7 +199,7 @@ module Ruport
     def rounded_text_box(text)
       opts = OpenStruct.new
       yield(opts)
-      
+
       resize_text_to_box(text, opts)
       
       pdf_writer.save_state
@@ -225,7 +223,7 @@ module Ruport
     def move_cursor(n) 
       pdf_writer.y += n
     end
-    
+
     # Moves the cursor to a specific y coordinate in the document.
     def move_cursor_to(n)
       pdf_writer.y = n
@@ -239,7 +237,7 @@ module Ruport
     def move_down(n)
       pdf_writer.y -= n
     end
-    
+
     # Adds a specified amount of whitespace above and below the code
     # in your block.  For example, if you want to surround the top and
     # bottom of a line of text with 5 pixels of whitespace:
@@ -250,8 +248,8 @@ module Ruport
       block.call
       move_cursor(-y)
     end
-    
-    # Adds a specified amount of whitespace above the code in your block.  
+
+    # Adds a specified amount of whitespace above the code in your block.
     # For example, if you want to add a 10 pixel buffer to the top of a
     # line of text:
     #
@@ -260,8 +258,8 @@ module Ruport
       move_cursor(-y)
       block.call
     end
-    
-    # Adds a specified amount of whitespace below the code in your block.  
+
+    # Adds a specified amount of whitespace below the code in your block.
     # For example, if you want to add a 10 pixel buffer to the bottom of a
     # line of text:
     #
@@ -270,19 +268,19 @@ module Ruport
       block.call
       move_cursor(-y)
     end
-    
+
     # Draws a PDF::SimpleTable using the given data (usually a Data::Table).
     # Takes all the options you can set on a PDF::SimpleTable object,
     # see the PDF::Writer API docs for details, or check our quick reference
-    # at: 
-    # 
+    # at:
+    #
     # http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/PdfWriterQuickRef
     def draw_table(table_data, format_opts={})
       m = "PDF Formatter requires column_names to be defined"
       raise FormatterError, m if table_data.column_names.empty?
-      
-      table_data.rename_columns { |c| c.to_s } 
-            
+
+      table_data.rename_columns { |c| c.to_s }
+
       if options.table_format
         format_opts =
           Marshal.load(Marshal.dump(options.table_format.merge(format_opts))) 
@@ -294,7 +292,7 @@ module Ruport
         table.maximum_width = 500
         table.column_order  = table_data.column_names
         table.data = table_data
-        table.data = [{}] if table.data.empty?                                                 
+        table.data = [{}] if table.data.empty?
         apply_pdf_table_column_opts(table,table_data,format_opts)
 
         format_opts.each {|k,v| table.send("#{k}=", v) }  
@@ -303,12 +301,12 @@ module Ruport
       
       pdf_writer.font_size = old
     end
-        
+
     # This module provides tools to simplify some common drawing operations.
     # It is included by default in the PDF formatter.
     #
     module DrawingHelpers
-      
+
       # Draws a horizontal line from x1 to x2
       def horizontal_line(x1,x2)
         pdf_writer.line(x1,cursor,x2,cursor)
@@ -317,45 +315,45 @@ module Ruport
       
       # Draws a horizontal line from left_boundary to right_boundary
       def horizontal_rule
-        horizontal_line(left_boundary,right_boundary)                                            
-      end                                            
-      
+        horizontal_line(left_boundary,right_boundary)
+      end
+
       alias_method :hr, :horizontal_rule
-                    
+
       # Draws a vertical line at x from y1 to y2
       def vertical_line_at(x,y1,y2)
         pdf_writer.line(x,y1,x,y2)
         pdf_writer.stroke 
       end
-    
+
       # Alias for PDF::Writer#absolute_left_margin
       def left_boundary
         pdf_writer.absolute_left_margin
       end
-      
+
       # Alias for PDF::Writer#absolute_right_margin
       def right_boundary
         pdf_writer.absolute_right_margin
       end
-      
+
       # Alias for PDF::Writer#absolute_top_margin
       def top_boundary
         pdf_writer.absolute_top_margin
       end
-      
+
       # Alias for PDF::Writer#absolute_bottom_margin
       def bottom_boundary
         pdf_writer.absolute_bottom_margin
       end
-      
+
       # Alias for PDF::Writer#y
       def cursor
         pdf_writer.y
       end
-      
+
       # Draws text at an absolute location, defined by
       # :y, :x1|:left, :x2|:right
-      # 
+      #
       # All options to add_text are also supported.
       def draw_text(text,text_opts)
         ypos = cursor
@@ -365,13 +363,13 @@ module Ruport
           :absolute_right => text_opts[:x2] || text_opts[:right]))
         move_cursor_to(ypos)
       end
-      
+
       # Draws text at an absolute location, defined by
       # :y, :x1|:left
       #
       # The x position defaults to the left margin and the
       # y position defaults to the current cursor location.
-      # 
+      #
       # Uses PDF::Writer#add_text, so it will ignore any options not supported
       # by that method.
       def draw_text!(text,text_opts)
@@ -382,17 +380,17 @@ module Ruport
           text_opts[:font_size],
           text_opts[:angle] || 0)
         move_cursor_to(ypos)
-      end   
-      
+      end
+
       def finalize
         render_pdf
       end
-    end   
+    end
 
     include DrawingHelpers
-    
+
     private
-    
+
     def apply_pdf_table_column_opts(table,table_data,format_opts)
       column_opts = format_opts.delete(:column_options)
 
@@ -408,7 +406,7 @@ module Ruport
                                                column_opts)
         columns = table_data.column_names.inject({}) { |s,c|
           s.merge( c => ::PDF::SimpleTable::Column.new(c) { |col|
-            col.heading = create_heading(heading_opts) 
+            col.heading = create_heading(heading_opts)
             column_opts.each { |k,v| col.send("#{k}=",v) }
             # use the specific column names now
             specific[c].each { |k,v| col.send("#{k}=",v) }
@@ -427,22 +425,22 @@ module Ruport
         s.merge(c => opts)
       end
     end
-    
+
     def create_heading(heading_opts)
       heading_opts ||= {}
       ::PDF::SimpleTable::Column::Heading.new {|head|
         heading_opts.each {|k,v| head.send("#{k}=",v) }
       }
     end
-    
+
     def grouping_columns
       data.data.to_a[0][1].column_names.dup.unshift(data.grouped_by)
     end
-    
+
     def table_with_grouped_by_column
       Ruport::Data::Table.new(:column_names => grouping_columns)
     end
-    
+
     def render_justified_or_separated_grouping
       table = table_with_grouped_by_column
       data.each do |name,group|
@@ -457,7 +455,7 @@ module Ruport
       end
       render_table table, options.to_hash.merge(:formatter => pdf_writer)
     end
-    
+
     def render_offset_grouping
       table = table_with_grouped_by_column
       data.each do |name,group|
@@ -466,11 +464,11 @@ module Ruport
       end
       render_table table, options.to_hash.merge(:formatter => pdf_writer)
     end
-    
+
     def image_fits_in_box?(img_width,box_width,img_height,box_height)
       !(img_width > box_width || img_height > box_height)
     end
-    
+
     def fit_image_in_box(img_width,box_width,img_height,box_height)
       img_ratio = img_height.to_f / img_width.to_f
       until image_fits_in_box?(img_width,box_width,img_height,box_height)
@@ -491,7 +489,7 @@ module Ruport
       end
       return x, y
     end
-    
+
     def resize_text_to_box(text,opts)
       loop do
         sz = pdf_writer.text_width(text, opts.font_size)
@@ -499,13 +497,13 @@ module Ruport
         opts.font_size -= 1
       end
     end
-    
+
     def draw_box(x,y,width,height,radius,fill_color=nil,stroke_color=nil)
       pdf_writer.fill_color(fill_color || Color::RGB::White)
       pdf_writer.stroke_color(stroke_color || Color::RGB::Black)
       pdf_writer.rounded_rectangle(x, y, width, height, radius).fill_stroke
     end
-    
+
     def add_text_with_bottom_border(text,x,y,width,font_size)
       pdf_writer.line( x, y - 20, 
                        x + width, y - 20).stroke
@@ -515,13 +513,13 @@ module Ruport
         :absolute_left => x, :absolute_right => x + width,
         :justification => :center, :font_size => font_size)
     end
-    
+
     def apply_page_format_template(t)
       t = (t || {}).merge(options.page_format || {})
       options.paper_size ||= t[:size]
       options.paper_orientation ||= t[:layout]
     end
-    
+
     def apply_text_format_template(t)
       t = (t || {}).merge(options.text_format || {})
       options.text_format = t unless t.empty?
@@ -531,7 +529,7 @@ module Ruport
       t = (t || {}).merge(options.table_format || {})
       options.table_format = t unless t.empty?
     end
-    
+
     def apply_column_format_template(t)
       t = (t || {}).merge(options.column_format || {})
       column_opts = {}
@@ -550,7 +548,7 @@ module Ruport
         end
       end
     end
-    
+
     def apply_heading_format_template(t)
       t = (t || {}).merge(options.heading_format || {})
       heading_opts = {}
@@ -582,7 +580,7 @@ module Ruport
         end
       end
     end
-    
+
     def apply_grouping_format_template(t)
       t = (t || {}).merge(options.grouping_format || {})
       options.style ||= t[:style]

@@ -2,7 +2,7 @@
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderPDFTable < Test::Unit::TestCase
-  
+
   def setup
     Ruport::Formatter::Template.create(:simple) do |format|
       format.page = {
@@ -30,43 +30,43 @@ class TestRenderPDFTable < Test::Unit::TestCase
     end
   end
 
-  def test_render_pdf_basic  
+  def test_render_pdf_basic
     # can't render without column names
     data = Table([], :data => [[1,2],[3,4]])
     assert_raise(Ruport::FormatterError) do
-      data.to_pdf 
-    end      
+      data.to_pdf
+    end
 
     data.column_names = %w[a b]
     assert_nothing_raised { data.to_pdf }
-    
+
     assert_nothing_raised { Table(%w[a b c]).to_pdf }
-  end     
-                              
+  end
+
   # this is mostly to check that the transaction hack gets called
   def test_relatively_large_pdf
-     table = Table(File.join(File.expand_path(File.dirname(__FILE__)), 
-                   %w[samples dates.csv]))  
+     table = Table(File.join(File.expand_path(File.dirname(__FILE__)),
+                   %w[samples dates.csv]))
      table.reduce(0..99)
      assert_nothing_raised { table.to_pdf }
-  end 
-     
+  end
+
   # this is just to make sure that the column_opts code is being called.
   # FIXME: add mocks to be sure
   def test_table_with_options
     data = Table(%w[a b], :data => [[1,2],[3,4]])
     assert_nothing_raised do
-      data.to_pdf(:table_format => { 
-            :column_options => { :justification => :center } } ) 
+      data.to_pdf(:table_format => {
+            :column_options => { :justification => :center } } )
     end
   end
-  
+
   def test_render_with_template
     formatter = Ruport::Formatter::PDF.new
     formatter.options = Ruport::Controller::Options.new
     formatter.options.template = :simple
     formatter.apply_template
-    
+
     assert_equal "LETTER", formatter.options.paper_size
     assert_equal :landscape, formatter.options.paper_orientation
 
@@ -78,7 +78,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
       formatter.options.table_format[:column_options][:justification]
     assert_equal 50,
       formatter.options.table_format[:column_options][:width]
-      
+
     assert_equal :right,
       formatter.options.table_format[:column_options][:heading][:justification]
     assert_equal false,
@@ -88,7 +88,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
 
     assert_equal :separated, formatter.options.style
   end
-  
+
   def test_options_hashes_override_template
     opts = nil
     table = Table(%w[a b c])
@@ -119,7 +119,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
     ) do |r|
       opts = r.options
     end
-    
+
     assert_equal "LEGAL", opts.paper_size
     assert_equal :portrait, opts.paper_orientation
 
@@ -129,7 +129,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
 
     assert_equal :left, opts.table_format[:column_options][:justification]
     assert_equal 25, opts.table_format[:column_options][:width]
-      
+
     assert_equal :left,
       opts.table_format[:column_options][:heading][:justification]
     assert_equal true, opts.table_format[:column_options][:heading][:bold]
@@ -162,7 +162,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
     ) do |r|
       opts = r.options
     end
-    
+
     assert_equal "LEGAL", opts.paper_size
     assert_equal :portrait, opts.paper_orientation
 
@@ -172,7 +172,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
 
     assert_equal :left, opts.table_format[:column_options][:justification]
     assert_equal 25, opts.table_format[:column_options][:width]
-      
+
     assert_equal :left,
       opts.table_format[:column_options][:heading][:justification]
     assert_equal true, opts.table_format[:column_options][:heading][:bold]
@@ -182,95 +182,97 @@ class TestRenderPDFTable < Test::Unit::TestCase
   end
 
   #--------BUG TRAPS--------#
-  
+
   # PDF::SimpleTable does not handle symbols as column names
-  # Ruport should smartly fix this surprising behaviour (#283) 
+  # Ruport should smartly fix this surprising behaviour (#283)
   def test_tables_should_render_with_symbol_column_name
     data = Table([:a,:b,:c], :data => [[1,2,3],[4,5,6]])
     assert_nothing_raised { data.to_pdf }
-  end   
-  
+  end
+
   # draw_table has destructive behavior on nested rendering options (#359)
   def test_draw_table_should_not_destroy_nested_rendering_options
-     f = Ruport::Formatter::PDF.new   
-     f.options = Ruport::Controller::Options.new 
-     f.options[:table_format] =  
+     f = Ruport::Formatter::PDF.new
+     f.options = Ruport::Controller::Options.new
+     f.options[:table_format] =
        { :column_options => { :heading => {:justification => :center }}}
-     f.draw_table Table(%w[a b c], :data => [[1,2,3],[4,5,6]])  
-     assert_equal({ :justification => :center }, 
-                  f.options[:table_format][:column_options][:heading])      
-  end        
-    
-end    
+     f.draw_table Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
+     assert_equal({ :justification => :center },
+                  f.options[:table_format][:column_options][:heading])
+  end
 
-class TestRenderPDFGrouping < Test::Unit::TestCase                                  
-   
+end
+
+class TestRenderPDFGrouping < Test::Unit::TestCase
+
   #--------BUG TRAPS----------#
-  
+
   # As of Ruport 0.10.0, PDF's justified group output was throwing
   # UnknownFormatError  (#288)
   def test_group_styles_should_not_throw_error
-     table = Table(%w[a b c], :data => [[1,2,3],[4,5,6],[1,7,9]]) 
+     table = Table(%w[a b c], :data => [[1,2,3],[4,5,6],[1,7,9]])
      grouping = Grouping(table,:by => "a")
-     assert_nothing_raised { grouping.to_pdf } 
+     assert_nothing_raised { grouping.to_pdf }
      assert_nothing_raised { grouping.to_pdf(:style => :inline) }
-     assert_nothing_raised { grouping.to_pdf(:style => :offset) }     
+     assert_nothing_raised { grouping.to_pdf(:style => :offset) }
      assert_nothing_raised { grouping.to_pdf(:style => :justified) }
      assert_nothing_raised { grouping.to_pdf(:style => :separated) }
-     assert_raises(NotImplementedError) do 
-       grouping.to_pdf(:style => :red_snapper) 
-     end       
-  end    
-  
+     assert_raises(NotImplementedError) do
+       grouping.to_pdf(:style => :red_snapper)
+     end
+  end
+
   def test_grouping_should_have_consistent_font_size
-    a = Table(%w[a b c]) <<  %w[eye like chicken] << %w[eye like liver] << 
-                               %w[meow mix meow ] << %w[mix please deliver ] 
+    a = Table(%w[a b c]) <<  %w[eye like chicken] << %w[eye like liver] <<
+                               %w[meow mix meow ] << %w[mix please deliver ]
     b = Grouping(a, :by => "a")
-    splat = b.to_pdf.split("\n") 
+    splat = b.to_pdf.split("\n")
     splat.grep(/meow/).each do |m|
-      assert_equal '10.0', m.split[5] 
-    end                  
+      assert_equal '10.0', m.split[5]
+    end
     splat.grep(/mix/).each do |m|
-      assert_equal '10.0', m.split[5] 
-    end                          
+      assert_equal '10.0', m.split[5]
+    end
     splat.grep(/eye/).each do |m|
       assert_equal '10.0', m.split[5]
     end
   end
-  
+
 end
 
-class TestPDFFormatterHelpers < Test::Unit::TestCase   
-  
-  def test_boundaries
+class TestPDFFormatterHelpers < Test::Unit::TestCase
+
+  def test_default_boundaries
      a = Ruport::Formatter::PDF.new
-     
-     assert_equal 36, a.left_boundary    
-     a.pdf_writer.left_margin = 50 
-     assert_equal 50, a.left_boundary   
-     
-     assert_equal 576, a.right_boundary
-     a.pdf_writer.right_margin -= 10  
-     assert_equal 586, a.right_boundary 
-     
-     assert_equal 756, a.top_boundary
-     a.pdf_writer.top_margin -= 10
-     assert_equal 766, a.top_boundary
-     
-     assert_equal 36, a.bottom_boundary
-     a.pdf_writer.bottom_margin -= 10
-     assert_equal 26, a.bottom_boundary             
+
+     assert_equal 36, a.pdf.bounds.absolute_left
+     assert_equal 576, a.pdf.bounds.absolute_right
+     assert_equal 756, a.pdf.bounds.absolute_top
+     assert_equal 36, a.pdf.bounds.absolute_bottom
   end
-     
+
+  def test_boundaries
+    a = Ruport::Formatter::PDF.new
+
+    #(:left_margin => 50, :right_margin => 586, :top_margin => 766, :bottom_margin => 26)
+
+
+
+    assert_equal 50, a.pdf.bounds.absolute_left
+    assert_equal 586, a.pdf.bounds.absolute_right
+    assert_equal 766, a.pdf.bounds.absolute_top
+    assert_equal 26, a.pdf.bounds.absolute_bottom
+  end
+
   def test_move_cursor
      a = Ruport::Formatter::PDF.new
      a.move_cursor_to(500)
-     assert_equal(500,a.cursor)  
+     assert_equal(500,a.cursor)
      a.move_cursor(-25)
      assert_equal(475,a.cursor)
      a.move_cursor(50)
      assert_equal(525,a.cursor)
-  end           
+  end
 
   def test_move_up
     a = Ruport::Formatter::PDF.new
@@ -280,75 +282,75 @@ class TestPDFFormatterHelpers < Test::Unit::TestCase
     a.move_down(100)
     assert_equal(450,a.cursor)
   end
-  
+
   def test_padding
     a = Ruport::Formatter::PDF.new
-    a.move_cursor_to(100)             
-    
+    a.move_cursor_to(100)
+
     # padding on top and bottom
-    a.pad(10) do        
+    a.pad(10) do
       assert_equal 90, a.cursor
-      a.move_cursor(-10)      
+      a.move_cursor(-10)
       assert_equal 80, a.cursor
     end
-    assert_equal(70,a.cursor)  
-    
+    assert_equal(70,a.cursor)
+
     a.move_cursor_to(100)
-    
-    # padding just on top  
+
+    # padding just on top
     a.pad_top(10) do
       assert_equal 90, a.cursor
       a.move_cursor(-10)
       assert_equal 80, a.cursor
     end
-    
-    assert_equal 80, a.cursor   
-    
-    a.move_cursor_to(100)  
-    
+
+    assert_equal 80, a.cursor
+
+    a.move_cursor_to(100)
+
     # padding just on bottom
     a.pad_bottom(10) do
       assert_equal 100, a.cursor
       a.move_cursor(-10)
       assert_equal 90, a.cursor
-    end  
-    
-    assert_equal 80, a.cursor        
+    end
+
+    assert_equal 80, a.cursor
   end
-  
+
   def test_draw_text_retains_cursor
     a = Ruport::Formatter::PDF.new
     a.move_cursor_to(100)
-    
+
     a.draw_text "foo", :left => a.left_boundary
     assert_equal 100, a.cursor
-    
+
     a.draw_text "foo", :left => a.left_boundary + 50, :y => 500
     assert_equal 100, a.cursor
   end
-end  
-  
+end
+
 class SimpleController < Ruport::Controller
   stage :foo
-  
+
   class PDF < Ruport::Formatter::PDF
     renders :pdf, :for => SimpleController
-    
+
     build :foo do
       add_text "Blah"
     end
   end
-end                                
+end
 
 class TestPDFFinalize < Test::Unit::TestCase
 
-  context "When rendering a PDF" do    
+  context "When rendering a PDF" do
     def specify_finalize_should_be_called
       SimpleController.render_pdf do |r|
         r.formatter.expects(:render_pdf)
-      end 
+      end
     end
   end
-  
+
 end
-    
+
