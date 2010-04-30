@@ -242,26 +242,25 @@ end
 
 class TestPDFFormatterHelpers < Test::Unit::TestCase
 
-  def test_default_boundaries
+  def test_boundaries
      a = Ruport::Formatter::PDF.new
 
-     assert_equal 36, a.pdf.bounds.absolute_left
-     assert_equal 576, a.pdf.bounds.absolute_right
-     assert_equal 756, a.pdf.bounds.absolute_top
-     assert_equal 36, a.pdf.bounds.absolute_bottom
-  end
+     assert_equal 36, a.left_boundary    
+     a.pdf_writer.left_margin = 50 
+     assert_equal 50, a.left_boundary   
+     
+     assert_equal 576, a.right_boundary
+     a.pdf_writer.right_margin -= 10  
+     assert_equal 586, a.right_boundary 
+     
+     assert_equal 756, a.top_boundary
+     a.pdf_writer.top_margin -= 10
+     assert_equal 766, a.top_boundary
+     
+     assert_equal 36, a.bottom_boundary
+     a.pdf_writer.bottom_margin -= 10
+     assert_equal 26, a.bottom_boundary   
 
-  def test_boundaries
-    a = Ruport::Formatter::PDF.new
-
-    #(:left_margin => 50, :right_margin => 586, :top_margin => 766, :bottom_margin => 26)
-
-
-
-    assert_equal 50, a.pdf.bounds.absolute_left
-    assert_equal 586, a.pdf.bounds.absolute_right
-    assert_equal 766, a.pdf.bounds.absolute_top
-    assert_equal 26, a.pdf.bounds.absolute_bottom
   end
 
   def test_move_cursor
