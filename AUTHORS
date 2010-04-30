@@ -53,3 +53,7 @@ Dave Nelson
 
 Bob Nadler:
  - Table pivot operations support.
+
+Michael Pope:
+ - Work on Prawn support.
+ - Table#add_row and #search.
