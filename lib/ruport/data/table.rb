@@ -394,6 +394,16 @@ module Ruport::Data
       return self   
     end    
     
+    # Add a row to a certain location within the existing table.
+    # 
+    # data.add_row([8,9], :position => 0)
+    #
+    #
+    def add_row(row_data, options={})
+      @data.insert(options[:position] || @data.length, recordize(row_data))
+      return self
+    end
+    
     # Returns the record class constant being used by the table.
     def record_class
       @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
@@ -845,6 +855,43 @@ module Ruport::Data
       }
     end
 
+    # Search row for a string and return the position
+    # 
+    # Example:
+    #
+    #   table = Table.new :data => [["Mow Lawn","50"], ["Sew","40"], ["Clean dishes","5"]],
+    #                     :column_names => %w[task cost]
+    #   table.row_search("Sew", :column => 0)           #=> [[1,2,3], [1,4,6]]
+    #
+    #   Search for a number in column 0 greater than 999.
+    #   result = table.row_search(999, :column => 0, :greater_than => true)
+    #
+    #
+    def row_search(search, options={})
+      position = 0
+
+      if column = options[:column]
+        self.each do |row|
+
+          if gt=options[:greater_than]
+            return position if row[column] > search
+          end
+
+          if lt=options[:less_than]
+            return position if row[column] < search
+          end
+
+          unless gt or lt
+            if row[column] =~ /#{search}/       # Search for part of or whole search text.
+              return position
+            end
+          end
+
+          position += 1
+        end
+      end
+    end
+    
     # Create a copy of the Table. Records will be copied as well.
     #
     # Example:

@@ -269,7 +269,38 @@ class TestTable < Test::Unit::TestCase
       assert_equal sorted_table_bc, table_bc
     end
     
-  end  
+  end
+
+  context "when adding rows" do
+    def setup
+      @columns = %w[a b c]
+      @data = [[1,2,3],[4,5,6],[7,8,9]]
+      @table = Ruport::Data::Table.new(:column_names => @columns, :data => @data)
+      @new_row = [-1,-2,-3]
+    end
+
+    def specify_insert_at_the_beginning
+      @table.add_row(@new_row, :position => 0)
+      assert_equal Ruport::Data::Table.new(:column_names => @columns,
+          :data => [@new_row] + @data), @table
+    end
+
+    def specify_insert_in_the_middle
+      @table.add_row(@new_row, :position => 2)
+      assert_equal Ruport::Data::Table.new(:column_names => @columns,
+          :data => [[1,2,3],[4,5,6],[-1,-2,-3],[7,8,9]]), @table
+    end
+
+    def specify_insert_at_the_end
+      @table.add_row(@new_row)
+      assert_equal Ruport::Data::Table.new(:column_names => @columns,
+          :data => @data + [@new_row]), @table
+    end
+
+    def should_return_itself
+      assert_equal @table.object_id, @table.add_row(@new_row).object_id
+    end
+  end
 
   def test_record_class
     a = Ruport::Data::Table.new( :column_names => %w[first_name last_name c], 
