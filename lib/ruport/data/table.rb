@@ -394,28 +394,14 @@ module Ruport::Data
       return self   
     end    
     
-    # Used to add a row to a certain location within the existing table.
-    # Split the rows into two seperate tables
-    # Add the row
-    # Merge sub tables back into large table
+    # Add a row to a certain location within the existing table.
     # 
     # data.add_row([8,9], :position => 0)
     #
     #
-    def add_row(row,options={})
-      if pos = options[:position]
-        if pos == 0
-          sub1 = Table(self.column_names)
-        else
-          sub1 = self.sub_table(0..pos - 1)
-        end
-
-        sub2 = self.sub_table(pos..-1)
-        sub1 << row
-
-        @data = sub1 + sub2
-        return self
-      end
+    def add_row(row_data, options={})
+      @data.insert(options[:position] || @data.length, recordize(row_data))
+      return self
     end
     
     # Returns the record class constant being used by the table.
@@ -871,22 +857,22 @@ module Ruport::Data
 
     # Search row for a string and return the position
     # 
-    # Example: 
-    #   
-    #   table = Table.new :data => [["Mow Lawn","50"], ["Sew","40"], ["Clean dishes","5"]], 
+    # Example:
+    #
+    #   table = Table.new :data => [["Mow Lawn","50"], ["Sew","40"], ["Clean dishes","5"]],
     #                     :column_names => %w[task cost]
     #   table.row_search("Sew", :column => 0)           #=> [[1,2,3], [1,4,6]]
     #
     #   Search for a number in column 0 greater than 999.
     #   result = table.row_search(999, :column => 0, :greater_than => true)
     #
-    #    
+    #
     def row_search(search, options={})
       position = 0
-      
+
       if column = options[:column]
         self.each do |row|
-     
+
           if gt=options[:greater_than]
             return position if row[column] > search
           end
@@ -894,13 +880,13 @@ module Ruport::Data
           if lt=options[:less_than]
             return position if row[column] < search
           end
-          
+
           unless gt or lt
             if row[column] =~ /#{search}/       # Search for part of or whole search text.
               return position
             end
           end
-          
+
           position += 1
         end
       end
