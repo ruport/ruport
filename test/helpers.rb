@@ -7,4 +7,5 @@ require "mocha"
 
 class Test::Unit::TestCase
   include SpecUnit
+  include Ruport
 end

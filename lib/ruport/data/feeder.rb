@@ -14,7 +14,7 @@
 #
 # Table Example:
 #
-#   t = Table(%w[a b c]) do |feeder|
+#   t = Ruport::Data::Table(%w[a b c]) do |feeder|
 #      feeder.filter { |r| r.a < 5 }
 #      feeder.transform { |r| r.b = "B: #{r.b}"}    
 #      feeder << [1,2,3]
