@@ -984,7 +984,7 @@ module Ruport::Data
 end
 
 
-module Kernel
+module Ruport
   
   # Shortcut interface for creating Data::Tables
   #
@@ -1002,25 +1002,22 @@ module Kernel
   #   t = Table("foo.csv")
   #   t = Table("bar.csv", :has_names => false)
   def Table(*args,&block)
-    table=
     case(args[0])
     when Array
       opts = args[1] || {}
       Ruport::Data::Table.new(f={:column_names => args[0]}.merge(opts),&block)
     when /\.csv/
-      return Ruport::Data::Table.load(*args,&block)
+      Ruport::Data::Table.load(*args,&block)
     when Hash
       if file = args[0].delete(:file)
-        return Ruport::Data::Table.load(file,args[0],&block)
+        Ruport::Data::Table.load(file,args[0],&block)
       elsif string = args[0].delete(:string)
-        return Ruport::Data::Table.parse(string,args[0],&block)
+        Ruport::Data::Table.parse(string,args[0],&block)
       else
-        return Ruport::Data::Table.new(args[0],&block)
+        Ruport::Data::Table.new(args[0],&block)
       end
     else
        Ruport::Data::Table.new(:data => [], :column_names => args,&block)
     end             
-    
-    return table
   end
 end  
