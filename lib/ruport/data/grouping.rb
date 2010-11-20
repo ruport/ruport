@@ -285,7 +285,7 @@ module Ruport::Data
       else 
         cols = procs.keys + [field]   
       end
-      expected = Table.new(cols) { |t|
+      expected = Table.new(:column_names => cols) { |t|
         each do |name,group|
           t << procs.inject({field => name}) do |s,r|
             s.merge(r[0] => r[1].call(group))
