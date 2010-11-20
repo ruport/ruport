@@ -91,7 +91,7 @@ module Ruport::Data
       end
       
       def to_table
-        result = Table()
+        result = Table.new
         result.add_column(@group_column)
         pivoted_columns = columns_from_pivot
         pivoted_columns.each { |name| result.add_column(name) }
@@ -479,7 +479,7 @@ module Ruport::Data
     #   
     # Example:
     #
-    #   data = Table("a","b") { |t| t << [1,2] << [3,4] }
+    #   data = Table.new("a","b") { |t| t << [1,2] << [3,4] }
     #   
     #   # basic usage, column full of 1's
     #   data.add_column 'new_column', :default => 1
@@ -516,7 +516,7 @@ module Ruport::Data
     #   
     # Example:
     #
-    #   data = Table("a","b") { |t| t << [1,2] << [3,4] }
+    #   data = Table.new("a","b") { |t| t << [1,2] << [3,4] }
     #   
     #   data.add_columns ['new_column_1','new_column_2'], :default => 1
     #
@@ -609,7 +609,7 @@ module Ruport::Data
     #
     #  Example: 
     #
-    #    >> a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] } 
+    #    >> a = Table.new(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] } 
     #    >> puts a
     #       +-----------+
     #       | a | b | c |
@@ -643,7 +643,7 @@ module Ruport::Data
     #
     #  Example:
     #
-    #  >> a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
+    #  >> a = Table.new(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
     #  >> a.replace_column("c","c2") { |r| r.c * 2 + r.a }
     #
     #  >> puts a

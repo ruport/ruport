@@ -285,7 +285,7 @@ module Ruport::Data
       else 
         cols = procs.keys + [field]   
       end
-      expected = Table(cols) { |t|
+      expected = Table.new(cols) { |t|
         each do |name,group|
           t << procs.inject({field => name}) do |s,r|
             s.merge(r[0] => r[1].call(group))
@@ -379,7 +379,7 @@ module Kernel
   #
   # Example:
   #
-  #   a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
+  #   a = Ruport::Data::Table.new(%w[a b c], :data => [[1,2,3],[4,5,6]])
   #   b = Grouping(a, :by => "a")   #=> creates a new grouping on column "a"
   #
   def Grouping(*args)
