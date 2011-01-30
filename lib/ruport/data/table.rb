@@ -55,10 +55,6 @@ module Ruport::Data
         @column ||= @table.map { |row| row[@group_column] }.uniq
       end
 
-      def perform_operation(rows)
-        Operation.send @operation, rows, @summary_column
-      end
-
       def to_table
         table = Table.new
         create_header(table)
@@ -110,6 +106,10 @@ module Ruport::Data
       def create_header(table)
         table.add_column(@group_column)
         row.each { |name| table.add_column(name) }
+      end
+
+      def perform_operation(rows)
+        Operation.send @operation, rows, @summary_column
       end
 
       def rows_groups
