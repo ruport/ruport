@@ -33,6 +33,9 @@ module Ruport::Data
         @summary_column = summary_col
         @pivot_order = options[:pivot_order]
         @operation = options[:operation] || :first
+        unless respond_to?("perform_#{@operation}", true)
+          raise ArgumentError, "Unknown pivot operation '#{@operation}'"
+        end
       end
 
       def convert_row_order_to_group_order(row_order_spec)
@@ -71,25 +74,38 @@ module Ruport::Data
       end
 
       def perform_operation(rows)
-        case @operation
-        when :first
-          return rows.first && rows.first[@summary_column]
-        when :sum
-          return rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
-        when :count
-          return rows && rows.length
-        when :mean
-          sum = rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
-          return sum / rows.length
-        when :min
-          return rows && (rows.collect { |r| r[@summary_column] }).min
-        when :max
-          return rows && (rows.collect { |r| r[@summary_column] }).max
-        else
-          raise ArgumentError, "Unknown pivot operation (#{@operation})"
-        end
+        send "perform_#{@operation}", rows
       end
-      
+
+      private
+
+      def perform_first(rows)
+        rows.first && rows.first[@summary_column]
+      end
+
+      def perform_sum(rows)
+        rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
+      end
+
+      def perform_count(rows)
+        rows && rows.length
+      end
+
+      def perform_mean(rows)
+        sum = rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
+        sum / rows.length
+      end
+
+      def perform_min(rows)
+        rows && (rows.collect { |r| r[@summary_column] }).min
+      end
+
+      def perform_max(rows)
+        rows && (rows.collect { |r| r[@summary_column] }).max
+      end
+
+      public
+
       def to_table
         result = Table.new
         result.add_column(@group_column)
