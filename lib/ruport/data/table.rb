@@ -38,31 +38,10 @@ module Ruport::Data
         end
       end
 
-      def convert_row_order_to_group_order(row_order_spec)
-        case row_order_spec
-        when Array
-          proc {|group|
-            row_order_spec.map {|e| group[0][e].to_s }
-          }
-        when Proc
-          proc {|group|
-            if row_order_spec.arity == 2
-              row_order_spec.call(group[0], group.name)
-            else
-              row_order_spec.call(group[0])
-            end
-          }
-        when NilClass
-          nil
-        else
-          proc {|group| group[0][row_order_spec].to_s }
-        end
-      end
-
       def columns
         return @columns if defined?(@columns)
 
-        ordering = convert_row_order_to_group_order(@pivot_order)
+        ordering = self.class.row_order_to_group_order(@pivot_order)
         pivot_column_grouping = Grouping(@table, :by => @pivot_column)
         pivot_column_grouping.each { |n,g| g.add_column(n) { n } }
         pivot_column_grouping.sort_grouping_by!(ordering) if ordering
@@ -102,6 +81,27 @@ module Ruport::Data
       end
 
       private
+
+      def self.row_order_to_group_order(row_order_spec)
+        case row_order_spec
+        when Array
+          proc {|group|
+            row_order_spec.map {|e| group[0][e].to_s }
+          }
+        when Proc
+          proc {|group|
+            if row_order_spec.arity == 2
+              row_order_spec.call(group[0], group.name)
+            else
+              row_order_spec.call(group[0])
+            end
+          }
+        when NilClass
+          nil
+        else
+          proc {|group| group[0][row_order_spec].to_s }
+        end
+      end
 
       def create_columns(table)
         table.add_column(@group_column)

@@ -25,10 +25,8 @@ end
 
 class PivotConvertRowOrderToGroupOrderTest < Test::Unit::TestCase
 
-  def convert(src)
-    Ruport::Data::Table::Pivot.new(
-      nil, nil, nil, nil
-    ).convert_row_order_to_group_order(src)
+  def convert(row_order)
+    Ruport::Data::Table::Pivot.row_order_to_group_order(row_order)
   end
 
   def setup
