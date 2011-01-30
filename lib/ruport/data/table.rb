@@ -33,7 +33,7 @@ module Ruport::Data
         @summary_column = summary_col
         @pivot_order = options[:pivot_order]
         @operation = options[:operation] || :first
-        unless respond_to?("perform_#{@operation}", true)
+        unless Operation.respond_to?(@operation, true)
           raise ArgumentError, "Unknown pivot operation '#{@operation}'"
         end
       end
@@ -74,37 +74,8 @@ module Ruport::Data
       end
 
       def perform_operation(rows)
-        send "perform_#{@operation}", rows
+        Operation.send @operation, rows, @summary_column
       end
-
-      private
-
-      def perform_first(rows)
-        rows.first && rows.first[@summary_column]
-      end
-
-      def perform_sum(rows)
-        rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
-      end
-
-      def perform_count(rows)
-        rows && rows.length
-      end
-
-      def perform_mean(rows)
-        sum = rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
-        sum / rows.length
-      end
-
-      def perform_min(rows)
-        rows && (rows.collect { |r| r[@summary_column] }).min
-      end
-
-      def perform_max(rows)
-        rows && (rows.collect { |r| r[@summary_column] }).max
-      end
-
-      public
 
       def to_table
         result = Table.new
@@ -126,6 +97,34 @@ module Ruport::Data
         result
       end
 
+      module Operation
+        extend self
+
+        def first(rows, summary_column)
+          rows.first && rows.first[summary_column]
+        end
+
+        def sum(rows, summary_column)
+          rows && rows.inject(0) { |sum,row| sum+row[summary_column] }
+        end
+
+        def count(rows, summary_column)
+          rows && rows.length
+        end
+
+        def mean(rows, summary_column)
+          sum = rows && rows.inject(0) { |sum,row| sum+row[summary_column] }
+          sum / rows.length
+        end
+
+        def min(rows, summary_column)
+          rows && (rows.collect { |r| r[summary_column] }).min
+        end
+
+        def max(rows, summary_column)
+          rows && (rows.collect { |r| r[summary_column] }).max
+        end
+      end
     end
 
     # Creates a new table with values from the specified pivot column
