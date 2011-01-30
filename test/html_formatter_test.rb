@@ -196,6 +196,6 @@ class TestHTMLFormatterHelpers < Test::Unit::TestCase
     a = Ruport::Formatter::HTML.new
     assert_equal "<p><strong>foo</strong></p>", a.textile("*foo*")
   rescue LoadError
-    STDERR.puts "Skipping textile test... needs redcloth"
+    STDERR.puts "Skipping textile test... needs RedCloth gem"
   end
 end
