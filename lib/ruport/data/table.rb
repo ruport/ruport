@@ -52,7 +52,7 @@ module Ruport::Data
 
       # Column in the first column in the pivoted table (without the group column)
       def column
-        @table.map { |row| row[@group_column] }.uniq
+        @column ||= @table.map { |row| row[@group_column] }.uniq
       end
 
       def perform_operation(rows)
