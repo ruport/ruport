@@ -38,22 +38,25 @@ module Ruport::Data
         end
       end
 
-      def columns
-        return @columns if defined?(@columns)
+      # Row is the first row in the pivoted table (without the group column)
+      def row
+        return @row if defined?(@row)
 
         pivot_column_grouping = Grouping(@table, :by => @pivot_column)
 
         ordering = self.class.row_order_to_group_order(@pivot_order)
         pivot_column_grouping.sort_grouping_by!(ordering) if ordering
 
-        @columns = pivot_column_grouping.inject([]) do |columns, grouping|
-          column = grouping[0]
-          columns << column
+        @row = pivot_column_grouping.inject([]) do |row, grouping|
+          column_name = grouping[0]
+          row << column_name
+          row
         end
       end
 
-      def group_column_entries
-        @table.map {|row| row[@group_column]}.uniq
+      # Column in the first column in the pivoted table (without the group column)
+      def column
+        @table.map { |row| row[@group_column] }.uniq
       end
 
       def perform_operation(rows)
@@ -62,20 +65,19 @@ module Ruport::Data
 
       def to_table
         table = Table.new
-        create_columns(table)
+        create_header(table)
 
-        outer_grouping = Grouping(@table, :by => @group_column)
-        group_column_entries.each {|outer_group_name|
-          outer_group = outer_grouping[outer_group_name]
-          pivot_values = columns.inject({}) do |hsh, e|
-            matching_rows = outer_group.rows_with(@pivot_column => e)
-            hsh[e] = perform_operation(matching_rows)
-            hsh
+        column.each do |column_entry|
+          rows_group = rows_groups[column_entry]
+          column_entry_values = row.inject({}) do |values, row_entry|
+            matching_rows = rows_group.rows_with(@pivot_column => row_entry)
+            values[row_entry] = perform_operation(matching_rows)
+            values
           end
-          table << [outer_group_name] + columns.map {|e|
-            pivot_values[e]
-          }
-        }
+
+          row_values = row.map { |column| column_entry_values[column] }
+          table << [column_entry] + row_values
+        end
 
         table
       end
@@ -103,9 +105,13 @@ module Ruport::Data
         end
       end
 
-      def create_columns(table)
+      def create_header(table)
         table.add_column(@group_column)
-        columns.each { |name| table.add_column(name) }
+        row.each { |name| table.add_column(name) }
+      end
+
+      def rows_groups
+        @rows_groups ||= Grouping(@table, :by => @group_column)
       end
 
       module Operation

@@ -62,7 +62,7 @@ end
 
 class PivotPreservesOrdering < Test::Unit::TestCase
 
-  def test_group_column_entries_preserves_order_of_occurrence
+  def test_group_column_preserves_order_of_occurrence
     table = Table('group', 'a', 'b')
     [
       [1, 0, 0],
@@ -75,10 +75,10 @@ class PivotPreservesOrdering < Test::Unit::TestCase
     ].each {|e| table << e}
     assert_equal([1,9,8],
        Ruport::Data::Table::Pivot.
-       new(table, 'group', 'a', 'b').group_column_entries)
+       new(table, 'group', 'a', 'b').column)
   end
 
-  def test_resulting_columns_preserve_ordering_of_rows
+  def test_pivoted_row_preserves_order_of_input_rows
     table = Table('group', 'a', 'b', 'c')
     [
       [200,   1, 2, 1],
@@ -91,7 +91,7 @@ class PivotPreservesOrdering < Test::Unit::TestCase
       [1,4,5],
       Ruport::Data::Table::Pivot.new(
         table, 'group', 'a', 'b', :pivot_order => ['c']
-      ).columns)
+      ).row)
   end
 
   def test_preserves_ordering
