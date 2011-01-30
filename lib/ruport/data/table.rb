@@ -41,14 +41,14 @@ module Ruport::Data
       def columns
         return @columns if defined?(@columns)
 
-        ordering = self.class.row_order_to_group_order(@pivot_order)
         pivot_column_grouping = Grouping(@table, :by => @pivot_column)
-        pivot_column_grouping.each { |n,g| g.add_column(n) { n } }
+
+        ordering = self.class.row_order_to_group_order(@pivot_order)
         pivot_column_grouping.sort_grouping_by!(ordering) if ordering
 
-        @columns = pivot_column_grouping.inject([]) do |result, data|
-          name = data[0]
-          result << name
+        @columns = pivot_column_grouping.inject([]) do |columns, grouping|
+          column = grouping[0]
+          columns << column
         end
       end
 
