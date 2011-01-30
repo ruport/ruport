@@ -59,14 +59,18 @@ module Ruport::Data
         end
       end
 
-      def columns_from_pivot
+      def columns
+        return @columns if defined?(@columns)
+
         ordering = convert_row_order_to_group_order(@pivot_order)
         pivot_column_grouping = Grouping(@table, :by => @pivot_column)
-        pivot_column_grouping.each {|n,g| g.add_column(n) { n }}
+        pivot_column_grouping.each { |n,g| g.add_column(n) { n } }
         pivot_column_grouping.sort_grouping_by!(ordering) if ordering
-        result = []
-        pivot_column_grouping.each {|name,_| result << name }
-        result
+
+        @columns = pivot_column_grouping.inject([]) do |result, data|
+          name = data[0]
+          result << name
+        end
       end
 
       def group_column_entries
@@ -78,23 +82,30 @@ module Ruport::Data
       end
 
       def to_table
-        result = Table.new
-        result.add_column(@group_column)
-        pivoted_columns = columns_from_pivot
-        pivoted_columns.each { |name| result.add_column(name) }
+        table = Table.new
+        create_columns(table)
+
         outer_grouping = Grouping(@table, :by => @group_column)
         group_column_entries.each {|outer_group_name|
           outer_group = outer_grouping[outer_group_name]
-          pivot_values = pivoted_columns.inject({}) do |hsh, e|
+          pivot_values = columns.inject({}) do |hsh, e|
             matching_rows = outer_group.rows_with(@pivot_column => e)
             hsh[e] = perform_operation(matching_rows)
             hsh
           end
-          result << [outer_group_name] + pivoted_columns.map {|e|
+          table << [outer_group_name] + columns.map {|e|
             pivot_values[e]
           }
         }
-        result
+
+        table
+      end
+
+      private
+
+      def create_columns(table)
+        table.add_column(@group_column)
+        columns.each { |name| table.add_column(name) }
       end
 
       module Operation

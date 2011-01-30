@@ -93,7 +93,7 @@ class PivotPreservesOrdering < Test::Unit::TestCase
       [1,4,5],
       Ruport::Data::Table::Pivot.new(
         table, 'group', 'a', 'b', :pivot_order => ['c']
-      ).columns_from_pivot)
+      ).columns)
   end
 
   def test_preserves_ordering
