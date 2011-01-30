@@ -47,11 +47,7 @@ module Ruport::Data
         ordering = self.class.row_order_to_group_order(@pivot_order)
         pivot_column_grouping.sort_grouping_by!(ordering) if ordering
 
-        @row = pivot_column_grouping.inject([]) do |row, grouping|
-          column_name = grouping[0]
-          row << column_name
-          row
-        end
+        @row = pivot_column_grouping.map { |grouping| grouping[0] }
       end
 
       # Column in the first column in the pivoted table (without the group column)
