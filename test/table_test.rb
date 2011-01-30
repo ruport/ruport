@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby -w 
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
-TEST_SAMPLES = File.join(File.expand_path(File.dirname(__FILE__)), "samples")
 
 class Person < Ruport::Data::Record
   
