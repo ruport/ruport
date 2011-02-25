@@ -211,7 +211,7 @@ module Ruport::Data
       private
       
       def get_table_from_csv(msg,param,options={},&block) #:nodoc:
-        require "fastercsv"
+        require "fastercsv" unless RUBY_VERSION > "1.9"
 
         options = {:has_names => true,
                    :csv_options => {} }.merge(options)
