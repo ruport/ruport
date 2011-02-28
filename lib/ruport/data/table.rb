@@ -1,21 +1,21 @@
 # Ruport : Extensible Reporting System
 #
 # data/table.rb provides a table data structure for Ruport.
-# 
+#
 # Created by Gregory Brown / Dudley Flanders, 2006
-# Copyright (C) 2006 Gregory Brown / Dudley Flanders, All Rights Reserved.  
+# Copyright (C) 2006 Gregory Brown / Dudley Flanders, All Rights Reserved.
 #
 # This is free software distributed under the same terms as Ruby 1.8
-# See LICENSE and COPYING for details.   
+# See LICENSE and COPYING for details.
 #
 module Ruport::Data
- 
+
   # === Overview
   #
-  # This class is one of the core classes for building and working with data 
-  # in Ruport. The idea is to get your data into a standard form, regardless 
+  # This class is one of the core classes for building and working with data
+  # in Ruport. The idea is to get your data into a standard form, regardless
   # of its source (a database, manual arrays, ActiveRecord, CSVs, etc.).
-  # 
+  #
   # Table is intended to be used as the data store for structured, tabular
   # data.
   #
@@ -33,9 +33,56 @@ module Ruport::Data
         @summary_column = summary_col
         @pivot_order = options[:pivot_order]
         @operation = options[:operation] || :first
+        unless Operation.respond_to?(@operation, true)
+          raise ArgumentError, "Unknown pivot operation '#{@operation}'"
+        end
       end
 
-      def convert_row_order_to_group_order(row_order_spec)
+      # Row is the first row in the pivoted table (without the group column)
+      def row
+        return @row if defined?(@row)
+
+        pivot_column_grouping = Grouping(@table, :by => @pivot_column)
+
+        ordering = self.class.row_order_to_group_order(@pivot_order)
+        pivot_column_grouping.sort_grouping_by!(ordering) if ordering
+
+        @row = pivot_column_grouping.map { |grouping| grouping[0] }
+      end
+
+      # Column in the first column in the pivoted table (without the group column)
+      def column
+        @column ||= @table.map { |row| row[@group_column] }.uniq
+      end
+
+      def to_table
+        table = Table.new
+        create_header(table)
+
+        column.each do |column_entry|
+          row_values = row.map { |row_entry| values[column_entry][row_entry] }
+          table << [column_entry] + row_values
+        end
+
+        table
+      end
+
+      def values
+        @values ||= Hash.new do |values, column_entry|
+          rows_group = rows_groups[column_entry]
+
+          values[column_entry] =
+            row.inject({}) do |values, row_entry|
+              matching_rows = rows_group.rows_with(@pivot_column => row_entry)
+              values[row_entry] = perform_operation(matching_rows)
+              values
+            end
+        end
+      end
+
+      private
+
+      def self.row_order_to_group_order(row_order_spec)
         case row_order_spec
         when Array
           proc {|group|
@@ -56,60 +103,47 @@ module Ruport::Data
         end
       end
 
-      def columns_from_pivot
-        ordering = convert_row_order_to_group_order(@pivot_order)
-        pivot_column_grouping = Grouping(@table, :by => @pivot_column)
-        pivot_column_grouping.each {|n,g| g.add_column(n) { n }}
-        pivot_column_grouping.sort_grouping_by!(ordering) if ordering
-        result = []
-        pivot_column_grouping.each {|name,_| result << name }
-        result
-      end
-
-      def group_column_entries
-        @table.map {|row| row[@group_column]}.uniq
+      def create_header(table)
+        table.add_column(@group_column)
+        row.each { |name| table.add_column(name) }
       end
 
       def perform_operation(rows)
-        case @operation
-        when :first
-          return rows.first && rows.first[@summary_column]
-        when :sum
-          return rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
-        when :count
-          return rows && rows.length
-        when :mean
-          sum = rows && rows.inject(0) { |sum,row| sum+row[@summary_column] }
-          return sum / rows.length
-        when :min
-          return rows && (rows.collect { |r| r[@summary_column] }).min
-        when :max
-          return rows && (rows.collect { |r| r[@summary_column] }).max
-        else
-          raise ArgumentError, "Unknown pivot operation (#{@operation})"
-        end
-      end
-      
-      def to_table
-        result = Table.new
-        result.add_column(@group_column)
-        pivoted_columns = columns_from_pivot
-        pivoted_columns.each { |name| result.add_column(name) }
-        outer_grouping = Grouping(@table, :by => @group_column)
-        group_column_entries.each {|outer_group_name|
-          outer_group = outer_grouping[outer_group_name]
-          pivot_values = pivoted_columns.inject({}) do |hsh, e|
-            matching_rows = outer_group.rows_with(@pivot_column => e)
-            hsh[e] = perform_operation(matching_rows)
-            hsh
-          end
-          result << [outer_group_name] + pivoted_columns.map {|e| 
-            pivot_values[e]
-          }
-        }
-        result
+        Operation.send @operation, rows, @summary_column
       end
 
+      def rows_groups
+        @rows_groups ||= Grouping(@table, :by => @group_column)
+      end
+
+      module Operation
+        extend self
+
+        def first(rows, summary_column)
+          rows.first && rows.first[summary_column]
+        end
+
+        def sum(rows, summary_column)
+          rows && rows.inject(0) { |sum,row| sum+row[summary_column] }
+        end
+
+        def count(rows, summary_column)
+          rows && rows.length
+        end
+
+        def mean(rows, summary_column)
+          sum = rows && rows.inject(0) { |sum,row| sum+row[summary_column] }
+          sum / rows.length
+        end
+
+        def min(rows, summary_column)
+          rows && (rows.collect { |r| r[summary_column] }).min
+        end
+
+        def max(rows, summary_column)
+          rows && (rows.collect { |r| r[summary_column] }).max
+        end
+      end
     end
 
     # Creates a new table with values from the specified pivot column
@@ -134,12 +168,12 @@ module Ruport::Data
     #                                   first argument. This wart will likely
     #                                   be fixed in a future version.
     #
-    # <b><tt>:operation</tt></b>::      The operation to perform on 
-    #                                   <tt>:values</tt> column. Supported 
-    #                                   operations are <tt>:first</tt>, 
-    #                                   <tt>:sum</tt>, <tt>:count</tt>, 
-    #                                   <tt>:mean</tt>, <tt>:min</tt>, and 
-    #                                   <tt>:max</tt>. If not specified, the 
+    # <b><tt>:operation</tt></b>::      The operation to perform on
+    #                                   <tt>:values</tt> column. Supported
+    #                                   operations are <tt>:first</tt>,
+    #                                   <tt>:sum</tt>, <tt>:count</tt>,
+    #                                   <tt>:mean</tt>, <tt>:min</tt>, and
+    #                                   <tt>:max</tt>. If not specified, the
     #                                   default is <tt>:first</tt>.
     #
     # Example:
@@ -168,9 +202,9 @@ module Ruport::Data
     #    +---------------+
     #
     def pivot(pivot_column, options = {})
-      group_column = options[:group_by] || 
+      group_column = options[:group_by] ||
         raise(ArgumentError, ":group_by option required")
-      value_column = options[:values]   || 
+      value_column = options[:values]   ||
         raise(ArgumentError, ":values option required")
       Pivot.new(
         self, group_column, pivot_column, value_column, options
@@ -185,7 +219,7 @@ module Ruport::Data
       # Loads a CSV file directly into a Table using the FasterCSV library.
       #
       # Example:
-      #   
+      #
       #   # treat first row as column_names
       #   table = Table.load('mydata.csv')
       #
@@ -198,7 +232,7 @@ module Ruport::Data
       def load(csv_file, options={},&block)
         get_table_from_csv(:foreach, csv_file, options,&block)
       end
-      
+
       # Creates a Table from a CSV string using FasterCSV.  See Table.load for
       # additional examples.
       #
@@ -209,13 +243,13 @@ module Ruport::Data
       end
 
       private
-      
+
       def get_table_from_csv(msg,param,options={},&block) #:nodoc:
         require "fastercsv" unless RUBY_VERSION > "1.9"
 
         options = {:has_names => true,
                    :csv_options => {} }.merge(options)
-              
+
         adjust_options_for_fcsv_headers(options)
 
         table = self.new(options) do |feeder|
@@ -226,15 +260,15 @@ module Ruport::Data
               first_line = false
               next if options[:has_names]
             end
-               
+
             if block
               handle_csv_row_proc(feeder,row,options,block)
             else
               feeder << row
-            end  
+            end
           end
         end
-        
+
         return table
       end
 
@@ -243,10 +277,10 @@ module Ruport::Data
           rc = options[:record_class] || Record
           row = rc.new(row, :attributes => feeder.data.column_names)
         end
-        
+
         block[feeder,row]
       end
-       
+
       def adjust_options_for_fcsv_headers(options)
         options[:has_names] = false if options[:csv_options][:headers]
       end
@@ -260,7 +294,7 @@ module Ruport::Data
       end
     end
 
-    include Enumerable             
+    include Enumerable
     extend FromCSV
 
     include Ruport::Controller::Hooks
@@ -269,13 +303,13 @@ module Ruport::Data
     def self.inherited(base) #:nodoc:
       base.renders_as_table
     end
-    
+
     # Creates a new table based on the supplied options.
     #
     # Valid options:
-    # <b><tt>:data</tt></b>::           An Array of Arrays representing the 
+    # <b><tt>:data</tt></b>::           An Array of Arrays representing the
     #                                   records in this Table.
-    # <b><tt>:column_names</tt></b>::   An Array containing the column names 
+    # <b><tt>:column_names</tt></b>::   An Array containing the column names
     #                                   for this Table.
     # <b><tt>:filters</tt></b>::        A proc or array of procs that set up
     #                                   conditions to filter the data being
@@ -288,55 +322,55 @@ module Ruport::Data
     #
     # Example:
     #
-    #   table = Table.new :data => [[1,2,3], [3,4,5]], 
+    #   table = Table.new :data => [[1,2,3], [3,4,5]],
     #                     :column_names => %w[a b c]
     #
     def initialize(options={})
       @column_names = options[:column_names] ? options[:column_names].dup : []
       @record_class = options[:record_class] &&
                       options[:record_class].name || "Ruport::Data::Record"
-      @data         = []  
-      
+      @data         = []
+
       feeder = Feeder.new(self)
-     
+
       Array(options[:filters]).each { |f| feeder.filter(&f) }
       Array(options[:transforms]).each { |t| feeder.transform(&t) }
-      
+
       if options[:data]
         options[:data].each do |e|
           if e.kind_of?(Record)
-            e = if @column_names.empty? or 
+            e = if @column_names.empty? or
                    e.attributes.all? { |a| a.kind_of?(Numeric) }
               e.to_a
             else
-              e.to_hash.values_at(*@column_names)  
+              e.to_hash.values_at(*@column_names)
             end
           end
           r = recordize(e)
-                                                     
+
           feeder << r
-        end  
-      end    
-      
-      yield(feeder) if block_given?  
+        end
+      end
+
+      yield(feeder) if block_given?
     end
 
     # This Table's column names
     attr_reader :column_names
-    
+
     # This Table's data
-    attr_reader :data        
-    
+    attr_reader :data
+
     require "forwardable"
     extend Forwardable
     def_delegators :@data, :each, :length, :size, :empty?, :[]
-    
-    # Sets the column names for this table. <tt>new_column_names</tt> should 
+
+    # Sets the column names for this table. <tt>new_column_names</tt> should
     # be an array listing the names of the columns.
     #
     # Example:
-    #                     
-    #   table = Table.new :data => [[1,2,3], [3,4,5]], 
+    #
+    #   table = Table.new :data => [[1,2,3], [3,4,5]],
     #                     :column_names => %w[a b c]
     #
     #   table.column_names = %w[e f g]
@@ -363,27 +397,27 @@ module Ruport::Data
     #
     # Example:
     #
-    #   one = Table.new :data => [[1,2], [3,4]], 
+    #   one = Table.new :data => [[1,2], [3,4]],
     #                   :column_names => %w[a b]
     #
-    #   two = Table.new :data => [[1,2], [3,4]], 
+    #   two = Table.new :data => [[1,2], [3,4]],
     #                   :column_names => %w[a b]
     #
     #   one.eql?(two) #=> true
     #
     def eql?(other)
-      data.eql?(other.data) && column_names.eql?(other.column_names) 
+      data.eql?(other.data) && column_names.eql?(other.column_names)
     end
 
     alias_method :==, :eql?
 
-    # Used to add extra data to the Table. <tt>row</tt> can be an Array, 
+    # Used to add extra data to the Table. <tt>row</tt> can be an Array,
     # Hash or Record. It also can be anything that implements a meaningful
     # to_hash or to_ary.
     #
     # Example:
     #
-    #   data = Table.new :data => [[1,2], [3,4]], 
+    #   data = Table.new :data => [[1,2], [3,4]],
     #                    :column_names => %w[a b]
     #   data << [8,9]
     #   data << { :a => 4, :b => 5}
@@ -391,11 +425,11 @@ module Ruport::Data
     #
     def <<(row)
       @data << recordize(row)
-      return self   
-    end    
-    
+      return self
+    end
+
     # Add a row to a certain location within the existing table.
-    # 
+    #
     # data.add_row([8,9], :position => 0)
     #
     #
@@ -403,21 +437,21 @@ module Ruport::Data
       @data.insert(options[:position] || @data.length, recordize(row_data))
       return self
     end
-    
+
     # Returns the record class constant being used by the table.
     def record_class
       @record_class.split("::").inject(Class) { |c,el| c.send(:const_get,el) }
     end
-    
+
     # Used to merge two Tables by rows.
     # Raises an ArgumentError if the Tables don't have identical columns.
     #
     # Example:
     #
-    #   inky = Table.new :data => [[1,2], [3,4]], 
+    #   inky = Table.new :data => [[1,2], [3,4]],
     #                    :column_names => %w[a b]
     #
-    #   blinky = Table.new :data => [[5,6]], 
+    #   blinky = Table.new :data => [[5,6]],
     #                      :column_names => %w[a b]
     #
     #   sue = inky + blinky
@@ -425,11 +459,11 @@ module Ruport::Data
     #
     def +(other)
       raise ArgumentError unless other.column_names == @column_names
-      self.class.new( :column_names => @column_names, 
+      self.class.new( :column_names => @column_names,
                       :data => @data + other.data,
                       :record_class => record_class )
     end
-  
+
     # Allows you to change the order of, or reduce the number of columns in a
     # Table.
     #
@@ -450,40 +484,40 @@ module Ruport::Data
     def reorder(*indices)
       raise(ArgumentError,"Can't reorder without column names set!") if
         @column_names.empty?
-      
+
       indices = indices[0] if indices[0].kind_of? Array
-      
-      if indices.all? { |i| i.kind_of? Integer }  
-        indices.map! { |i| @column_names[i] }  
+
+      if indices.all? { |i| i.kind_of? Integer }
+        indices.map! { |i| @column_names[i] }
       end
-      
+
       reduce(indices)
     end
-    
+
     # Adds an extra column to the Table.
     #
     # Available Options:
-    # <b><tt>:default</tt></b>:: The default value to use for the column in 
+    # <b><tt>:default</tt></b>:: The default value to use for the column in
     #                            existing rows. Set to nil if not specified.
-    # 
+    #
     # <b><tt>:position</tt></b>:: Inserts the column at the indicated position
     #                             number.
     #
-    # <b><tt>:before</tt></b>:: Inserts the new column before the column 
+    # <b><tt>:before</tt></b>:: Inserts the new column before the column
     #                           indicated (by name).
     #
     # <b><tt>:after</tt></b>:: Inserts the new column after the column
     #                          indicated (by name).
     #
     # If a block is provided, it will be used to build up the column.
-    #   
+    #
     # Example:
     #
     #   data = Table.new("a","b") { |t| t << [1,2] << [3,4] }
-    #   
+    #
     #   # basic usage, column full of 1's
     #   data.add_column 'new_column', :default => 1
-    #        
+    #
     #   # new empty column before new_column
     #   data.add_column 'new_col2', :before => 'new_column'
     #
@@ -492,43 +526,43 @@ module Ruport::Data
     #
     #   # new column built via a block, added at the end of the table
     #   data.add_column("new_col4") { |r| r.a + r.b }
-    #   
+    #
     def add_column(name,options={})
       if pos = options[:position]
-        column_names.insert(pos,name)   
+        column_names.insert(pos,name)
       elsif pos = options[:after]
-        column_names.insert(column_names.index(pos)+1,name)   
+        column_names.insert(column_names.index(pos)+1,name)
       elsif pos = options[:before]
         column_names.insert(column_names.index(pos),name)
       else
         column_names << name
-      end 
+      end
 
       if block_given?
         each { |r| r[name] = yield(r) || options[:default] }
       else
         each { |r| r[name] = options[:default] }
       end; self
-    end     
-    
+    end
+
     # Add multiple extra columns to the Table. See <tt>add_column</tt> for
     # a list of available options.
-    #   
+    #
     # Example:
     #
     #   data = Table.new("a","b") { |t| t << [1,2] << [3,4] }
-    #   
+    #
     #   data.add_columns ['new_column_1','new_column_2'], :default => 1
     #
-    def add_columns(names,options={})     
+    def add_columns(names,options={})
       raise "Greg isn't smart enough to figure this out.\n"+
             "Send ideas in at http://list.rubyreports.org" if block_given?
       need_reverse = !!(options[:after] || options[:position])
       names = names.reverse if need_reverse
-      names.each { |n| add_column(n,options) } 
+      names.each { |n| add_column(n,options) }
       self
     end
-    
+
     # Removes the given column from the table.  May use name or position.
     #
     # Example:
@@ -541,7 +575,7 @@ module Ruport::Data
       column_names.delete(col)
       each { |r| r.send(:delete,col) }
     end
-   
+
     # Removes multiple columns from the table.  May use name or position
     # Will autosplat arrays.
     #
@@ -553,9 +587,9 @@ module Ruport::Data
       cols = cols[0] if cols[0].kind_of? Array
       cols.each { |col| remove_column(col) }
     end
-    
+
     # Renames a column.  Will update Record attributes as well.
-    # 
+    #
     # Example:
     #
     #   old_values = table.map { |r| r.a }
@@ -567,12 +601,12 @@ module Ruport::Data
     def rename_column(old_name,new_name)
       index = column_names.index(old_name) or return
       self.column_names[index] = new_name
-      each { |r| r.rename_attribute(old_name,new_name,false)} 
+      each { |r| r.rename_attribute(old_name,new_name,false)}
     end
 
     # Renames multiple columns.  Takes either a hash of "old" => "new"
     # names or two arrays of names %w[old names],%w[new names].
-    # 
+    #
     # Example:
     #
     #   table.column_names #=> ["a", "b"]
@@ -592,7 +626,7 @@ module Ruport::Data
         end
         return
       end
-      
+
       raise ArgumentError unless old_cols
 
       if new_cols
@@ -604,12 +638,12 @@ module Ruport::Data
       end
       h.each {|old,new| rename_column(old,new) }
     end
-    
+
     #  Exchanges one column with another.
     #
-    #  Example: 
+    #  Example:
     #
-    #    >> a = Table.new(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] } 
+    #    >> a = Table.new(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
     #    >> puts a
     #       +-----------+
     #       | a | b | c |
@@ -626,18 +660,18 @@ module Ruport::Data
     #       | 6 | 5 | 4 |
     #       +-----------+
     #
-    def swap_column(a,b)    
+    def swap_column(a,b)
       if [a,b].all? { |r| r.kind_of? Fixnum }
        col_a,col_b = column_names[a],column_names[b]
        column_names[a] = col_b
        column_names[b] = col_a
       else
-        a_ind, b_ind = [column_names.index(a), column_names.index(b)] 
+        a_ind, b_ind = [column_names.index(a), column_names.index(b)]
         column_names[b_ind] = a
         column_names[a_ind] = b
       end
     end
-       
+
     #  Allows you to specify a new column to replace an existing column
     #  in your table via a block.
     #
@@ -661,12 +695,12 @@ module Ruport::Data
       else
         each { |r| r[old_col] = yield(r) }
       end
-    end         
-          
+    end
+
     #  Generates a sub table
-    #  
+    #
     #  Examples:
-    #   
+    #
     #    table = [[1,2,3,4],[5,6,7,8],[9,10,11,12]].to_table(%w[a b c d])
     #
     #  Using column_names and a range:
@@ -680,16 +714,16 @@ module Ruport::Data
     #     sub_table == [[1,4],[5,8],[9,12]].to_table(%w[a d]) #=> true
     #
     #  Using column_names and a block:
-    # 
-    #     sub_table = table.sub_table(%w[d b]) { |r| r.a < 6 } 
-    #     sub_table == [[4,2],[8,6]].to_table(%w[d b]) #=> true 
+    #
+    #     sub_table = table.sub_table(%w[d b]) { |r| r.a < 6 }
+    #     sub_table == [[4,2],[8,6]].to_table(%w[d b]) #=> true
     #
     #  Using a range for row reduction:
     #     sub_table = table.sub_table(1..-1)
     #     sub_table == [[5,6,7,8],[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
     #  Using just a block:
-    #      
+    #
     #     sub_table = table.sub_table { |r| r.c > 10 }
     #     sub_table == [[9,10,11,12]].to_table(%w[a b c d]) #=> true
     #
@@ -701,8 +735,8 @@ module Ruport::Data
       elsif block
         self.class.new( :column_names => cor, :data => data.select(&block))
       else
-        self.class.new( :column_names => cor, :data => data)  
-      end 
+        self.class.new( :column_names => cor, :data => data)
+      end
     end
 
     # Generates a sub table in place, modifying the receiver. See documentation
@@ -716,7 +750,7 @@ module Ruport::Data
     end
 
     alias_method :sub_table!, :reduce
-    
+
     # Returns an array of values for the given column name.
     #
     # Example:
@@ -728,20 +762,20 @@ module Ruport::Data
       case(name)
       when Integer
         unless column_names.empty?
-          raise ArgumentError if name > column_names.length         
+          raise ArgumentError if name > column_names.length
         end
       else
         raise ArgumentError unless column_names.include?(name)
       end
-         
+
       map { |r| r[name] }
     end
-    
+
     # Calculates sums. If a column name or index is given, it will try to
-    # convert each element of that column to an integer or float 
+    # convert each element of that column to an integer or float
     # and add them together.
     #
-    # If a block is given, it yields each Record so that you can do your own 
+    # If a block is given, it yields each Record so that you can do your own
     # calculation.
     #
     # Example:
@@ -753,7 +787,7 @@ module Ruport::Data
     #   table.sigma { |r| r.col2 + 1 } #=> 15
     #
     def sigma(column=nil)
-      inject(0) { |s,r| 
+      inject(0) { |s,r|
         if column
           s + if r.get(column).kind_of? Numeric
             r.get(column)
@@ -763,12 +797,12 @@ module Ruport::Data
         else
           s + yield(r)
         end
-      }      
+      }
     end
 
     alias_method :sum, :sigma
 
-    # Returns a sorted table. If col_names is specified, 
+    # Returns a sorted table. If col_names is specified,
     # the block is ignored and the table is sorted by the named columns.
     #
     # The second argument specifies sorting options. Currently only
@@ -798,54 +832,54 @@ module Ruport::Data
     #   table.sort_rows_by(["col1", "col2"], :order => descending)
     #
     def sort_rows_by(col_names=nil, options={}, &block)
-      # stabilizer is needed because of 
+      # stabilizer is needed because of
       # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/170565
       stabilizer = 0
-      
-      nil_rows, sortable = partition do |r| 
-        Array(col_names).any? { |c| r[c].nil? } 
+
+      nil_rows, sortable = partition do |r|
+        Array(col_names).any? { |c| r[c].nil? }
       end
 
       data_array =
         if col_names
-          sortable.sort_by do |r| 
+          sortable.sort_by do |r|
             stabilizer += 1
-            [Array(col_names).map {|col| r[col]}, stabilizer] 
+            [Array(col_names).map {|col| r[col]}, stabilizer]
           end
         else
           sortable.sort_by(&block)
-        end                 
-                                                               
-      data_array += nil_rows
-      data_array.reverse! if options[:order] == :descending    
+        end
 
-      table = self.class.new( :data => data_array, 
+      data_array += nil_rows
+      data_array.reverse! if options[:order] == :descending
+
+      table = self.class.new( :data => data_array,
                               :column_names => @column_names,
                               :record_class => record_class )
 
       return table
-    end   
-    
+    end
+
     # Same as Table#sort_rows_by, but self modifying.
     # See <tt>sort_rows_by</tt> for documentation.
     #
     def sort_rows_by!(col_names=nil,options={},&block)
-      table = sort_rows_by(col_names,options,&block) 
+      table = sort_rows_by(col_names,options,&block)
       @data = table.data
     end
-    
+
     # Get an array of records from the Table limited by the criteria specified.
     #
     # Example:
     #
-    #   table = Table.new :data => [[1,2,3], [1,4,6], [4,5,6]], 
+    #   table = Table.new :data => [[1,2,3], [1,4,6], [4,5,6]],
     #                     :column_names => %w[a b c]
     #   table.rows_with(:a => 1)           #=> [[1,2,3], [1,4,6]]
     #   table.rows_with(:a => 1, :b => 4)  #=> [[1,4,6]]
     #   table.rows_with_a(1)               #=> [[1,2,3], [1,4,6]]
     #   table.rows_with(%w[a b]) {|a,b| [a,b] == [1,4] }  #=> [[1,4,6]]
     #
-    def rows_with(columns,&block) 
+    def rows_with(columns,&block)
       select { |r|
         if block
           block[*(columns.map { |c| r.get(c) })]
@@ -856,7 +890,7 @@ module Ruport::Data
     end
 
     # Search row for a string and return the position
-    # 
+    #
     # Example:
     #
     #   table = Table.new :data => [["Mow Lawn","50"], ["Sew","40"], ["Clean dishes","5"]],
@@ -891,12 +925,12 @@ module Ruport::Data
         end
       end
     end
-    
+
     # Create a copy of the Table. Records will be copied as well.
     #
     # Example:
     #
-    #   one = Table.new :data => [[1,2], [3,4]], 
+    #   one = Table.new :data => [[1,2], [3,4]],
     #                   :column_names => %w[a b]
     #   two = one.dup
     #
@@ -906,32 +940,32 @@ module Ruport::Data
       @data = []
       from.data.each { |r| self << r.dup }
     end
-    
+
     # Uses Ruport's built-in text formatter to render this Table into a String.
-    # 
+    #
     # Example:
-    # 
-    #   data = Table.new :data => [[1,2], [3,4]], 
+    #
+    #   data = Table.new :data => [[1,2], [3,4]],
     #                    :column_names => %w[a b]
     #   puts data.to_s
-    # 
+    #
     def to_s
       as(:text)
-    end     
+    end
 
     # Convert the Table into a Group using the supplied group name.
     #
-    #   data = Table.new :data => [[1,2], [3,4]], 
+    #   data = Table.new :data => [[1,2], [3,4]],
     #                    :column_names => %w[a b]
     #   group = data.to_group("my_group")
     #
     def to_group(name=nil)
-      Group.new( :data => data, 
+      Group.new( :data => data,
                  :column_names => column_names,
                  :name => name,
                  :record_class => record_class )
     end
-                            
+
     # NOTE: does not respect tainted status
     alias_method :clone, :dup
 
@@ -942,50 +976,50 @@ module Ruport::Data
     # <tt>rows_with(:columnname => args[0])</tt>.
     #
     def method_missing(id,*args,&block)
-     return as($1.to_sym,*args,&block) if id.to_s =~ /^to_(.*)/ 
+     return as($1.to_sym,*args,&block) if id.to_s =~ /^to_(.*)/
      return rows_with($1.to_sym => args[0]) if id.to_s =~ /^rows_with_(.*)/
      super
     end
-    
+
     def feed_element(row)
        recordize(row)
     end
-    
-    private    
-    
+
+    private
+
     def recordize(row)
       case row
       when Array
         normalize_array(row)
       when Hash
-        normalize_hash(row)            
-      when record_class     
+        normalize_hash(row)
+      when record_class
         recordize(normalize_record(row))
       else
         normalize_hash(row) rescue normalize_array(row)
-      end    
-    end  
-    
+      end
+    end
+
     def normalize_hash(hash_obj)
-      hash_obj = hash_obj.to_hash 
+      hash_obj = hash_obj.to_hash
       raise ArgumentError unless @column_names
       record_class.new(hash_obj, :attributes => @column_names)
-    end 
-    
+    end
+
     def normalize_record(record)
       record.send(column_names.empty? ? :to_a : :to_hash)
-    end  
-    
+    end
+
     def normalize_array(array)
-      attributes = @column_names.empty? ? nil : @column_names 
-      record_class.new(array.to_ary, :attributes => attributes)                             
-    end                                            
+      attributes = @column_names.empty? ? nil : @column_names
+      record_class.new(array.to_ary, :attributes => attributes)
+    end
   end
 end
 
 
 module Ruport
-  
+
   # Shortcut interface for creating Data::Tables
   #
   # Examples:
@@ -994,7 +1028,7 @@ module Ruport
   #   t = Table("a","b","c") #=> creates a new empty table w. cols a,b,c
   #
   #   # allows building table inside of block, returns table object
-  #   t = Table(%w[a b c]) { |t| t << [1,2,3] } 
+  #   t = Table(%w[a b c]) { |t| t << [1,2,3] }
   #
   #   # allows loading table from CSV
   #   # accepts all Data::Table.load options, including block (yields table,row)
@@ -1018,6 +1052,6 @@ module Ruport
       end
     else
        Ruport::Data::Table.new(:data => [], :column_names => args,&block)
-    end             
+    end
   end
-end  
+end

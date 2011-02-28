@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -w   
+#!/usr/bin/env ruby -w
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TablePivotSimpleCaseTest < Test::Unit::TestCase
@@ -25,10 +25,8 @@ end
 
 class PivotConvertRowOrderToGroupOrderTest < Test::Unit::TestCase
 
-  def convert(src)
-    Ruport::Data::Table::Pivot.new(
-      nil, nil, nil, nil
-    ).convert_row_order_to_group_order(src)
+  def convert(row_order)
+    Ruport::Data::Table::Pivot.row_order_to_group_order(row_order)
   end
 
   def setup
@@ -64,7 +62,7 @@ end
 
 class PivotPreservesOrdering < Test::Unit::TestCase
 
-  def test_group_column_entries_preserves_order_of_occurrence
+  def test_group_column_preserves_order_of_occurrence
     table = Table('group', 'a', 'b')
     [
       [1, 0, 0],
@@ -75,12 +73,12 @@ class PivotPreservesOrdering < Test::Unit::TestCase
       [8, 0, 0],
       [1, 0, 0]
     ].each {|e| table << e}
-    assert_equal([1,9,8], 
+    assert_equal([1,9,8],
        Ruport::Data::Table::Pivot.
-       new(table, 'group', 'a', 'b').group_column_entries)
+       new(table, 'group', 'a', 'b').column)
   end
 
-  def test_resulting_columns_preserve_ordering_of_rows
+  def test_pivoted_row_preserves_order_of_input_rows
     table = Table('group', 'a', 'b', 'c')
     [
       [200,   1, 2, 1],
@@ -93,7 +91,7 @@ class PivotPreservesOrdering < Test::Unit::TestCase
       [1,4,5],
       Ruport::Data::Table::Pivot.new(
         table, 'group', 'a', 'b', :pivot_order => ['c']
-      ).columns_from_pivot)
+      ).row)
   end
 
   def test_preserves_ordering
@@ -115,7 +113,7 @@ class PivotPreservesOrdering < Test::Unit::TestCase
       [1, 1], [2, 2], [3, 3]
     ].each {|e| table << e}
     table.add_column('pivotme') {|row| 10 - row.group.to_i}
-    pivoted = table.pivot('pivotme', :group_by => 'group', :values => 'a', 
+    pivoted = table.pivot('pivotme', :group_by => 'group', :values => 'a',
                                      :pivot_order => :name)
     assert_equal(['group', 7, 8, 9], pivoted.column_names)
   end
@@ -126,7 +124,7 @@ class PivotPreservesOrdering < Test::Unit::TestCase
       [1, 1], [2, 2], [3, 3]
     ].each {|e| table << e}
     table.add_column('pivotme') {|row| 10 - row.group.to_i}
-    pivoted = table.pivot('pivotme', :group_by => 'group', :values => 'a', 
+    pivoted = table.pivot('pivotme', :group_by => 'group', :values => 'a',
                                      :pivot_order => proc {|row, pivot| pivot })
     assert_equal(['group', 7, 8, 9], pivoted.column_names)
   end
@@ -135,92 +133,46 @@ end
 
 class TablePivotOperationTest < Test::Unit::TestCase
   def setup
-    @table = Table(File.join(TEST_SAMPLES, 'sales.csv'), 
-                   :csv_options => { :converters => :integer })
+    @rows = [
+      Ruport::Data::Record.new('Values' => 3),
+      Ruport::Data::Record.new('Values' => 9),
+      Ruport::Data::Record.new('Values' => 4)
+    ]
   end
 
   def test_performs_operation_sum
-    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
-    expected << ['North', 1, 10, 12]
-    expected << ['South', 5, 12,  6]
-    expected << ['East', 10,  8,  3]
-    expected << ['West',  8,  7, 10]
-    
-    pivoted = @table.pivot('Product', :group_by => 'Region', 
-                                      :values => 'Units Sold', 
-                                      :operation => :sum)
-    assert_equal(expected, pivoted)
+    sum = Ruport::Data::Table::Pivot::Operation.sum(@rows, 'Values')
+    assert_equal 16, sum
   end
-  
+
   def test_performs_operation_first
-    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
-    expected << ['North', 1, 2, 8]
-    expected << ['South', 2, 5, 6]
-    expected << ['East',  5, 8, 3]
-    expected << ['West',  8, 1, 6]
-    
-    pivoted = @table.pivot('Product', :group_by => 'Region', 
-                                      :values => 'Units Sold', 
-                                      :operation => :first)
-    assert_equal(expected, pivoted)
+    first = Ruport::Data::Table::Pivot::Operation.first(@rows, 'Values')
+    assert_equal 3, first
   end
-  
+
   def test_performs_operation_count
-    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
-    expected << ['North', 1, 2, 2]
-    expected << ['South', 2, 2, 1]
-    expected << ['East',  3, 1, 1]
-    expected << ['West',  1, 2, 2]
-    
-    pivoted = @table.pivot('Product', :group_by => 'Region', 
-                                      :values => 'Units Sold', 
-                                      :operation => :count)
-    assert_equal(expected, pivoted)
+    count = Ruport::Data::Table::Pivot::Operation.count(@rows, 'Values')
+    assert_equal 3, count
   end
-  
+
   def test_performs_operation_mean
-    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
-    expected << ['North', 1, 5, 6]
-    expected << ['South', 2, 6, 6]
-    expected << ['East',  3, 8, 3]
-    expected << ['West',  8, 3, 5]
-    
-    pivoted = @table.pivot('Product', :group_by => 'Region',
-                                      :values => 'Units Sold',
-                                      :operation => :mean)
-    assert_equal(expected, pivoted)
+    mean = Ruport::Data::Table::Pivot::Operation.mean(@rows, 'Values')
+    assert_equal 5, mean
   end
 
   def test_performs_operation_min
-    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
-    expected << ['North', 1, 2, 4]
-    expected << ['South', 2, 5, 6]
-    expected << ['East',  1, 8, 3]
-    expected << ['West',  8, 1, 4]
-    
-    pivoted = @table.pivot('Product', :group_by => 'Region',
-                                      :values => 'Units Sold',
-                                      :operation => :min)
-    assert_equal(expected, pivoted)
+    min = Ruport::Data::Table::Pivot::Operation.min(@rows, 'Values')
+    assert_equal 3, min
   end
 
   def test_performs_operation_max
-    expected = Table('Region', 'Gadget', 'Gizmo', 'Widget')
-    expected << ['North', 1, 8, 8]
-    expected << ['South', 3, 7, 6]
-    expected << ['East',  5, 8, 3]
-    expected << ['West',  8, 6, 6]
-    
-    pivoted = @table.pivot('Product', :group_by => 'Region',
-                                      :values => 'Units Sold',
-                                      :operation => :max)
-    assert_equal(expected, pivoted)
+    max = Ruport::Data::Table::Pivot::Operation.max(@rows, 'Values')
+    assert_equal 9, max
   end
-  
+
   def test_invalid_operation_causes_exception
     assert_raise ArgumentError do
-      @table.pivot('Product', :group_by => 'Region', :values => 'Units Sold', 
-                              :operation => :foo)
+      Ruport::Data::Table::Pivot.new(nil, nil, nil, nil, :operation => :foo)
     end
   end
 end
