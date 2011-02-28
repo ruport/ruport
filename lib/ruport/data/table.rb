@@ -33,7 +33,7 @@ module Ruport::Data
         @summary_column = summary_col
         @pivot_order = options[:pivot_order]
         @operation = options[:operation] || :first
-        unless Operation.respond_to?(@operation, true)
+        unless Operations.respond_to?(@operation, true)
           raise ArgumentError, "Unknown pivot operation '#{@operation}'"
         end
       end
@@ -109,14 +109,14 @@ module Ruport::Data
       end
 
       def perform_operation(rows)
-        Operation.send @operation, rows, @summary_column
+        Operations.send @operation, rows, @summary_column
       end
 
       def rows_groups
         @rows_groups ||= Grouping(@table, :by => @group_column)
       end
 
-      module Operation
+      module Operations
         extend self
 
         def first(rows, summary_column)

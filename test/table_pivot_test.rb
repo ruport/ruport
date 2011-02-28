@@ -141,32 +141,32 @@ class TablePivotOperationTest < Test::Unit::TestCase
   end
 
   def test_performs_operation_sum
-    sum = Ruport::Data::Table::Pivot::Operation.sum(@rows, 'Values')
+    sum = Ruport::Data::Table::Pivot::Operations.sum(@rows, 'Values')
     assert_equal 16, sum
   end
 
   def test_performs_operation_first
-    first = Ruport::Data::Table::Pivot::Operation.first(@rows, 'Values')
+    first = Ruport::Data::Table::Pivot::Operations.first(@rows, 'Values')
     assert_equal 3, first
   end
 
   def test_performs_operation_count
-    count = Ruport::Data::Table::Pivot::Operation.count(@rows, 'Values')
+    count = Ruport::Data::Table::Pivot::Operations.count(@rows, 'Values')
     assert_equal 3, count
   end
 
   def test_performs_operation_mean
-    mean = Ruport::Data::Table::Pivot::Operation.mean(@rows, 'Values')
+    mean = Ruport::Data::Table::Pivot::Operations.mean(@rows, 'Values')
     assert_equal 5, mean
   end
 
   def test_performs_operation_min
-    min = Ruport::Data::Table::Pivot::Operation.min(@rows, 'Values')
+    min = Ruport::Data::Table::Pivot::Operations.min(@rows, 'Values')
     assert_equal 3, min
   end
 
   def test_performs_operation_max
-    max = Ruport::Data::Table::Pivot::Operation.max(@rows, 'Values')
+    max = Ruport::Data::Table::Pivot::Operations.max(@rows, 'Values')
     assert_equal 9, max
   end
 
