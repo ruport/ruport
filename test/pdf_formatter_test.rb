@@ -343,13 +343,10 @@ end
 
 class TestPDFFinalize < Test::Unit::TestCase
 
-  context "When rendering a PDF" do
-    def specify_finalize_should_be_called
-      SimpleController.render_pdf do |r|
-        r.formatter.expects(:render_pdf)
-      end
+  def test_finalize_should_be_called
+    SimpleController.render_pdf do |r|
+      r.formatter.expects(:render_pdf)
     end
   end
-
 end
 
