@@ -1,6 +1,12 @@
-require "rake/rdoctask"
+begin
+  # Ruby 1.8.7 and below
+  require "rake/rdoctask"
+rescue LoadError
+  # Ruby 1.9.2
+  require "rdoc/task"
+end
 require "rake/testtask"
-require "lib/ruport/version"
+require "./lib/ruport/version"
 
 begin
   require "rubygems"
