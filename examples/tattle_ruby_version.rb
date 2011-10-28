@@ -21,11 +21,11 @@ table = Report.report_table(:all,
 
 grouping = Grouping(table, :by => "host_os")
 
-ruby_versions = Table(%w[platform ruby_version count])  
+ruby_versions = Table(%w[platform ruby_version count])
 
 grouping.each do |name,group|
   Grouping(group, :by => "ruby_version").each do |vname,group|
-    ruby_versions << { "platform"         => name, 
+    ruby_versions << { "platform"         => name,
                        "ruby_version"     => vname,
                        "count"            => group.length }
   end

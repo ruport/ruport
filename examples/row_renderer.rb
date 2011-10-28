@@ -21,7 +21,7 @@ class HTML < Ruport::Formatter::HTML
     yield
     output << "</table></div></html>\n"
   end
-  
+
   def build_table_body
     table_feeder { |r| render_row(r) }
   end
@@ -33,7 +33,7 @@ class Text < Ruport::Formatter::Text
   def build_table_body
     table_feeder { |r|  output << r.to_a.join("$") }
   end
- 
+
 end
 
 CSV2Something.render_html(:csv_file => "example.csv",:io => STDOUT)

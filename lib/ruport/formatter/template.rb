@@ -1,4 +1,4 @@
-# Ruport : Extensible Reporting System                                
+# Ruport : Extensible Reporting System
 #
 # template.rb provides templating support for Ruby Reports.
 #
@@ -7,7 +7,7 @@
 # This is free software. Please see the LICENSE and COPYING files for details.
 
 
-class Ruport::Formatter::TemplateNotDefined < StandardError; end       
+class Ruport::Formatter::TemplateNotDefined < StandardError; end
 
 # This class provides templating functionality for Ruport.
 # New templates are created using the Template.create method.
@@ -24,7 +24,7 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 #
 # Example:
 #
-#   class Ruport::Formatter::PDF 
+#   class Ruport::Formatter::PDF
 #     def apply_template
 #       options.paper_orientation = template.page_layout
 #       options.style = template.grouping_style
@@ -69,18 +69,18 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 # ==== PDF Formatter Options
 #
 #   Option          Key                 Value
-# 
+#
 #   page            :size               Any size supported by the :paper
 #                                       option to PDF::Writer.new
-# 
+#
 #                   :layout             :portrait, :landscape
-# 
+#
 #   text            Any available to    Corresponding values
 #                   PDF::Writer#text
-# 
+#
 #   table           All attributes of   Corresponding values
 #                   PDF::SimpleTable
-# 
+#
 #                   :column_options     - All attributes of
 #                                         PDF::SimpleTable::Column
 #                                         except :heading
@@ -90,65 +90,65 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 #                                         for specific columns)
 #                                       - :heading => { All attributes of
 #                                         PDF::SimpleTable::Column::Heading }
-# 
+#
 #   column          :alignment          :left, :right, :center, :full
-# 
+#
 #                   :width              column width
-# 
+#
 #   heading         :alignment          :left, :right, :center, :full
-# 
+#
 #                   :bold               true or false
-# 
+#
 #                   :title              heading title (if not set,
 #                                       defaults to column name)
-# 
+#
 #   grouping        :style              :inline, :justified, :separated, :offset
 #
 #
 # ==== Text Formatter Options
-# 
+#
 #   Option          Key                 Value
-# 
+#
 #   table           :show_headings      true or false
 #                   :width              Table width
 #                   :ignore_width       true or false
-# 
+#
 #   column          :alignment          :center
 #                   :maximum_width      Max column width
-# 
+#
 #   grouping        :show_headings      true or false
 #
 #
 # ==== HTML Formatter Options
-# 
+#
 #   Option          Key                 Value
-# 
+#
 #   table           :show_headings      true or false
-# 
+#
 #   grouping        :style              :inline, :justified
 #                   :show_headings      true or false
 #
 #
 # ==== CSV Formatter Options
-# 
+#
 #   Option          Key                 Value
-# 
+#
 #   table           :show_headings      true or false
-# 
+#
 #   grouping        :style              :inline, :justified, :raw
 #                   :show_headings      true or false
-# 
+#
 #   format_options  All options         Corresponding values
 #                   available to
 #                   FasterCSV.new
 #
 class Ruport::Formatter::Template < Ruport::Controller::Options
-  
+
   # Returns all existing templates in a hash keyed by the template names.
   def self.templates
-    @templates ||= Hash.new 
+    @templates ||= Hash.new
   end
-  
+
   # Creates a new template with a name given by <tt>label</tt>.
   #
   # Example:
@@ -174,14 +174,14 @@ class Ruport::Formatter::Template < Ruport::Controller::Options
     yield(obj) if block_given?
     templates[label] = obj
   end
-  
+
   # Returns an existing template with the provided name (label).
-  def self.[](label) 
+  def self.[](label)
     templates[label] or raise Ruport::Formatter::TemplateNotDefined
   end
-  
+
   # Returns the default template.
   def self.default
     templates[:default]
   end
-end   
+end

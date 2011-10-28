@@ -14,7 +14,7 @@ Ruport::Formatter::Template.create(:simple) do |format|
   }
   format.column = {
     :alignment => :center,
-  }                       
+  }
   format.heading = {
     :alignment => :right
   }
@@ -27,7 +27,7 @@ Ruport::Formatter::Template.create(:derived, :base => :simple) do |t|
   t.table_format[:show_headings] = true
 end
 
-t = Table(%w[a b c]) << [1,2,3] << [1,"hello",6] << [2,3,4] 
+t = Table(%w[a b c]) << [1,2,3] << [1,"hello",6] << [2,3,4]
 g = Grouping(t, :by => "a")
 
 puts g.to_pdf(:template => :simple)

@@ -63,7 +63,7 @@ module Ruport
     save_as_binary_file
 
     def initialize
-      Ruport.quiet do   
+      Ruport.quiet do
         require "pdf/writer"
         require "pdf/simpletable"
       end
@@ -82,7 +82,7 @@ module Ruport
 
     # Returns the current PDF::Writer object or creates a new one if it has not
     # been set yet.
-    #    
+    #
     def pdf_writer
       @pdf_writer ||= options.formatter ||
         ::PDF::Writer.new( :paper => options.paper_size || "LETTER",
@@ -95,7 +95,7 @@ module Ruport
       draw_table(data)
     end
 
-    # Appends the results of PDF::Writer#render to output for your 
+    # Appends the results of PDF::Writer#render to output for your
     # <tt>pdf_writer</tt> object.
     #
     def finalize_table
@@ -176,7 +176,7 @@ module Ruport
       # if the image is smaller than the box, calculate the white space buffer
       x, y = add_white_space(x,y,img_width,width,img_height,height)
 
-      pdf_writer.add_image_from_file(path, x, y, img_width, img_height) 
+      pdf_writer.add_image_from_file(path, x, y, img_width, img_height)
     end
 
     # Draws some text on the canvas, surrounded by a box with rounded corners.
@@ -191,7 +191,7 @@ module Ruport
     #      o.height    = options.height || 130
     #      o.font_size = options.font_size || 12
     #      o.heading   = options.heading
-    #   
+    #
     #      o.x = pdf_writer.absolute_x_middle - o.width/2
     #      o.y = 300
     #    end
@@ -201,9 +201,9 @@ module Ruport
       yield(opts)
 
       resize_text_to_box(text, opts)
-      
+
       pdf_writer.save_state
-      draw_box(opts.x, opts.y, opts.width, opts.height, opts.radius, 
+      draw_box(opts.x, opts.y, opts.width, opts.height, opts.radius,
         opts.fill_color, opts.stroke_color)
       add_text_with_bottom_border(opts.heading, opts.x, opts.y,
         opts.width, opts.font_size) if opts.heading
@@ -220,7 +220,7 @@ module Ruport
 
     # Adds n to pdf_writer.y, moving the vertical drawing position in the
     # document.
-    def move_cursor(n) 
+    def move_cursor(n)
       pdf_writer.y += n
     end
 
@@ -283,22 +283,22 @@ module Ruport
 
       if options.table_format
         format_opts =
-          Marshal.load(Marshal.dump(options.table_format.merge(format_opts))) 
-      end  
-        
+          Marshal.load(Marshal.dump(options.table_format.merge(format_opts)))
+      end
+
       old = pdf_writer.font_size
-      
-      ::PDF::SimpleTable.new do |table|          
+
+      ::PDF::SimpleTable.new do |table|
         table.maximum_width = 500
         table.column_order  = table_data.column_names
         table.data = table_data
         table.data = [{}] if table.data.empty?
         apply_pdf_table_column_opts(table,table_data,format_opts)
 
-        format_opts.each {|k,v| table.send("#{k}=", v) }  
+        format_opts.each {|k,v| table.send("#{k}=", v) }
         table.render_on(pdf_writer)
-      end                                              
-      
+      end
+
       pdf_writer.font_size = old
     end
 
@@ -311,8 +311,8 @@ module Ruport
       def horizontal_line(x1,x2)
         pdf_writer.line(x1,cursor,x2,cursor)
         pdf_writer.stroke
-      end 
-      
+      end
+
       # Draws a horizontal line from left_boundary to right_boundary
       def horizontal_rule
         horizontal_line(left_boundary,right_boundary)
@@ -323,7 +323,7 @@ module Ruport
       # Draws a vertical line at x from y1 to y2
       def vertical_line_at(x,y1,y2)
         pdf_writer.line(x,y1,x,y2)
-        pdf_writer.stroke 
+        pdf_writer.stroke
       end
 
       # Alias for PDF::Writer#absolute_left_margin
@@ -505,7 +505,7 @@ module Ruport
     end
 
     def add_text_with_bottom_border(text,x,y,width,font_size)
-      pdf_writer.line( x, y - 20, 
+      pdf_writer.line( x, y - 20,
                        x + width, y - 20).stroke
       pdf_writer.fill_color(Color::RGB::Black)
       move_cursor_to(y - 3)

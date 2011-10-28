@@ -15,7 +15,7 @@ agent.get(download.uri)
 
 links = agent.page.links
 
-links_hash = %w[zip tar.gz tar.bz2].inject({}) {|h,ext| 
+links_hash = %w[zip tar.gz tar.bz2].inject({}) {|h,ext|
   h.merge(ext => "http://rubyforge.org"+links.text(/#{ext}/).first.uri.to_s)
 }
 

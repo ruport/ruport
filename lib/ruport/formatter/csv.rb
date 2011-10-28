@@ -1,15 +1,15 @@
-# Ruport : Extensible Reporting System                                
+# Ruport : Extensible Reporting System
 #
 # formatter/csv.rb provides csv formatting for Ruport.
-#     
+#
 # Original code dates back to the earliest versions of Ruport in August 2005
 # Extended over time, with much of the existing code being added around
 # December 2006.
-#    
-# Copyright (C) 2005-2007 Gregory Brown, All Rights Reserved.  
+#
+# Copyright (C) 2005-2007 Gregory Brown, All Rights Reserved.
 #
 # This is free software distributed under the same terms as Ruby 1.8
-# See LICENSE and COPYING for details.   
+# See LICENSE and COPYING for details.
 #
 module Ruport
 
@@ -18,10 +18,10 @@ module Ruport
   # James Edward Gray II's FasterCSV.
   #
   # === Rendering Options
-  #                                                     
-  # <tt>:style</tt> Used for grouping (:inline,:justified,:raw)      
   #
-  # <tt>:format_options</tt> A hash of FasterCSV options  
+  # <tt>:style</tt> Used for grouping (:inline,:justified,:raw)
+  #
+  # <tt>:format_options</tt> A hash of FasterCSV options
   #
   # <tt>:formatter</tt> An existing FasterCSV object to write to
   #
@@ -30,17 +30,17 @@ module Ruport
   # <tt>:show_group_headers</tt> True by default
   #
   class Formatter::CSV < Formatter
-    
-    renders :csv, :for => [ Controller::Row,   Controller::Table, 
+
+    renders :csv, :for => [ Controller::Row,   Controller::Table,
                             Controller::Group, Controller::Grouping ]
-    
+
     def initialize
-      require "fastercsv" unless RUBY_VERSION > "1.9"   
+      require "fastercsv" unless RUBY_VERSION > "1.9"
     end
 
     attr_writer :csv_writer
 
-    # Hook for setting available options using a template. See the template 
+    # Hook for setting available options using a template. See the template
     # documentation for the available options and their format.
     def apply_template
       apply_table_format_template(template.table)
@@ -81,19 +81,19 @@ module Ruport
     def build_row(data = self.data)
       csv_writer << data
     end
-    
+
     # Renders the header for a group using the group name.
-    # 
+    #
     def build_group_header
       csv_writer << [data.name.to_s] << []
     end
-    
+
     # Renders the group body - uses the table controller to generate the output.
     #
     def build_group_body
       render_table data, options.to_hash
     end
-    
+
     # Generates a header for the grouping using the grouped_by column and the
     # column names.
     #
@@ -102,7 +102,7 @@ module Ruport
         csv_writer << [data.grouped_by] + grouping_columns
       end
     end
-   
+
     # Determines the proper style to use and renders the Grouping.
     def build_grouping_body
       case options.style
@@ -114,13 +114,13 @@ module Ruport
         raise NotImplementedError, "Unknown style"
       end
     end
-    
+
     private
-    
+
     def grouping_columns
       data.data.to_a[0][1].column_names
     end
-    
+
     def render_justified_or_raw_grouping
       data.each do |_,group|
         prefix = [group.name.to_s]
@@ -131,19 +131,19 @@ module Ruport
         csv_writer << []
       end
     end
-    
+
     def apply_table_format_template(t)
       t = (t || {}).merge(options.table_format || {})
       options.show_table_headers = t[:show_headings] if
         options.show_table_headers.nil?
     end
-    
+
     def apply_grouping_format_template(t)
       t = (t || {}).merge(options.grouping_format || {})
       options.style ||= t[:style]
       options.show_group_headers = t[:show_headings] if
         options.show_group_headers.nil?
     end
-    
+
   end
 end

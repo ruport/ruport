@@ -3,7 +3,7 @@ require "enumerator"
 require "rubygems"
 require "ruport/util/bench"
 
-include Ruport::Bench  
+include Ruport::Bench
 
 deep_data = (0..299).enum_slice(3).to_a
 
@@ -16,9 +16,9 @@ wide_table = wide_data.to_table
 
 SMALL_N = 5000
 DEEP_N  = 500
-WIDE_N  = 500    
+WIDE_N  = 500
 
-bench_suite do  
+bench_suite do
 
   bench_prepare { @table = small_table.dup }
   bench_case("Table#column_names= small table",SMALL_N) {
@@ -98,6 +98,6 @@ bench_suite do
   bench_case("Table#add_column",DEEP_N) {
     @table.add_column("d") { |r| r.a + r.b }
   }
- 
+
 
 end
