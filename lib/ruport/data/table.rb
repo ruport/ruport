@@ -132,6 +132,7 @@ module Ruport::Data
         end
 
         def mean(rows, summary_column)
+          return if rows.length == 0
           sum = rows && rows.inject(0) { |sum,row| sum+row[summary_column] }
           sum / rows.length
         end
