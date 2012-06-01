@@ -1,2 +1,3 @@
 doc/
 *.pdf
+Gemfile.lock
