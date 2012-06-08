@@ -47,7 +47,7 @@ module Ruport::Data
         ordering = self.class.row_order_to_group_order(@pivot_order)
         pivot_column_grouping.sort_grouping_by!(ordering) if ordering
 
-        @row = pivot_column_grouping.map { |grouping| grouping[0] }
+        @row = pivot_column_grouping.map { |name,grouping| name }
       end
 
       # Column in the first column in the pivoted table (without the group column)
