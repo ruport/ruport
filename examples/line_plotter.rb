@@ -12,7 +12,7 @@ class LinePlotter < Ruport::Controller
   stage :plot
 
   Line = Struct.new(:x1,:y1,:x2,:y2)
-  
+
   def setup
     data.map! { |r| Line.new( r[0][0],r[0][1],r[1][0],r[1][1] ) }
   end
@@ -20,7 +20,7 @@ class LinePlotter < Ruport::Controller
 end
 
 class SVG < Ruport::Formatter
-  
+
   renders :svg, :for => LinePlotter
 
   def initialize
@@ -57,5 +57,5 @@ puts LinePlotter.render_svg(
   :data => [ [ [0,0],     [0,100]   ],
              [ [0,100],   [100,100] ],
              [ [100,100], [100,0]   ],
-             [ [100,0],   [0,0]     ] ] 
+             [ [100,0],   [0,0]     ] ]
 )

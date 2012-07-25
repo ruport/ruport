@@ -12,7 +12,7 @@ rand_large_attributes = large_attributes.sort_by { rand }
 large_record = Ruport::Data::Record.new large,
                :attributes => large_attributes
 
-small_record = Ruport::Data::Record.new({ "foo"  => 'bar', 
+small_record = Ruport::Data::Record.new({ "foo"  => 'bar',
                                            "baz"  => "bang",
                                            "Quux" => "adfdsa" })
 

@@ -1,8 +1,8 @@
-Ruport is copyrighted free software originally produced by Gregory Brown 
+Ruport is copyrighted free software originally produced by Gregory Brown
 <gregory.t.brown@gmail.com> which now contains a number of community
 contributions and is actively developed by Michael Milner <mikem836@gmail.com>.
 
-See the AUTHORS file for a complete list of contributors.  
+See the AUTHORS file for a complete list of contributors.
 
 Licensing terms follow (License of Ruby 1.8):
 
@@ -45,11 +45,11 @@ You can redistribute Ruport and/or modify it under either the terms of the GPL
        d) make other distribution arrangements with the author.
 
   4. You may modify and include the part of the software into any other
-     software (possibly commercial). 
+     software (possibly commercial).
 
-  5. The scripts and library files supplied as input to or produced as 
+  5. The scripts and library files supplied as input to or produced as
      output from the software do not automatically fall under the
-     copyright of the software, but belong to whomever generated them, 
+     copyright of the software, but belong to whomever generated them,
      and may be sold commercially, and may be aggregated with this
      software.
 

@@ -10,7 +10,7 @@ sym_l_attributes = large_attributes.map { |r| r.intern }
 large_record = Ruport::Data::Record.new large,
                :attributes => large_attributes
 
-small_record = Ruport::Data::Record.new({ "foo"  => 'bar', 
+small_record = Ruport::Data::Record.new({ "foo"  => 'bar',
                                            "baz"  => "bang",
                                            "Quux" => "adfdsa" })
 
@@ -23,10 +23,10 @@ LARGE_N = 10
 bench_suite do
 
   bench_case("Integer Index - Small",SMALL_N) {
-    (0..2).each { |i| small_record[i] } 
+    (0..2).each { |i| small_record[i] }
   }
 
-  bench_case("Integer Index - Large",LARGE_N) {  
+  bench_case("Integer Index - Large",LARGE_N) {
      large.each_index { |r| large_record[r]  }
   }
 
@@ -34,31 +34,31 @@ bench_suite do
     small_attributes.each { |a| small_record[a] }
   }
 
-  bench_case("String Index - Large", LARGE_N) {    
+  bench_case("String Index - Large", LARGE_N) {
     large_attributes.each { |a| large_record[a] }
   }
 
   bench_case("Integer get() - Small", SMALL_N) {
-    (0..2).each { |i| small_record.get(i) } 
+    (0..2).each { |i| small_record.get(i) }
   }
 
-  bench_case("Integer get() - Large", LARGE_N) {  
-    large.each_index { |r| large_record.get(r) } 
+  bench_case("Integer get() - Large", LARGE_N) {
+    large.each_index { |r| large_record.get(r) }
   }
 
   bench_case("String get() - Small", SMALL_N) {
     small_attributes.each { |a| small_record.get(a) }
   }
 
-  bench_case("String get() - Large", LARGE_N) {     
+  bench_case("String get() - Large", LARGE_N) {
     large_attributes.each { |a| large_record.get(a) }
   }
 
-  bench_case("Symbol get() - Small", SMALL_N) {    
+  bench_case("Symbol get() - Small", SMALL_N) {
     sym_s_attributes.each { |a| small_record.get(a) }
   }
 
-  bench_case("Symbol get() - Large", LARGE_N) {  
+  bench_case("Symbol get() - Large", LARGE_N) {
     sym_l_attributes.each { |a| large_record.get(a) }
   }
 

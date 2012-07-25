@@ -1,13 +1,13 @@
 Hacking on Ruby Reports : A Guide For Contributors
 --------------------------------------------------
 
-If you'd like to help test, maintain, or develop on Ruport, 
+If you'd like to help test, maintain, or develop on Ruport,
 this document is for you.
 
 We try to be as community friendly as possible, and we welcome all sorts of
 contributions to our project.  Here are a few different ways you can help.
 
-  - Adding Tests and Hunting for bugs. 
+  - Adding Tests and Hunting for bugs.
 
   - Improving documentation or writing tutorials
 

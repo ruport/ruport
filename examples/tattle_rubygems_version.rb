@@ -21,11 +21,11 @@ table = Report.report_table(:all,
 
 grouping = Grouping(table, :by => "host_os")
 
-rubygems_versions = Table(%w[platform rubygems_version count])  
+rubygems_versions = Table(%w[platform rubygems_version count])
 
 grouping.each do |name,group|
   Grouping(group, :by => "rubygems_version").each do |vname,group|
-    rubygems_versions << { "platform"         => name, 
+    rubygems_versions << { "platform"         => name,
                            "rubygems_version" => vname,
                            "count"            => group.length }
   end
@@ -34,4 +34,4 @@ end
 sorted_table = rubygems_versions.sort_rows_by("count", :order => :descending)
 sorted_table.reduce { |r| r["platform"] !~ /darwin/i }
 g = Grouping(sorted_table, :by => "platform", :order => "name")
-puts g.to_pdf 
+puts g.to_pdf

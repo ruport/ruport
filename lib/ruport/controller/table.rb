@@ -7,14 +7,14 @@ module Ruport
 
   # This class implements the basic controller for table rows.
   #
-  # == Supported Formatters 
-  #  
+  # == Supported Formatters
+  #
   # * Formatter::CSV
   # * Formatter::Text
   # * Formatter::HTML
   #
   # == Formatter hooks called (in order)
-  #  
+  #
   # * build_row
   #
   class Controller::Row < Controller
@@ -23,19 +23,19 @@ module Ruport
 
   # This class implements the basic tabular data controller for Ruport.
   #
-  # == Supported Formatters 
-  #  
+  # == Supported Formatters
+  #
   # * Formatter::CSV
   # * Formatter::Text
   # * Formatter::HTML
   # * Formatter::PDF
   #
-  # == Default layout options 
-  #  
+  # == Default layout options
+  #
   # * <tt>show_table_headers</tt> #=> true
   #
   # == Formatter hooks called (in order)
-  #  
+  #
   # * prepare_table
   # * build_table_header
   # * build_table_body
@@ -46,7 +46,7 @@ module Ruport
     options { |o| o.show_table_headers = true }
 
     prepare :table
-    
+
     stage :table_header, :table_body, :table_footer
 
     finalize :table

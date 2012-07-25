@@ -1,11 +1,11 @@
  %w[ruport hpricot open-uri].each { |lib| require lib }
 
 class TracSummaryReport
-  
+
   include Ruport::Controller::Hooks
-  
+
   renders_as_table
-  
+
   def initialize(options={})
     @days = options[:days] || 7
     @timeline_uri = options[:timeline_uri]
@@ -25,10 +25,10 @@ class TracSummaryReport
 
   def feed_data
     uri = @timeline_uri + "?wiki=on&milestone=on&ticket=on&changeset=on"+
-     "&max=10000&daysback=#{@days-1}&format=rss" 
-     
-    feed = Hpricot(open(uri))  
-    
+     "&max=10000&daysback=#{@days-1}&format=rss"
+
+    feed = Hpricot(open(uri))
+
     table = Table([:title, :date], :record_class => TicketStatus) do |table|
       (feed/"item").each do |r|
          title = (r/"title").innerHTML
@@ -36,8 +36,8 @@ class TracSummaryReport
          table <<  { :title => title,
                      :date  => Date.parse((r/"pubdate").innerHTML) }
        end
-    end     
-    
+    end
+
     Grouping(table,:by => :date)
   end
 
@@ -45,8 +45,8 @@ class TracSummaryReport
     summary = feed_data.summary :date,
       :opened => lambda { |g| g.sigma { |r| r.opened  } },
       :closed => lambda { |g| g.sigma { |r| r.closed  } },
-      :order => [:date,:opened,:closed] 
-      
+      :order => [:date,:opened,:closed]
+
     summary.sort_rows_by! { |r| r.date }
     return summary
   end
@@ -54,6 +54,6 @@ end
 
 timeline = "http://stonecode.svnrepository.com/ruport/trac.cgi/timeline"
 
-report = TracSummaryReport.new(:timeline_uri => timeline, :days => 30)  
+report = TracSummaryReport.new(:timeline_uri => timeline, :days => 30)
 puts report.as(:text)
 

@@ -5,12 +5,12 @@
 # and derived classes such as ClientPDF would implement the     #
 # stuff specific to a given report.                             #
 #################################################################
-                         
-require "ruport" 
 
-# only used for the titleize call in ClientController#setup  
+require "ruport"
+
+# only used for the titleize call in ClientController#setup
 # tweak as needed if you don't want to install AS.
-require "active_support" 
+require "active_support"
 
 # This looks a little more messy than usual, but it addresses the
 # concern of wanting to have a standard template for reports.
@@ -22,15 +22,15 @@ class ClientController < Ruport::Controller
 
   def setup
     data.rename_columns { |c| c.to_s.titleize }
-  end 
+  end
 end
 
 # This defines the base PDF output, you'd do similar for other
 # formats if needed. It implements the common hooks that will be used
-# across the company's reports. 
+# across the company's reports.
 #
 class CompanyPDFBase < Ruport::Formatter::PDF
-  def prepare_standard_report 
+  def prepare_standard_report
     # defaults to US Letter, but this overrides
     options.paper_size = "A4"
   end
@@ -48,7 +48,7 @@ end
 #  This is actual report's formatter
 #
 #  It implements the remaining hooks the standard formatter didn't
-#  Notice the footer is not implemented and it doesn't complain.   
+#  Notice the footer is not implemented and it doesn't complain.
 #
 class ClientPDF < CompanyPDFBase
   renders :pdf, :for => ClientController
@@ -62,7 +62,7 @@ class ClientPDF < CompanyPDFBase
 
   def build_client_body
     draw_table(data, :width => 300)
-  end 
+  end
 end
 
 table = Table([:a,:b,:c]) << [1,2,3] << [4,5,6]
