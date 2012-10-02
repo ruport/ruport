@@ -34,6 +34,7 @@ begin
     gemspec.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README.rdoc', '-q']
     gemspec.add_dependency 'fastercsv'
     gemspec.add_dependency 'pdf-writer', '= 1.1.8'
+    gemspec.add_dependency 'prawn',  '= 0.12.0'
   end
 rescue LoadError
   puts "Jeweler gem not available."

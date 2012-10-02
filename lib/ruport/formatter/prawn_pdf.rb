@@ -16,16 +16,30 @@ module Ruport
     end
 
     def pdf
-      @pdf ||= (options.formatter || ::Prawn::Document.new())
+      @pdf ||= (options.formatter || 
+        ::Prawn::Document.new(options[:pdf_format] || {:page_size => "LETTER", 
+          :page_layout => :portrait} ))
     end
 
-    def draw_table(table)
+    def draw_table(table, format_opts={})
+
+      m = "PDF Formatter requires column_names to be defined"
+      raise FormatterError, m if table.column_names.empty?
+
+      table.rename_columns { |c| c.to_s }
 
       table_array = [table.column_names]
       table_array += table_to_array(table)
-      pdf.table(table_array) do
-        style row(0), :font_style => :bold
+      table_array.map { |array| array.map! { |elem| elem.class != String ? elem.to_s : elem }}
+
+      if options[:table_format]
+        opt = options[:table_format] 
+      else
+        opt = {}
       end
+
+      pdf.table(table_array,opt)
+
     end
 
     def table_to_array(tbl)
