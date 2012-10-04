@@ -6,7 +6,7 @@ class Document < Ruport::Controller
   stage :body
 
   def setup
-    self.data = Ruport::Table(
+    self.data = Ruport::Data::Table.new(
       :column_names => %w(Make Model Year),
       :data => [
         %w(Nissan Skyline 1989),

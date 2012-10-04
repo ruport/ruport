@@ -2,7 +2,7 @@ $: << File.join(File.dirname(__FILE__), '..', 'lib')
 require "ruport"
 
 # Quick and simple example using prawn 0.9.0 with to_prawn_pdf.
-table = Ruport::Table(
+table = Ruport::Data::Table.new(
           :column_names => %w(Make Model Year),
           :data => [
             %w(Nissan Skyline 1989),
