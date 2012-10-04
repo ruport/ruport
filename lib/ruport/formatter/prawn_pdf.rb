@@ -17,12 +17,10 @@ module Ruport
 
     def pdf
       @pdf ||= (options.formatter || 
-        ::Prawn::Document.new(options[:pdf_format] || {:page_size => "LETTER", 
-          :page_layout => :portrait} ))
+        ::Prawn::Document.new(options[:pdf_format] || {} ))
     end
 
     def draw_table(table, format_opts={})
-
       m = "PDF Formatter requires column_names to be defined"
       raise FormatterError, m if table.column_names.empty?
 

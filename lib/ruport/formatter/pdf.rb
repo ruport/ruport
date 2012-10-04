@@ -276,7 +276,6 @@ module Ruport
     #
     # http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/PdfWriterQuickRef
     def draw_table(table_data, format_opts={})
-
       m = "PDF Formatter requires column_names to be defined"
       raise FormatterError, m if table_data.column_names.empty?
 
@@ -393,7 +392,6 @@ module Ruport
     private
 
     def apply_pdf_table_column_opts(table,table_data,format_opts)
-
       column_opts = format_opts.delete(:column_options)
 
       if column_opts
