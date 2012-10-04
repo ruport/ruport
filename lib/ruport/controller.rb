@@ -219,7 +219,7 @@ class Ruport::Controller
      { :html => Ruport::Formatter::HTML,
        :csv  => Ruport::Formatter::CSV,
        :pdf  => Ruport::Formatter::PDF,
-       :pdf_prawn => Ruport::Formatter::PrawnPDF,
+       :prawn_pdf => Ruport::Formatter::PrawnPDF,
        :text => Ruport::Formatter::Text }
     end
 
