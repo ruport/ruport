@@ -170,11 +170,9 @@ class Ruport::Controller
       unless self.class.controller.formats.include?(format)
         raise UnknownFormatError
       end
-      self.class.controller.render(format,
-        self.class.rendering_options.merge(options)) do |rend|
-          rend.data =
-            respond_to?(:renderable_data) ? renderable_data(format) : self
-          yield(rend) if block_given?  
+      self.class.controller.render(format, self.class.rendering_options.merge(options)) do |rend|
+          rend.data = respond_to?(:renderable_data) ? renderable_data(format,options) : self
+          yield(rend) if block_given?
       end
     end      
     
@@ -221,6 +219,7 @@ class Ruport::Controller
      { :html => Ruport::Formatter::HTML,
        :csv  => Ruport::Formatter::CSV,
        :pdf  => Ruport::Formatter::PDF,
+       :prawn_pdf => Ruport::Formatter::PrawnPDF,
        :text => Ruport::Formatter::Text }
     end
 
@@ -573,7 +572,6 @@ class Ruport::Controller
     else
       execute_stages
     end
-
     finalize self.class.final_stage if self.class.final_stage
     maybe :finalize
   end  
