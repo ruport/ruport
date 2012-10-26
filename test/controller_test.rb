@@ -631,23 +631,17 @@ class ControllerWithAnonymousFormatters < Ruport::Controller
 end
 
 class TestAnonymousFormatter < Test::Unit::TestCase
-  context "When using built in Ruport formatters" do
 
-    def specify_text_formatter_shortcut_is_accessible
-      assert_equal "Hello world", ControllerWithAnonymousFormatters.render_text
-      assert_equal "1,2,3\n", ControllerWithAnonymousFormatters.render_csv
-      assert_equal "<h1>Hi there</h1>", ControllerWithAnonymousFormatters.render_html
-      assert_not_nil ControllerWithAnonymousFormatters.render_pdf
-    end
-    
+  def test_text_formatter_shortcut_is_accessible
+    assert_equal "Hello world", ControllerWithAnonymousFormatters.render_text
+    assert_equal "1,2,3\n", ControllerWithAnonymousFormatters.render_csv
+    assert_equal "<h1>Hi there</h1>", ControllerWithAnonymousFormatters.render_html
+    assert_not_nil ControllerWithAnonymousFormatters.render_pdf
   end
 
-  context "When using custom formatters" do
-    def specify_custom_formatter_shortcut_is_accessible
-      assert_equal "This is Custom!", ControllerWithAnonymousFormatters.render_custom
-    end
+  def test_custom_formatter_shortcut_is_accessible
+    assert_equal "This is Custom!", ControllerWithAnonymousFormatters.render_custom
   end
-
 end
 
 # Used to ensure that problems in controller code aren't mistakenly intercepted
@@ -665,11 +659,9 @@ end
 
 class TestMisbehavingController < Test::Unit::TestCase
 
-  context "using a controller that throws NoMethodError" do
-    def specify_controller_errors_should_bubble_up
-      assert_raises(NoMethodError) do
-        MisbehavingController.render :text
-      end
+  def test_controller_errors_should_bubble_up
+    assert_raises(NoMethodError) do
+      MisbehavingController.render :text
     end
   end
 
@@ -677,92 +669,76 @@ end
 
 class TestControllerHooks < Test::Unit::TestCase
 
-  context "when renderable_data omitted" do
+  require "mocha"
 
-    require "mocha"
-
-    class DummyObject 
-      include Ruport::Controller::Hooks
-      renders_as_table
-    end
-
-    def specify_should_return_self
-      a = DummyObject.new
-      rend = mock("renderer")
-      rend.expects(:data=).with(a)
-      Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
-      a.as(:csv)
-    end
-
+  class DummyObject 
+    include Ruport::Controller::Hooks
+    renders_as_table
   end
 
-  context "when using renderable_data" do
+  def test_should_return_self
+    a = DummyObject.new
+    rend = mock("renderer")
+    rend.expects(:data=).with(a)
+    Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
+    a.as(:csv)
+  end
 
-    class DummyObject2
-      include Ruport::Controller::Hooks
-      renders_as_table
+  class DummyObject2
+    include Ruport::Controller::Hooks
+    renders_as_table
 
-      def renderable_data(format)
+    def renderable_data(format)
+      1
+    end
+  end
+
+  def test_should_return_results_of_renderable_data
+    a = DummyObject2.new
+    rend = mock("renderer")
+    rend.expects(:data=).with(1)
+    Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
+    a.as(:csv)
+  end
+
+  class DummyObject3
+    include Ruport::Controller::Hooks
+    renders_as_table
+    
+    def renderable_data
+      raise ArgumentError
+    end
+  end
+
+  def test_should_not_mask_errors
+    assert_raises(ArgumentError) { DummyObject3.new.as(:csv) }
+  end
+
+  class DummyObject4
+    include Ruport::Controller::Hooks
+    renders_as_table
+
+    def renderable_data(format)
+      case format
+      when :html
         1
+      when :csv
+        2
       end
-    end
-
-    def specify_should_return_results_of_renderable_data
-      a = DummyObject2.new
-      rend = mock("renderer")
-      rend.expects(:data=).with(1)
-      Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
-      a.as(:csv)
-    end
-
-    class DummyObject3
-      include Ruport::Controller::Hooks
-      renders_as_table
-      
-      def renderable_data
-        raise ArgumentError
-      end
-    end
-
-    def specify_should_not_mask_errors
-      assert_raises(ArgumentError) { DummyObject3.new.as(:csv) }
-    end
-
-    class DummyObject4
-      include Ruport::Controller::Hooks
-      renders_as_table
-
-      def renderable_data(format)
-        case format
-        when :html
-          1
-        when :csv
-          2
-        end
-      end
-    end
-
-    def specify_should_return_results_of_renderable_data_using_format
-      a = DummyObject4.new
-      rend = mock("renderer")
-      rend.expects(:data=).with(2)
-      Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
-      a.as(:csv)
-    end
-
-  end    
-
-  context "when attempting to render a format that doesn't exist" do
-
-    def specify_an_unknown_format_error_should_be_raised
-
-      assert_raises(Ruport::Controller::UnknownFormatError) do
-        Ruport::Controller.render_foo
-      end
-
     end
   end
 
+  def test_should_return_results_of_renderable_data_using_format
+    a = DummyObject4.new
+    rend = mock("renderer")
+    rend.expects(:data=).with(2)
+    Ruport::Controller::Table.expects(:render).with(:csv,{}).yields(rend)
+    a.as(:csv)
+  end
 
-
+  def test_an_unknown_format_error_should_be_raised
+    assert_raises(Ruport::Controller::UnknownFormatError) do
+      Ruport::Controller.render_foo
+    end
+  end
 end
