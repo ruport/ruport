@@ -215,7 +215,7 @@ class TestRenderTextGrouping < Test::Unit::TestCase
     table = Ruport::Data::Table.new(:data => [ %w[is this more],
                                                %w[interesting red snapper]],
                                     :column_names => %w[i hope so])
-    grouping = Grouping(table, :by => "i")
+    grouping = Grouping(table, :by => "i", :order => :name)
 
     actual = Ruport::Controller::Grouping.render(:text, :data => grouping)
     expected = "interesting:\n\n"+
@@ -240,7 +240,7 @@ class TestRenderTextGrouping < Test::Unit::TestCase
     table = Ruport::Data::Table.new(:data => [ %w[is this more],
                                                %w[interesting red snapper]],
                                     :column_names => %w[i hope so])
-    grouping = Grouping(table, :by => "i")
+    grouping = Grouping(table, :by => "i", :order => :name)
 
     actual = Ruport::Controller::Grouping.render(:text, :data => grouping,
       :show_table_headers => false)
