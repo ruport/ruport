@@ -165,17 +165,15 @@ class Ruport::Controller
     #  Example:
     #
     #    table.as(:csv, :show_table_headers => false)
-    def as(format,options={})
+    def as(format, options = {})
       raise ControllerNotSetError unless self.class.controller
-      unless self.class.controller.formats.include?(format)
-        raise UnknownFormatError
-      end
+      raise UnknownFormatError unless self.class.controller.formats.include?(format)
       self.class.controller.render(format, self.class.rendering_options.merge(options)) do |rend|
-          rend.data = respond_to?(:renderable_data) ? renderable_data(format,options) : self
+          rend.data = respond_to?(:renderable_data) ? renderable_data(format) : self
           yield(rend) if block_given?
       end
-    end      
-    
+    end
+
     def save_as(file,options={})
       file =~ /.*\.(.*)/    
       format = $1
