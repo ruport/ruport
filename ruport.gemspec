@@ -40,4 +40,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<pdf-writer>, ["= 1.1.8"])
     s.add_runtime_dependency(%q<prawn>, ["= 0.12.0"])
   end
+
+  s.add_development_dependency(%q<rake>, [">= 0.8.7"])
 end
