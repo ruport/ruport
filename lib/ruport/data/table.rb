@@ -255,7 +255,9 @@ module Ruport::Data
 
         table = self.new(options) do |feeder|
           first_line = true
-          FasterCSV.send(msg,param,options[:csv_options]) do |row|
+
+          csv_class = RUBY_VERSION < "1.9" ? FasterCSV : CSV
+          csv_class.send(msg,param,options[:csv_options]) do |row|
             if first_line
               adjust_for_headers(feeder.data,row,options)
               first_line = false
