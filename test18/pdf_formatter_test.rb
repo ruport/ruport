@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby -w
-require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
+require File.join(File.expand_path(File.dirname(__FILE__)), "../test/helpers")
 
 class TestRenderPDFTable < Test::Unit::TestCase
 
@@ -45,7 +45,7 @@ class TestRenderPDFTable < Test::Unit::TestCase
 
   # this is mostly to check that the transaction hack gets called
   def test_relatively_large_pdf
-     table = Table(File.join(File.expand_path(File.dirname(__FILE__)),
+     table = Table(File.join(File.expand_path(File.dirname(__FILE__)), "../test/",
                    %w[samples dates.csv]))
      table.reduce(0..99)
      assert_nothing_raised { table.to_pdf }

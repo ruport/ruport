@@ -636,7 +636,9 @@ class TestAnonymousFormatter < Test::Unit::TestCase
     assert_equal "Hello world", ControllerWithAnonymousFormatters.render_text
     assert_equal "1,2,3\n", ControllerWithAnonymousFormatters.render_csv
     assert_equal "<h1>Hi there</h1>", ControllerWithAnonymousFormatters.render_html
-    assert_not_nil ControllerWithAnonymousFormatters.render_pdf
+    if RUBY_VERSION < "1.9"
+      assert_not_nil ControllerWithAnonymousFormatters.render_pdf
+    end
   end
 
   def test_custom_formatter_shortcut_is_accessible

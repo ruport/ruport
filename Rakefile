@@ -13,7 +13,11 @@ task :default => [:test]
 
 Rake::TestTask.new do |test|
   test.libs << "test"
-  test.test_files = Dir[ "test/*_test.rb" ]
+  if RUBY_VERSION < "1.9"
+    test.test_files = Dir["test/*_test.rb", "test18/*_test.rb"]
+  else
+    test.test_files = Dir[ "test/*_test.rb" ]
+  end
   test.verbose = true
 end
 
