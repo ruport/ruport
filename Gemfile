@@ -5,8 +5,8 @@ gemspec
 gem 'rdoc'
 
 # Testing gems
-gem 'spec-unit'
-gem 'shoulda'
+gem 'minitest'
+gem 'shoulda-context'
 gem 'mocha'
 
 # Test dependencies

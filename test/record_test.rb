@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby -w   
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
+require 'minitest/spec'
 
 class TestRecord < Test::Unit::TestCase
 
@@ -10,7 +11,7 @@ class TestRecord < Test::Unit::TestCase
     @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes 
   end   
   
-  context "when initializing with an array with attributes" do 
+  describe "when initializing with an array with attributes" do
     def specify_key_access_should_work
       assert_equal 1, @record["a"]
       assert_equal 4, @record["d"]
@@ -27,7 +28,7 @@ class TestRecord < Test::Unit::TestCase
     end
   end  
       
-  context "when initializing with an array without attributes" do
+  describe "when initializing with an array without attributes" do
     def specify_ordinal_access_should_work
       record = Ruport::Data::Record.new [1,2,3,4]
       assert_equal 1, record[0]
@@ -37,7 +38,7 @@ class TestRecord < Test::Unit::TestCase
     end 
   end         
   
-  context "when initializing with a hash without attributes" do    
+  describe "when initializing with a hash without attributes" do
     def setup  
       @record = Ruport::Data::Record.new({:a => 1, :b => 2, :c => 3},{})
     end     
@@ -50,7 +51,7 @@ class TestRecord < Test::Unit::TestCase
     end  
   end
   
-  context "when initializing with a hash with attributes" do
+  describe "when initializing with a hash with attributes" do
     def setup
       @record = Record.new({:a => 1, :b => 2, :c => 3 }, 
                            :attributes => [:c,:b,:a])
@@ -290,7 +291,7 @@ class TestRecord < Test::Unit::TestCase
     assert_equal "1,2,3\n", a.to_csv
   end
     
-  context "when rendering records" do   
+  describe "when rendering records" do
     
     def specify_record_as_should_work
       rendered_row = @record.as(:text)
@@ -307,7 +308,7 @@ class TestRecord < Test::Unit::TestCase
       assert_equal("1\t2\t3\t4\n",rendered_row)     
     end                                      
     
-    context "when given bad format names" do
+    describe "when given bad format names" do
       def setup 
         @a = Record.new({ "a" => 1, "b" => 2 }) 
       end
