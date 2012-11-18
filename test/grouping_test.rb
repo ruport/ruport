@@ -88,10 +88,10 @@ class TestGroupRendering < Test::Unit::TestCase
   end       
 
   def test_group_as
-    assert_equal(7, @group.to_text.to_a.length)
+    assert_equal(7, @group.to_text.split("\n").size)
     assert_equal(5, @group.as(:text,
-                              :show_table_headers => false).to_a.length)
-    assert_equal(13, @group.to_html.to_a.length)
+                              :show_table_headers => false).split("\n").size)
+    assert_equal(13, @group.to_html.split("\n").size)
   end
   
   def test_as_throws_proper_errors
@@ -284,7 +284,7 @@ class TestGrouping < Test::Unit::TestCase
     end
   end
 
-  context "when sorting groupings" do
+  describe "when sorting groupings" do
     
     def setup
       @table = Table(%w[a b c]) << ["dog",1,2] << ["cat",3,5] << 
@@ -371,9 +371,9 @@ class TestGroupingRendering < Test::Unit::TestCase
   end
   
   def test_grouping_as
-    assert_equal(16, @grouping.to_text.to_a.length)
-    assert_equal(12, @grouping.as(:text,
-      :show_table_headers => false).to_a.length)
+    assert_equal(15, @grouping.to_text.split("\n").size)
+    assert_equal(11, @grouping.as(:text,
+      :show_table_headers => false).split("\n").size)
   end
 
   def test_as_throws_proper_errors

@@ -4,6 +4,7 @@ require "ruport"
 begin; require "rubygems"; rescue LoadError; nil; end
 require "shoulda-context"
 require "mocha"
+require "minitest/spec"
 
 class Test::Unit::TestCase
   include Ruport

@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby -w   
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
-require 'minitest/spec'
 
 class TestRecord < Test::Unit::TestCase
 
