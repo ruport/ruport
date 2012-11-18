@@ -2,6 +2,7 @@ source "https://rubygems.org"
 gemspec
 
 # Utilities
+gem 'rake'
 gem 'rdoc'
 
 # Testing gems
