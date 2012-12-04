@@ -6,7 +6,7 @@ require 'ruport/version'
 Gem::Specification.new do |s|
   s.name = %q{ruport}
 
-  s.homepage = %q{http://rubyreports.org}
+  s.homepage = %q{http://github.com/ruport/ruport}
 
   s.version = Ruport::VERSION
 
