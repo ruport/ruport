@@ -386,16 +386,16 @@ class Ruport::Controller
     #      # other details omitted
     #   end
     def required_option(*opts) 
-      self.required_options ||= []
-      opts.each do |opt|
-        self.required_options << opt 
+      (self.required_options ||= []).concat(opts)
 
-        o = opt
-        unless instance_methods(false).include?(o.to_s)
-          define_method(o) { options.send(o.to_s) }
+      opts.each do |opt|
+        unless method_defined?(opt)
+          define_method(opt) { options.send(opt) }
         end
-        opt = "#{opt}="
-        define_method(opt) {|t| options.send(opt, t) }
+        setter = "#{opt}="
+        unless method_defined?(setter)
+          define_method(setter) {|t| options.send(setter, t) }
+        end
       end
     end
 
