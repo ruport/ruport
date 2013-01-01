@@ -491,35 +491,35 @@ end
 
 class TestFormatterErbHelper < Test::Unit::TestCase
   class ErbFormatter < Ruport::Formatter
-     
+
     renders :terb, :for  => VanillaController
-    
-    def build_body    
+
+    def build_body
        # demonstrate local binding
-       @foo = "bar"                         
+       @foo = "bar"
        if options.binding
-         output << erb("Binding Override: <%= reverse %>", 
-                       :binding => options.binding) 
-       else   
-         output << erb("Default Binding: <%= @foo %>") 
-       end   
+         output << erb("Binding Override: <%= reverse.inspect %>",
+                       :binding => options.binding)
+       else
+         output << erb("Default Binding: <%= @foo %>")
+       end
     end
     
   end
 
-   #FIXME: need to test file
+  #FIXME: need to test file
 
    def test_self_bound
      assert_equal "Default Binding: bar", VanillaController.render_terb
    end
-   
+
    def test_custom_bound
      a = [1,2,3]
      arr_binding = a.instance_eval { binding }
-     assert_equal "Binding Override: 321", 
+     assert_equal "Binding Override: [3, 2, 1]",
                    VanillaController.render_terb(:binding => arr_binding)
    end
-end    
+end
 
 
 class TestOptionReaders < Test::Unit::TestCase
