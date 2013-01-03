@@ -1,12 +1,8 @@
+require "rubygems"
+require "bundler/setup"
+
 require "rdoc/task"
 require "rake/testtask"
-
-begin
-  require "rubygems"
-rescue LoadError
-  nil
-end
-
 require 'bundler/gem_tasks'
 
 task :default => [:test]
@@ -21,7 +17,7 @@ Rake::TestTask.new do |test|
   test.verbose = true
 end
 
-Rake::RDocTask.new do |rdoc|
+RDoc::Task.new do |rdoc|
   rdoc.rdoc_files.include( "README.rdoc",
                            "AUTHORS", "COPYING",
                            "LICENSE", "lib/" )
