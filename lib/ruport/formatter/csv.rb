@@ -35,7 +35,11 @@ module Ruport
                             Controller::Group, Controller::Grouping ]
     
     def initialize
-      require "fastercsv" unless RUBY_VERSION > "1.9"   
+      if RUBY_VERSION > "1.9"
+        require "csv"
+      else
+        require "fastercsv"
+      end
     end
 
     attr_writer :csv_writer
@@ -56,7 +60,7 @@ module Ruport
     #
     def csv_writer
       @csv_writer ||= options.formatter ||
-        FCSV(output, options.format_options || {})
+        (defined?(FasterCSV) ? FasterCSV : ::CSV).instance(output, options.format_options || {})
     end
 
     # Generates table header by turning column_names into a CSV row.
