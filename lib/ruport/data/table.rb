@@ -98,6 +98,8 @@ module Ruport::Data
           }
         when NilClass
           nil
+        when :name  # Pass through :name as it's a special instruction to Grouping
+          :name
         else
           proc {|group| group[0][row_order_spec].to_s }
         end

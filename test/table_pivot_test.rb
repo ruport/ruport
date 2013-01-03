@@ -107,7 +107,7 @@ class PivotPreservesOrdering < Test::Unit::TestCase
     assert_equal(expected, pivoted)
   end
 
-  def test_preserves_ordering_on_calculated_column
+  def test_reorders_a_calculated_column_by_column_name
     table = Table('group', 'a')
     [
       [1, 1], [2, 2], [3, 3]
