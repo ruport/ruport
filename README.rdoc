@@ -22,7 +22,7 @@ a DRY and consistent interface.
 To get a quick feel for what you can accomplish with Ruport, take a look at
 a few simple examples provided on our web site.
 
-http://rubyreports.org/examples.html
+http://ruport.github.com/examples.html
 
 Since Ruport's core support is intentionally minimalistic, you may be looking
 for some higher level support for specific needs such as graphing, invoices,
@@ -78,7 +78,7 @@ If you are looking to dig a little deeper, there are a couple more resources
 that may be helpful to you.
 
 -  The latest stable API documentation is available at:
-   http://api.rubyreports.org
+   http://rubydoc.info/gems/ruport/frames
 
 -  Our issues tracker is at http://github.com/ruport/ruport/issues
 
