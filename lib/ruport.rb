@@ -72,7 +72,7 @@ module Ruport #:nodoc:#
           [output.match('columns = (\d+)')[1].to_i,
           output.match('rows = (\d+)')[1].to_i]
         else
-           `stty size`.split.map { |x| x.to_i }.reverse
+           `stty -F /dev/tty size`.split.map { |x| x.to_i }.reverse
         end
         return $? == 0 ? size : [80,24]
       end
