@@ -68,5 +68,92 @@ module Ruport
         draw_table group, &block
       end
     end
+
+    # Hook for setting available options using a template. See the template
+    # documentation for the available options and their format.
+    def apply_template
+      apply_page_format_template(template.page)
+      apply_text_format_template(template.text)
+      apply_table_format_template(template.table)
+      apply_column_format_template(template.column)
+      apply_heading_format_template(template.heading)
+      apply_grouping_format_template(template.grouping)
+    end
+
+    private
+
+    def apply_page_format_template(t)
+      options.pdf_format ||= {}
+      t = (t || {}).merge(options.page_format || {})
+      options.pdf_format[:page_size] ||= t[:size]
+      options.pdf_format[:page_layout] ||= t[:layout]
+    end
+
+    def apply_text_format_template(t)
+      t = (t || {}).merge(options.text_format || {})
+      options.text_format = t unless t.empty?
+    end
+
+    def apply_table_format_template(t)
+      t = (t || {}).merge(options.table_format || {})
+      options.table_format = t unless t.empty?
+    end
+
+    def apply_column_format_template(t)
+      t = (t || {}).merge(options.column_format || {})
+      column_opts = {}
+      column_opts.merge!(:justification => t[:alignment]) if t[:alignment]
+      column_opts.merge!(:width => t[:width]) if t[:width]
+      unless column_opts.empty?
+        if options.table_format
+          if options.table_format[:column_options]
+            options.table_format[:column_options] =
+              column_opts.merge(options.table_format[:column_options])
+          else
+            options.table_format.merge!(:column_options => column_opts)
+          end
+        else
+          options.table_format = { :column_options => column_opts }
+        end
+      end
+    end
+
+    def apply_heading_format_template(t)
+      t = (t || {}).merge(options.heading_format || {})
+      heading_opts = {}
+      heading_opts.merge!(:justification => t[:alignment]) if t[:alignment]
+      heading_opts.merge!(:bold => t[:bold]) unless t[:bold].nil?
+      heading_opts.merge!(:title => t[:title]) if t[:title]
+      unless heading_opts.empty?
+        if options.table_format
+          if options.table_format[:column_options]
+            if options.table_format[:column_options][:heading]
+              options.table_format[:column_options][:heading] =
+                heading_opts.merge(
+                  options.table_format[:column_options][:heading]
+                )
+            else
+              options.table_format[:column_options].merge!(
+                :heading => heading_opts
+              )
+            end
+          else
+            options.table_format.merge!(
+              :column_options => { :heading => heading_opts }
+            )
+          end
+        else
+          options.table_format = {
+            :column_options => { :heading => heading_opts }
+          }
+        end
+      end
+    end
+
+    def apply_grouping_format_template(t)
+      t = (t || {}).merge(options.grouping_format || {})
+      options.style ||= t[:style]
+    end
+
   end
 end
