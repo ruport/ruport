@@ -1040,7 +1040,7 @@ module Ruport
   #
   #   t = Table("foo.csv")
   #   t = Table("bar.csv", :has_names => false)
-  def Table(*args,&block)
+  def self.Table(*args,&block)
     case(args[0])
     when Array
       opts = args[1] || {}
