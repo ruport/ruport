@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w   
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
-class TestGroup < Test::Unit::TestCase
+class TestGroup < Minitest::Test
 
   def setup
     @group = Ruport::Data::Group.new(:name => 'test',
@@ -79,7 +79,7 @@ class TestGroup < Test::Unit::TestCase
   end
 end
 
-class TestGroupRendering < Test::Unit::TestCase
+class TestGroupRendering < Minitest::Test
 
   def setup
     @group = Ruport::Data::Group.new(:name => 'test',
@@ -95,8 +95,8 @@ class TestGroupRendering < Test::Unit::TestCase
   end
   
   def test_as_throws_proper_errors
-    assert_nothing_raised { @group.as(:csv) }
-    assert_nothing_raised { @group.to_csv }
+    @group.as(:csv)
+    @group.to_csv
     assert_raises(Ruport::Controller::UnknownFormatError) {
       @group.as(:nothing) }
     assert_raises(Ruport::Controller::UnknownFormatError) {
@@ -111,7 +111,7 @@ class TestGroupRendering < Test::Unit::TestCase
   end
 end
     
-class TestGrouping < Test::Unit::TestCase
+class TestGrouping < Minitest::Test
   
   def setup
     table = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
@@ -363,7 +363,7 @@ class TestGrouping < Test::Unit::TestCase
   end
 end
 
-class TestGroupingRendering < Test::Unit::TestCase
+class TestGroupingRendering < Minitest::Test
 
   def setup
     table = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
@@ -377,8 +377,8 @@ class TestGroupingRendering < Test::Unit::TestCase
   end
 
   def test_as_throws_proper_errors
-    assert_nothing_raised { @grouping.as(:csv) }
-    assert_nothing_raised { @grouping.to_csv }
+     @grouping.as(:csv)
+     @grouping.to_csv 
     assert_raises(Ruport::Controller::UnknownFormatError) {
       @grouping.as(:nothing) }
     assert_raises(Ruport::Controller::UnknownFormatError) {
@@ -386,7 +386,7 @@ class TestGroupingRendering < Test::Unit::TestCase
   end
 end
 
-class TestGroupingKernelHacks < Test::Unit::TestCase
+class TestGroupingKernelHacks < Minitest::Test
 
   def test_group_kernel_hack
     group = Ruport::Data::Group.new( :name => 'test',

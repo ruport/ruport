@@ -94,7 +94,7 @@ class SpecialFinalize < Ruport::Formatter
   end
 end
 
-class TestController < Test::Unit::TestCase
+class TestController < Minitest::Test
 
   def teardown
     Ruport::Formatter::Template.instance_variable_set(:@templates, nil)
@@ -231,7 +231,7 @@ class TestController < Test::Unit::TestCase
 end
 
 
-class TestFormatterUsingBuild < Test::Unit::TestCase
+class TestFormatterUsingBuild < Minitest::Test
   # This formatter uses the build syntax
   class UsesBuild < Ruport::Formatter
      renders :text_using_build, :for => VanillaController 
@@ -261,7 +261,7 @@ class TestFormatterUsingBuild < Test::Unit::TestCase
 end
 
 
-class TestFormatterWithLayout < Test::Unit::TestCase
+class TestFormatterWithLayout < Minitest::Test
   # This formatter is meant to check out a special case in Ruport's renderer,
   # in which a layout method is called and yielded to when defined
   class WithLayout < DummyText
@@ -288,7 +288,7 @@ class TestFormatterWithLayout < Test::Unit::TestCase
 end
 
 
-class TestControllerWithManyHooks < Test::Unit::TestCase
+class TestControllerWithManyHooks < Minitest::Test
   # This provides a way to check several hooks that controllers supports
   class ControllerWithManyHooks < Ruport::Controller
     add_format DummyText, :text
@@ -351,13 +351,13 @@ class TestControllerWithManyHooks < Test::Unit::TestCase
   end
 
   def test_finalize_again
-   assert_raise(Ruport::Controller::StageAlreadyDefinedError) { 
+   assert_raises(Ruport::Controller::StageAlreadyDefinedError) { 
      ControllerWithManyHooks.finalize :report 
    }
   end
 
   def test_prepare_again
-   assert_raise(Ruport::Controller::StageAlreadyDefinedError) { 
+   assert_raises(Ruport::Controller::StageAlreadyDefinedError) { 
      ControllerWithManyHooks.prepare :foo 
    }
   end
@@ -385,13 +385,13 @@ class TestControllerWithManyHooks < Test::Unit::TestCase
    a = ControllerWithManyHooks.dup
    a.required_option :title
 
-   assert_raise(Ruport::Controller::RequiredOptionNotSet) { a.render(:text) }
+   assert_raises(Ruport::Controller::RequiredOptionNotSet) { a.render(:text) }
   end
  
 end
 
 
-class TestControllerWithRunHook < Test::Unit::TestCase
+class TestControllerWithRunHook < Minitest::Test
 
   class ControllerWithRunHook < Ruport::Controller
     add_format DummyText, :text
@@ -416,7 +416,7 @@ class TestControllerWithRunHook < Test::Unit::TestCase
 end
 
 
-class TestControllerWithHelperModule < Test::Unit::TestCase
+class TestControllerWithHelperModule < Minitest::Test
 
   class ControllerWithHelperModule < VanillaController
 
@@ -437,7 +437,7 @@ class TestControllerWithHelperModule < Test::Unit::TestCase
 end
 
 
-class TestMultiPurposeFormatter < Test::Unit::TestCase
+class TestMultiPurposeFormatter < Minitest::Test
   # This provides a way to check the multi-format hooks for the Controller
   class MultiPurposeFormatter < Ruport::Formatter 
 
@@ -489,7 +489,7 @@ class TestMultiPurposeFormatter < Test::Unit::TestCase
 end
 
 
-class TestFormatterErbHelper < Test::Unit::TestCase
+class TestFormatterErbHelper < Minitest::Test
   class ErbFormatter < Ruport::Formatter
 
     renders :terb, :for  => VanillaController
@@ -522,7 +522,7 @@ class TestFormatterErbHelper < Test::Unit::TestCase
 end
 
 
-class TestOptionReaders < Test::Unit::TestCase
+class TestOptionReaders < Minitest::Test
   
   class ControllerForCheckingOptionReaders < Ruport::Controller
     required_option :foo  
@@ -557,7 +557,7 @@ class TestOptionReaders < Test::Unit::TestCase
      
 end
      
-class TestSetupOrdering < Test::Unit::TestCase
+class TestSetupOrdering < Minitest::Test
    
   class ControllerWithSetup < Ruport::Controller
     stage :bar
@@ -630,7 +630,7 @@ class ControllerWithAnonymousFormatters < Ruport::Controller
 
 end
 
-class TestAnonymousFormatter < Test::Unit::TestCase
+class TestAnonymousFormatter < Minitest::Test
 
   def test_text_formatter_shortcut_is_accessible
     assert_equal "Hello world", ControllerWithAnonymousFormatters.render_text
@@ -659,7 +659,7 @@ class MisbehavingFormatter < Ruport::Formatter
   end
 end
 
-class TestMisbehavingController < Test::Unit::TestCase
+class TestMisbehavingController < Minitest::Test
 
   def test_controller_errors_should_bubble_up
     assert_raises(NoMethodError) do
@@ -669,7 +669,7 @@ class TestMisbehavingController < Test::Unit::TestCase
 
 end
 
-class TestControllerHooks < Test::Unit::TestCase
+class TestControllerHooks < Minitest::Test
 
   require "mocha"
 
