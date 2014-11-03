@@ -42,9 +42,9 @@ module Ruport
     def build_table_header
       output << "\t<table>\n"
       unless data.column_names.empty? || !options.show_table_headers
-        output << "\t\t<tr>\n\t\t\t<th>" + 
+        output << "\t\t<thead>\n\t\t<tr>\n\t\t\t<th>" + 
           data.column_names.join("</th>\n\t\t\t<th>") + 
-          "</th>\n\t\t</tr>\n"
+          "</th>\n\t\t</tr>\n\t\t</thead>\n"
       end
     end
     

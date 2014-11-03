@@ -37,8 +37,8 @@ class TestRenderHTMLTable < Minitest::Test
       r.data = Table(%w[a b c], :data => [ [1,2,3],[4,5,6]]) 
     }
     
-    assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
-      "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
+    assert_equal("\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
+      "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t</thead>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
       "\t</tr>\n\t</table>\n",actual)   
@@ -117,8 +117,8 @@ class TestRenderHTMLGroup < Minitest::Test
                                     :column_names => %w[a b c])
     actual = Ruport::Controller::Group.render(:html, :data => group)
     assert_equal "\t<p>test</p>\n"+
-      "\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
-      "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1</td>"+
+      "\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
+      "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t</thead>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
       "\t</tr>\n\t</table>\n", actual
@@ -157,12 +157,12 @@ class TestRenderHTMLGrouping < Minitest::Test
     g = Grouping(table,:by => "a")
     actual = Ruport::Controller::Grouping.render(:html, :data => g)
 
-    assert_equal "\t<p>1</p>\n\t<table>\n\t\t<tr>\n\t\t\t<th>b</th>\n"+
-                 "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>"+
+    assert_equal "\t<p>1</p>\n\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>b</th>\n"+
+                 "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t</thead>\n\t\t<tr>\n\t\t\t<td>"+
                  "2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t"+
                  "\t<td>1</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t</table>\n\n"+
-                 "\t<p>2</p>\n\t<table>\n\t\t<tr>\n\t\t\t<th>b</th>\n\t\t"+
-                 "\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>7</td>\n"+
+                 "\t<p>2</p>\n\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>b</th>\n\t\t"+
+                 "\t<th>c</th>\n\t\t</tr>\n\t\t</thead>\n\t\t<tr>\n\t\t\t<td>7</td>\n"+
                  "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n\n", actual
   end
 
@@ -172,8 +172,8 @@ class TestRenderHTMLGrouping < Minitest::Test
     actual = Ruport::Controller::Grouping.render(:html, :data => g,
                                                :style => :justified)
 
-    assert_equal "\t<table>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>\n"+
-                 "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t"+
+    assert_equal "\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>\n"+
+                 "\t\t\t<th>c</th>\n\t\t</tr>\n\t\t</thead>\n\t\t<tr>\n\t\t\t"+
                  "<td class=\"groupName\">1</td>\n\t\t\t<td>"+
                  "2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t"+
                  "<td>&nbsp;</td>\n\t\t\t<td>1</td>\n\t\t\t<td>3</td>"+
