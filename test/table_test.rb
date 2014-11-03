@@ -11,7 +11,7 @@ end
 
 class DuckRecord < Ruport::Data::Record; end
 
-class TestTable < Test::Unit::TestCase
+class TestTable < Minitest::Test
   def test_constructors
     table  = Ruport::Data::Table.new
 
@@ -328,26 +328,25 @@ class TestTable < Test::Unit::TestCase
     table_with_names = Table(%w[a b c], :data => [[1,2,3],[4,5,6],[7,8,9]])
 
     a,b,c = nil
-    assert_nothing_raised { a = Table(%w[a b c], :data => table.to_a) }
-    assert_nothing_raised { b = Table(%w[d e f], :data => table.to_a) }
-    assert_nothing_raised { c = Table(table_with_names.column_names,
-      :data => table_with_names.to_a) }
+    a = Table(%w[a b c], :data => table.to_a) 
+    b = Table(%w[d e f], :data => table.to_a) 
+    c = Table(table_with_names.column_names, :data => table_with_names.to_a) 
 
     [a,b,c].each { |t| assert_equal(3,t.length) }
     assert_equal %w[a b c], a.column_names
     a.each { |r|
       assert_equal %w[a b c], r.attributes
-      assert_nothing_raised { r.a; r.b; r.c }
+      r.a; r.b; r.c 
       [r.a,r.b,r.c].each { |i| assert(i.kind_of?(Numeric)) }
     }
     assert_equal %w[d e f], b.column_names
     b.each { |r|
       assert_equal %w[d e f], r.attributes
-      assert_nothing_raised { r.d; r.e; r.f }
+      r.d; r.e; r.f
       [r.d,r.e,r.f].each { |i| assert(i.kind_of?(Numeric)) }
     }
     c.each { |r|
-      assert_nothing_raised { r[0]; r[1]; r[2] }
+      r[0]; r[1]; r[2]
       [r[0],r[1],r[2]].each { |i| assert(i.kind_of?(Numeric)) }
     }
   end
@@ -363,12 +362,12 @@ class TestTable < Test::Unit::TestCase
   def test_to_yaml
     require "yaml"
     a = Table([])
-    assert_nothing_raised { a.to_yaml }
+    a.to_yaml
     a = Table(%w[first_name last_name],:record_class => Person) { |t|
       t << %w[joe loop]
     }
     assert_equal "joe loop", a[0].name
-    assert_nothing_raised { a.to_yaml }
+    a.to_yaml 
   end
 
   def test_ensure_subtable_works_with_unnamed_tables
@@ -393,9 +392,9 @@ class TestTable < Test::Unit::TestCase
 
   def test_ensure_reorder_raises_on_bad_reorder_use
     a = Table() << [1,2,3] << [4,5,6]
-    assert_raise(ArgumentError) { a.reorder("a","b","c") }
-    assert_raise(ArgumentError) { a.reorder(%w[a b c]) }
-    assert_raise(ArgumentError) { a.reorder(2,1,0) }
+    assert_raises(ArgumentError) { a.reorder("a","b","c") }
+    assert_raises(ArgumentError) { a.reorder(%w[a b c]) }
+    assert_raises(ArgumentError) { a.reorder(2,1,0) }
   end
 
   class MySubClass < Ruport::Data::Table; end
@@ -408,7 +407,7 @@ class TestTable < Test::Unit::TestCase
 
 end
 
-class TestTableAppendOperations < Test::Unit::TestCase
+class TestTableAppendOperations < Minitest::Test
   def test_append_record
     table = Ruport::Data::Table.new :column_names => %w[a b c]
     table << Ruport::Data::Record.new([1,2,3], :attributes => %w[a b c])
@@ -416,7 +415,7 @@ class TestTableAppendOperations < Test::Unit::TestCase
     assert_equal(%w[a b c],table[0].attributes)
     rec = table[0].dup
     rec.attributes = %w[a b c d]
-    assert_raise(NoMethodError) { table << Object.new }
+    assert_raises(NoMethodError) { table << Object.new }
   end
 
   def test_append_hash
@@ -447,7 +446,7 @@ class TestTableAppendOperations < Test::Unit::TestCase
   end
 end
 
-class TestTableFormattingHooks < Test::Unit::TestCase
+class TestTableFormattingHooks < Minitest::Test
 
   def test_to_hack_takes_args
     a = Table(%w[hello mr crowley]) << %w[would you like] << %w[one red cat]
@@ -473,23 +472,23 @@ class TestTableFormattingHooks < Test::Unit::TestCase
 
   def test_as_throws_proper_errors
     a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
-    assert_nothing_raised { a.as(:csv) }
-    assert_nothing_raised { a.to_csv }
+    a.as(:csv)
+    a.to_csv 
     assert_raises(Ruport::Controller::UnknownFormatError) { a.as(:nothing) }
     assert_raises(Ruport::Controller::UnknownFormatError) { a.to_nothing }
   end
 
 end
 
-class TestTableColumnOperations < Test::Unit::TestCase
+class TestTableColumnOperations < Minitest::Test
 
   def test_column
     a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     assert_equal [3,6], a.column(2)
     assert_equal [2,5], a.column("b")
 
-    assert_raise(ArgumentError) { a.column("d") }
-    assert_raise(ArgumentError) { a.column(42) }
+    assert_raises(ArgumentError) { a.column("d") }
+    assert_raises(ArgumentError) { a.column(42) }
 
     a = Table([], :data => [[1],[2],[3],[4]])
     assert_equal [1,2,3,4], a.column(0)
@@ -623,7 +622,7 @@ class TestTableColumnOperations < Test::Unit::TestCase
     assert_equal Table(%w[x y]) { |t| t << [1,2] << [3,4] }, a
 
     a = Table(%w[a b]) { |t| t << [1,2] << [3,4] }
-    assert_raise(ArgumentError) { a.rename_columns(%w[a b], %w[x]) }
+    assert_raises(ArgumentError) { a.rename_columns(%w[a b], %w[x]) }
 
     a = Table(%w[a b c]) { |t| t << [1,2,3] << [4,5,6] }
     a.rename_columns { |r| r.to_sym }
@@ -694,14 +693,14 @@ class TestTableColumnOperations < Test::Unit::TestCase
 
   def test_ensure_renaming_a_missing_column_fails_silently
     a = Table(%w[a b c])
-    assert_nothing_raised do
-      a.rename_column("d", "z")
-    end
+    
+    a.rename_column("d", "z")
+    
   end
 
 end
 
-class TestTableFromCSV < Test::Unit::TestCase
+class TestTableFromCSV < Minitest::Test
 
   def test_csv_load
     table = Ruport::Data::Table.load(File.join(TEST_SAMPLES,"data.csv"))
@@ -743,9 +742,9 @@ class TestTableFromCSV < Test::Unit::TestCase
 
   # ticket:76
   def test_parse
-    assert_nothing_raised {
-      Ruport::Data::Table.parse("a,b,c\n1,2,3\n")
-    }
+    
+    Ruport::Data::Table.parse("a,b,c\n1,2,3\n")
+    
 
     table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n")
     expected = Table(%w[a b c], :data => [%w[1 2 3],%w[4 5 6]])
@@ -806,7 +805,7 @@ class TestTableFromCSV < Test::Unit::TestCase
 
 end
 
-class TestTableKernelHack < Test::Unit::TestCase
+class TestTableKernelHack < Minitest::Test
 
   def test_simple
     assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),

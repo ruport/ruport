@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w  
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
-class TestRenderHTMLTable < Test::Unit::TestCase
+class TestRenderHTMLTable < Minitest::Test
   
   def setup
     Ruport::Formatter::Template.create(:simple) do |format|
@@ -99,7 +99,7 @@ class TestRenderHTMLTable < Test::Unit::TestCase
 end
    
 
-class TestRenderHTMLRow < Test::Unit::TestCase
+class TestRenderHTMLRow < Minitest::Test
   
   def test_render_html_row
     actual = Ruport::Controller::Row.render_html { |r| r.data = [1,2,3] }
@@ -109,7 +109,7 @@ class TestRenderHTMLRow < Test::Unit::TestCase
 end
    
 
-class TestRenderHTMLGroup < Test::Unit::TestCase
+class TestRenderHTMLGroup < Minitest::Test
     
   def test_render_html_group
     group = Ruport::Data::Group.new(:name => 'test',
@@ -138,7 +138,7 @@ class TestRenderHTMLGroup < Test::Unit::TestCase
 end
 
 
-class TestRenderHTMLGrouping < Test::Unit::TestCase
+class TestRenderHTMLGrouping < Minitest::Test
 
   def test_render_html_grouping
     table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
@@ -184,7 +184,7 @@ class TestRenderHTMLGrouping < Test::Unit::TestCase
 end  
      
 
-class TestHTMLFormatterHelpers < Test::Unit::TestCase
+class TestHTMLFormatterHelpers < Minitest::Test
   begin
     require "rubygems"
   rescue LoadError

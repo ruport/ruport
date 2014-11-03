@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w   
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
-class TestRecord < Test::Unit::TestCase
+class TestRecord < Minitest::Test
 
   include Ruport::Data
   
@@ -16,7 +16,7 @@ class TestRecord < Test::Unit::TestCase
       assert_equal 4, @record["d"]
       assert_equal 2, @record.b
       assert_equal 3, @record.c
-      assert_raise(NoMethodError) { @record.f }        
+      assert_raises(NoMethodError) { @record.f }        
     end  
     
     def specify_ordinal_access_should_work
@@ -94,7 +94,7 @@ class TestRecord < Test::Unit::TestCase
   end
 
   def test_nonexistent_accessor
-    assert_raise NoMethodError do
+    assert_raises NoMethodError do
       @record.e
     end
   end
@@ -112,7 +112,7 @@ class TestRecord < Test::Unit::TestCase
   end
 
   def test_to_hash
-    assert_nothing_raised { @record.to_hash }
+    @record.to_hash
     assert_equal({ "a" => 1, "b" => 2, "c" => 3, "d" => 4 }, @record.to_hash)
   end  
   
@@ -175,10 +175,10 @@ class TestRecord < Test::Unit::TestCase
     assert_equal [1,2,3], r.to_a
     assert_equal %w[a b c], r.attributes
 
-    assert_raise(ArgumentError) { r.dup.reorder "foo" }
-    assert_raise(ArgumentError) { r.dup.reorder 0,5 }
-    assert_nothing_raised { r.dup.reorder 0 }
-    assert_nothing_raised { r.dup.reorder "a","b" }
+    assert_raises(ArgumentError) { r.dup.reorder "foo" }
+    assert_raises(ArgumentError) { r.dup.reorder 0,5 }
+    r.dup.reorder 0
+    r.dup.reorder "a","b"
   end
 
   def test_dup

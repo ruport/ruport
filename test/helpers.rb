@@ -1,12 +1,17 @@
-require "test/unit"
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
-require "ruport"
-begin; require "rubygems"; rescue LoadError; nil; end
-require "shoulda-context"
-require "mocha"
-require "minitest/spec"
 
-class Test::Unit::TestCase
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+require 'ruport'
+begin; require 'rubygems'; rescue LoadError; nil; end
+
+
+require 'minitest'
+require 'minitest/autorun'
+
+require 'minitest/spec'
+require 'minitest/unit'
+require 'shoulda-context'
+require 'mocha/mini_test'
+class Minitest::Test
   include Ruport
 end
 

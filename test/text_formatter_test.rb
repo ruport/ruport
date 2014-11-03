@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
-class TestRenderTextTable < Test::Unit::TestCase 
+class TestRenderTextTable < Minitest::Test
   
   def setup
     Ruport::Formatter::Template.create(:simple) do |format|
@@ -67,8 +67,8 @@ class TestRenderTextTable < Test::Unit::TestCase
   end 
   
   def test_render_empty_table
-    assert_raise(Ruport::FormatterError) { Table([]).to_text }
-    assert_nothing_raised { Table(%w[a b c]).to_text }
+    assert_raises(Ruport::FormatterError) { Table([]).to_text }
+    Table(%w[a b c]).to_text
 
     a = Table(%w[a b c]).to_text
     expected = "+-----------+\n"+
@@ -162,7 +162,7 @@ class TestRenderTextTable < Test::Unit::TestCase
 end
     
 
-class TestRenderTextRow < Test::Unit::TestCase
+class TestRenderTextRow < Minitest::Test
 
   def test_row_basic
     actual = Ruport::Controller::Row.render_text(:data => [1,2,3])
@@ -172,7 +172,7 @@ class TestRenderTextRow < Test::Unit::TestCase
 end
         
 
-class TestRenderTextGroup < Test::Unit::TestCase
+class TestRenderTextGroup < Minitest::Test
 
   def test_render_text_group
     group = Ruport::Data::Group.new(:name => 'test',
@@ -209,7 +209,7 @@ class TestRenderTextGroup < Test::Unit::TestCase
 end       
        
 
-class TestRenderTextGrouping < Test::Unit::TestCase
+class TestRenderTextGrouping < Minitest::Test
 
   def test_render_text_grouping
     table = Ruport::Data::Table.new(:data => [ %w[is this more],

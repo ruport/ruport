@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby -w   
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
-class TestRenderCSVRow < Test::Unit::TestCase
+class TestRenderCSVRow < Minitest::Test
   def test_render_csv_row
     actual = Ruport::Controller::Row.render_csv(:data => [1,2,3])
     assert_equal("1,2,3\n", actual)
   end
 end
 
-class TestRenderCSVTable < Test::Unit::TestCase
+class TestRenderCSVTable < Minitest::Test
   
   def setup
     Ruport::Formatter::Template.create(:simple) do |format|
@@ -106,7 +106,7 @@ class TestRenderCSVTable < Test::Unit::TestCase
   end
 end     
 
-class TestRenderCSVGroup < Test::Unit::TestCase
+class TestRenderCSVGroup < Minitest::Test
 
   def test_render_csv_group
     group = Ruport::Data::Group.new(:name => 'test',
@@ -119,7 +119,7 @@ class TestRenderCSVGroup < Test::Unit::TestCase
   
 end
 
-class RenderCSVGrouping < Test::Unit::TestCase
+class RenderCSVGrouping < Minitest::Test
   def test_render_csv_grouping
     table = Table(%w[hi red snapper]) << %w[is this annoying] <<
                                           %w[is it funny]
@@ -144,7 +144,7 @@ class RenderCSVGrouping < Test::Unit::TestCase
     g = Grouping((Table(%w[a b c]) << [1,2,3] << [1,1,4] <<
                                       [2,1,2] << [1,9,1] ), :by => "a")
     
-    assert_raise(NotImplementedError) { g.to_csv :style => :not_real }
+    assert_raises(NotImplementedError) { g.to_csv :style => :not_real }
 
     assert_equal "a,b,c\n1,2,3\n,1,4\n,9,1\n\n2,1,2\n\n", 
                  g.to_csv(:style => :justified)

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
-class TablePivotSimpleCaseTest < Test::Unit::TestCase
+class TablePivotSimpleCaseTest < Minitest::Test
 
   def setup
     table = Table('a', 'b', 'c')
@@ -23,7 +23,7 @@ class TablePivotSimpleCaseTest < Test::Unit::TestCase
 
 end
 
-class PivotConvertRowOrderToGroupOrderTest < Test::Unit::TestCase
+class PivotConvertRowOrderToGroupOrderTest < Minitest::Test
 
   def convert(row_order)
     Ruport::Data::Table::Pivot.row_order_to_group_order(row_order)
@@ -60,7 +60,7 @@ class PivotConvertRowOrderToGroupOrderTest < Test::Unit::TestCase
 
 end
 
-class PivotPreservesOrdering < Test::Unit::TestCase
+class PivotPreservesOrdering < Minitest::Test
 
   def test_group_column_preserves_order_of_occurrence
     table = Table('group', 'a', 'b')
@@ -131,7 +131,7 @@ class PivotPreservesOrdering < Test::Unit::TestCase
 
 end
 
-class TablePivotOperationTest < Test::Unit::TestCase
+class TablePivotOperationTest < Minitest::Test
   def setup
     @rows = [
       Ruport::Data::Record.new('Values' => 3),
@@ -171,7 +171,7 @@ class TablePivotOperationTest < Test::Unit::TestCase
   end
 
   def test_invalid_operation_causes_exception
-    assert_raise ArgumentError do
+    assert_raises ArgumentError do
       Ruport::Data::Table::Pivot.new(nil, nil, nil, nil, :operation => :foo)
     end
   end
