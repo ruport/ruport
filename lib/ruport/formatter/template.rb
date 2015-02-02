@@ -140,7 +140,7 @@ class Ruport::Formatter::TemplateNotDefined < StandardError; end
 # 
 #   format_options  All options         Corresponding values
 #                   available to
-#                   FasterCSV.new
+#                   ::CSV.new
 #
 class Ruport::Formatter::Template < Ruport::Controller::Options
   
