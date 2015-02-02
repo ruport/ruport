@@ -62,10 +62,6 @@ bench_suite do
   } 
                  
   bench_case("FasterCSV Table loading", CSV_N) {
-    if RUBY_VERSION < "1.9"
-      FasterCSV::Table.new(FasterCSV.read("util/bench/samples/tattle.csv"))
-    else
-      CSV::Table.new(CSV.read("util/bench/samples/tattle.csv"))
-    end
+    ::CSV::Table.new(::CSV.read("util/bench/samples/tattle.csv"))
   } 
 end 

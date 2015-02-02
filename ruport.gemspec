@@ -32,11 +32,9 @@ Gem::Specification.new do |s|
   s.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README.rdoc', '-q']
 
   if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-    s.add_runtime_dependency(%q<fastercsv>, [">= 0"]) if RUBY_VERSION < "1.9"
     s.add_runtime_dependency(%q<pdf-writer>, ["= 1.1.8"])
     s.add_runtime_dependency(%q<prawn>, ["= 0.12.0"])
   else
-    s.add_dependency(%q<fastercsv>, [">= 0"]) if RUBY_VERSION < "1.9"
     s.add_dependency(%q<pdf-writer>, ["= 1.1.8"])
     s.add_runtime_dependency(%q<prawn>, ["= 0.12.0"])
   end

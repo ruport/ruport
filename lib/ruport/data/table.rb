@@ -219,7 +219,7 @@ module Ruport::Data
     # This module provides facilities for creating tables from csv data.
     #
     module FromCSV
-      # Loads a CSV file directly into a Table using the FasterCSV library.
+      # Loads a CSV file directly into a Table.
       #
       # Example:
       #
@@ -236,7 +236,7 @@ module Ruport::Data
         get_table_from_csv(:foreach, csv_file, options,&block)
       end
 
-      # Creates a Table from a CSV string using FasterCSV.  See Table.load for
+      # Creates a Table from a CSV string.  See Table.load for
       # additional examples.
       #
       #   table = Table.parse("a,b,c\n1,2,3\n4,5,6\n")
@@ -248,8 +248,6 @@ module Ruport::Data
       private
 
       def get_table_from_csv(msg,param,options={},&block) #:nodoc:
-        require "fastercsv" unless RUBY_VERSION > "1.9"
-
         options = {:has_names => true,
                    :csv_options => {} }.merge(options)
 
@@ -258,8 +256,7 @@ module Ruport::Data
         table = self.new(options) do |feeder|
           first_line = true
 
-          csv_class = RUBY_VERSION < "1.9" ? FasterCSV : CSV
-          csv_class.send(msg,param,options[:csv_options]) do |row|
+          ::CSV.send(msg,param,options[:csv_options]) do |row|
             if first_line
               adjust_for_headers(feeder.data,row,options)
               first_line = false
