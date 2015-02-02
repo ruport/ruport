@@ -91,7 +91,8 @@ class TestGroupRendering < Minitest::Test
     assert_equal(7, @group.to_text.split("\n").size)
     assert_equal(5, @group.as(:text,
                               :show_table_headers => false).split("\n").size)
-    assert_equal(13, @group.to_html.split("\n").size)
+    assert_equal(15, @group.to_html.split("\n").size)
+    assert_equal(8, @group.to_html(:show_table_headers => false).split("\n").size)
   end
   
   def test_as_throws_proper_errors

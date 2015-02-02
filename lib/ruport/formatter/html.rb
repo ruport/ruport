@@ -40,12 +40,7 @@ module Ruport
     # This method does not do anything if options.show_table_headers is false
     # or the Data::Table has no column names.
     def build_table_header
-      output << "\t<table>\n"
-      unless data.column_names.empty? || !options.show_table_headers
-        output << "\t\t<thead>\n\t\t<tr>\n\t\t\t<th>" + 
-          data.column_names.join("</th>\n\t\t\t<th>") + 
-          "</th>\n\t\t</tr>\n\t\t</thead>\n"
-      end
+      output << build_header(options.show_table_headers ? data.column_names : nil)
     end
     
     # Uses the Row controller to build up the table body.
@@ -119,12 +114,19 @@ module Ruport
     end
     
     private
-    
+
+    def build_header(columns)
+      if !columns || columns.empty?
+        "\t<table>\n"
+      else
+        "\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>" + 
+        columns.join("</th>\n\t\t\t<th>") + 
+        "</th>\n\t\t</tr>\n\t\t</thead>\n"
+      end
+    end
+
     def render_justified_grouping
-      output << "\t<table>\n\t\t<tr>\n\t\t\t<th>" +
-        "#{data.grouped_by}</th>\n\t\t\t<th>" +
-        grouping_columns.join("</th>\n\t\t\t<th>") + 
-        "</th>\n\t\t</tr>\n"
+      output << build_header(options.show_group_headers ? ([data.grouped_by] + grouping_columns) : nil)
       data.each do |name, group|                     
         group.each_with_index do |row, i|
           output << "\t\t<tr>\n\t\t\t"
