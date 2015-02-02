@@ -46,7 +46,7 @@ If you get an error, please let us know on our mailing list.
 
 ==== Formatting
 
-Ruport relies on PDF::Writer and FasterCSV for its formatting support.
+Ruport relies on PDF::Writer for its formatting support.
 If you want to make use of textile helpers, you'll also need RedCloth.
 
 ==== Database interaction
