@@ -55,10 +55,10 @@ module Ruport::Data
       case(data)
       when Array
         @attributes = options[:attributes] || (0...data.length).to_a
-        @data = @attributes.inject({}) { |h,a| h.merge(a => data.shift) }
+        @data = @attributes.each_with_object({}) { |a, h| h[a.freeze] = data.shift }
       when Hash
-        @data = data.dup
-        @attributes = options[:attributes] || data.keys
+        @data = data
+        @attributes = options[:attributes] || @data.keys
       end
     end        
     
