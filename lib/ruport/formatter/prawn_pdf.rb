@@ -4,7 +4,7 @@ module Ruport
     renders :prawn_pdf, :for =>[Controller::Row, Controller::Table,
                               Controller::Group, Controller::Grouping]
 
-    attr_accessor :pdf
+    attr_writer :pdf
 
     def method_missing(id,*args, &block)
       pdf.send(id,*args, &block)
@@ -12,7 +12,6 @@ module Ruport
 
     def initialize
       require 'prawn'
-      require 'prawn/layout'
     end
 
     def pdf
