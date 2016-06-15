@@ -65,7 +65,7 @@ Ruport, including complete coverage of acts_as_reportable and some of
 ruport-util's features.  This book serves as the definitive guide to
 Ruport, so all users should become acquainted with it:
 
-  http://ruportbook.com
+  http://ruport.github.io
 
 The next best way to get help and make suggestions is the Ruport mailing list.
 This software is on the move, so the list is the most reliable way of getting
