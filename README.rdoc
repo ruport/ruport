@@ -22,7 +22,7 @@ a DRY and consistent interface.
 To get a quick feel for what you can accomplish with Ruport, take a look at
 a few simple examples provided on our web site.
 
-http://ruport.github.com/examples.html
+http://ruport.github.io/examples.html
 
 Since Ruport's core support is intentionally minimalistic, you may be looking
 for some higher level support for specific needs such as graphing, invoices,
