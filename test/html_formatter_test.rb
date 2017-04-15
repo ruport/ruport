@@ -25,7 +25,7 @@ class TestRenderHTMLTable < Minitest::Test
   def test_render_html_basic
     
     actual = Ruport::Controller::Table.render_html { |r|
-      r.data = Table([], :data => [[1,2,3],[4,5,6]])
+      r.data = Ruport.Table([], :data => [[1,2,3],[4,5,6]])
     }          
     
     assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
@@ -33,8 +33,8 @@ class TestRenderHTMLTable < Minitest::Test
                  "\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
                  "\t</tr>\n\t</table>\n",actual)
 
-    actual = Ruport::Controller::Table.render_html { |r| 
-      r.data = Table(%w[a b c], :data => [ [1,2,3],[4,5,6]]) 
+    actual = Ruport::Controller::Table.render_html { |r|
+      r.data = Ruport.Table(%w[a b c], :data => [ [1,2,3],[4,5,6]])
     }
     
     assert_equal("\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
@@ -59,7 +59,7 @@ class TestRenderHTMLTable < Minitest::Test
 
   def test_options_hashes_override_template
     opts = nil
-    table = Table(%w[a b c])
+    table = Ruport.Table(%w[a b c])
     table.to_html(
       :template => :simple,
       :table_format => {
@@ -81,7 +81,7 @@ class TestRenderHTMLTable < Minitest::Test
 
   def test_individual_options_override_template
     opts = nil
-    table = Table(%w[a b c])
+    table = Ruport.Table(%w[a b c])
     table.to_html(
       :template => :simple,
       :show_table_headers => true,
@@ -141,7 +141,7 @@ end
 class TestRenderHTMLGrouping < Minitest::Test
 
   def test_render_html_grouping
-    table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
+    table = Ruport.Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
     g = Grouping(table,:by => "a")
     actual = Ruport::Controller::Grouping.render(:html, :data => g,
                                                :show_table_headers => false)
@@ -153,7 +153,7 @@ class TestRenderHTMLGrouping < Minitest::Test
   end
 
   def test_render_html_grouping_with_table_headers
-    table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
+    table = Ruport.Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
     g = Grouping(table,:by => "a")
     actual = Ruport::Controller::Grouping.render(:html, :data => g)
 
@@ -167,7 +167,7 @@ class TestRenderHTMLGrouping < Minitest::Test
   end
 
   def test_render_justified_html_grouping
-    table = Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
+    table = Ruport.Table(%w[a b c]) << [1,2,3] << [1,1,3] << [2,7,9]
     g = Grouping(table,:by => "a")
     actual = Ruport::Controller::Grouping.render(:html, :data => g,
                                                :style => :justified)

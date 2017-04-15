@@ -23,17 +23,17 @@ class TestRenderTextTable < Minitest::Test
   def test_basic
     tf = "+-------+\n"
     
-    a = Table([], :data => [[1,2],[3,4]]).to_text
+    a = Ruport.Table([], :data => [[1,2],[3,4]]).to_text
     assert_equal("#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}",a)
 
-    a = Table(%w[a b], :data => [[1,2],[3,4]]).to_text
+    a = Ruport.Table(%w[a b], :data => [[1,2],[3,4]]).to_text
     assert_equal("#{tf}| a | b |\n#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}", a)
   end
   
   def test_centering
     tf = "+---------+\n" 
 
-    a = Table([], :data => [[1,2],[300,4]])
+    a = Ruport.Table([], :data => [[1,2],[300,4]])
     assert_equal( "#{tf}|  1  | 2 |\n| 300 | 4 |\n#{tf}",
                   a.to_text(:alignment => :center) )
 
@@ -45,7 +45,7 @@ class TestRenderTextTable < Minitest::Test
 
   def test_justified
     tf = "+----------+\n"
-    a = Table([], :data => [[1,'Z'],[300,'BB']])
+    a = Ruport.Table([], :data => [[1,'Z'],[300,'BB']])
     
     # justified alignment can be set explicitly
     assert_equal "#{tf}|   1 | Z  |\n| 300 | BB |\n#{tf}", 
@@ -56,21 +56,21 @@ class TestRenderTextTable < Minitest::Test
   end
 
   def test_wrapping  
-    a = Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10)
+    a = Ruport.Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10)
     assert_equal("+------->>\n|   1 | >>\n| 300 | >>\n+------->>\n",a)
   end  
   
   def test_ignore_wrapping
-    a = Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10, 
+    a = Ruport.Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10, 
                                          :ignore_table_width => true )
     assert_equal("+---------+\n|   1 | 2 |\n| 300 | 4 |\n+---------+\n",a)
   end 
   
   def test_render_empty_table
-    assert_raises(Ruport::FormatterError) { Table([]).to_text }
-    Table(%w[a b c]).to_text
+    assert_raises(Ruport::FormatterError) { Ruport.Table([]).to_text }
+    Ruport.Table(%w[a b c]).to_text
 
-    a = Table(%w[a b c]).to_text
+    a = Ruport.Table(%w[a b c]).to_text
     expected = "+-----------+\n"+
                "| a | b | c |\n"+
                "+-----------+\n"
@@ -95,7 +95,7 @@ class TestRenderTextTable < Minitest::Test
   
   def test_options_hashes_override_template
     opts = nil
-    table = Table(%w[a b c])
+    table = Ruport.Table(%w[a b c])
     table.to_text(
       :template => :simple,
       :table_format => {
@@ -126,7 +126,7 @@ class TestRenderTextTable < Minitest::Test
 
   def test_individual_options_override_template
     opts = nil
-    table = Table(%w[a b c])
+    table = Ruport.Table(%w[a b c])
     table.to_text(
       :template => :simple,
       :show_table_headers => true,
@@ -152,7 +152,7 @@ class TestRenderTextTable < Minitest::Test
   # -- BUG TRAPS ------------------------------
 
   def test_should_render_without_column_names
-    a = Table([], :data => [[1,2,3]]).to_text
+    a = Ruport.Table([], :data => [[1,2,3]]).to_text
     expected = "+-----------+\n"+
                "| 1 | 2 | 3 |\n"+
                "+-----------+\n"

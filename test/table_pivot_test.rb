@@ -4,7 +4,7 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 class TablePivotSimpleCaseTest < Minitest::Test
 
   def setup
-    table = Table('a', 'b', 'c')
+    table = Ruport.Table('a', 'b', 'c')
     table << [1,3,6]
     table << [1,4,7]
     table << [2,3,8]
@@ -17,7 +17,7 @@ class TablePivotSimpleCaseTest < Minitest::Test
   end
 
   def test_produces_correct_full_table
-    expected = Table("a",3,4) { |t| t << [1,6,7] << [2,8,9] }
+    expected = Ruport.Table("a",3,4) { |t| t << [1,6,7] << [2,8,9] }
     assert_equal(expected, @pivoted)
   end
 
@@ -63,7 +63,7 @@ end
 class PivotPreservesOrdering < Minitest::Test
 
   def test_group_column_preserves_order_of_occurrence
-    table = Table('group', 'a', 'b')
+    table = Ruport.Table('group', 'a', 'b')
     [
       [1, 0, 0],
       [9, 0, 0],
@@ -79,7 +79,7 @@ class PivotPreservesOrdering < Minitest::Test
   end
 
   def test_pivoted_row_preserves_order_of_input_rows
-    table = Table('group', 'a', 'b', 'c')
+    table = Ruport.Table('group', 'a', 'b', 'c')
     [
       [200,   1, 2, 1],
       [200,   4, 5, 2],
@@ -95,7 +95,7 @@ class PivotPreservesOrdering < Minitest::Test
   end
 
   def test_preserves_ordering
-    table = Table('group', 'a', 'b', 'c')
+    table = Ruport.Table('group', 'a', 'b', 'c')
     [
       [200,   1, 2, 3],
       [200,   4, 5, 6],
@@ -103,12 +103,12 @@ class PivotPreservesOrdering < Minitest::Test
       [100,   4,11,12]
     ].each {|e| table << e}
     pivoted = table.pivot('a', :group_by => 'group', :values => 'b')
-    expected = Table("group",1,4) { |t| t << [200,2,5] << [100,8,11] }
+    expected = Ruport.Table("group",1,4) { |t| t << [200,2,5] << [100,8,11] }
     assert_equal(expected, pivoted)
   end
 
   def test_reorders_a_calculated_column_by_column_name
-    table = Table('group', 'a')
+    table = Ruport.Table('group', 'a')
     [
       [1, 1], [2, 2], [3, 3]
     ].each {|e| table << e}
@@ -119,7 +119,7 @@ class PivotPreservesOrdering < Minitest::Test
   end
 
   def test_preserves_ordering_on_calculated_column_with_proc_pivot_order
-    table = Table('group', 'a')
+    table = Ruport.Table('group', 'a')
     [
       [1, 1], [2, 2], [3, 3]
     ].each {|e| table << e}

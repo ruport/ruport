@@ -25,18 +25,18 @@ class TestRenderCSVTable < Minitest::Test
 
   def test_render_csv_table
     actual = Ruport::Controller::Table.render_csv do |r| 
-      r.data = Table([], :data => [[1,2,3],[4,5,6]])
+      r.data = Ruport.Table([], :data => [[1,2,3],[4,5,6]])
     end
     assert_equal("1,2,3\n4,5,6\n",actual)
 
     actual = Ruport::Controller::Table.render_csv do |r|
-      r.data = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
+      r.data = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     end
     assert_equal("a,b,c\n1,2,3\n4,5,6\n",actual)
   end   
   
   def test_format_options
-    a = Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
+    a = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     assert_equal "a\tb\tc\n1\t2\t3\n4\t5\t6\n", 
       a.as(:csv,:format_options => { :col_sep => "\t" })
   end
@@ -44,7 +44,7 @@ class TestRenderCSVTable < Minitest::Test
   def test_table_headers
     actual = Ruport::Controller::Table.
              render_csv(:show_table_headers => false, 
-                        :data => Table(%w[a b c], :data => [[1,2,3],[4,5,6]]))
+                        :data => Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]]))
     assert_equal("1,2,3\n4,5,6\n",actual)
   end
      
@@ -64,7 +64,7 @@ class TestRenderCSVTable < Minitest::Test
 
   def test_options_hashes_override_template
     opts = nil
-    table = Table(%w[a b c])
+    table = Ruport.Table(%w[a b c])
     table.to_csv(
       :template => :simple,
       :table_format => {
@@ -86,7 +86,7 @@ class TestRenderCSVTable < Minitest::Test
 
   def test_individual_options_override_template
     opts = nil
-    table = Table(%w[a b c])
+    table = Ruport.Table(%w[a b c])
     table.to_csv(
       :template => :simple,
       :show_table_headers => true,
@@ -121,7 +121,7 @@ end
 
 class RenderCSVGrouping < Minitest::Test
   def test_render_csv_grouping
-    table = Table(%w[hi red snapper]) << %w[is this annoying] <<
+    table = Ruport.Table(%w[hi red snapper]) << %w[is this annoying] <<
                                           %w[is it funny]
     grouping = Grouping(table,:by => "hi")
 
@@ -131,7 +131,7 @@ class RenderCSVGrouping < Minitest::Test
   end
 
   def test_render_csv_grouping_without_header
-    table = Table(%w[hi red snapper]) << %w[is this annoying] <<
+    table = Ruport.Table(%w[hi red snapper]) << %w[is this annoying] <<
                                           %w[is it funny]
     grouping = Grouping(table,:by => "hi")
 
@@ -141,7 +141,7 @@ class RenderCSVGrouping < Minitest::Test
   end  
 
   def test_alternative_styles
-    g = Grouping((Table(%w[a b c]) << [1,2,3] << [1,1,4] <<
+    g = Grouping((Ruport.Table(%w[a b c]) << [1,2,3] << [1,1,4] <<
                                       [2,1,2] << [1,9,1] ), :by => "a")
     
     assert_raises(NotImplementedError) { g.to_csv :style => :not_real }
@@ -158,7 +158,7 @@ class RenderCSVGrouping < Minitest::Test
   # ------------------------------------------------------------------------
   
   def test_ensure_group_names_are_converted_to_string
-    g = Grouping((Table(%w[a b c])<<[1,2,3]<<[1,1,4]), :by => "a")
+    g = Grouping((Ruport.Table(%w[a b c])<<[1,2,3]<<[1,1,4]), :by => "a")
     assert_equal "1\n\nb,c\n2,3\n1,4\n\n", g.to_csv
   end
 end

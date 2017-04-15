@@ -115,14 +115,14 @@ class TestController < Minitest::Test
   context "when using templates" do
     def specify_apply_template_should_be_called
       Ruport::Formatter::Template.create(:stub)
-      Table(%w[a b c]).to_csv(:template => :stub) do |r| 
+      Ruport.Table(%w[a b c]).to_csv(:template => :stub) do |r|
        r.formatter.expects(:apply_template)
       end  
     end 
 
     def specify_undefined_template_should_throw_sensible_error
       assert_raises(Ruport::Formatter::TemplateNotDefined) do
-        Table(%w[a b c]).to_csv(:template => :sub)
+        Ruport.Table(%w[a b c]).to_csv(:template => :sub)
       end 
     end
   end
@@ -130,7 +130,7 @@ class TestController < Minitest::Test
   context "when using default templates" do
     def specify_default_template_should_be_called
       Ruport::Formatter::Template.create(:default)
-      Table(%w[a b c]).to_csv do |r| 
+      Ruport.Table(%w[a b c]).to_csv do |r|
         r.formatter.expects(:apply_template)
         assert r.formatter.template == Ruport::Formatter::Template[:default]
       end  
@@ -139,7 +139,7 @@ class TestController < Minitest::Test
     def specify_specific_should_override_default
       Ruport::Formatter::Template.create(:default)
       Ruport::Formatter::Template.create(:stub)
-      Table(%w[a b c]).to_csv(:template => :stub) do |r| 
+      Ruport.Table(%w[a b c]).to_csv(:template => :stub) do |r|
         r.formatter.expects(:apply_template)
         assert r.formatter.template == Ruport::Formatter::Template[:stub]
       end  
@@ -147,7 +147,7 @@ class TestController < Minitest::Test
 
     def specify_should_be_able_to_disable_templates
       Ruport::Formatter::Template.create(:default)
-      Table(%w[a b c]).to_csv(:template => false) do |r| 
+      Ruport.Table(%w[a b c]).to_csv(:template => false) do |r|
         r.formatter.expects(:apply_template).never
       end  
     end
@@ -176,7 +176,7 @@ class TestController < Minitest::Test
   def test_using_file_via_rendering_tools     
     f = []
     File.expects(:open).yields(f)  
-    Table(%w[a b c], :data => [[1,2,3],[4,5,6]]).save_as("foo.csv")      
+    Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]]).save_as("foo.csv")
     assert_equal "a,b,c\n1,2,3\n4,5,6\n", f[0]  
   end
     
