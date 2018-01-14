@@ -335,7 +335,7 @@ class TestTable < Minitest::Test
     assert_equal %w[a b c], a.column_names
     a.each { |r|
       assert_equal %w[a b c], r.attributes
-      r.a; r.b; r.c 
+      r.a; r.b; r.c
       [r.a,r.b,r.c].each { |i| assert(i.kind_of?(Numeric)) }
     }
     assert_equal %w[d e f], b.column_names
@@ -366,7 +366,7 @@ class TestTable < Minitest::Test
       t << %w[joe loop]
     }
     assert_equal "joe loop", a[0].name
-    a.to_yaml 
+    a.to_yaml
   end
 
   def test_ensure_subtable_works_with_unnamed_tables
@@ -472,7 +472,7 @@ class TestTableFormattingHooks < Minitest::Test
   def test_as_throws_proper_errors
     a = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     a.as(:csv)
-    a.to_csv 
+    a.to_csv
     assert_raises(Ruport::Controller::UnknownFormatError) { a.as(:nothing) }
     assert_raises(Ruport::Controller::UnknownFormatError) { a.to_nothing }
   end
@@ -692,9 +692,9 @@ class TestTableColumnOperations < Minitest::Test
 
   def test_ensure_renaming_a_missing_column_fails_silently
     a = Ruport.Table(%w[a b c])
-    
+
     a.rename_column("d", "z")
-    
+
   end
 
 end
@@ -741,9 +741,9 @@ class TestTableFromCSV < Minitest::Test
 
   # ticket:76
   def test_parse
-    
+
     Ruport::Data::Table.parse("a,b,c\n1,2,3\n")
-    
+
 
     table = Ruport::Data::Table.parse("a,b,c\n1,2,3\n4,5,6\n")
     expected = Ruport.Table(%w[a b c], :data => [%w[1 2 3],%w[4 5 6]])

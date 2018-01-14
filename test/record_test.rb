@@ -1,75 +1,75 @@
-#!/usr/bin/env ruby -w   
+#!/usr/bin/env ruby -w
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRecord < Minitest::Test
 
   include Ruport::Data
-  
+
   def setup
     @attributes = %w[a b c d]
-    @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes 
-  end   
-  
+    @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes
+  end
+
   describe "when initializing with an array with attributes" do
     def specify_key_access_should_work
       assert_equal 1, @record["a"]
       assert_equal 4, @record["d"]
       assert_equal 2, @record.b
       assert_equal 3, @record.c
-      assert_raises(NoMethodError) { @record.f }        
-    end  
-    
+      assert_raises(NoMethodError) { @record.f }
+    end
+
     def specify_ordinal_access_should_work
       assert_equal 1, @record[0]
       assert_equal 2, @record[1]
       assert_equal 3, @record[2]
       assert_equal 4, @record[3]
     end
-  end  
-      
+  end
+
   describe "when initializing with an array without attributes" do
     def specify_ordinal_access_should_work
       record = Ruport::Data::Record.new [1,2,3,4]
       assert_equal 1, record[0]
       assert_equal 2, record[1]
       assert_equal 3, record[2]
-      assert_equal 4, record[3]   
-    end 
-  end         
-  
+      assert_equal 4, record[3]
+    end
+  end
+
   describe "when initializing with a hash without attributes" do
-    def setup  
+    def setup
       @record = Ruport::Data::Record.new({:a => 1, :b => 2, :c => 3},{})
-    end     
-     
+    end
+
     def specify_key_access_should_work
       assert_equal 1, @record[:a]
       assert_equal 2, @record[:b]
       assert_equal 3, @record[:c]
-      assert_equal 3, @record.c  
-    end  
+      assert_equal 3, @record.c
+    end
   end
-  
+
   describe "when initializing with a hash with attributes" do
     def setup
-      @record = Record.new({:a => 1, :b => 2, :c => 3 }, 
+      @record = Record.new({:a => 1, :b => 2, :c => 3 },
                            :attributes => [:c,:b,:a])
-    end   
-    
+    end
+
     def specify_key_access_should_work
       assert_equal 1, @record[:a]
       assert_equal 2, @record[:b]
       assert_equal 3, @record[:c]
-      assert_equal 3, @record.c   
+      assert_equal 3, @record.c
     end
-    
-    def specify_ordinal_access_should_work    
+
+    def specify_ordinal_access_should_work
       assert_equal 3, @record[0]
-      assert_equal 2, @record[1]           
-      assert_equal 1, @record[2]           
+      assert_equal 2, @record[1]
+      assert_equal 1, @record[2]
     end
   end
-  
+
   def test_bracket_equals
     @record[1] = "godzilla"
     @record["d"] = "mothra"
@@ -80,16 +80,16 @@ class TestRecord < Minitest::Test
     assert_equal @record[3], "mothra"
     assert_equal @record["d"], "mothra"
   end
-    
+
   def test_accessors
     assert_equal @record.a, @record["a"]
     assert_equal @record.b, @record["b"]
     assert_equal @record.c, @record["c"]
     assert_equal @record.d, @record["d"]
-  end            
-  
+  end
+
   def test_can_has_id
-     record = Ruport::Data::Record.new(:id => 12345) 
+     record = Ruport::Data::Record.new(:id => 12345)
      assert_equal 12345, record.id
   end
 
@@ -98,7 +98,7 @@ class TestRecord < Minitest::Test
       @record.e
     end
   end
-  
+
   def test_attribute_setting
     @record.a = 10
     @record.b = 20
@@ -114,22 +114,22 @@ class TestRecord < Minitest::Test
   def test_to_hash
     @record.to_hash
     assert_equal({ "a" => 1, "b" => 2, "c" => 3, "d" => 4 }, @record.to_hash)
-  end  
-  
+  end
+
   def test_rename_attribute
      @record.rename_attribute("b","x")
      assert_equal %w[a x c d], @record.attributes
      assert_equal 2, @record["x"]
      assert_equal 2, @record.x
      assert_equal 2, @record[1]
-  end   
+  end
 
   def test_equality
 
     dc  = %w[a b c d]
     dc2 = %w[a b c d]
     dc3 = %w[a b c]
-    
+
     rec1 = Record.new [1,2,3,4]
     rec2 = Record.new [1,2,3,4]
     rec3 = Record.new [1,2]
@@ -137,7 +137,7 @@ class TestRecord < Minitest::Test
     rec5 = Record.new [1,2,3,4], :attributes => dc2
     rec6 = Record.new [1,2,3,4], :attributes => dc3
     rec7 = Record.new [1,2],     :attributes => dc
-    
+
     [:==, :eql?].each do |op|
       assert   rec1.send(op, rec2)
       assert   rec4.send(op, rec5)
@@ -162,7 +162,7 @@ class TestRecord < Minitest::Test
 
     assert_equal [1,2,3,4], @record.to_a
     assert_equal %w[a b c d], @record.attributes
-    
+
     @record.reorder "a","d","b","c"
     assert_equal [1,4,2,3], @record.to_a
     assert_equal %w[a d b c], @record.attributes
@@ -199,12 +199,12 @@ class TestRecord < Minitest::Test
     s = Record.new :attributes => %w[a b], :data => [1,2]
     assert_equal r.hash, s.hash
   end
-  
+
   def test_records_with_differing_attrs_and_data_hash_differently
     r = Record.new [1,2],:attributes => %w[a b]
     s = Record.new [nil,nil],:attributes => %w[a b]
     assert r.hash != s.hash
-    
+
     t = Record.new [1,3],:attributes => %w[a b]
     assert r.hash != t.hash
   end
@@ -225,7 +225,7 @@ class TestRecord < Minitest::Test
     new_object_id = @record.instance_variable_get(:@attributes).object_id
     assert_equal a.object_id, new_object_id
   end
-  
+
   #----------------------------------------------------------------------
   #  BUG Traps
   #----------------------------------------------------------------------
@@ -245,35 +245,35 @@ class TestRecord < Minitest::Test
   end
 
   # Ticket #172
-  def test_ensure_get_really_indifferent   
+  def test_ensure_get_really_indifferent
     a = Record.new({"a" => 1, "b" => 2})
     assert_equal(2,a.get("b"))
     assert_equal(2,a.get(:b))
-    a = Record.new({:a => 1, :b => 2})    
+    a = Record.new({:a => 1, :b => 2})
     assert_equal(2,a.get("b"))
     assert_equal(2,a.get(:b))
   end
-  
+
   def test_ensure_get_throws_argument_error
     a = Record.new({"a" => 1, "b" => 2})
     assert_raises(ArgumentError) { a.get([]) }
   end
-  
+
   def test_ensure_delete_removes_attribute
     a = Record.new({"a" => 1, "b" => 2})
     assert_equal({"a" => 1, "b" => 2}, a.data)
     assert_equal(["a","b"], a.attributes)
-    
+
     a.send(:delete, "a")
     assert_equal({"b" => 2}, a.data)
     assert_equal(["b"], a.attributes)
   end
-  
+
   def test_ensure_bracket_equals_updates_attributes
     a = Record.new({"a" => 1, "b" => 2})
     assert_equal({"a" => 1, "b" => 2}, a.data)
     assert_equal(["a","b"], a.attributes)
-    
+
     a["b"] = 3
     assert_equal({"a" => 1, "b" => 3}, a.data)
     assert_equal(["a","b"], a.attributes)
@@ -289,9 +289,9 @@ class TestRecord < Minitest::Test
     a = MyRecordSub.new [1,2,3]
     assert_equal "1,2,3\n", a.to_csv
   end
-    
+
   describe "when rendering records" do
-    
+
     def specify_record_as_should_work
       rendered_row = @record.as(:text)
       assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
@@ -299,34 +299,34 @@ class TestRecord < Minitest::Test
 
     def specify_record_to_format_should_work_without_options
       rendered_row = @record.to_text
-      assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)    
-    end             
-         
+      assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
+    end
+
     def specify_record_to_format_should_work_with_options
       rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
-      assert_equal("1\t2\t3\t4\n",rendered_row)     
-    end                                      
-    
+      assert_equal("1\t2\t3\t4\n",rendered_row)
+    end
+
     describe "when given bad format names" do
-      def setup 
-        @a = Record.new({ "a" => 1, "b" => 2 }) 
+      def setup
+        @a = Record.new({ "a" => 1, "b" => 2 })
       end
 
       def specify_as_should_throw_proper_errors
-        assert_raises(Ruport::Controller::UnknownFormatError) { @a.as(:nothing) } 
-      end 
-    
+        assert_raises(Ruport::Controller::UnknownFormatError) { @a.as(:nothing) }
+      end
+
       def specify_to_format_should_throw_proper_errors
         assert_raises(Ruport::Controller::UnknownFormatError) { @a.to_nothing }
-      end  
-    end   
-  
+      end
+    end
+
     ## -- BUG TRAPS --------------------
-  
+
     def specify_attributes_should_not_be_broken_by_to_hack
       record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
       assert_equal 2, record.to_something
-    end                              
+    end
   end
 
 end
