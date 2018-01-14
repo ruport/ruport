@@ -117,7 +117,6 @@ module Ruport
                    :io => output,
                    :layout => false }.merge(options)
 
-        options[:io] = "" if self.class.kind_of?(Ruport::Formatter::PDF)
         rend_klass.render(format,options) do |rend|
           block[rend] if block
         end
@@ -251,5 +250,4 @@ require "ruport/formatter/template"
 require "ruport/formatter/csv"
 require "ruport/formatter/html"
 require "ruport/formatter/text"
-require "ruport/formatter/pdf"
 require "ruport/formatter/prawn_pdf"
