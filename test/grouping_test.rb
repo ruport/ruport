@@ -292,7 +292,7 @@ class TestGrouping < Minitest::Test
                                    ["banana",8,1] << ["dog",5,6] << ["dog",2,4] << ["banana",7,9]
     end
 
-    def specify_can_set_by_group_name_order_in_constructor
+    def test_specify_can_set_by_group_name_order_in_constructor
       a = Grouping(@table, :by => "a", :order => :name)
       names = %w[banana cat dog]
       data = [ [[8,1],[7,9]], [[3,5]], [[1,2],[5,6],[2,4]] ]
@@ -302,7 +302,7 @@ class TestGrouping < Minitest::Test
       end
     end
 
-    def specify_can_set_by_proc_ordering_in_constructor
+    def test_specify_can_set_by_proc_ordering_in_constructor
       a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )
       names = %w[dog banana cat]
       data = [ [[1,2],[5,6],[2,4]], [[8,1],[7,9]], [[3,5]] ]
@@ -312,7 +312,7 @@ class TestGrouping < Minitest::Test
       end
     end
 
-    def specify_can_override_sorting
+    def test_specify_can_override_sorting
       a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )
       a.sort_grouping_by!(:name)
       names = %w[banana cat dog]
@@ -323,7 +323,7 @@ class TestGrouping < Minitest::Test
       end
     end
 
-    def specify_can_get_a_new_sorted_grouping
+    def test_specify_can_get_a_new_sorted_grouping
       a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )
       b = a.sort_grouping_by(:name)
 

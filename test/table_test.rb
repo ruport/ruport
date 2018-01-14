@@ -41,14 +41,14 @@ class TestTable < Minitest::Test
       @data = [[1,2,3],[4,5,6],[7,8,9]]
     end
 
-    def specify_filters_should_discard_unmatched_rows
+    should "specify_filters_should_discard_unmatched_rows" do
       table = Ruport::Data::Table.new(:column_names => %w[a b c],
                                       :data => [[1,2,3],[4,5,6],[7,8,9]],
                                       :filters => [ lambda { |r| r.a % 2 == 1 } ] )
       assert_equal Ruport.Table(%w[a b c]) << [1,2,3] << [7,8,9], table
     end
 
-    def specify_filters_should_work_on_csvs
+    should "specify_filters_should_work_on_csvs" do
       only_ids_less_than_3 = lambda { |r| r["id"].to_i < 3 }
       table = Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"),
                     :filters => [only_ids_less_than_3])
@@ -58,11 +58,12 @@ class TestTable < Minitest::Test
 
   context "when transforming data" do
 
-    def setup
+    setup do
       @data = [[1,2,3],[4,5,6],[7,8,9]]
     end
 
-    def specify_transforms_should_modify_table_data
+    should "specify_transforms_should_modify_table_data" do
+
      stringify_c = lambda { |r| r.c = r.c.to_s }
      add_two_to_all_int_cols = lambda { |r|
       r.each_with_index do |c,i|
@@ -82,7 +83,7 @@ class TestTable < Minitest::Test
 
     end
 
-    def specify_transforms_should_work_on_csvs
+    should "specify_transforms_should_work_on_csvs" do
       ids_to_i = lambda { |r| r["id"] = r["id"].to_i }
       table = Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"),
                     :filters => [ids_to_i])
@@ -185,12 +186,12 @@ class TestTable < Minitest::Test
 
   context "when sorting rows" do
 
-    def setup
+    setup do
       @table = Ruport.Table(%w[a b c]) << [1,2,3] << [6,1,8] << [9,1,4]
       @table_with_nils = Ruport.Table(%w[a b c]) << [1,nil,3] << [9,3,4] << [6,1,8]
     end
 
-    def specify_should_sort_in_reverse_order_on_descending
+    should "specify_should_sort_in_reverse_order_on_descending" do
        t = @table.sort_rows_by("a", :order => :descending )
        assert_equal Ruport.Table(%w[a b c]) << [9,1,4] << [6,1,8] << [1,2,3], t
 
@@ -198,7 +199,7 @@ class TestTable < Minitest::Test
        assert_equal Ruport.Table(%w[a b c]) << [6,1,8] << [9,1,4] << [1,2,3], t
     end
 
-    def specify_show_put_rows_with_nil_columns_after_sorted_rows
+    should "specify_show_put_rows_with_nil_columns_after_sorted_rows" do
        # should not effect when using columns that are all populated
        t = @table_with_nils.sort_rows_by("a")
        assert_equal Ruport.Table(%w[a b c]) << [1,nil,3] << [6,1,8] << [9,3,4], t
@@ -210,12 +211,12 @@ class TestTable < Minitest::Test
        assert_equal Ruport.Table(%w[a b c]) << [1,nil,3] << [9,3,4] << [6,1,8], t
     end
 
-    def specify_in_place_sort_should_allow_order_by
+    should "specify_in_place_sort_should_allow_order_by" do
        @table.sort_rows_by!("a", :order => :descending )
        assert_equal Ruport.Table(%w[a b c]) << [9,1,4] << [6,1,8] << [1,2,3], @table
     end
 
-    def specify_sort_rows_by
+    should "specify_sort_rows_by" do
       table = Ruport::Data::Table.new :column_names => %w[a b c]
       table << [1,2,3] << [6,1,8] << [9,1,4]
 
@@ -240,7 +241,7 @@ class TestTable < Minitest::Test
       assert_equal sorted_table_bs, table2.sort_rows_by(:b)
     end
 
-    def specify_sort_rows_by!
+    should "specify_sort_rows_by!" do
       table = Ruport::Data::Table.new :column_names => %w[a b c]
       table << [1,2,3] << [6,1,8] << [9,1,4]
 
@@ -270,32 +271,32 @@ class TestTable < Minitest::Test
   end
 
   context "when adding rows" do
-    def setup
+    setup do
       @columns = %w[a b c]
       @data = [[1,2,3],[4,5,6],[7,8,9]]
       @table = Ruport::Data::Table.new(:column_names => @columns, :data => @data)
       @new_row = [-1,-2,-3]
     end
 
-    def specify_insert_at_the_beginning
+    should "specify_insert_at_the_beginning" do
       @table.add_row(@new_row, :position => 0)
       assert_equal Ruport::Data::Table.new(:column_names => @columns,
           :data => [@new_row] + @data), @table
     end
 
-    def specify_insert_in_the_middle
+    should "specify_insert_in_the_middle" do
       @table.add_row(@new_row, :position => 2)
       assert_equal Ruport::Data::Table.new(:column_names => @columns,
           :data => [[1,2,3],[4,5,6],[-1,-2,-3],[7,8,9]]), @table
     end
 
-    def specify_insert_at_the_end
+    should "specify_insert_at_the_end" do
       @table.add_row(@new_row)
       assert_equal Ruport::Data::Table.new(:column_names => @columns,
           :data => @data + [@new_row]), @table
     end
 
-    def should_return_itself
+    should "return_itself" do
       assert_equal @table.object_id, @table.add_row(@new_row).object_id
     end
   end

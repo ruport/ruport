@@ -106,21 +106,21 @@ class TestController < Minitest::Test
   end
 
   context "when running a formatter with custom a finalize method" do
-    def specify_finalize_method_should_be_called
+    should "specify_finalize_method_should_be_called" do
       assert_equal "I has been finalized",
                    VanillaController.render_with_finalize
     end
   end
 
   context "when using templates" do
-    def specify_apply_template_should_be_called
+    should "specify_apply_template_should_be_called" do
       Ruport::Formatter::Template.create(:stub)
       Ruport.Table(%w[a b c]).to_csv(:template => :stub) do |r|
        r.formatter.expects(:apply_template)
       end
     end
 
-    def specify_undefined_template_should_throw_sensible_error
+    should "specify_undefined_template_should_throw_sensible_error" do
       assert_raises(Ruport::Formatter::TemplateNotDefined) do
         Ruport.Table(%w[a b c]).to_csv(:template => :sub)
       end
@@ -128,7 +128,7 @@ class TestController < Minitest::Test
   end
 
   context "when using default templates" do
-    def specify_default_template_should_be_called
+    should "specify_default_template_should_be_called" do
       Ruport::Formatter::Template.create(:default)
       Ruport.Table(%w[a b c]).to_csv do |r|
         r.formatter.expects(:apply_template)
@@ -136,7 +136,7 @@ class TestController < Minitest::Test
       end
     end
 
-    def specify_specific_should_override_default
+    should "specify_specific_should_override_default" do
       Ruport::Formatter::Template.create(:default)
       Ruport::Formatter::Template.create(:stub)
       Ruport.Table(%w[a b c]).to_csv(:template => :stub) do |r|
@@ -145,7 +145,7 @@ class TestController < Minitest::Test
       end
     end
 
-    def specify_should_be_able_to_disable_templates
+    should "specify_should_be_able_to_disable_templates" do
       Ruport::Formatter::Template.create(:default)
       Ruport.Table(%w[a b c]).to_csv(:template => false) do |r|
         r.formatter.expects(:apply_template).never

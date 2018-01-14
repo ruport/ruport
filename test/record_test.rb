@@ -10,8 +10,8 @@ class TestRecord < Minitest::Test
     @record = Ruport::Data::Record.new [1,2,3,4], :attributes => @attributes
   end
 
-  describe "when initializing with an array with attributes" do
-    def specify_key_access_should_work
+  context "when initializing with an array with attributes" do
+    should "test_specify_key_access_should_work" do
       assert_equal 1, @record["a"]
       assert_equal 4, @record["d"]
       assert_equal 2, @record.b
@@ -19,7 +19,7 @@ class TestRecord < Minitest::Test
       assert_raises(NoMethodError) { @record.f }
     end
 
-    def specify_ordinal_access_should_work
+    should "test_specify_ordinal_access_should_work" do
       assert_equal 1, @record[0]
       assert_equal 2, @record[1]
       assert_equal 3, @record[2]
@@ -27,8 +27,8 @@ class TestRecord < Minitest::Test
     end
   end
 
-  describe "when initializing with an array without attributes" do
-    def specify_ordinal_access_should_work
+  context "when initializing with an array without attributes" do
+    should "test_specify_ordinal_access_should_work" do
       record = Ruport::Data::Record.new [1,2,3,4]
       assert_equal 1, record[0]
       assert_equal 2, record[1]
@@ -42,7 +42,7 @@ class TestRecord < Minitest::Test
       @record = Ruport::Data::Record.new({:a => 1, :b => 2, :c => 3},{})
     end
 
-    def specify_key_access_should_work
+    def test_specify_key_access_should_work
       assert_equal 1, @record[:a]
       assert_equal 2, @record[:b]
       assert_equal 3, @record[:c]
@@ -56,14 +56,14 @@ class TestRecord < Minitest::Test
                            :attributes => [:c,:b,:a])
     end
 
-    def specify_key_access_should_work
+    def test_specify_key_access_should_work
       assert_equal 1, @record[:a]
       assert_equal 2, @record[:b]
       assert_equal 3, @record[:c]
       assert_equal 3, @record.c
     end
 
-    def specify_ordinal_access_should_work
+    def test_specify_ordinal_access_should_work
       assert_equal 3, @record[0]
       assert_equal 2, @record[1]
       assert_equal 1, @record[2]
@@ -290,19 +290,19 @@ class TestRecord < Minitest::Test
     assert_equal "1,2,3\n", a.to_csv
   end
 
-  describe "when rendering records" do
+  context "when rendering records" do
 
-    def specify_record_as_should_work
+    should "test_specify_record_as_should_work" do
       rendered_row = @record.as(:text)
       assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
     end
 
-    def specify_record_to_format_should_work_without_options
+    should "test_specify_record_to_format_should_work_without_options" do
       rendered_row = @record.to_text
       assert_equal("| 1 | 2 | 3 | 4 |\n", rendered_row)
     end
 
-    def specify_record_to_format_should_work_with_options
+    should "test_specify_record_to_format_should_work_with_options" do
       rendered_row = @record.to_csv(:format_options => { :col_sep => "\t"})
       assert_equal("1\t2\t3\t4\n",rendered_row)
     end
@@ -312,18 +312,18 @@ class TestRecord < Minitest::Test
         @a = Record.new({ "a" => 1, "b" => 2 })
       end
 
-      def specify_as_should_throw_proper_errors
+      def test_specify_as_should_throw_proper_errors
         assert_raises(Ruport::Controller::UnknownFormatError) { @a.as(:nothing) }
       end
 
-      def specify_to_format_should_throw_proper_errors
+      def test_specify_to_format_should_throw_proper_errors
         assert_raises(Ruport::Controller::UnknownFormatError) { @a.to_nothing }
       end
     end
 
     ## -- BUG TRAPS --------------------
 
-    def specify_attributes_should_not_be_broken_by_to_hack
+    should "test_specify_attributes_should_not_be_broken_by_to_hack" do
       record = Ruport::Data::Record.new [1,2], :attributes => %w[a to_something]
       assert_equal 2, record.to_something
     end
