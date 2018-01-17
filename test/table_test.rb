@@ -63,11 +63,10 @@ class TestTable < Minitest::Test
     end
 
     def specify_transforms_should_modify_table_data
-
      stringify_c = lambda { |r| r.c = r.c.to_s }
      add_two_to_all_int_cols = lambda { |r|
       r.each_with_index do |c,i|
-        if Fixnum === c
+        if Integer === c
           r[i] += 2
         end
       end

@@ -140,7 +140,7 @@ module Ruport::Data
       case name
       when String,Symbol
         self[name] || send(name)
-      when Fixnum
+      when Integer
         self[name]
       else
         raise ArgumentError, "Whatchu Talkin' Bout, Willis?"

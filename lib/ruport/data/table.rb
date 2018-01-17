@@ -576,7 +576,7 @@ module Ruport::Data
     #    table.remove_column("apple") #=> removes column named apple
     #
     def remove_column(col)
-      col = column_names[col] if col.kind_of? Fixnum
+      col = column_names[col] if col.kind_of? Integer
       column_names.delete(col)
       each { |r| r.send(:delete,col) }
     end
@@ -666,7 +666,7 @@ module Ruport::Data
     #       +-----------+
     #
     def swap_column(a,b)
-      if [a,b].all? { |r| r.kind_of? Fixnum }
+      if [a,b].all? { |r| r.kind_of? Integer }
        col_a,col_b = column_names[a],column_names[b]
        column_names[a] = col_b
        column_names[b] = col_a
