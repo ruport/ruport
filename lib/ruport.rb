@@ -5,15 +5,15 @@
 # Copyright (c) 2005-2007, All Rights Reserved.
 #
 # This is free software.  You may modify and redistribute this freely under
-# your choice of the GNU General Public License or the Ruby License. 
+# your choice of the GNU General Public License or the Ruby License.
 #
 # See LICENSE and COPYING for details
 #
- 
+
 module Ruport #:nodoc:#
   class FormatterError < RuntimeError #:nodoc:
   end
-  
+
   # SystemExtensions lovingly ganked from HighLine 1.2.1
   #
   # The following modifications have been made by Gregory Brown on 2006.06.25
@@ -27,7 +27,7 @@ module Ruport #:nodoc:#
   # All modifications are under the distributions terms of Ruport.
   # Copyright 2006, Gregory Brown.  All Rights Reserved
   #
-  # Original copyright notice preserved below. 
+  # Original copyright notice preserved below.
   # --------------------------------------------------------------------------
   #
   #  Created by James Edward Gray II on 2006-06-14.
@@ -37,7 +37,7 @@ module Ruport #:nodoc:#
 
   module SystemExtensions #:nodoc:
     module_function
-    
+
     # This section builds character reading and terminal size functions
     # to suit the proper platform we're running on.  Be warned:  Here be
     # dragons!
@@ -58,7 +58,7 @@ module Ruport #:nodoc:#
         format        = 'SSSSSssssSS'
         buf           = ([0] * format.size).pack(format)
         stdout_handle = m_GetStdHandle.call(0xFFFFFFF5)
-        
+
         m_GetConsoleScreenBufferInfo.call(stdout_handle, buf)
         bufx, bufy, curx, cury, wattr,
         left, top, right, bottom, maxx, maxy = buf.unpack(format)
@@ -72,13 +72,13 @@ module Ruport #:nodoc:#
           [output.match('columns = (\d+)')[1].to_i,
           output.match('rows = (\d+)')[1].to_i]
         else
-           `stty size`.split.map { |x| x.to_i }.reverse
-        end 
-        return $? == 0 ? size : [80,24] 
+           `stty -F /dev/tty size`.split.map { |x| x.to_i }.reverse
+        end
+        return $? == 0 ? size : [80,24]
       end
 
    end
-   
+
    def terminal_width
      terminal_size.first
    end
@@ -96,18 +96,18 @@ module Ruport #:nodoc:#
 
   module_function :quiet
 
-end  
+end
 
 require "ruport/version"
 require "enumerator"
-require "ruport/controller" 
-require "ruport/data" 
-require "ruport/formatter" 
+require "ruport/controller"
+require "ruport/data"
+require "ruport/formatter"
 
 begin
   if Object.const_defined? :ActiveRecord
-    require "ruport/acts_as_reportable"   
-  end                                     
+    require "ruport/acts_as_reportable"
+  end
 rescue LoadError
   nil
 end
