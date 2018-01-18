@@ -1,3 +1,5 @@
+{<img src="https://travis-ci.org/ruport/ruport.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/ruport/ruport]
+
 = What Ruport Is
 
 Ruby Reports (Ruport) is an extensible reporting system.
