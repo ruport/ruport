@@ -55,7 +55,7 @@ class PivotConvertRowOrderToGroupOrderTest < Minitest::Test
   end
 
   def test_nil
-    assert_equal(nil, convert(nil))
+    assert_nil convert(nil)
   end
 
 end
