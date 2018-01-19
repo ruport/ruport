@@ -1,4 +1,5 @@
 [![Build Status][BS img]](https://travis-ci.org/ruport/ruport)
+[![Coverage Status][CS img]](https://coveralls.io/r/ruport/ruport)
 
 ## What Ruport Is
 
@@ -93,3 +94,4 @@ approach works well for us.
 So if you want to help out with Ruport, we'll happy accept your efforts!
 
 [BS img]: https://travis-ci.org/ruport/ruport.svg?branch=master
+[CS img]: https://coveralls.io/repos/ruport/ruport/badge.png?branch=master
