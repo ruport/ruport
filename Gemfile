@@ -12,3 +12,4 @@ gem 'mocha'
 
 # Test dependencies
 gem 'RedCloth'
+gem 'coveralls', require: false
