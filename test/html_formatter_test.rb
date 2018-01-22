@@ -1,8 +1,8 @@
-#!/usr/bin/env ruby -w  
+#!/usr/bin/env ruby -w
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderHTMLTable < Minitest::Test
-  
+
   def setup
     Ruport::Formatter::Template.create(:simple) do |format|
       format.table = {
@@ -14,7 +14,7 @@ class TestRenderHTMLTable < Minitest::Test
       }
     end
   end
-  
+
   def test_html_table
     a = Ruport::Formatter::HTML.new
 
@@ -23,11 +23,11 @@ class TestRenderHTMLTable < Minitest::Test
   end
 
   def test_render_html_basic
-    
+
     actual = Ruport::Controller::Table.render_html { |r|
       r.data = Ruport.Table([], :data => [[1,2,3],[4,5,6]])
-    }          
-    
+    }
+
     assert_equal("\t<table>\n\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
                  "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t"+
                  "\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
@@ -36,21 +36,21 @@ class TestRenderHTMLTable < Minitest::Test
     actual = Ruport::Controller::Table.render_html { |r|
       r.data = Ruport.Table(%w[a b c], :data => [ [1,2,3],[4,5,6]])
     }
-    
+
     assert_equal("\t<table>\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>a</th>\n\t\t\t<th>b</th>"+
       "\n\t\t\t<th>c</th>\n\t\t</tr>\n\t\t</thead>\n\t\t<tr>\n\t\t\t<td>1</td>"+
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
-      "\t</tr>\n\t</table>\n",actual)   
-    
+      "\t</tr>\n\t</table>\n",actual)
+
   end
-  
+
   def test_render_with_template
     formatter = Ruport::Formatter::HTML.new
     formatter.options = Ruport::Controller::Options.new
     formatter.options.template = :simple
     formatter.apply_template
-    
+
     assert_equal false, formatter.options.show_table_headers
 
     assert_equal :justified, formatter.options.style
@@ -72,7 +72,7 @@ class TestRenderHTMLTable < Minitest::Test
     ) do |r|
       opts = r.options
     end
-    
+
     assert_equal true, opts.show_table_headers
 
     assert_equal :inline, opts.style
@@ -90,27 +90,27 @@ class TestRenderHTMLTable < Minitest::Test
     ) do |r|
       opts = r.options
     end
-    
+
     assert_equal true, opts.show_table_headers
 
     assert_equal :inline, opts.style
     assert_equal true, opts.show_group_headers
   end
 end
-   
+
 
 class TestRenderHTMLRow < Minitest::Test
-  
+
   def test_render_html_row
     actual = Ruport::Controller::Row.render_html { |r| r.data = [1,2,3] }
     assert_equal("\t\t<tr>\n\t\t\t<td>1</td>\n\t\t\t<td>2"+
                  "</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n",actual)
   end
 end
-   
+
 
 class TestRenderHTMLGroup < Minitest::Test
-    
+
   def test_render_html_group
     group = Ruport::Data::Group.new(:name => 'test',
                                     :data => [[1,2,3],[4,5,6]],
@@ -134,7 +134,7 @@ class TestRenderHTMLGroup < Minitest::Test
       "\n\t\t\t<td>2</td>\n\t\t\t<td>3</td>\n\t\t</tr>\n\t\t<tr>"+
       "\n\t\t\t<td>4</td>\n\t\t\t<td>5</td>\n\t\t\t<td>6</td>\n\t"+
       "\t</tr>\n\t</table>\n", actual
-  end                                           
+  end
 end
 
 
@@ -181,8 +181,8 @@ class TestRenderHTMLGrouping < Minitest::Test
                  "<td class=\"groupName\">2</td>\n\t\t\t<td>7</td>\n"+
                  "\t\t\t<td>9</td>\n\t\t</tr>\n\t</table>\n", actual
   end
-end  
-     
+end
+
 
 class TestHTMLFormatterHelpers < Minitest::Test
   begin
@@ -190,8 +190,8 @@ class TestHTMLFormatterHelpers < Minitest::Test
   rescue LoadError
     nil
   end
-  
-  def test_textile     
+
+  def test_textile
     require "redcloth"
     a = Ruport::Formatter::HTML.new
     assert_equal "<p><strong>foo</strong></p>", a.textile("*foo*")

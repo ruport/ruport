@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -w   
+#!/usr/bin/env ruby -w
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestGroup < Minitest::Test
@@ -8,7 +8,7 @@ class TestGroup < Minitest::Test
                                      :data => [[1,2,3]],
                                      :column_names => %w[a b c])
   end
-  
+
   def test_group_constructor
     group = Ruport::Data::Group.new(:name => 'test',
                                     :data => [[1,2,3]],
@@ -44,7 +44,7 @@ class TestGroup < Minitest::Test
     assert_equal @group, group2
     assert_equal @group, @group.dup
   end
-  
+
   def test_create_subgroups
     group = @group << [4,5,6]
     group.send(:create_subgroups, "a")
@@ -55,7 +55,7 @@ class TestGroup < Minitest::Test
                                         :column_names => %w[b c],
                                         :name => 4 ) }
     assert_equal b, group.subgroups
-    
+
     group.send(:create_subgroups, "b")
     c = { 2 => Ruport::Data::Group.new( :data => [[3]],
                                         :column_names => %w[c],
@@ -65,8 +65,8 @@ class TestGroup < Minitest::Test
                                         :name => 5 ) }
     assert_equal c, group.subgroups[1].subgroups
     assert_equal d, group.subgroups[4].subgroups
-  end    
-  
+  end
+
   def test_grouped_data
     a = @group << [4,5,6]
     b = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
@@ -85,7 +85,7 @@ class TestGroupRendering < Minitest::Test
     @group = Ruport::Data::Group.new(:name => 'test',
                                      :data => [[1,2,3]],
                                      :column_names => %w[a b c])
-  end       
+  end
 
   def test_group_as
     assert_equal(7, @group.to_text.split("\n").size)
@@ -94,7 +94,7 @@ class TestGroupRendering < Minitest::Test
     assert_equal(15, @group.to_html.split("\n").size)
     assert_equal(8, @group.to_html(:show_table_headers => false).split("\n").size)
   end
-  
+
   def test_as_throws_proper_errors
     @group.as(:csv)
     @group.to_csv
@@ -111,14 +111,14 @@ class TestGroupRendering < Minitest::Test
     assert_equal "1\n\nb,c\n2,3\n", t.to_csv
   end
 end
-    
+
 class TestGrouping < Minitest::Test
-  
+
   def setup
     table = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     @grouping = Ruport::Data::Grouping.new(table, :by => "a")
   end
-  
+
   def test_grouping_constructor
     a = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     b = Ruport::Data::Grouping.new(a, :by => "a")
@@ -129,24 +129,24 @@ class TestGrouping < Minitest::Test
                                         :column_names => %w[b c],
                                         :name => 4 ) }
     assert_equal c, b.data
-  end        
-  
+  end
+
   def test_empty_grouping
     a = Ruport::Data::Grouping.new()
     a << Group("foo",:data => [[1,2,3],[4,5,6]],
                      :column_names => %w[a b c] )
-    assert_equal "foo", a["foo"].name    
-    assert_nil a.grouped_by         
-  end                               
-  
+    assert_equal "foo", a["foo"].name
+    assert_nil a.grouped_by
+  end
+
   def test_empty_grouping_with_grouped_by
-    a = Ruport::Data::Grouping.new(:by => "nada")  
+    a = Ruport::Data::Grouping.new(:by => "nada")
     a << Group("foo",:data => [[1,2,3],[4,5,6]],
                      :column_names => %w[a b c] )
-    assert_equal "foo", a["foo"].name    
+    assert_equal "foo", a["foo"].name
     assert_equal "nada", a.grouped_by
   end
-  
+
   def test_grouping_indexing
     a = [Ruport::Data::Group.new( :data => [[2,3]],
                                   :column_names => %w[b c],
@@ -160,8 +160,8 @@ class TestGrouping < Minitest::Test
     assert_equal a[0], @grouping[1]
     assert_equal a[1], @grouping[4]
     assert_raises(IndexError) { @grouping[2] }
-  end    
-  
+  end
+
   def test_should_copy_grouping
     a = { 1 => Ruport::Data::Group.new( :data => [[2,3]],
                                         :column_names => %w[b c],
@@ -178,10 +178,10 @@ class TestGrouping < Minitest::Test
    a = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
    @grouping << a.to_group("red snapper")
    assert_equal @grouping["red snapper"], a.to_group("red snapper")
-   
+
    assert_raises(ArgumentError) { @grouping << a.to_group("red snapper") }
   end
-  
+
   def test_grouped_by
     assert_equal "a", @grouping.grouped_by
   end
@@ -205,7 +205,7 @@ class TestGrouping < Minitest::Test
                                         :name => 5 ) }
     assert_equal d, b[1].subgroups
     assert_equal e, b[4].subgroups
-  end      
+  end
 
   def test_subgrouping
     a = Ruport.Table(%w[first_name last_name id])
@@ -220,7 +220,7 @@ class TestGrouping < Minitest::Test
     sub = (g / "mike")["milner"]
     assert_equal %w[schweet], sub.column("id")
   end
-  
+
   class TicketStatus < Ruport::Data::Record
 
     def closed
@@ -232,38 +232,38 @@ class TestGrouping < Minitest::Test
     end
 
   end
-  
+
   def test_grouping_summary
     source = Ruport.Table(File.join(File.expand_path(File.dirname(__FILE__)),
                    *%w[samples ticket_count.csv]),
                      :record_class => TicketStatus)
     grouping = Grouping(source,:by => "date")
-    
+
     expected = Ruport.Table(:date, :opened,:closed)
     grouping.each do |date,group|
       opened = group.sigma { |r| r.opened  }
       closed = group.sigma { |r| r.closed  }
       expected << { :date => date, :opened => opened, :closed => closed }
     end
-    
+
     actual = grouping.summary :date,
       :opened => lambda { |g| g.sigma(:opened) },
       :closed => lambda { |g| g.sigma(:closed) },
       :order => [:date,:opened,:closed]
-      
+
     assert_equal expected, actual
-    
+
     actual = grouping.summary :date,
       :opened => lambda { |g| g.sigma(:opened) },
       :closed => lambda { |g| g.sigma(:closed) }
-      
-    assert_equal [], expected.column_names - actual.column_names       
-  end                                                              
-  
+
+    assert_equal [], expected.column_names - actual.column_names
+  end
+
   def test_grouping_sigma
     assert_respond_to @grouping, :sigma
     assert_respond_to @grouping, :sum
-    
+
     expected = {}
     @grouping.data[@grouping.data.keys.first].column_names.each do |col|
       expected[col] = @grouping.inject(0) do |s, (group_name, group)|
@@ -286,66 +286,66 @@ class TestGrouping < Minitest::Test
   end
 
   describe "when sorting groupings" do
-    
+
     def setup
       @table = Ruport.Table(%w[a b c]) << ["dog",1,2] << ["cat",3,5] <<
                                    ["banana",8,1] << ["dog",5,6] << ["dog",2,4] << ["banana",7,9]
     end
-    
-    def specify_can_set_by_group_name_order_in_constructor
-      a = Grouping(@table, :by => "a", :order => :name)    
-      names = %w[banana cat dog]           
+
+    def test_specify_can_set_by_group_name_order_in_constructor
+      a = Grouping(@table, :by => "a", :order => :name)
+      names = %w[banana cat dog]
       data = [ [[8,1],[7,9]], [[3,5]], [[1,2],[5,6],[2,4]] ]
       a.each do |name,group|
         assert_equal names.shift, name
-        assert_equal data.shift, group.map { |r| r.to_a } 
+        assert_equal data.shift, group.map { |r| r.to_a }
       end
     end
-    
-    def specify_can_set_by_proc_ordering_in_constructor
-      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } ) 
-      names = %w[dog banana cat]      
+
+    def test_specify_can_set_by_proc_ordering_in_constructor
+      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )
+      names = %w[dog banana cat]
       data = [ [[1,2],[5,6],[2,4]], [[8,1],[7,9]], [[3,5]] ]
       a.each do |name,group|
         assert_equal names.shift, name
-        assert_equal data.shift, group.map { |r| r.to_a } 
+        assert_equal data.shift, group.map { |r| r.to_a }
       end
-    end  
-    
-    def specify_can_override_sorting
-      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )  
+    end
+
+    def test_specify_can_override_sorting
+      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )
       a.sort_grouping_by!(:name)
-      names = %w[banana cat dog]           
+      names = %w[banana cat dog]
       data = [ [[8,1],[7,9]], [[3,5]], [[1,2],[5,6],[2,4]] ]
       a.each do |name,group|
         assert_equal names.shift, name
-        assert_equal data.shift, group.map { |r| r.to_a } 
+        assert_equal data.shift, group.map { |r| r.to_a }
       end
-    end 
-    
-    def specify_can_get_a_new_sorted_grouping
-      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )  
-      b = a.sort_grouping_by(:name)     
-      
-      names = %w[banana cat dog]           
+    end
+
+    def test_specify_can_get_a_new_sorted_grouping
+      a = Grouping(@table, :by => "a", :order => lambda { |g| -g.length } )
+      b = a.sort_grouping_by(:name)
+
+      names = %w[banana cat dog]
       data = [ [[8,1],[7,9]], [[3,5]], [[1,2],[5,6],[2,4]] ]
       b.each do |name,group|
         assert_equal names.shift, name
-        assert_equal data.shift, group.map { |r| r.to_a } 
+        assert_equal data.shift, group.map { |r| r.to_a }
       end
-      
+
       # assert original retained
-      names = %w[dog banana cat]      
+      names = %w[dog banana cat]
       data = [ [[1,2],[5,6],[2,4]], [[8,1],[7,9]], [[3,5]] ]
       a.each do |name,group|
         assert_equal names.shift, name
-        assert_equal data.shift, group.map { |r| r.to_a } 
-      end   
+        assert_equal data.shift, group.map { |r| r.to_a }
+      end
     end
   end
- 
+
   class MyRecord < Ruport::Data::Record; end
-  
+
   def test_grouping_should_set_record_class
     a = Ruport.Table(%w[a b c], :record_class => MyRecord) { |t|
           t << [1,2,3]
@@ -353,13 +353,13 @@ class TestGrouping < Minitest::Test
         }
     b = Ruport::Data::Grouping.new(a, :by => "a")
     assert_equal MyRecord, b[1].record_class
-  end   
+  end
 
   class MyGroupingSub < Ruport::Data::Grouping; end
 
   def test_ensure_grouping_subclasses_render_properly
     t = Ruport.Table(%w[a b c]) << [1,2,3]
-    a = MyGroupingSub.new(t, :by => "a") 
+    a = MyGroupingSub.new(t, :by => "a")
     assert_equal "1\n\nb,c\n2,3\n\n", a.to_csv
   end
 end
@@ -370,7 +370,7 @@ class TestGroupingRendering < Minitest::Test
     table = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
     @grouping = Ruport::Data::Grouping.new(table, :by => "a")
   end
-  
+
   def test_grouping_as
     assert_equal(15, @grouping.to_text.split("\n").size)
     assert_equal(11, @grouping.as(:text,
@@ -379,7 +379,7 @@ class TestGroupingRendering < Minitest::Test
 
   def test_as_throws_proper_errors
      @grouping.as(:csv)
-     @grouping.to_csv 
+     @grouping.to_csv
     assert_raises(Ruport::Controller::UnknownFormatError) {
       @grouping.as(:nothing) }
     assert_raises(Ruport::Controller::UnknownFormatError) {
@@ -394,7 +394,7 @@ class TestGroupingKernelHacks < Minitest::Test
                                      :data => [[1,2,3]],
                                      :column_names => %w[a b c])
     assert_equal group, Group('test', :data => [[1,2,3]],
-                                      :column_names => %w[a b c]) 
+                                      :column_names => %w[a b c])
   end
 
   def test_grouping_kernel_hack

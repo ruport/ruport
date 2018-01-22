@@ -2,7 +2,7 @@
 require File.join(File.expand_path(File.dirname(__FILE__)), "helpers")
 
 class TestRenderTextTable < Minitest::Test
-  
+
   def setup
     Ruport::Formatter::Template.create(:simple) do |format|
       format.table = {
@@ -22,50 +22,50 @@ class TestRenderTextTable < Minitest::Test
 
   def test_basic
     tf = "+-------+\n"
-    
+
     a = Ruport.Table([], :data => [[1,2],[3,4]]).to_text
     assert_equal("#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}",a)
 
     a = Ruport.Table(%w[a b], :data => [[1,2],[3,4]]).to_text
     assert_equal("#{tf}| a | b |\n#{tf}| 1 | 2 |\n| 3 | 4 |\n#{tf}", a)
   end
-  
+
   def test_centering
-    tf = "+---------+\n" 
+    tf = "+---------+\n"
 
     a = Ruport.Table([], :data => [[1,2],[300,4]])
     assert_equal( "#{tf}|  1  | 2 |\n| 300 | 4 |\n#{tf}",
                   a.to_text(:alignment => :center) )
 
     tf = "+------------+\n"
-    a.column_names = %w[a bark]     
+    a.column_names = %w[a bark]
     assert_equal("#{tf}|  a  | bark |\n#{tf}|  1  |  2   |\n"+
-                 "| 300 |  4   |\n#{tf}", a.to_text(:alignment => :center) )   
+                 "| 300 |  4   |\n#{tf}", a.to_text(:alignment => :center) )
   end
 
   def test_justified
     tf = "+----------+\n"
     a = Ruport.Table([], :data => [[1,'Z'],[300,'BB']])
-    
+
     # justified alignment can be set explicitly
-    assert_equal "#{tf}|   1 | Z  |\n| 300 | BB |\n#{tf}", 
-                 a.to_text(:alignment => :justified)    
-    
-    # justified alignment is also default             
-    assert_equal "#{tf}|   1 | Z  |\n| 300 | BB |\n#{tf}", a.to_s      
+    assert_equal "#{tf}|   1 | Z  |\n| 300 | BB |\n#{tf}",
+                 a.to_text(:alignment => :justified)
+
+    # justified alignment is also default
+    assert_equal "#{tf}|   1 | Z  |\n| 300 | BB |\n#{tf}", a.to_s
   end
 
-  def test_wrapping  
+  def test_wrapping
     a = Ruport.Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10)
     assert_equal("+------->>\n|   1 | >>\n| 300 | >>\n+------->>\n",a)
-  end  
-  
+  end
+
   def test_ignore_wrapping
-    a = Ruport.Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10, 
+    a = Ruport.Table([], :data => [[1,2],[300,4]]).to_text(:table_width => 10,
                                          :ignore_table_width => true )
     assert_equal("+---------+\n|   1 | 2 |\n| 300 | 4 |\n+---------+\n",a)
-  end 
-  
+  end
+
   def test_render_empty_table
     assert_raises(Ruport::FormatterError) { Ruport.Table([]).to_text }
     Ruport.Table(%w[a b c]).to_text
@@ -76,13 +76,13 @@ class TestRenderTextTable < Minitest::Test
                "+-----------+\n"
     assert_equal expected, a
   end
-  
+
   def test_render_with_template
     formatter = Ruport::Formatter::Text.new
     formatter.options = Ruport::Controller::Options.new
     formatter.options.template = :simple
     formatter.apply_template
-    
+
     assert_equal false, formatter.options.show_table_headers
     assert_equal 50, formatter.options.table_width
     assert_equal true, formatter.options.ignore_table_width
@@ -92,7 +92,7 @@ class TestRenderTextTable < Minitest::Test
 
     assert_equal false, formatter.options.show_group_headers
   end
-  
+
   def test_options_hashes_override_template
     opts = nil
     table = Ruport.Table(%w[a b c])
@@ -113,7 +113,7 @@ class TestRenderTextTable < Minitest::Test
     ) do |r|
       opts = r.options
     end
-    
+
     assert_equal true, opts.show_table_headers
     assert_equal 25, opts.table_width
     assert_equal false, opts.ignore_table_width
@@ -138,7 +138,7 @@ class TestRenderTextTable < Minitest::Test
     ) do |r|
       opts = r.options
     end
-    
+
     assert_equal true, opts.show_table_headers
     assert_equal 75, opts.table_width
     assert_equal false, opts.ignore_table_width
@@ -148,7 +148,7 @@ class TestRenderTextTable < Minitest::Test
 
     assert_equal true, opts.show_group_headers
   end
-                                             
+
   # -- BUG TRAPS ------------------------------
 
   def test_should_render_without_column_names
@@ -158,9 +158,9 @@ class TestRenderTextTable < Minitest::Test
                "+-----------+\n"
     assert_equal(expected,a)
   end
-  
+
 end
-    
+
 
 class TestRenderTextRow < Minitest::Test
 
@@ -170,7 +170,7 @@ class TestRenderTextRow < Minitest::Test
   end
 
 end
-        
+
 
 class TestRenderTextGroup < Minitest::Test
 
@@ -196,7 +196,7 @@ class TestRenderTextGroup < Minitest::Test
                                    :data => [ %w[is this more],
                                               %w[interesting red snapper]],
                                    :column_names => %w[i hope so])
-   
+
     actual = Ruport::Controller::Group.render(:text, :data => group,
       :show_table_headers => false )
     expected = "test:\n\n"+
@@ -205,9 +205,9 @@ class TestRenderTextGroup < Minitest::Test
                "| interesting | red  | snapper |\n"+
                "+------------------------------+\n"
     assert_equal(expected, actual)
-  end                                           
-end       
-       
+  end
+end
+
 
 class TestRenderTextGrouping < Minitest::Test
 
@@ -230,8 +230,8 @@ class TestRenderTextGrouping < Minitest::Test
                "+-------------+\n"+
                "| this | more |\n"+
                "+-------------+\n\n"
-    assert_equal(expected, actual)  
-    
+    assert_equal(expected, actual)
+
     actual = grouping.to_s
     assert_equal(expected,actual)
   end
@@ -254,5 +254,5 @@ class TestRenderTextGrouping < Minitest::Test
                "+-------------+\n\n"
     assert_equal(expected, actual)
   end
-  
+
 end
