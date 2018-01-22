@@ -1,4 +1,6 @@
-= What Ruport Is
+[![Build Status][BS img]](https://travis-ci.org/ruport/ruport)
+
+## What Ruport Is
 
 Ruby Reports (Ruport) is an extensible reporting system.
 
@@ -20,9 +22,9 @@ of helper functions that will let you build complex reports while maintaining
 a DRY and consistent interface.
 
 To get a quick feel for what you can accomplish with Ruport, take a look at
-a few simple examples provided on our web site.
+a few simple examples provided on our web site:
 
-http://ruport.github.io/examples.html
+https://ruport.github.io/examples.html
 
 Since Ruport's core support is intentionally minimalistic, you may be looking
 for some higher level support for specific needs such as graphing, invoices,
@@ -30,71 +32,57 @@ report mailing support, etc.  For this, you may wish to take a look at the
 ruport-util package, which contains some generally useful tools and libraries
 to extend Ruport's capabilities.
 
-= Installation
+## Installation
 
 To install ruport via rubygems:
 
-  sudo gem install ruport
+```sh
+$ sudo gem install ruport
+```
 
 Check to see if it installed properly:
 
-  ruby -rubygems -e "require 'ruport'; puts Ruport::VERSION"
+```sh
+$ ruby -e "require 'ruport'; puts Ruport::VERSION"
+```
 
 If you get an error, please let us know on our mailing list.
 
-=== Dependencies
+### Dependencies
 
-==== Formatting
+#### Formatting
 
 Ruport relies on PDF::Writer for its formatting support.
 If you want to make use of textile helpers, you'll also need RedCloth.
 
-==== Database interaction
+#### Database interaction
 
-If you wish to use Ruport to report against a rails project,
-a camping project, or do standalone acts_as_reportable reports, you'll need
-ActiveRecord and the acts_as_reportable gem.
+If you wish to use Ruport to report against a Rails project, you'll need
+ActiveRecord and the `acts_as_reportable` gem.
 
 If you want to use Ruport::Query for raw SQL support, you'll need to
-install ruport-util, RubyDBI and whatever database drivers you might need.
+install `ruport-util`, `RubyDBI` and whatever database drivers you might
+need.
 
-= Resources
+## Resources
 
 Our developers have published a free-content book about all things
 Ruport, including complete coverage of acts_as_reportable and some of
 ruport-util's features.  This book serves as the definitive guide to
 Ruport, so all users should become acquainted with it:
 
-  http://ruport.github.io
-
-The next best way to get help and make suggestions is the Ruport mailing list.
-This software is on the move, so the list is the most reliable way of getting
-up to date information.
-
--  You can sign up and/or view the archives here:
-   http://groups.google.com/group/ruby-reports
+https://ruport.github.io
 
 If you are looking to dig a little deeper, there are a couple more resources
 that may be helpful to you.
 
--  The latest stable API documentation is available at:
-   http://rubydoc.info/gems/ruport/frames
+- The latest stable API documentation is available at: http://rubydoc.info/gems/ruport/frames
+- The code repository is on GitHub: https://github.com/ruport/ruport
+- Our issues tracker is at https://github.com/ruport/ruport/issues
 
--  Our issues tracker is at http://github.com/ruport/ruport/issues
+## Hacking
 
-= Hacking
-
-If you'd like to contribute code to Ruport, please join our development
-mailing list, and let us know what you'd like to do!
-
-http://groups.google.com/group/ruport-dev
-
-The main Git repository is on GitHub:
-http://github.com/ruport/ruport
-
-It also may be worthwhile to join this list if you plan on running edge
-versions of Ruport, as this is where we make announcements about major
-breakage in trunk.
+If you'd like to contribute code to Ruport, fork the repository and open a PR!
 
 We are very responsive to contributors, and review every patch we receive
 fairly quickly.  Most contributors who successfully get a patch or two applied
@@ -103,3 +91,5 @@ development team.  Since we view every user as potential contributor, this
 approach works well for us.
 
 So if you want to help out with Ruport, we'll happy accept your efforts!
+
+[BS img]: https://travis-ci.org/ruport/ruport.svg?branch=master
