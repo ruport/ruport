@@ -216,7 +216,7 @@ class Ruport::Controller
     def built_in_formats
      { :html => Ruport::Formatter::HTML,
        :csv  => Ruport::Formatter::CSV,
-       :pdf  => Ruport::Formatter::PDF,
+       :pdf  => Ruport::Formatter::PrawnPDF,
        :prawn_pdf => Ruport::Formatter::PrawnPDF,
        :text => Ruport::Formatter::Text }
     end
