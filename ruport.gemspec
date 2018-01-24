@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
 
   s.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README.rdoc', '-q']
 
-  s.add_runtime_dependency(%q<pdf-writer>, ["= 1.1.8"])
   s.add_runtime_dependency(%q<prawn>, [">= 0.12.0", "< 2.1.0"]) # tested on 2.0.x, but not 2.1.x
 
   s.add_development_dependency(%q<rake>)
