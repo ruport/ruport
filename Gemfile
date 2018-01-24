@@ -3,6 +3,7 @@ gemspec
 
 # Utilities
 gem 'rdoc'
+gem 'byebug'
 
 # Testing gems
 gem 'minitest'
