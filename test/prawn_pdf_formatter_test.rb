@@ -42,7 +42,11 @@ class TestRenderPDFTable < Minitest::Test
 
     data.to_prawn_pdf
 
-    Ruport.Table(%w[a b c]).to_prawn_pdf
+    expected_output = IO.read(File.join(__dir__, 'expected_outputs/prawn_pdf_formatter/pdf_basic.pdf.test')).bytes
+
+    actual_output = Ruport.Table(%w[a b c]).to_prawn_pdf.bytes
+
+    assert_equal expected_output, actual_output
   end
 
   # this is mostly to check that the transaction hack gets called
