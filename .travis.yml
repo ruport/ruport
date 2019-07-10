@@ -12,4 +12,5 @@ matrix:
     - rvm: ruby-head
 # Bundler+Rubygems issue; see https://github.com/travis-ci/travis-ci/issues/8978
 before_install:
-  - gem update --system
+  - "if $(ruby -e 'exit(RUBY_VERSION >= \"2.3.0\")'); then gem update --system; fi"
+  - "if $(ruby -e 'exit(RUBY_VERSION <  \"2.3.0\")'); then gem update --system 2.7.8; fi"
