@@ -2,8 +2,8 @@ source "https://rubygems.org"
 gemspec
 
 # Utilities
-gem 'rake'
 gem 'rdoc'
+gem 'byebug'
 
 # Testing gems
 gem 'minitest'
