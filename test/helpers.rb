@@ -12,7 +12,7 @@ require 'minitest/autorun'
 require 'minitest/spec'
 require 'minitest/unit'
 require 'shoulda-context'
-require 'mocha/mini_test'
+require 'mocha/minitest'
 class Minitest::Test
   include Ruport
 end
