@@ -12,6 +12,7 @@ module Ruport
 
     def initialize
       require 'prawn'
+      require 'prawn/table'
     end
 
     def pdf

@@ -31,7 +31,7 @@ class TestRenderPDFTable < Minitest::Test
     end
   end
 
-  def test_render_pdf_basic
+  def test_render_pdf_errors
     # can't render without column names
     data = Ruport.Table([], data:  [[1,2],[3,4]])
     assert_raises(Ruport::FormatterError) do
@@ -41,10 +41,15 @@ class TestRenderPDFTable < Minitest::Test
     data.column_names = %w[a b]
 
     data.to_prawn_pdf
+  end
 
-    expected_output = IO.read(File.join(__dir__, 'expected_outputs/prawn_pdf_formatter/pdf_basic.pdf.test')).bytes
+  def test_render_pdf_basic
+    expected_output = IO.binread(File.join(__dir__, 'expected_outputs/prawn_pdf_formatter/pdf_basic.pdf.test')).bytes
 
-    actual_output = Ruport.Table(%w[a b c]).to_prawn_pdf.bytes
+    data = Ruport.Table(%w[a b c], data: [[1,2,3]])
+    # debugging:
+    # data.to_prawn_pdf(:file => File.join(__dir__, 'expected_outputs/prawn_pdf_formatter/pdf_actual.pdf.test'))
+    actual_output = data.to_prawn_pdf.bytes
 
     assert_equal expected_output, actual_output
   end
