@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
 
   s.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README.rdoc', '-q']
 
-  s.add_runtime_dependency "prawn", "~> 2.1.0"
+  s.add_runtime_dependency "prawn", "~> 2.2.0"
   s.add_runtime_dependency "prawn-table", "~> 0.2.0"
   s.add_development_dependency "rake"
 end
