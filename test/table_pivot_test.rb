@@ -21,6 +21,13 @@ class TablePivotSimpleCaseTest < Minitest::Test
     assert_equal(expected, @pivoted)
   end
 
+  def test_pivot_empty_table
+    tab = Ruport.Table ["id", "num_sessions", "status", "diagnosis"]
+    tab <<             ["one", 10,            :aborted, :good]
+    tab <<             ["two", 10,            :success, :bad]
+
+    tab.pivot("status", :group_by=>"diagnosis", :values=>"num_sessions", :operation=>:mean)
+  end
 end
 
 class PivotConvertRowOrderToGroupOrderTest < Minitest::Test
