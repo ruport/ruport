@@ -71,10 +71,10 @@ module Ruport::Data
       end
 
       def values
-        @values ||= Hash.new do |values, column_entry|
+        @values ||= Hash.new do |row_values, column_entry|
           rows_group = rows_groups[column_entry]
 
-          values[column_entry] =
+          row_values[column_entry] =
             row.inject({}) do |values, row_entry|
               matching_rows = rows_group.rows_with(@pivot_column => row_entry)
               values[row_entry] = perform_operation(matching_rows)
