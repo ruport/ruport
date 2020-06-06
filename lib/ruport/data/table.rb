@@ -259,7 +259,7 @@ module Ruport::Data
         table = self.new(options) do |feeder|
           first_line = true
 
-          ::CSV.send(msg,param,options[:csv_options]) do |row|
+          ::CSV.send(msg,param, **options[:csv_options]) do |row|
             if first_line
               adjust_for_headers(feeder.data,row,options)
               first_line = false
