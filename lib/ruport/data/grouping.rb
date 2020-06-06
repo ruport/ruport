@@ -285,7 +285,7 @@ module Ruport::Data
       else 
         cols = procs.keys + [field]   
       end
-      expected = Table.new(:column_names => cols) { |t|
+      Table.new(:column_names => cols) { |t|
         each do |name,group|
           t << procs.inject({field => name}) do |s,r|
             s.merge(r[0] => r[1].call(group))
@@ -327,7 +327,7 @@ module Ruport::Data
     #   grouping.sigma { |r| r.col2 + 1 } #=> 15
     #
     def sigma(column=nil)
-      inject(0) do |s, (group_name, group)|
+      inject(0) do |s, (_group_name, group)|
         if column
           s + group.sigma(column)
         else

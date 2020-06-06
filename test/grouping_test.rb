@@ -266,7 +266,7 @@ class TestGrouping < Minitest::Test
 
     expected = {}
     @grouping.data[@grouping.data.keys.first].column_names.each do |col|
-      expected[col] = @grouping.inject(0) do |s, (group_name, group)|
+      expected[col] = @grouping.inject(0) do |s, (_group_name, group)|
         s + group.sigma(col)
       end
     end
@@ -276,7 +276,7 @@ class TestGrouping < Minitest::Test
 
     expected = {}
     @grouping.data[@grouping.data.keys.first].column_names.each do |col|
-      expected[col] = @grouping.inject(0) do |s, (group_name, group)|
+      expected[col] = @grouping.inject(0) do |s, (_group_name, group)|
         s + group.sigma {|r| r[col] + 2 }
       end
     end
