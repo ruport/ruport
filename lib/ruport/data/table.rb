@@ -560,8 +560,8 @@ module Ruport::Data
     #   data.add_columns ['new_column_1','new_column_2'], :default => 1
     #
     def add_columns(names,options={})
-      raise "Greg isn't smart enough to figure this out.\n"+
-            "Send ideas in at http://list.rubyreports.org" if block_given?
+      raise "Greg isn't smart enough to figure this out.\n" \
+            "Send ideas in at github" if block_given?
       need_reverse = !!(options[:after] || options[:position])
       names = names.reverse if need_reverse
       names.each { |n| add_column(n,options) }
