@@ -55,7 +55,7 @@ module Ruport
     #
     def csv_writer
       @csv_writer ||= options.formatter ||
-        ::CSV.instance(output, options.format_options || {})
+        ::CSV.instance(output, **(options.format_options || {}))
     end
 
     # Generates table header by turning column_names into a CSV row.

@@ -132,7 +132,7 @@ class PivotPreservesOrdering < Minitest::Test
     ].each {|e| table << e}
     table.add_column('pivotme') {|row| 10 - row.group.to_i}
     pivoted = table.pivot('pivotme', :group_by => 'group', :values => 'a',
-                                     :pivot_order => proc {|row, pivot| pivot })
+                                     :pivot_order => proc {|_row, pivot| pivot })
     assert_equal(['group', 7, 8, 9], pivoted.column_names)
   end
 

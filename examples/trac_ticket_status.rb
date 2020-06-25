@@ -41,7 +41,7 @@ class TracSummaryReport
     Grouping(table,:by => :date)
   end
 
-  def renderable_data(format)
+  def renderable_data(_format)
     summary = feed_data.summary :date,
       :opened => lambda { |g| g.sigma { |r| r.opened  } },
       :closed => lambda { |g| g.sigma { |r| r.closed  } },

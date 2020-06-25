@@ -156,7 +156,7 @@ class TestController < Minitest::Test
   def test_using_io
     require "stringio"
     out = StringIO.new
-    a = OldSchoolController.render(:text) { |r| r.io = out }
+    OldSchoolController.render(:text) { |r| r.io = out }
     out.rewind
     assert_equal "header\nbody\nfooter\n", out.read
     assert_equal "", out.read
@@ -165,7 +165,7 @@ class TestController < Minitest::Test
   def test_using_file
     f = []
     File.expects(:open).yields(f)
-    a = OldSchoolController.render(:text, :file => "foo.text")
+    OldSchoolController.render(:text, :file => "foo.text")
     assert_equal "header\nbody\nfooter\n", f[0]
 
     f = []
@@ -305,30 +305,28 @@ class TestControllerWithManyHooks < Minitest::Test
     def setup
       options.apple = true
     end
-
   end
 
   def test_hash_options_setters
-    a = ControllerWithManyHooks.render(:text, :subtitle => "foo",
-                                       :subsubtitle => "bar") { |r|
+    ControllerWithManyHooks.render(:text, :subtitle => "foo", :subsubtitle => "bar") do |r|
       assert_equal "foo", r.options.subtitle
       assert_equal "bar", r.options.subsubtitle
-    }
+    end
   end
 
   def test_data_accessors
-   a = ControllerWithManyHooks.render(:text, :data => [1,2,4]) { |r|
-     assert_equal [1,2,4], r.data
-   }
+    ControllerWithManyHooks.render(:text, :data => [1,2,4]) do |r|
+      assert_equal [1,2,4], r.data
+    end
 
-   b = ControllerWithManyHooks.render_text(%w[a b c]) { |r|
-     assert_equal %w[a b c], r.data
-   }
+    ControllerWithManyHooks.render_text(%w[a b c]) do |r|
+      assert_equal %w[a b c], r.data
+    end
 
-   c = ControllerWithManyHooks.render_text(%w[a b f],:snapper => :red) { |r|
-     assert_equal %w[a b f], r.data
-     assert_equal :red, r.options.snapper
-   }
+    ControllerWithManyHooks.render_text(%w[a b f],:snapper => :red) do |r|
+      assert_equal %w[a b f], r.data
+      assert_equal :red, r.options.snapper
+    end
   end
 
   def test_formatter_data_dup
@@ -690,7 +688,7 @@ class TestControllerHooks < Minitest::Test
     include Ruport::Controller::Hooks
     renders_as_table
 
-    def renderable_data(format)
+    def renderable_data(_format)
       1
     end
   end

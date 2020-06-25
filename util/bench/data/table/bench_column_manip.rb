@@ -1,5 +1,4 @@
 require "ruport"
-require "enumerator"
 require "rubygems"
 require "ruport/util/bench"
 

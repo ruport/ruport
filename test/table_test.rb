@@ -25,7 +25,7 @@ class TestTable < Minitest::Test
       assert_equal n, t.column_names
 
       t = Ruport.Table(%w[a b c], :data => [[1,2,3],[4,5,6]])
-      table_from_records = Ruport.Table(t.column_names, :data => t.data)
+      Ruport.Table(t.column_names, :data => t.data)
     end
 
     a = Ruport::Data::Record.new [1,2,3]
@@ -719,7 +719,7 @@ class TestTableFromCSV < Minitest::Test
 
     table = Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"),
       :csv_options => { :headers => true, :header_converters => :symbol }
-      ) do |s,r|
+      ) do |_s,r|
         assert_equal expected.shift, r[:col3]
       end
 
@@ -728,7 +728,7 @@ class TestTableFromCSV < Minitest::Test
     expected = ['c','e']
 
     Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"),
-                              :records => true ) do |s,r|
+                              :records => true ) do |_s,r|
       assert_equal expected.shift, r.col3
       assert_kind_of Ruport::Data::Record, r
     end
@@ -791,27 +791,21 @@ class TestTableFromCSV < Minitest::Test
   end
 
   def test_ensure_csv_loading_accepts_table_options
-     a = Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"),
-                 :record_class => DuckRecord)
-     a.each { |r| assert_kind_of(DuckRecord,r) }
+    a = Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"), :record_class => DuckRecord)
+    a.each { |r| assert_kind_of(DuckRecord,r) }
   end
 
   def test_ensure_table_from_csv_accepts_record_class_in_block_usage
-    a = Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"),
-                :record_class => DuckRecord, :records => true) do |s,r|
-       assert_kind_of(DuckRecord,r)
+    Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"), :record_class => DuckRecord, :records => true) do |_s,r|
+      assert_kind_of(DuckRecord,r)
     end
   end
-
 end
 
 class TestTableKernelHack < Minitest::Test
-
   def test_simple
-    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),
-      Ruport.Table(%w[a b c])
-    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),
-      Ruport.Table("a","b","c")
+    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]), Ruport.Table(%w[a b c])
+    assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]), Ruport.Table("a","b","c")
     assert_equal Ruport::Data::Table.load(
                  File.join(TEST_SAMPLES,"addressbook.csv")),
                  Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"))
@@ -863,5 +857,4 @@ class TestTableKernelHack < Minitest::Test
     assert_equal Ruport::Data::Table.new(:column_names => %w[a b c]),
                  Ruport.Table(:column_names => %w[a b c])
   end
-
 end

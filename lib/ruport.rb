@@ -60,8 +60,7 @@ module Ruport #:nodoc:#
         stdout_handle = m_GetStdHandle.call(0xFFFFFFF5)
         
         m_GetConsoleScreenBufferInfo.call(stdout_handle, buf)
-        bufx, bufy, curx, cury, wattr,
-        left, top, right, bottom, maxx, maxy = buf.unpack(format)
+        _bufx, _bufy, _curx, _cury, _wattr, left, top, right, bottom, _maxx, _maxy = buf.unpack(format)
         return right - left + 1, bottom - top + 1
       end
     rescue LoadError             # If we're not on Windows try...
@@ -76,13 +75,11 @@ module Ruport #:nodoc:#
         end 
         return $? == 0 ? size : [80,24] 
       end
-
-   end
+    end
    
-   def terminal_width
-     terminal_size.first
-   end
-
+    def terminal_width
+      terminal_size.first
+    end
   end
 
   # quiets warnings for block
@@ -99,7 +96,6 @@ module Ruport #:nodoc:#
 end  
 
 require "ruport/version"
-require "enumerator"
 require "ruport/controller" 
 require "ruport/data" 
 require "ruport/formatter" 

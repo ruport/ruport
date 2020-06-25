@@ -99,7 +99,7 @@ module Ruport::Data
       if @subgroups.empty?
         @subgroups = grouped_data(group_column)
       else
-        @subgroups.each {|name,group|
+        @subgroups.each {|_name,group|
           group.send(:create_subgroups, group_column)
         }
       end
@@ -172,7 +172,7 @@ module Ruport::Data
         cols = Array(options[:by]).dup
         @data = data.to_group.send(:grouped_data, cols.shift)
         cols.each do |col|
-          @data.each do |name,group|
+          @data.each do |_name,group|
             group.send(:create_subgroups, col)
           end
         end    
@@ -200,9 +200,9 @@ module Ruport::Data
     #
     def each 
       if @order.respond_to?(:call) 
-        @data.sort_by { |n,g| @order[g] }.each { |n,g| yield(n,g) }
+        @data.sort_by { |_n,g| @order[g] }.each { |n,g| yield(n,g) }
       elsif @order == :name
-        @data.sort_by { |n,g| n }.each { |name,group| yield(name,group) } 
+        @data.sort_by { |n,_g| n }.each { |name,group| yield(name,group) }
       else
         @data.each { |name,group| yield(name,group) }
       end
@@ -216,7 +216,7 @@ module Ruport::Data
     #   by_size = grouping.sort_grouping_by { |g| g.size }
     def sort_grouping_by(type=nil,&block)
       a = Grouping.new(:by => @grouped_by, :order => type || block)
-      each { |n,g| a << g }
+      each { |_n,g| a << g }
       return a
     end
                                                           
@@ -285,7 +285,7 @@ module Ruport::Data
       else 
         cols = procs.keys + [field]   
       end
-      expected = Table.new(:column_names => cols) { |t|
+      Table.new(:column_names => cols) { |t|
         each do |name,group|
           t << procs.inject({field => name}) do |s,r|
             s.merge(r[0] => r[1].call(group))
@@ -327,7 +327,7 @@ module Ruport::Data
     #   grouping.sigma { |r| r.col2 + 1 } #=> 15
     #
     def sigma(column=nil)
-      inject(0) do |s, (group_name, group)|
+      inject(0) do |s, (_group_name, group)|
         if column
           s + group.sigma(column)
         else
