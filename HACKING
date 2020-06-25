@@ -23,23 +23,7 @@ contributions to our project.  Here are a few different ways you can help.
 If any of these things sound appealing to you, there are a few things
 you should do:
 
-1) Sign up on the mailing list: http://list.rubyreports.org/
-
-2) Post and introduce yourself, letting us know what you'd like to work on OR
-   Find sandal or mikem836 on #ruport
-
-3) Please read the MakingChangeRequests, ReportingDefects, and
-   SubmittingPatches Trac wiki pages, as appropriate.
-
-   - http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/MakingChangeRequests
-
-   - http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/ReportingDefects
-
-   - http://stonecode.svnrepository.com/ruport/trac.cgi/wiki/SubmittingPatches
-
-4) Please pull the latest code from SVN trunk:
-   http://stonecode.svnrepository.com/svn/ruport/ruport/trunk
-
+1) Head over to https://github.com/ruport/ruport
 
 This should hopefully be enough to get you on the right track.  We welcome your
 questions and ideas, so don't be afraid to contact us.
