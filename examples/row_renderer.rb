@@ -6,7 +6,7 @@ class CSV2Something < Ruport::Controller
 
   module Helpers
     def table_feeder
-      Table(options.csv_file,:has_names => false) { |t,r| yield(r) }
+      Table(options.csv_file,:has_names => false) { |_t,r| yield(r) }
     end
   end
 

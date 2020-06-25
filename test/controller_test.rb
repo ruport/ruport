@@ -688,7 +688,7 @@ class TestControllerHooks < Minitest::Test
     include Ruport::Controller::Hooks
     renders_as_table
 
-    def renderable_data(format)
+    def renderable_data(_format)
       1
     end
   end

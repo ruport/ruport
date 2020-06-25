@@ -719,7 +719,7 @@ class TestTableFromCSV < Minitest::Test
 
     table = Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"),
       :csv_options => { :headers => true, :header_converters => :symbol }
-      ) do |s,r|
+      ) do |_s,r|
         assert_equal expected.shift, r[:col3]
       end
 
@@ -728,7 +728,7 @@ class TestTableFromCSV < Minitest::Test
     expected = ['c','e']
 
     Ruport::Data::Table.load( File.join(TEST_SAMPLES,"data.csv"),
-                              :records => true ) do |s,r|
+                              :records => true ) do |_s,r|
       assert_equal expected.shift, r.col3
       assert_kind_of Ruport::Data::Record, r
     end
@@ -796,7 +796,7 @@ class TestTableFromCSV < Minitest::Test
   end
 
   def test_ensure_table_from_csv_accepts_record_class_in_block_usage
-    Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"), :record_class => DuckRecord, :records => true) do |s,r|
+    Ruport.Table(File.join(TEST_SAMPLES,"addressbook.csv"), :record_class => DuckRecord, :records => true) do |_s,r|
       assert_kind_of(DuckRecord,r)
     end
   end

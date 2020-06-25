@@ -110,7 +110,7 @@ module Ruport
     def build_row(data = self.data)
       max_col_widths_for_row(data) unless options.max_col_width
 
-      data.enum_for(:each_with_index).inject(line=[]) { |s,e|
+      data.enum_for(:each_with_index).inject(line=[]) { |_s,e|
         field,index = e
         if options.alignment.eql? :center
           line << field.to_s.center(options.max_col_width[index])

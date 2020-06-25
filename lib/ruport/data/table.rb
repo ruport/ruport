@@ -50,7 +50,7 @@ module Ruport::Data
         ordering = self.class.row_order_to_group_order(@pivot_order)
         pivot_column_grouping.sort_grouping_by!(ordering) if ordering
 
-        @row = pivot_column_grouping.map { |name,grouping| name }
+        @row = pivot_column_grouping.map { |name,_grouping| name }
       end
 
       # Column in the first column in the pivoted table (without the group column)
@@ -132,7 +132,7 @@ module Ruport::Data
           rows && rows.inject(0) { |sum,row| sum+row[summary_column] }
         end
 
-        def count(rows, summary_column)
+        def count(rows, _summary_column)
           rows && rows.length
         end
 
