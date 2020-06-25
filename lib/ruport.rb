@@ -67,11 +67,11 @@ module Ruport #:nodoc:#
       # A Unix savvy method to fetch the console columns, and rows.
       def terminal_size
         size = if /solaris/ =~ RUBY_PLATFORM
-          output = `stty`
+          output = `stty 2>&1`
           [output.match('columns = (\d+)')[1].to_i,
           output.match('rows = (\d+)')[1].to_i]
         else
-           `stty size`.split.map { |x| x.to_i }.reverse
+           `stty size 2>&1`.split.map { |x| x.to_i }.reverse
         end 
         return $? == 0 ? size : [80,24] 
       end
