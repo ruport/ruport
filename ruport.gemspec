@@ -25,15 +25,11 @@ Gem::Specification.new do |s|
 
   s.email = %q{gregory.t.brown@gmail.com}
 
-  s.files = `/bin/bash -c 'git ls-files -- {lib,examples,test,util}/*'`.split("\n") + %w[AUTHORS COPYING HACKING LICENSE README.rdoc Rakefile]
+  s.files = `/bin/bash -c 'git ls-files -- {lib,examples,test,util}/*'`.split("\n") + %w[AUTHORS COPYING HACKING LICENSE README.md CHANGELOG Rakefile]
 
   s.test_files = `/bin/bash -c 'git ls-files -- {examples,test}/*'`.split("\n")
 
-  s.extra_rdoc_files = %w[LICENSE README.rdoc]
-
   s.require_paths = %w[lib]
-
-  s.rdoc_options = ['--title', 'Ruport Documentation', '--main', 'README.rdoc', '-q']
 
   s.add_runtime_dependency "prawn", "~> 2.4.0"
   s.add_runtime_dependency "prawn-table", "~> 0.2.0"

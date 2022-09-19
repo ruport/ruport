@@ -2,7 +2,6 @@ source "https://rubygems.org"
 gemspec
 
 # Utilities
-gem 'rdoc'
 gem 'byebug'
 
 # Testing gems

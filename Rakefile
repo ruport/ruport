@@ -1,7 +1,6 @@
 require "rubygems"
 require "bundler/setup"
 
-require "rdoc/task"
 require "rake/testtask"
 require 'bundler/gem_tasks'
 
@@ -15,15 +14,6 @@ Rake::TestTask.new do |test|
     test.test_files = Dir[ "test/*_test.rb" ]
   end
   test.verbose = true
-end
-
-RDoc::Task.new do |rdoc|
-  rdoc.rdoc_files.include( "README.rdoc",
-                           "AUTHORS", "COPYING",
-                           "LICENSE", "lib/" )
-  rdoc.main     = "README.rdoc"
-  rdoc.rdoc_dir = "doc/html"
-  rdoc.title    = "Ruport Documentation"
 end
 
 task :run_benchmarks do
