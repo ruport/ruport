@@ -7,6 +7,10 @@ Gem::Specification.new do |s|
   s.name = %q{ruport}
 
   s.homepage = %q{http://github.com/ruport/ruport}
+  s.metadata = {
+    "source_code_uri" => "https://github.com/ruport/ruport",
+    "changelog_uri"   => "https://github.com/ruport/ruport/blob/master/CHANGELOG.md"
+  }
 
   s.version = Ruport::VERSION
 
