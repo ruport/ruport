@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
 
   s.email = %q{gregory.t.brown@gmail.com}
 
-  s.files = `/bin/bash -c 'git ls-files -- {lib,examples,test,util}/*'`.split("\n") + %w[AUTHORS COPYING HACKING LICENSE README.md CHANGELOG Rakefile]
+  s.files = `/bin/bash -c 'git ls-files -- {lib,examples,test,util}/*'`.split("\n") + %w[AUTHORS COPYING HACKING LICENSE README.md CHANGELOG.md Rakefile]
 
   s.test_files = `/bin/bash -c 'git ls-files -- {examples,test}/*'`.split("\n")
 
