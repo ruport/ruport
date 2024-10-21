@@ -26,6 +26,12 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency "ostruct"
   s.add_runtime_dependency "prawn", "~> 2.4.0"
+  # matrix required by prawn.
+  # Drop this once we upgrade to prawn 2.5:
+  s.add_runtime_dependency "matrix"
   s.add_runtime_dependency "prawn-table", "~> 0.2.0"
+  # csv required by prawn-table:
+  # drop this depencency once https://github.com/prawnpdf/prawn-table/pull/161 has been merged
+  s.add_runtime_dependency "csv"
   s.add_development_dependency "rake"
 end
