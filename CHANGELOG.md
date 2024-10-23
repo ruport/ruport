@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - undecided
 
+## [1.8.1] - 2024-10-24
+
+### Added
+
+- Explicitly added ostruct dependency since it is leaving the standard library.
+- Explicitly added csv dependency. It is required by prawn-table.
+- Explicitly added matrix. It is required by prawn. (We're not ready to upgrade to 2.5 yet)
+
 ## [1.8.0] - 2022-09-20
 
 ### Added
